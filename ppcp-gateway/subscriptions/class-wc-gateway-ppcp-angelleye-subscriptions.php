@@ -44,7 +44,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);
         }
-        
+
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($renewal_order_id)) {
             $subscriptions = wcs_get_subscriptions_for_order($renewal_order_id);
         } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($renewal_order_id)) {
@@ -106,7 +106,9 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
     }
 
     public function free_signup_with_token_payment_tokenization($order_id) {
-        if (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new') {
+        if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') || (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new' )) {
+
+
             $order = wc_get_order($order_id);
             if ($order->get_total() == 0) {
                 return true;

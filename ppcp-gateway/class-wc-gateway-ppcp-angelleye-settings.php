@@ -33,7 +33,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
                 }
                 $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
-                
             } catch (Exception $ex) {
                 
             }
@@ -168,8 +167,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 54 => __('51 px', 'paypal-for-woocommerce'),
                 55 => __('55 px', 'paypal-for-woocommerce')
             );
-            if(!empty($this->merchant_id)) {
-                $available_endpoints = AngellEYE_PayPal_PPCP_Request::angelleye_ppcp_get_available_endpoints($this->merchant_id);
+            if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
+                if (!empty($this->merchant_id)) {
+                    $available_endpoints = AngellEYE_PayPal_PPCP_Request::angelleye_ppcp_get_available_endpoints($this->merchant_id);
+                } else {
+                    $available_endpoints = false;
+                }
             } else {
                 $available_endpoints = false;
             }

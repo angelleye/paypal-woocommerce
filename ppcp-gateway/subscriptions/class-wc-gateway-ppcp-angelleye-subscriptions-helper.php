@@ -118,6 +118,30 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                     } else {
                         $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
                     }
+                } elseif (!empty($api_response['payment_source']['venmo']['attributes']['vault']['id'])) {
+                    $token = new WC_Payment_Token_CC();
+                    $order = wc_get_order($order_id);
+                    if (0 != $order->get_user_id()) {
+                        $customer_id = $order->get_user_id();
+                    } else {
+                        $customer_id = get_current_user_id();
+                    }
+                    $token->set_token($payment_token);
+                    $token->set_gateway_id($order->get_payment_method());
+                    $token->set_card_type('PayPal Billing Agreement');
+                    $token->set_last4(substr($payment_token, -4));
+                    $token->set_expiry_month(date('m'));
+                    $token->set_expiry_year(date('Y', strtotime('+20 years')));
+                    $token->set_user_id($customer_id);
+                    if ($token->validate()) {
+                        $this->save_payment_token($order, $payment_token);
+                        $save_result = $token->save();
+                        if ($save_result) {
+                            $order->add_payment_token($token);
+                        }
+                    } else {
+                        $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
+                    }
                 }
             }
         }

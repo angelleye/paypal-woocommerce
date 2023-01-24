@@ -111,7 +111,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_pay_later_messaging_home_page_content($content) {
-        if (angelleye_ppcp_is_cart_contains_subscription == true) {
+        if (angelleye_ppcp_is_cart_contains_subscription() === true) {
             return $content;
         }
         if ((is_home() || is_front_page())) {
@@ -125,7 +125,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_pay_later_messaging_home_page() {
-        if (angelleye_ppcp_is_cart_contains_subscription == true) {
+        if (angelleye_ppcp_is_cart_contains_subscription() === true) {
             return false;
         }
         if (is_shop()) {
@@ -137,7 +137,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_pay_later_messaging_category_page() {
-        if (angelleye_ppcp_is_cart_contains_subscription == true) {
+        if (angelleye_ppcp_is_cart_contains_subscription() === true) {
             return false;
         }
         if (is_shop() === false && $this->pay_later_messaging_category_shortcode === false) {
@@ -151,7 +151,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     public function angelleye_ppcp_pay_later_messaging_product_page() {
         try {
             global $product;
-            if (angelleye_ppcp_is_cart_contains_subscription == true) {
+            if (angelleye_ppcp_is_cart_contains_subscription() === true) {
                 return false;
             }
             if (angelleye_ppcp_is_product_purchasable($product) === true) {
@@ -169,7 +169,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (WC()->cart->is_empty()) {
             return false;
         }
-        if (angelleye_ppcp_is_cart_contains_subscription == true) {
+        if (angelleye_ppcp_is_cart_contains_subscription() === true) {
             return false;
         }
         if (WC()->cart->needs_payment()) {
@@ -187,7 +187,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (angelleye_ppcp_has_active_session()) {
             return false;
         }
-        if (angelleye_ppcp_is_cart_contains_subscription == true) {
+        if (angelleye_ppcp_is_cart_contains_subscription() === true) {
             return false;
         }
         angelleye_ppcp_add_css_js();

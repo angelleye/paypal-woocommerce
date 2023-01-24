@@ -13,6 +13,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public $setting_obj;
     public $ppcp_payment_token;
     public $subscriptions_helper;
+    public $enable_tokenized_payments;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -57,6 +58,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->error_email_notification = 'yes' === $this->setting_obj->get('error_email_notification', 'yes');
         $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
         $this->send_items = 'yes' === $this->setting_obj->get('send_items', 'yes');
+        $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
         $this->AVSCodes = array("A" => "Address Matches Only (No ZIP)",
             "B" => "Address Matches Only (No ZIP)",
             "C" => "This tranaction was declined.",
@@ -280,7 +282,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             $body_request = $this->angelleye_ppcp_set_payer_details($woo_order_id, $body_request);
-            $body_request = $this->angelleye_ppcp_add_payment_source_parameter($body_request);
+            if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription() && $this->enable_tokenized_payments === true) {
+                $body_request = $this->angelleye_ppcp_add_payment_source_parameter($body_request);
+            }
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $args = array(
                 'method' => 'POST',
@@ -834,6 +838,16 @@ class AngellEYE_PayPal_PPCP_Payment {
                 } elseif (isset($this->api_response['payment_source']['paypal']['attributes']['vault']['status']) && 'VAULTED' === $this->api_response['payment_source']['paypal']['attributes']['vault']['status']) {
                     if ($this->ppcp_payment_token->angelleye_ppcp_is_paypal_generated_customer_id_exist($this->is_sandbox) === false) {
                         $customer_id = isset($this->api_response['payment_source']['paypal']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['paypal']['attributes']['vault']['customer']['id'] : '';
+                        if (isset($customer_id) && !empty($customer_id)) {
+                            $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
+                        }
+                    }
+                    if ($this->subscriptions_helper->is_subscription($woo_order_id)) {
+                        $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $this->api_response);
+                    }
+                } elseif (isset($this->api_response['payment_source']['venmo']['attributes']['vault']['status']) && 'VAULTED' === $this->api_response['payment_source']['venmo']['attributes']['vault']['status']) {
+                    if ($this->ppcp_payment_token->angelleye_ppcp_is_paypal_generated_customer_id_exist($this->is_sandbox) === false) {
+                        $customer_id = isset($this->api_response['payment_source']['venmo']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['venmo']['attributes']['vault']['customer']['id'] : '';
                         if (isset($customer_id) && !empty($customer_id)) {
                             $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                         }
@@ -2219,7 +2233,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $request['payment_source'][$payment_method_name]['experience_context']['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
                         $request['payment_source'][$payment_method_name]['experience_context']['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
                         break;
-                    case 'venmo':
+                    case 'PayPal Venmo':
                         $payment_method_name = 'venmo';
                         $attributes = array('vault' => array('store_in_vault' => 'ON_SUCCESS', 'usage_type' => 'MERCHANT', 'permit_multiple_payment_tokens ' => true));
                         $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
@@ -2362,6 +2376,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $use_payment_method = 'paypal';
                 } elseif($angelleye_ppcp_used_payment_method === 'card') {
                     $use_payment_method = 'card';
+                } elseif($angelleye_ppcp_used_payment_method === 'PayPal Venmo') {
+                    $use_payment_method = 'venmo';
                 } else {
                     $use_payment_method = $angelleye_ppcp_used_payment_method;
                 }
