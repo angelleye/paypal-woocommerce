@@ -24,21 +24,31 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             if (angelleye_ppcp_has_active_session()) {
                 $this->order_button_text = apply_filters('angelleye_ppcp_order_review_page_place_order_button_text', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
             }
-            $this->supports = array(
-                'products',
-                'refunds',
-                'subscriptions',
-                'subscription_cancellation',
-                'subscription_reactivation',
-                'subscription_suspension',
-                'subscription_amount_changes',
-                'subscription_payment_method_change', // Subs 1.n compatibility.
-                'subscription_payment_method_change_customer',
-                'subscription_payment_method_change_admin',
-                'subscription_date_changes',
-                'multiple_subscriptions',
-                'add_payment_method',
-            );
+            $this->enable_tokenized_payments = 'yes' === $this->get_option('enable_tokenized_payments', 'no');
+            if ($this->enable_tokenized_payments) {
+                $this->supports = array(
+                    'products',
+                    'refunds',
+                    'pay_button',
+                    'subscriptions',
+                    'subscription_cancellation',
+                    'subscription_reactivation',
+                    'subscription_suspension',
+                    'subscription_amount_changes',
+                    'subscription_payment_method_change', // Subs 1.n compatibility.
+                    'subscription_payment_method_change_customer',
+                    'subscription_payment_method_change_admin',
+                    'subscription_date_changes',
+                    'multiple_subscriptions',
+                    'add_payment_method',
+                );
+            } else {
+                $this->supports = array(
+                    'products',
+                    'refunds',
+                    'pay_button'
+                );
+            }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -80,11 +90,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $this->has_fields = true;
         $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'));
         $this->method_description = __('The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce');
-        $this->supports = array(
-            'products',
-            'refunds',
-            'pay_button'
-        );
     }
 
     public function angelleye_get_settings() {
@@ -282,7 +287,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                              ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <div class="ppcp_paypal_connection_image">
@@ -312,7 +317,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                              ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
@@ -350,14 +355,14 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                  ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                  ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
-                    <?php echo $this->get_description_html($data); // WPCS: XSS ok.        ?>
+                    <?php echo $this->get_description_html($data); // WPCS: XSS ok.         ?>
                 </fieldset>
             </td>
         </tr>
@@ -501,12 +506,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             $is_saller_onboarding_done = true;
             delete_transient('angelleye_ppcp_live_seller_onboarding_process_done');
         }
-        if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
-            echo '<div class="error notice-warning"><p>';
-            echo __("Complete Payments - Powered by PayPal is not yet compatible with Woo Subscriptions. You will need to use <a target='_blank' href='" . admin_url("admin.php?page=wc-settings&tab=checkout&section=paypal_express") . "'>Classic Express Checkout</a> for now, and make sure you have <a target='_blank' href='https://www.angelleye.com/how-to-enable-paypal-billing-agreements-for-reference-transactions/'>Billing Agreements enabled on your account</a> in order to use this with Woo Subscriptions.", '');
-            echo '</p></div>';
-        }
-
         if ($is_saller_onboarding_done) {
             echo '<div class="notice notice-success angelleye-notice is-dismissible" id="ppcp_success_notice_onboarding" style="display:none;">'
             . '<div class="angelleye-notice-logo-original">'

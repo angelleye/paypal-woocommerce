@@ -280,7 +280,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function enqueue_scripts() {
         global $post, $wp, $product;
-
         $this->angelleye_ppcp_smart_button_style_properties();
         $smart_js_arg = array();
         $enable_funding = array();
@@ -369,7 +368,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $components = array("buttons");
         if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
             array_push($components, "hosted-fields");
-            if (is_checkout_pay_page()) {
+            if (is_checkout_pay_page() && isset($wp->query_vars['order-pay'])) {
                 $order_id = $wp->query_vars['order-pay'];
                 $order_id = absint($order_id);
                 $order = wc_get_order($order_id);
@@ -507,7 +506,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         try {
             global $product;
             $this->angelleye_ppcp_smart_button_style_properties();
-            if (AngellEYE_Utility::is_cart_contains_subscription() == true) {
+            if (angelleye_ppcp_is_cart_contains_subscription == true) {
                 return false;
             }
             if (angelleye_ppcp_is_product_purchasable($product) === true) {

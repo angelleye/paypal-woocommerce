@@ -26,7 +26,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
 
     public function process_payment($order_id) {
         if ($this->is_subscription($order_id)) {
-            if (AngellEYE_Utility::is_subs_change_payment()) {
+            if (angelleye_ppcp_is_subs_change_payment()) {
                 return parent::subscription_change_payment($order_id);
             } elseif ($this->free_signup_with_token_payment_tokenization($order_id) == true) {
                 return parent::free_signup_order_payment($order_id);

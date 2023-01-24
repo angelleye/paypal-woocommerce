@@ -29,7 +29,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
                 }
+                if (!class_exists('AngellEYE_PayPal_PPCP_Request')) {
+                    include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
+                }
                 $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
+                
             } catch (Exception $ex) {
                 
             }
@@ -81,6 +85,30 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
         public function angelleye_ppcp_setting_fields() {
+            $this->is_sandbox = 'yes' === $this->get('testmode', 'no');
+            if ($this->is_sandbox) {
+                $this->merchant_id = $this->get('sandbox_merchant_id', '');
+            } else {
+                $this->merchant_id = $this->get('live_merchant_id', '');
+            }
+            $this->enable_tokenized_payments = $was_enable_tokenized_payments = $this->get('enable_tokenized_payments', 'no');
+            if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+                $this->enable_tokenized_payments = 'no';
+                $this->is_multi_account_active = 'yes';
+            } else {
+                $this->is_multi_account_active = 'no';
+            }
+            $credit_messaging_text = '';
+            if ($this->is_multi_account_active == 'yes') {
+                $credit_messaging_text = __('PayPal Pay Later Messaging - Buy Now Pay Later is not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+            }
+            if ($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
+                $enable_tokenized_payments_text = __('Payment tokenization is not available when using the PayPal Multi-Account add-on, and it has been disabled.', 'paypal-for-woocommerce');
+            } elseif ($was_enable_tokenized_payments == 'no' && $this->is_multi_account_active == 'yes') {
+                $enable_tokenized_payments_text = __('Token payments are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+            } else {
+                $enable_tokenized_payments_text = __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future. (Currently considered BETA for Express Checkout.)', 'paypal-for-woocommerce');
+            }
             $cards_list = array(
                 'visa' => _x('Visa', 'Name of credit card', 'paypal-for-woocommerce'),
                 'mastercard' => _x('Mastercard', 'Name of credit card', 'paypal-for-woocommerce'),
@@ -140,6 +168,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 54 => __('51 px', 'paypal-for-woocommerce'),
                 55 => __('55 px', 'paypal-for-woocommerce')
             );
+            if(!empty($this->merchant_id)) {
+                $available_endpoints = AngellEYE_PayPal_PPCP_Request::angelleye_ppcp_get_available_endpoints($this->merchant_id);
+            } else {
+                $available_endpoints = false;
+            }
+            $advanced_cc_text = '';
+            $advanced_cc_text = '';
+            $vaulting_advanced_text = '';
+            if ($available_endpoints === false) {
+                $advanced_cc_text = '';
+                $advanced_cc_text = '';
+            } elseif (empty($available_endpoints)) {
+                $advanced_cc_text = 'Advanced Credit Cards not enable.';
+                $advanced_cc_text = '';
+            }
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -1246,6 +1289,20 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'custom_attributes' => array('readonly' => 'readonly'),
                     'default' => '[aepfw_bnpl_message placement="payment"]'
                 ),
+                'tokenization_subscriptions' => array(
+                    'title' => __('Tokenization / Subscriptions', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'enable_tokenized_payments' => array(
+                    'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                    'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'description' => $enable_tokenized_payments_text,
+                    'default' => 'no',
+                    'class' => 'enable_tokenized_payments'
+                ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
                     'type' => 'title',
@@ -1435,10 +1492,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             if (wc_coupons_enabled() === false) {
                 unset($this->angelleye_ppcp_gateway_setting['order_review_page_enable_coupons']);
             }
-            if( get_option('woocommerce_enable_guest_checkout') === 'no' ) {
+            if (get_option('woocommerce_enable_guest_checkout') === 'no') {
                 unset($this->angelleye_ppcp_gateway_setting['skip_final_review']);
                 unset($this->angelleye_ppcp_gateway_setting['disable_term']);
-                
             }
             if ((apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) === false) {
                 //disable_term

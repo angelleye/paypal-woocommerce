@@ -2206,7 +2206,30 @@ class AngellEYE_PayPal_PPCP_Payment {
                         //$request['payment_source'][$payment_method_name]['experience_context']['shipping_preference'] = $this->angelleye_ppcp_shipping_preference();
                         $request['payment_source'][$payment_method_name]['experience_context']['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
                         $request['payment_source'][$payment_method_name]['experience_context']['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
-
+                        break;
+                    case 'PayPal Credit':
+                        $payment_method_name = 'paypal';
+                        $attributes = array('vault' => array('store_in_vault' => 'ON_SUCCESS', 'usage_type' => 'MERCHANT', 'permit_multiple_payment_tokens ' => true));
+                        $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
+                        if (!empty($paypal_generated_customer_id)) {
+                            $attributes['customer'] = array('id' => $paypal_generated_customer_id);
+                        }
+                        $request['payment_source'][$payment_method_name]['attributes'] = $attributes;
+                        //$request['payment_source'][$payment_method_name]['experience_context']['shipping_preference'] = $this->angelleye_ppcp_shipping_preference();
+                        $request['payment_source'][$payment_method_name]['experience_context']['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
+                        $request['payment_source'][$payment_method_name]['experience_context']['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
+                        break;
+                    case 'venmo':
+                        $payment_method_name = 'venmo';
+                        $attributes = array('vault' => array('store_in_vault' => 'ON_SUCCESS', 'usage_type' => 'MERCHANT', 'permit_multiple_payment_tokens ' => true));
+                        $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
+                        if (!empty($paypal_generated_customer_id)) {
+                            $attributes['customer'] = array('id' => $paypal_generated_customer_id);
+                        }
+                        $request['payment_source'][$payment_method_name]['attributes'] = $attributes;
+                        //$request['payment_source'][$payment_method_name]['experience_context']['shipping_preference'] = $this->angelleye_ppcp_shipping_preference();
+                        $request['payment_source'][$payment_method_name]['experience_context']['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
+                        $request['payment_source'][$payment_method_name]['experience_context']['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
                         break;
                     default:
                         break;
@@ -2335,14 +2358,15 @@ class AngellEYE_PayPal_PPCP_Payment {
             $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
             $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
             if (!empty($payment_tokens_id) && $angelleye_ppcp_used_payment_method) {
-                if($angelleye_ppcp_used_payment_method === 'PayPal Checkout') {
+                if($angelleye_ppcp_used_payment_method === 'PayPal Checkout' || 'PayPal Credit' === $angelleye_ppcp_used_payment_method) {
                     $use_payment_method = 'paypal';
-                } else {
+                } elseif($angelleye_ppcp_used_payment_method === 'card') {
                     $use_payment_method = 'card';
+                } else {
+                    $use_payment_method = $angelleye_ppcp_used_payment_method;
                 }
                 $body_request['payment_source'][$use_payment_method] = array('vault_id' => $payment_tokens_id);
             }
-
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $args = array(
                 'method' => 'POST',
