@@ -11,16 +11,35 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         try {
             $this->id = 'angelleye_ppcp_cc';
             $this->icon = apply_filters('woocommerce_angelleye_ppcp_cc_icon', plugins_url('/assets/images/cards.png', plugin_basename(dirname(__FILE__))));
-            
             $this->method_description = __('Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce');
             $this->has_fields = true;
-            $this->supports = array(
-                'products',
-                'refunds',
-                'pay_button'
-            );
             $this->angelleye_ppcp_load_class();
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit card'));
+            $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
+            if ($this->enable_tokenized_payments) {
+                $this->supports = array(
+                    'products',
+                    'refunds',
+                    'pay_button',
+                    'subscriptions',
+                    'subscription_cancellation',
+                    'subscription_reactivation',
+                    'subscription_suspension',
+                    'subscription_amount_changes',
+                    'subscription_payment_method_change', // Subs 1.n compatibility.
+                    'subscription_payment_method_change_customer',
+                    'subscription_payment_method_change_admin',
+                    'subscription_date_changes',
+                    'multiple_subscriptions',
+                    'add_payment_method',
+                );
+            } else {
+                $this->supports = array(
+                    'products',
+                    'refunds',
+                    'pay_button'
+                );
+            }
             $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit card');
             $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
             $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
@@ -283,6 +302,31 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             }
         } catch (Exception $ex) {
             
+        }
+    }
+    
+    public function process_subscription_payment($order, $amount_to_charge) {
+        try {
+            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function subscription_change_payment($order_id) {
+        try {
+            
+        } catch (Exception $ex) {
+            
+        }
+    }
+    
+    public function free_signup_order_payment($order_id) {
+        try {
+            
+        } catch (Exception $ex) {
+
         }
     }
 

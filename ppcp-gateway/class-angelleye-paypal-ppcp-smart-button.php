@@ -380,7 +380,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         if (angelleye_ppcp_is_cart_contains_subscription() || angelleye_ppcp_is_subs_change_payment()) {
-           $smart_js_arg['vault'] = 'true';
+            $smart_js_arg['vault'] = 'true';
             $this->enabled_pay_later_messaging = false;
             foreach ($enable_funding as $key => $value) {
                 if ($value === 'paylater') {
@@ -810,9 +810,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $user_id_token = '';
             if (!isset($_GET['paypal_order_id'])) {
                 $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
-                 $this->id_token = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                $this->id_token = $this->payment_request->angelleye_ppcp_get_generate_id_token();
                 $client_token = "data-client-token='{$this->client_token}'";
-                 $user_id_token = " data-user-id-token='{$this->id_token}'";
+                $user_id_token = " data-user-id-token='{$this->id_token}'";
             }
             $tag = str_replace(' src=', ' ' . $client_token . $user_id_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
         }
@@ -917,8 +917,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if ((isset($_GET['page']) && 'wc-settings' === $_GET['page'])) {
                 
             } else {
-                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
-                $methods[] = 'WC_Gateway_CC_AngellEYE';
+                if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-cc-angelleye-subscriptions.php');
+                    $methods[] = 'WC_Gateway_CC_AngellEYE_Subscriptions';
+                } else {
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
+                    $methods[] = 'WC_Gateway_CC_AngellEYE';
+                }
             }
         }
         return $methods;
