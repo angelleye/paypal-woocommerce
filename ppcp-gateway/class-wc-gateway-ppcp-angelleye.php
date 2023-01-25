@@ -569,5 +569,13 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
         }
     }
+    
+    public function add_payment_method($order = null) {
+        try {
+            
+        } catch (Exception $ex) {
+
+        }
+    }
 
 }

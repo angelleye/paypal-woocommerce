@@ -18,6 +18,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public $api_log;
     public $ppcp_host;
     public $payment_request;
+    public $setup_tokens_url;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -87,10 +88,12 @@ class AngellEYE_PayPal_PPCP_Request {
             $this->token_url = 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
             $this->paypal_oauth_api = 'https://api-m.sandbox.paypal.com/v1/oauth2/token/';
             $this->generate_token_url = 'https://api-m.sandbox.paypal.com/v1/identity/generate-token';
+            $this->setup_tokens_url = 'https://api-m.sandbox.paypal.com/v3/vault/setup-tokens';
         } else {
             $this->token_url = 'https://api-m.paypal.com/v1/oauth2/token';
             $this->paypal_oauth_api = 'https://api-m.paypal.com/v1/oauth2/token/';
             $this->generate_token_url = 'https://api-m.paypal.com/v1/identity/generate-token';
+            $this->setup_tokens_url = 'https://api-m.paypal.com/v3/vault/setup-tokens';
         }
     }
 
@@ -194,7 +197,7 @@ class AngellEYE_PayPal_PPCP_Request {
 
     public static function angelleye_ppcp_get_available_endpoints($merchant_id) {
         $available_endpoints = array();
-        if(empty($merchant_id)) {
+        if (empty($merchant_id)) {
             return $available_endpoints = false;
         }
         $available_endpoints = array();
@@ -226,6 +229,36 @@ class AngellEYE_PayPal_PPCP_Request {
             }
         }
         return $available_endpoints;
+    }
+
+    public function angelleye_ppcp_paypal_setup_tokens() {
+        try {
+            $body_request = array();
+            $body_request['payment_source']['paypal']['description'] = "PayPal Billing Agrrement";
+            $body_request['payment_source']['paypal']['shipping']['name']['full_name'] = "PayPal Billing Agrrement";
+            $body_request['payment_source']['paypal']['shipping']['name']['address'] = array(
+                'address_line_1' => '',
+                'address_line_2' => '',
+                'admin_area_2' => '',
+                'admin_area_1' => '',
+                'postal_code' => '',
+                'country_code' => ''
+            );
+            $body_request['payment_source']['paypal']['permit_multiple_payment_tokens'] = true;
+            $body_request['payment_source']['paypal']['usage_pattern'] = 'IMMEDIATE';
+            $body_request['payment_source']['paypal']['usage_type'] = 'MERCHANT';
+            $body_request['payment_source']['paypal']['customer_type'] = 'CONSUMER';
+            $body_request['payment_source']['paypal']['experience_context'] = array(
+                'shipping_preference' => '',
+                'payment_method_preference' => '',
+                'brand_name' => '',
+                'locale' => '',
+                'return_url' => '',
+                'cancel_url' => ''
+            );
+        } catch (Exception $ex) {
+            
+        }
     }
 
 }

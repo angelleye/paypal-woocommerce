@@ -182,9 +182,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_has_active_session() === false) {
                 angelleye_ppcp_add_css_js();
             }
-
             if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true) {
-
                 parent::payment_fields();
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }

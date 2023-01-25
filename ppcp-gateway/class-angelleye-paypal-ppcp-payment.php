@@ -2466,7 +2466,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'request' => 'capture_order',
                     'order_id' => $woo_order_id
                 );
-                $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                $readable_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                $order->add_order_note($readable_message);
                 return false;
             }
         } catch (Exception $ex) {

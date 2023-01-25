@@ -388,6 +388,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
             }
         }
+        $smart_js_arg['debug'] = 'true';
         if ($this->enabled_pay_later_messaging) {
             array_push($components, 'messages');
         }
