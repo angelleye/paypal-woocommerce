@@ -570,9 +570,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
     
-    public function add_payment_method($order = null) {
+    public function add_payment_method() {
         try {
-            
+            return $this->payment_request->angelleye_ppcp_paypal_setup_tokens();
         } catch (Exception $ex) {
 
         }

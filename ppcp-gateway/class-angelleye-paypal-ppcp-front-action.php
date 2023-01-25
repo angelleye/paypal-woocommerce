@@ -150,6 +150,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     wp_redirect(wc_get_checkout_url());
                     exit();
                     break;
+                case "update_payment_method":
+                    $this->payment_request->angelleye_ppcp_paypal_update_payment_method();
+                    exit();
             }
         }
     }
