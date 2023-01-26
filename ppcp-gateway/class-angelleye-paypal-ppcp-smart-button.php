@@ -265,6 +265,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_shortcode('angelleye_ppcp_smart_button', array($this, 'angelleye_ppcp_display_paypal_smart_button_using_shortcode'), 9);
         add_action('woocommerce_get_checkout_url', array($this, 'angelleye_ppcp_woocommerce_get_checkout_url'), 9999, 1);
         add_filter('angelleye_ppcp_gateway_method_title', array($this, 'angelleye_ppcp_gateway_method_title'), 999, 1);
+        add_filter('woocommerce_get_credit_card_type_label', array($this, 'angelleye_ppcp_woocommerce_get_credit_card_type_label'), 999, 1);
     }
 
     /*
@@ -1299,6 +1300,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             return $payment_method_title;
         }
         return $method_title;
+    }
+
+    public function angelleye_ppcp_woocommerce_get_credit_card_type_label($type) {
+        if (strpos($type, 'Paypal') !== false) {
+            $type = str_replace('Paypal', 'PayPal', $type);
+        }
+        return $type;
     }
 
 }

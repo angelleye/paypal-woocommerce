@@ -832,31 +832,25 @@ class AngellEYE_PayPal_PPCP_Payment {
                     );
                     $this->response = $this->api_request->request('https://api-m.sandbox.paypal.com/v3/vault/payment-tokens', $args, 'payment_tokens');
                 } elseif (isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'VAULTED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
-                    if ($this->ppcp_payment_token->angelleye_ppcp_is_paypal_generated_customer_id_exist($this->is_sandbox) === false) {
-                        $customer_id = isset($this->api_response['payment_source']['card']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['card']['attributes']['vault']['customer']['id'] : '';
-                        if (isset($customer_id) && !empty($customer_id)) {
-                            $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
-                        }
+                    $customer_id = isset($this->api_response['payment_source']['card']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['card']['attributes']['vault']['customer']['id'] : '';
+                    if (isset($customer_id) && !empty($customer_id)) {
+                        $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
                     if ($this->subscriptions_helper->is_subscription($woo_order_id)) {
                         $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $this->api_response);
                     }
                 } elseif (isset($this->api_response['payment_source']['paypal']['attributes']['vault']['status']) && 'VAULTED' === $this->api_response['payment_source']['paypal']['attributes']['vault']['status']) {
-                    if ($this->ppcp_payment_token->angelleye_ppcp_is_paypal_generated_customer_id_exist($this->is_sandbox) === false) {
-                        $customer_id = isset($this->api_response['payment_source']['paypal']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['paypal']['attributes']['vault']['customer']['id'] : '';
-                        if (isset($customer_id) && !empty($customer_id)) {
-                            $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
-                        }
+                    $customer_id = isset($this->api_response['payment_source']['paypal']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['paypal']['attributes']['vault']['customer']['id'] : '';
+                    if (isset($customer_id) && !empty($customer_id)) {
+                        $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
                     if ($this->subscriptions_helper->is_subscription($woo_order_id)) {
                         $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $this->api_response);
                     }
                 } elseif (isset($this->api_response['payment_source']['venmo']['attributes']['vault']['status']) && 'VAULTED' === $this->api_response['payment_source']['venmo']['attributes']['vault']['status']) {
-                    if ($this->ppcp_payment_token->angelleye_ppcp_is_paypal_generated_customer_id_exist($this->is_sandbox) === false) {
-                        $customer_id = isset($this->api_response['payment_source']['venmo']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['venmo']['attributes']['vault']['customer']['id'] : '';
-                        if (isset($customer_id) && !empty($customer_id)) {
-                            $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
-                        }
+                    $customer_id = isset($this->api_response['payment_source']['venmo']['attributes']['vault']['customer']['id']) ? $this->api_response['payment_source']['venmo']['attributes']['vault']['customer']['id'] : '';
+                    if (isset($customer_id) && !empty($customer_id)) {
+                        $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
                     if ($this->subscriptions_helper->is_subscription($woo_order_id)) {
                         $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $this->api_response);
@@ -2485,7 +2479,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_paypal_setup_tokens() {
         try {
             $body_request = array();
-            $body_request['payment_source']['paypal']['description'] = "PayPal Billing Agrrement";
+            $body_request['payment_source']['paypal']['description'] = "Billing Agreement";
             $body_request['payment_source']['paypal']['permit_multiple_payment_tokens'] = true;
             $body_request['payment_source']['paypal']['usage_pattern'] = 'IMMEDIATE';
             $body_request['payment_source']['paypal']['usage_type'] = 'MERCHANT';
@@ -2495,12 +2489,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'payment_method_preference' => 'IMMEDIATE_PAYMENT_REQUIRED',
                 'brand_name' => $this->brand_name,
                 'locale' => 'en-US',
-                'return_url' => add_query_arg(array('angelleye_ppcp_action' => 'update_payment_method', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
+                'return_url' => add_query_arg(array('angelleye_ppcp_action' => 'paypal_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
                 'cancel_url' => wc_get_account_endpoint_url('add-payment-method')
             );
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
             if (!empty($paypal_generated_customer_id)) {
-                $request['payment_source']['customer_id'] = $paypal_generated_customer_id;
+                $body_request['payment_source']['customer_id'] = $paypal_generated_customer_id;
             }
             $args = array(
                 'method' => 'POST',
@@ -2521,8 +2515,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                     }
                 }
-                wc_add_notice( __( 'Unable to add payment method to your account.', 'woocommerce' ), 'error' );
-                wp_redirect(wc_get_account_endpoint_url('add-payment-method'));
+                wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                 exit();
             } else {
                 $error_email_notification_param = array(
@@ -2530,8 +2524,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
-                wc_add_notice( __( 'Unable to add payment method to your account.', 'woocommerce' ), 'error' );
-                wp_redirect(wc_get_account_endpoint_url('add-payment-method'));
+                wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                 exit();
             }
         } catch (Exception $ex) {
@@ -2539,55 +2533,215 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_paypal_update_payment_method() {
+    public function angelleye_ppcp_paypal_setup_tokens_free_signup_with_free_trial($order_id) {
         try {
             $body_request = array();
-            if (isset($_GET['approval_token_id'])) {
-                
-            }
-            $body_request['payment_source']['token'] = array(
-                'id' => wc_clean($_GET['approval_token_id']),
-                'type' => 'SETUP_TOKEN'
+            $body_request['payment_source']['paypal']['description'] = "Billing Agreement";
+            $body_request['payment_source']['paypal']['permit_multiple_payment_tokens'] = true;
+            $body_request['payment_source']['paypal']['usage_pattern'] = 'IMMEDIATE';
+            $body_request['payment_source']['paypal']['usage_type'] = 'MERCHANT';
+            $body_request['payment_source']['paypal']['customer_type'] = 'CONSUMER';
+            $body_request['payment_source']['paypal']['experience_context'] = array(
+                'shipping_preference' => 'GET_FROM_FILE',
+                'payment_method_preference' => 'IMMEDIATE_PAYMENT_REQUIRED',
+                'brand_name' => $this->brand_name,
+                'locale' => 'en-US',
+                'return_url' => add_query_arg(array('angelleye_ppcp_action' => 'paypal_create_payment_token_free_signup_with_free_trial', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id(), 'order_id' => $order_id), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
+                'cancel_url' => wc_get_checkout_url()
             );
-
+            $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
+            if (!empty($paypal_generated_customer_id)) {
+                $body_request['payment_source']['customer_id'] = $paypal_generated_customer_id;
+            }
             $args = array(
                 'method' => 'POST',
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                 'body' => $body_request
             );
-            $this->api_response = $this->api_request->request($this->payment_tokens_url, $args, 'create_payment_token');
+            $this->api_response = $this->api_request->request($this->setup_tokens_url, $args, 'setup tokens');
             if (ob_get_length()) {
                 ob_end_clean();
             }
             if (!empty($this->api_response['id'])) {
-                $token = new WC_Payment_Token_CC();
-                $customer_id = get_current_user_id();
-                $token->set_token($this->api_response['id']);
-                $token->set_gateway_id('angelleye_ppcp');
-                $token->set_card_type('PayPal Billing Agreement');
-                $token->set_last4(substr($this->api_response['id'], -4));
-                $token->set_expiry_month(date('m'));
-                $token->set_expiry_year(date('Y', strtotime('+20 years')));
-                $token->set_user_id($customer_id);
-                if ($token->validate()) {
-                    $save_result = $token->save();
-                    wc_add_notice(__('Payment method successfully added.', 'woocommerce'));
-                } else {
-                    wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                if (!empty($this->api_response['links'])) {
+                    foreach ($this->api_response['links'] as $key => $link_result) {
+                        if ('approve' === $link_result['rel']) {
+                            return array(
+                                'result' => 'success',
+                                'redirect' => $link_result['href']
+                            );
+                        }
+                    }
                 }
+                wp_redirect(wc_get_checkout_url());
+                exit();
             } else {
                 $error_email_notification_param = array(
-                    'request' => 'create_payment_token'
+                    'request' => 'setup_tokens'
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
-                wc_add_notice( __( 'Unable to add payment method to your account.', 'woocommerce' ), 'error' );
-                wp_redirect(wc_get_account_endpoint_url('add-payment-method'));
+                wp_redirect(wc_get_checkout_url());
                 exit();
             }
         } catch (Exception $ex) {
             
         }
+    }
+
+    public function angelleye_ppcp_paypal_create_payment_token_free_signup_with_free_trial() {
+        try {
+            $body_request = array();
+            if (isset($_GET['approval_token_id']) && isset($_GET['order_id'])) {
+                $body_request['payment_source']['token'] = array(
+                    'id' => wc_clean($_GET['approval_token_id']),
+                    'type' => 'SETUP_TOKEN'
+                );
+                $args = array(
+                    'method' => 'POST',
+                    'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                    'body' => $body_request
+                );
+                $this->api_response = $this->api_request->request($this->payment_tokens_url, $args, 'create_payment_token');
+                if (ob_get_length()) {
+                    ob_end_clean();
+                }
+                if (!empty($this->api_response['id'])) {
+                    $customer_id = isset($this->api_response['customer']['id']) ? $this->api_response['customer']['id'] : '';
+                    if (isset($customer_id) && !empty($customer_id)) {
+                        $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
+                    }
+                    $order = wc_get_order(wc_clean($_GET['order_id']));
+                    $token = new WC_Payment_Token_CC();
+                    if (0 != $order->get_user_id()) {
+                        $customer_id = $order->get_user_id();
+                    } else {
+                        $customer_id = get_current_user_id();
+                    }
+                    $token->set_token($this->api_response['id']);
+                    $token->set_gateway_id($order->get_payment_method());
+                    $token->set_card_type('PayPal Vault');
+                    $token->set_last4(substr($this->api_response['id'], -4));
+                    $token->set_expiry_month(date('m'));
+                    $token->set_expiry_year(date('Y', strtotime('+20 years')));
+                    $token->set_user_id($customer_id);
+                    if ($token->validate()) {
+                        $this->save_payment_token($order, $this->api_response['id']);
+                        $save_result = $token->save();
+                        if ($save_result) {
+                            $order->add_payment_token($token);
+                        }
+                        $order->payment_complete();
+                        WC()->cart->empty_cart();
+                        wp_redirect($this->angelleye_ppcp_get_order_return_url($order));
+                        exit();
+                    } else {
+                        $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
+                    }
+                    wp_redirect(wc_get_checkout_url());
+                    exit();
+                } else {
+                    $error_email_notification_param = array(
+                        'request' => 'create_payment_token'
+                    );
+                    $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                    wc_add_notice($error_message, 'error');
+                    wp_redirect(wc_get_checkout_url());
+                    exit();
+                }
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_paypal_create_payment_token() {
+        try {
+            $body_request = array();
+            if (isset($_GET['approval_token_id'])) {
+                $body_request['payment_source']['token'] = array(
+                    'id' => wc_clean($_GET['approval_token_id']),
+                    'type' => 'SETUP_TOKEN'
+                );
+
+                $args = array(
+                    'method' => 'POST',
+                    'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                    'body' => $body_request
+                );
+                $this->api_response = $this->api_request->request($this->payment_tokens_url, $args, 'create_payment_token');
+                if (ob_get_length()) {
+                    ob_end_clean();
+                }
+                if (!empty($this->api_response['id'])) {
+                    $token = new WC_Payment_Token_CC();
+                    $customer_id = get_current_user_id();
+                    $token->set_token($this->api_response['id']);
+                    $token->set_gateway_id('angelleye_ppcp');
+                    $token->set_card_type('PayPal Vault');
+                    $token->set_last4(substr($this->api_response['id'], -4));
+                    $token->set_expiry_month(date('m'));
+                    $token->set_expiry_year(date('Y', strtotime('+20 years')));
+                    $token->set_user_id($customer_id);
+                    if ($token->validate()) {
+                        $save_result = $token->save();
+                        wc_add_notice(__('Payment method successfully added.', 'woocommerce'));
+                    } else {
+                        wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                    }
+                    wp_redirect(wc_get_account_endpoint_url('payment-methods'));
+                    exit();
+                } else {
+                    $error_email_notification_param = array(
+                        'request' => 'create_payment_token'
+                    );
+                    $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                    wc_add_notice($error_message, 'error');
+                    wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                    wp_redirect(wc_get_account_endpoint_url('payment-methods'));
+                    exit();
+                }
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_subscription() {
+        
+    }
+
+    public function save_payment_token($order, $payment_tokens_id) {
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
+            $subscriptions = wcs_get_subscriptions_for_order($order_id);
+        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order_id)) {
+            $subscriptions = wcs_get_subscriptions_for_renewal_order($order_id);
+        } else {
+            $subscriptions = array();
+        }
+        if (!empty($subscriptions)) {
+            foreach ($subscriptions as $subscription) {
+                $subscription_id = version_compare(WC_VERSION, '3.0', '<') ? $subscription->id : $subscription->get_id();
+                update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
+                if (!empty($angelleye_ppcp_used_payment_method)) {
+                    update_post_meta($subscription_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                }
+            }
+        } else {
+            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+        }
+    }
+
+    public function angelleye_ppcp_get_order_return_url($order = null) {
+        if ($order) {
+            $return_url = $order->get_checkout_order_received_url();
+        } else {
+            $return_url = wc_get_endpoint_url('order-received', '', wc_get_checkout_url());
+        }
+
+        return apply_filters('woocommerce_get_return_url', $return_url, $order);
     }
 
 }

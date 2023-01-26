@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
-    
+
     public $setting_obj;
 
     public function __construct() {
@@ -179,12 +179,18 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function payment_fields() {
         try {
-            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_has_active_session() === false) {
+            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_has_active_session() === false && angelleye_ppcp_get_order_total() > 0) {
                 angelleye_ppcp_add_css_js();
             }
-            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true) {
+            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_get_order_total() > 0) {
                 parent::payment_fields();
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
+            }
+            if (is_account_page()) {
+                 parent::form();
+            }
+            if(is_checkout() && angelleye_ppcp_get_order_total() === 0) {
+                parent::form();
             }
         } catch (Exception $ex) {
             
@@ -302,7 +308,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             
         }
     }
-    
+
     public function process_subscription_payment($order, $amount_to_charge) {
         try {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
@@ -319,12 +325,12 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             
         }
     }
-    
+
     public function free_signup_order_payment($order_id) {
         try {
             
         } catch (Exception $ex) {
-
+            
         }
     }
 

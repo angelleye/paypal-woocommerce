@@ -209,7 +209,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     public function angelleye_paypal_pay_later_messaging_js_enqueue($placement = '', $atts = null) {
         if (!empty($placement)) {
             $enqueue_script_param = array();
-            $enqueue_script_param['amount'] = $this->angelleye_ppcp_get_order_total();
+            $enqueue_script_param['amount'] = angelleye_ppcp_get_order_total();
             switch ($placement) {
                 case 'home':
                     $required_keys = array(
@@ -299,7 +299,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     public function angelleye_get_default_attribute_pay_later_messaging($placement = '') {
         if (!empty($placement)) {
             $enqueue_script_param = array();
-            $enqueue_script_param['amount'] = $this->angelleye_ppcp_get_order_total();
+            $enqueue_script_param['amount'] = angelleye_ppcp_get_order_total();
             switch ($placement) {
                 case 'home':
                     $required_keys = array(
@@ -375,21 +375,6 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                     break;
             }
         }
-    }
-
-    public function angelleye_ppcp_get_order_total() {
-        global $product;
-        $total = 0;
-        $order_id = absint(get_query_var('order-pay'));
-        if (is_product()) {
-            $total = ( is_a( $product, \WC_Product::class ) ) ? wc_get_price_including_tax( $product ) : 0;
-        } elseif (0 < $order_id) {
-            $order = wc_get_order($order_id);
-            $total = (float) $order->get_total();
-        } elseif (isset(WC()->cart) && 0 < WC()->cart->total) {
-            $total = (float) WC()->cart->total;
-        }
-        return $total;
     }
 
     public function aepfw_bnpl_message_shortcode($atts) {

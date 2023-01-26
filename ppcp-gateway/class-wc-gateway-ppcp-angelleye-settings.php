@@ -42,7 +42,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             if (!$this->has($id)) {
                 return $default;
             }
-            return $this->setting_obj[$id];
+            return empty($this->setting_obj[$id]) ? $default : $this->setting_obj[$id];
         }
 
         public function get_load() {

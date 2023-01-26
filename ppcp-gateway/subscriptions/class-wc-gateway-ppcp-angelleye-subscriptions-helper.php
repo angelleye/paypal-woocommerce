@@ -111,7 +111,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                     }
                     $token->set_token($payment_token);
                     $token->set_gateway_id($order->get_payment_method());
-                    $token->set_card_type('PayPal Billing Agreement');
+                    $token->set_card_type('PayPal vault');
                     $token->set_last4(substr($payment_token, -4));
                     $token->set_expiry_month(date('m'));
                     $token->set_expiry_year(date('Y', strtotime('+20 years')));
@@ -135,7 +135,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                     }
                     $token->set_token($payment_token);
                     $token->set_gateway_id($order->get_payment_method());
-                    $token->set_card_type('PayPal Billing Agreement');
+                    $token->set_card_type('PayPal vault');
                     $token->set_last4(substr($payment_token, -4));
                     $token->set_expiry_month(date('m'));
                     $token->set_expiry_year(date('Y', strtotime('+20 years')));

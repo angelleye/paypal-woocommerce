@@ -30,12 +30,21 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
                 return parent::subscription_change_payment($order_id);
             } elseif ($this->free_signup_with_token_payment_tokenization($order_id) == true) {
                 return parent::free_signup_order_payment($order_id);
+            } elseif ($this->angelleye_ppcp_is_free_signup_with_free_trial() === true) {
+                return parent::angelleye_ppcp_process_free_signup_with_free_trial($order_id);
             } else {
                 return parent::process_payment($order_id);
             }
         } else {
             return parent::process_payment($order_id);
         }
+    }
+
+    public function angelleye_ppcp_is_free_signup_with_free_trial() {
+        if (angelleye_ppcp_get_order_total() === 0) {
+            return true;
+        }
+        return false;
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {

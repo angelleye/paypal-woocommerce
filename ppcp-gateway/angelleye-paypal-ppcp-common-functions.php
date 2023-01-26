@@ -774,3 +774,21 @@ if (!function_exists('angelleye_ppcp_is_subs_change_payment')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_get_order_total')) {
+
+    function angelleye_ppcp_get_order_total() {
+        global $product;
+        $total = 0;
+        $order_id = absint(get_query_var('order-pay'));
+        if (is_product()) {
+            $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 0;
+        } elseif (0 < $order_id) {
+            $order = wc_get_order($order_id);
+            $total = (float) $order->get_total();
+        } elseif (isset(WC()->cart) && 0 < WC()->cart->total) {
+            $total = (float) WC()->cart->total;
+        }
+        return $total;
+    }
+
+}
