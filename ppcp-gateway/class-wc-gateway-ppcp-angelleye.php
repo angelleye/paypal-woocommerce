@@ -41,6 +41,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                     'subscription_date_changes',
                     'multiple_subscriptions',
                     'add_payment_method',
+                    'tokenization'
                 );
             } else {
                 $this->supports = array(
@@ -195,6 +196,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->checkout_disable_smart_button === false && angelleye_ppcp_get_order_total() > 0) {
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
         }
+        $this->tokenization_script();
+        $this->saved_payment_methods();
         if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false && $this->advanced_card_payments === true && angelleye_ppcp_get_order_total() > 0) {
             if (angelleye_ppcp_has_active_session() === false) {
                 angelleye_ppcp_add_css_js();

@@ -32,6 +32,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     'subscription_date_changes',
                     'multiple_subscriptions',
                     'add_payment_method',
+                    'tokenization'
                 );
             } else {
                 $this->supports = array(
@@ -187,9 +188,13 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
             if (is_account_page()) {
+                $this->tokenization_script();
+                $this->saved_payment_methods();
                 $this->angelleye_ppcp_cc_form();
             }
             if (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
+                $this->tokenization_script();
+                $this->saved_payment_methods();
                 $this->angelleye_ppcp_cc_form();
             }
         } catch (Exception $ex) {
@@ -304,6 +309,15 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 return parent::get_title();
             }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_process_free_signup_with_free_trial($order_id) {
+        try {
+            $posted_card = $this->get_posted_card();
+            return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens_free_signup_with_free_trial($posted_card, $order_id);
         } catch (Exception $ex) {
             
         }
