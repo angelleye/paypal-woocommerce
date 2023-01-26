@@ -2494,7 +2494,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
             if (!empty($paypal_generated_customer_id)) {
-                $body_request['payment_source']['customer_id'] = $paypal_generated_customer_id;
+                $body_request['customer']['id'] = $paypal_generated_customer_id;
             }
             $args = array(
                 'method' => 'POST',
@@ -2551,7 +2551,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
             if (!empty($paypal_generated_customer_id)) {
-                $body_request['payment_source']['customer_id'] = $paypal_generated_customer_id;
+                $body_request['customer']['id'] = $paypal_generated_customer_id;
             }
             $args = array(
                 'method' => 'POST',
@@ -2746,7 +2746,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
             if (!empty($paypal_generated_customer_id)) {
-                $body_request['payment_source']['customer_id'] = $paypal_generated_customer_id;
+                $body_request['customer']['id'] = $paypal_generated_customer_id;
             }
             $args = array(
                 'method' => 'POST',
