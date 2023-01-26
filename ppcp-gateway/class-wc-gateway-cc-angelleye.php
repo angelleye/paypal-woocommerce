@@ -187,9 +187,9 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
             if (is_account_page()) {
-                 parent::form();
+                parent::form();
             }
-            if(is_checkout() && angelleye_ppcp_get_order_total() === 0) {
+            if (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
                 parent::form();
             }
         } catch (Exception $ex) {
@@ -329,6 +329,64 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     public function free_signup_order_payment($order_id) {
         try {
             
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function get_posted_card() {
+        $card_number = isset($_POST['paypal_pro-card-number']) ? wc_clean($_POST['paypal_pro-card-number']) : '';
+        $card_cvc = isset($_POST['paypal_pro-card-cvc']) ? wc_clean($_POST['paypal_pro-card-cvc']) : '';
+        $card_exp_month = isset($_POST['paypal_pro-card_expiration_month']) ? wc_clean($_POST['paypal_pro-card_expiration_month']) : '';
+        $card_exp_year = isset($_POST['paypal_pro-card_expiration_year']) ? wc_clean($_POST['paypal_pro-card_expiration_year']) : '';
+
+        // Format values
+        $card_number = str_replace(array(' ', '-'), '', $card_number);
+
+        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) ? wc_clean($_POST['paypal_pro-card-cardholder-first']) : '';
+        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) ? wc_clean($_POST['paypal_pro-card-cardholder-last']) : '';
+
+        if (isset($_POST['paypal_pro-card-startdate'])) {
+            $card_start = wc_clean($_POST['paypal_pro-card-startdate']);
+            $card_start = array_map('trim', explode('/', $card_start));
+            $card_start_month = str_pad($card_start[0], 2, "0", STR_PAD_LEFT);
+            $card_start_year = $card_start[1];
+        } else {
+            $card_start_month = '';
+            $card_start_year = '';
+        }
+
+        $card_exp_month = (int) $card_exp_month;
+        if ($card_exp_month < 10) {
+            $card_exp_month = '0' . $card_exp_month;
+        }
+
+        if (strlen($card_exp_year) == 2) {
+            $card_exp_year += 2000;
+        }
+
+        if (strlen($card_start_year) == 2) {
+            $card_start_year += 2000;
+        }
+
+        $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
+
+        return (object) array(
+                    'number' => $card_number,
+                    'type' => $card_type,
+                    'cvc' => $card_cvc,
+                    'exp_month' => $card_exp_month,
+                    'exp_year' => $card_exp_year,
+                    'start_month' => $card_start_month,
+                    'start_year' => $card_start_year,
+                    'firstname' => $firstname,
+                    'lastname' => $lastname
+        );
+    }
+
+    public function add_payment_method() {
+        try {
+            return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens();
         } catch (Exception $ex) {
             
         }
