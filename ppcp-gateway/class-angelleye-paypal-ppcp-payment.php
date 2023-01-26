@@ -2663,7 +2663,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'id' => wc_clean($_GET['approval_token_id']),
                     'type' => 'SETUP_TOKEN'
                 );
-
                 $args = array(
                     'method' => 'POST',
                     'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
@@ -2710,21 +2709,32 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_advanced_credit_card_setup_tokens($posted_card) {
         try {
             $body_request = array();
-            $billing_address = $this->angelleye_ppcp_get_address_from_customer();
-            $name = $billing_address['first_name'] . ' ' . $billing_address['last_name'];
+            $customer = WC()->customer;
+            $old_wc = version_compare(WC_VERSION, '3.0', '<');
+            $first_name = $old_wc ? $customer->billing_first_name : $customer->get_billing_first_name();
+            $last_name = $old_wc ? $customer->billing_last_name : $customer->get_billing_last_name();
+            $address_1 = $old_wc ? $customer->get_address() : $customer->get_billing_address_1();
+            $address_2 = $old_wc ? $customer->get_address_2() : $customer->get_billing_address_2();
+            $city = $old_wc ? $customer->get_city() : $customer->get_billing_city();
+            $state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
+            $postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
+            $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
+            $email_address = $old_wc ? WC()->customer->billing_email : WC()->customer->get_billing_email();
+
+            $name = $first_name . ' ' . $$last_name;
             $body_request['payment_source']['card'] = array(
                 'number' => $posted_card->number,
                 'expiry' => $posted_card->exp_year . '-' . $posted_card->exp_month,
                 'name' => $name
             );
-            if (isset($billing_address['country']) && !empty($billing_address['country']) && isset($billing_address['postcode']) && !empty($billing_address['postcode'])) {
+            if (!empty($country) && !empty($postcode) && !empty($city)) {
                 $body_request['payment_source']['card']['billing_address'] = array(
-                    'address_line_1' => $billing_address['address_1'],
-                    'address_line_2' => $billing_address['address_2'],
-                    'admin_area_1' => $billing_address['address_2'],
-                    'admin_area_2' => $billing_address['state'],
-                    'postal_code' => $billing_address['postcode'],
-                    'country_code' => $billing_address['country']
+                    'address_line_1' => $address_1,
+                    'address_line_2' => $address_1,
+                    'admin_area_1' => $state,
+                    'admin_area_2' => $city,
+                    'postal_code' => $postcode,
+                    'country_code' => $country
                 );
             }
             $body_request['payment_source']['card']['verification_method'] = 'SCA_WHEN_REQUIRED';
@@ -2749,7 +2759,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             if (!empty($this->api_response['id'])) {
                 if (isset($this->api_response['status']) && 'APPROVED' === $this->api_response['status']) {
-                    wp_redirect(add_query_arg(array('id' => $this->api_response['id'], 'angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))));
+                    wp_redirect(add_query_arg(array('approval_token_id' => $this->api_response['id'], 'angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))));
                     exit();
                 } elseif (isset($this->api_response['status']) && 'PAYER_ACTION_REQUIRED' === $this->api_response['status']) {
                     if (!empty($this->api_response['links'])) {
@@ -2825,7 +2835,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'id' => wc_clean($_GET['approval_token_id']),
                     'type' => 'SETUP_TOKEN'
                 );
-
                 $args = array(
                     'method' => 'POST',
                     'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
@@ -2836,14 +2845,18 @@ class AngellEYE_PayPal_PPCP_Payment {
                     ob_end_clean();
                 }
                 if (!empty($this->api_response['id'])) {
+                    $customer_id = isset($this->api_response['customer']['id']) ? $this->api_response['customer']['id'] : '';
+                    if (isset($customer_id) && !empty($customer_id)) {
+                        $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
+                    }
                     $token = new WC_Payment_Token_CC();
                     $customer_id = get_current_user_id();
                     $token->set_token($this->api_response['id']);
-                    $token->set_gateway_id('angelleye_ppcp');
-                    $token->set_card_type('PayPal Vault');
-                    $token->set_last4(substr($this->api_response['id'], -4));
+                    $token->set_gateway_id('angelleye_ppcp_cc');
+                    $token->set_card_type($this->api_response['payment_source']['card']['brand']);
+                    $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
                     $token->set_expiry_month(date('m'));
-                    $token->set_expiry_year(date('Y', strtotime('+20 years')));
+                    $token->set_expiry_year(date('Y', strtotime('+5 years')));
                     $token->set_user_id($customer_id);
                     if ($token->validate()) {
                         $save_result = $token->save();

@@ -158,7 +158,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     exit();
                 case "advanced_credit_card_create_payment_token":
                     $this->payment_request->angelleye_ppcp_advanced_credit_card_create_payment_token();
-                    
             }
         }
     }
