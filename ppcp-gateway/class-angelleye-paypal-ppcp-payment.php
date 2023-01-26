@@ -561,7 +561,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'amount' => angelleye_ppcp_round($amount, $decimals),
             );
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -760,7 +760,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
         }
         if (!empty($message)) {
-            
+
         } else if (!empty($error['message'])) {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
@@ -1988,7 +1988,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             endswitch;
             return;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2107,7 +2107,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
             if (!empty($this->api_response['id'])) {
-                
+
             } else {
                 $error_email_notification_param = array(
                     'request' => 'capture_authorized',
@@ -2155,7 +2155,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
             if (isset($this->api_response['status'])) {
-                
+
             } else {
                 $error_email_notification_param = array(
                     'request' => 'refund_order',
@@ -2251,7 +2251,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $request;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2529,7 +2529,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 exit();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2585,7 +2585,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 exit();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2651,7 +2651,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2673,6 +2673,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                     ob_end_clean();
                 }
                 if (!empty($this->api_response['id'])) {
+                    $customer_id = isset($this->api_response['customer']['id']) ? $this->api_response['customer']['id'] : '';
+                    if (isset($customer_id) && !empty($customer_id)) {
+                        $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
+                    }
                     $token = new WC_Payment_Token_CC();
                     $customer_id = get_current_user_id();
                     $token->set_token($this->api_response['id']);
@@ -2702,7 +2706,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2786,12 +2790,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 exit();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
     public function angelleye_ppcp_subscription() {
-        
+
     }
 
     public function save_payment_token($order, $payment_tokens_id) {
@@ -2855,8 +2859,16 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $token->set_gateway_id('angelleye_ppcp_cc');
                     $token->set_card_type($this->api_response['payment_source']['card']['brand']);
                     $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
-                    $token->set_expiry_month(date('m'));
-                    $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                    if (isset($this->api_response['payment_source']['card']['expiry'])) {
+                        $card_expiry = array_map('trim', explode('-', $this->api_response['payment_source']['card']['expiry']));
+                        $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                        $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                        $token->set_expiry_month($card_exp_month);
+                        $token->set_expiry_year($card_exp_year);
+                    } else {
+                        $token->set_expiry_month(date('m'));
+                        $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                    }
                     $token->set_user_id($customer_id);
                     if ($token->validate()) {
                         $save_result = $token->save();
@@ -2878,7 +2890,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
