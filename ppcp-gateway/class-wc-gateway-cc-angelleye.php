@@ -339,7 +339,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $card_number = isset($_POST['angelleye_ppcp_cc-card-number']) ? wc_clean($_POST['angelleye_ppcp_cc-card-number']) : '';
             $cc_card_expiry = isset($_POST['angelleye_ppcp_cc-card-expiry']) ? wc_clean($_POST['angelleye_ppcp_cc-card-expiry']) : '';
             $card_number = str_replace(array(' ', '-'), '', $card_number);
-            $card_expiry = array_map('trim', explode('/', $card_expiry));
+            $card_expiry = array_map('trim', explode('/', $cc_card_expiry));
             $card_exp_month = str_pad($card_expiry[0], 2, "0", STR_PAD_LEFT);
             $card_exp_year = isset($card_expiry[1]) ? $card_expiry[1] : '';
             if (strlen($card_exp_year) == 2) {

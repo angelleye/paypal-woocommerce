@@ -156,6 +156,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "paypal_create_payment_token_free_signup_with_free_trial":
                     $this->payment_request->angelleye_ppcp_paypal_create_payment_token_free_signup_with_free_trial();
                     exit();
+                case "advanced_credit_card_create_payment_token":
+                    $this->payment_request->angelleye_ppcp_advanced_credit_card_create_payment_token();
+                    
             }
         }
     }
