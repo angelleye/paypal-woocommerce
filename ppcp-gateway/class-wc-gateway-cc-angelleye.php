@@ -58,7 +58,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -162,7 +162,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 exit();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -173,7 +173,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             }
             return false;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -187,13 +187,13 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
             if (is_account_page()) {
-                parent::form();
+                $this->angelleye_ppcp_cc_form();
             }
             if (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
-                parent::form();
+                $this->angelleye_ppcp_cc_form();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -236,7 +236,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 echo '<fieldset>' . $cvc_field . '</fieldset>';
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -272,7 +272,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         try {
             return $order && $order->get_transaction_id();
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -286,7 +286,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
             return $bool;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -305,7 +305,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 return parent::get_title();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -314,82 +314,91 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
-            
+
         }
     }
 
     public function subscription_change_payment($order_id) {
         try {
-            
+
         } catch (Exception $ex) {
-            
+
         }
     }
 
     public function free_signup_order_payment($order_id) {
         try {
-            
+
         } catch (Exception $ex) {
-            
+
         }
     }
 
     public function get_posted_card() {
-        $card_number = isset($_POST['paypal_pro-card-number']) ? wc_clean($_POST['paypal_pro-card-number']) : '';
-        $card_cvc = isset($_POST['paypal_pro-card-cvc']) ? wc_clean($_POST['paypal_pro-card-cvc']) : '';
-        $card_exp_month = isset($_POST['paypal_pro-card_expiration_month']) ? wc_clean($_POST['paypal_pro-card_expiration_month']) : '';
-        $card_exp_year = isset($_POST['paypal_pro-card_expiration_year']) ? wc_clean($_POST['paypal_pro-card_expiration_year']) : '';
+        try {
+            $card_number = isset($_POST['angelleye_ppcp_cc-card-number']) ? wc_clean($_POST['angelleye_ppcp_cc-card-number']) : '';
+            $cc_card_expiry = isset($_POST['angelleye_ppcp_cc-card-expiry']) ? wc_clean($_POST['angelleye_ppcp_cc-card-expiry']) : '';
+            $card_number = str_replace(array(' ', '-'), '', $card_number);
+            $card_expiry = array_map('trim', explode('/', $card_expiry));
+            $card_exp_month = str_pad($card_expiry[0], 2, "0", STR_PAD_LEFT);
+            $card_exp_year = isset($card_expiry[1]) ? $card_expiry[1] : '';
+            if (strlen($card_exp_year) == 2) {
+                $card_exp_year += 2000;
+            }
+            return (object) array(
+                        'number' => $card_number,
+                        'exp_month' => $card_exp_month,
+                        'exp_year' => $card_exp_year,
+            );
+        } catch (Exception $ex) {
 
-        // Format values
-        $card_number = str_replace(array(' ', '-'), '', $card_number);
-
-        $firstname = isset($_POST['paypal_pro-card-cardholder-first']) ? wc_clean($_POST['paypal_pro-card-cardholder-first']) : '';
-        $lastname = isset($_POST['paypal_pro-card-cardholder-last']) ? wc_clean($_POST['paypal_pro-card-cardholder-last']) : '';
-
-        if (isset($_POST['paypal_pro-card-startdate'])) {
-            $card_start = wc_clean($_POST['paypal_pro-card-startdate']);
-            $card_start = array_map('trim', explode('/', $card_start));
-            $card_start_month = str_pad($card_start[0], 2, "0", STR_PAD_LEFT);
-            $card_start_year = $card_start[1];
-        } else {
-            $card_start_month = '';
-            $card_start_year = '';
         }
-
-        $card_exp_month = (int) $card_exp_month;
-        if ($card_exp_month < 10) {
-            $card_exp_month = '0' . $card_exp_month;
-        }
-
-        if (strlen($card_exp_year) == 2) {
-            $card_exp_year += 2000;
-        }
-
-        if (strlen($card_start_year) == 2) {
-            $card_start_year += 2000;
-        }
-
-        $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
-
-        return (object) array(
-                    'number' => $card_number,
-                    'type' => $card_type,
-                    'cvc' => $card_cvc,
-                    'exp_month' => $card_exp_month,
-                    'exp_year' => $card_exp_year,
-                    'start_month' => $card_start_month,
-                    'start_year' => $card_start_year,
-                    'firstname' => $firstname,
-                    'lastname' => $lastname
-        );
     }
 
     public function add_payment_method() {
         try {
-            return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens();
+            $posted_card = $this->get_posted_card();
+            return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens($posted_card);
         } catch (Exception $ex) {
-            
+
         }
+    }
+
+    public function angelleye_ppcp_cc_form() {
+        wp_enqueue_script('wc-credit-card-form');
+
+        $fields = array();
+
+        $cvc_field = '<p class="form-row form-row-last">
+			<label for="' . esc_attr($this->id) . '-card-cvc">' . esc_html__('Card code', 'woocommerce') . '&nbsp;<span class="required">*</span></label>
+			<input id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__('CVC', 'woocommerce') . '" ' . $this->field_name('card-cvc') . ' style="width:100px" />
+		</p>';
+
+        $default_fields = array(
+            'card-number-field' => '<p class="form-row form-row-wide">
+				<label for="' . esc_attr($this->id) . '-card-number">' . esc_html__('Card number', 'woocommerce') . '&nbsp;<span class="required">*</span></label>
+				<input id="' . esc_attr($this->id) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" ' . $this->field_name('card-number') . ' />
+			</p>',
+            'card-expiry-field' => '<p class="form-row form-row-first">
+				<label for="' . esc_attr($this->id) . '-card-expiry">' . esc_html__('Expiry (MM/YY)', 'woocommerce') . '&nbsp;<span class="required">*</span></label>
+				<input id="' . esc_attr($this->id) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry" inputmode="numeric" autocomplete="cc-exp" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="' . esc_attr__('MM / YY', 'woocommerce') . '" ' . $this->field_name('card-expiry') . ' />
+			</p>',
+        );
+
+        $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->id));
+        ?>
+
+        <fieldset id="wc-<?php echo esc_attr($this->id); ?>-cc-form" class='wc-credit-card-form wc-payment-form'>
+            <?php do_action('woocommerce_credit_card_form_start', $this->id); ?>
+            <?php
+            foreach ($fields as $field) {
+                echo $field; // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+            }
+            ?>
+            <?php do_action('woocommerce_credit_card_form_end', $this->id); ?>
+            <div class="clear"></div>
+        </fieldset>
+        <?php
     }
 
 }

@@ -2707,7 +2707,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_advanced_credit_card_setup_tokens() {
+    public function angelleye_ppcp_advanced_credit_card_setup_tokens($posted_card) {
         try {
             $body_request = array();
             $billing_address = $this->angelleye_ppcp_get_address_from_customer();
