@@ -378,6 +378,10 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
+    public function field_name($name) {
+        return ' name="' . esc_attr($this->id . '-' . $name) . '" ';
+    }
+
     public function angelleye_ppcp_cc_form() {
         wp_enqueue_script('wc-credit-card-form');
 

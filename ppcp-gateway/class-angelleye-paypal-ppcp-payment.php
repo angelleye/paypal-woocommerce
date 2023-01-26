@@ -2977,7 +2977,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
             $postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
             $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
-            $name = $first_name . ' ' . $$last_name;
+            $name = $first_name . ' ' . $last_name;
             $body_request['payment_source']['card'] = array(
                 'number' => $posted_card->number,
                 'expiry' => $posted_card->exp_year . '-' . $posted_card->exp_month,
