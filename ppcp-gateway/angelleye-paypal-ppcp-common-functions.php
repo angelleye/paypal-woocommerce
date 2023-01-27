@@ -799,3 +799,12 @@ if (!function_exists('angelleye_ppcp_get_order_total')) {
     }
 
 }
+
+if (!function_exists('angelleye_ppcp_get_view_sub_order_url')) {
+
+    function angelleye_ppcp_get_view_sub_order_url($order_id) {
+        $view_subscription_url = wc_get_endpoint_url('view-subscription', $order_id, wc_get_page_permalink('myaccount'));
+        return apply_filters('wcs_get_view_subscription_url', $view_subscription_url, $order_id);
+    }
+
+}
