@@ -335,7 +335,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function subscription_change_payment($order_id) {
         try {
-            
+            $posted_card = $this->get_posted_card();
+            return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens_sub_change_payment($posted_card, $order_id);
         } catch (Exception $ex) {
             
         }
