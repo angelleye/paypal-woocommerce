@@ -114,9 +114,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
     }
 
     public function free_signup_with_token_payment_tokenization($order_id) {
-        if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') || (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new' )) {
-
-
+        if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') || (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new' && $this->enable_separate_payment_method === false)) {
             $order = wc_get_order($order_id);
             if ($order->get_total() == 0) {
                 return true;

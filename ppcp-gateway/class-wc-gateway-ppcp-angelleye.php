@@ -193,11 +193,16 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         if ($description) {
             echo wpautop(wp_kses_post($description));
         }
+        if (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
+            $this->tokenization_script();
+            $this->saved_payment_methods();
+        } elseif (angelleye_ppcp_is_subs_change_payment() === true) {
+            $this->tokenization_script();
+            $this->saved_payment_methods();
+        }
         if ($this->checkout_disable_smart_button === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
         }
-        $this->tokenization_script();
-        $this->saved_payment_methods();
         if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false && $this->advanced_card_payments === true && angelleye_ppcp_get_order_total() > 0) {
             if (angelleye_ppcp_has_active_session() === false) {
                 angelleye_ppcp_add_css_js();
@@ -230,7 +235,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->id));
         ?>
         <fieldset id="wc-<?php echo esc_attr($this->id); ?>-cc-form" class='wc-credit-card-form wc-payment-form' style="display:none;">
-            <?php do_action('woocommerce_credit_card_form_start', $this->id); ?>
+        <?php do_action('woocommerce_credit_card_form_start', $this->id); ?>
             <?php
             foreach ($fields as $field) {
                 echo $field;
@@ -290,7 +295,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                    ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                       ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <div class="ppcp_paypal_connection_image">
@@ -320,13 +325,13 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                    ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                       ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
-                    <?php
-                    if (($this->is_live_first_party_used !== 'yes' && $this->is_live_third_party_used !== 'yes' && $testmode === 'no') || ($this->is_sandbox_first_party_used !== 'yes' && $this->is_sandbox_third_party_used !== 'yes' && $testmode === 'yes')) {
-                        $setup_url = add_query_arg(array('testmode' => $testmode, 'utm_nooverride' => '1'), untrailingslashit(admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products')));
-                        ?>
+            <?php
+            if (($this->is_live_first_party_used !== 'yes' && $this->is_live_third_party_used !== 'yes' && $testmode === 'no') || ($this->is_sandbox_first_party_used !== 'yes' && $this->is_sandbox_third_party_used !== 'yes' && $testmode === 'yes')) {
+                $setup_url = add_query_arg(array('testmode' => $testmode, 'utm_nooverride' => '1'), untrailingslashit(admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products')));
+                ?>
                         <a class="button-primary" href="<?php echo $setup_url; ?>"><?php echo __('Go To Setup', 'paypal-for-woocommerce'); ?></a>
                         <?php
                     }
@@ -358,14 +363,14 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                      ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                         ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                      ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                         ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
-                    <?php echo $this->get_description_html($data); // WPCS: XSS ok.          ?>
+        <?php echo $this->get_description_html($data); // WPCS: XSS ok.           ?>
                 </fieldset>
             </td>
         </tr>
@@ -491,7 +496,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <tr>
             <td class="label stripe-fee">
-                <?php echo wc_help_tip(__('This represents the fee PayPal collects for the transaction.', 'paypal-for-woocommerce')); ?>
+        <?php echo wc_help_tip(__('This represents the fee PayPal collects for the transaction.', 'paypal-for-woocommerce')); ?>
                 <?php esc_html_e('PayPal Fee:', 'paypal-for-woocommerce'); ?>
             </td>
             <td width="1%"></td>

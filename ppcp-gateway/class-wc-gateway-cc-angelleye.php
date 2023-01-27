@@ -188,8 +188,6 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
             if (is_account_page()) {
-                $this->tokenization_script();
-                $this->saved_payment_methods();
                 $this->angelleye_ppcp_cc_form();
             } elseif (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
                 $this->tokenization_script();

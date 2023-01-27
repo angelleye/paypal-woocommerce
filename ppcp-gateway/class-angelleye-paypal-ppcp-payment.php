@@ -2542,23 +2542,26 @@ class AngellEYE_PayPal_PPCP_Payment {
                     foreach ($this->api_response['links'] as $key => $link_result) {
                         if ('approve' === $link_result['rel']) {
                             return array(
+                                'result' => '',
                                 'redirect' => $link_result['href']
                             );
                         }
                     }
                 }
-                wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
-                wp_redirect(wc_get_account_endpoint_url('payment-methods'));
-                exit();
+                return array(
+                    'result' => 'failure',
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
+                );
             } else {
                 $error_email_notification_param = array(
                     'request' => 'setup_tokens'
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
-                wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
-                wp_redirect(wc_get_account_endpoint_url('payment-methods'));
-                exit();
+                return array(
+                    'result' => 'failure',
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
+                );
             }
         } catch (Exception $ex) {
             
@@ -2606,7 +2609,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
                 return array(
-                    'result' => 'success',
+                    'result' => 'failure',
                     'redirect' => wc_get_checkout_url()
                 );
             } else {
@@ -2616,7 +2619,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
                 return array(
-                    'result' => 'success',
+                    'result' => 'failure',
                     'redirect' => wc_get_checkout_url()
                 );
             }
@@ -2761,7 +2764,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
             $postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
             $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
-            $name = $first_name . ' ' . $$last_name;
+            $name = $first_name . ' ' . $last_name;
             $body_request['payment_source']['card'] = array(
                 'number' => $posted_card->number,
                 'expiry' => $posted_card->exp_year . '-' . $posted_card->exp_month,
@@ -2806,24 +2809,27 @@ class AngellEYE_PayPal_PPCP_Payment {
                         foreach ($this->api_response['links'] as $key => $link_result) {
                             if ('approve' === $link_result['rel']) {
                                 return array(
+                                    'result' => '',
                                     'redirect' => $link_result['href']
                                 );
                             }
                         }
                     }
                 }
-                wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
-                wp_redirect(wc_get_account_endpoint_url('payment-methods'));
-                exit();
+                return array(
+                    'result' => 'failure',
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
+                );
             } else {
                 $error_email_notification_param = array(
                     'request' => 'setup_tokens'
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
-                wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
-                wp_redirect(wc_get_account_endpoint_url('payment-methods'));
-                exit();
+                return array(
+                    'result' => 'failure',
+                    'redirect' => wc_get_account_endpoint_url('payment-methods')
+                );
             }
         } catch (Exception $ex) {
             
@@ -3037,9 +3043,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                     }
                 }
-                wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                
                 return array(
-                    'result' => 'success',
+                    'result' => 'failure',
                     'redirect' => wc_get_checkout_url()
                 );
             } else {
@@ -3048,9 +3054,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
-                wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
                 return array(
-                    'result' => 'success',
+                    'result' => 'failure',
                     'redirect' => wc_get_checkout_url()
                 );
             }
