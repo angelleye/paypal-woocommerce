@@ -53,7 +53,6 @@ class WC_Gateway_CC_AngellEYE_Subscriptions extends WC_Gateway_CC_AngellEYE {
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);
         }
-
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($renewal_order_id)) {
             $subscriptions = wcs_get_subscriptions_for_order($renewal_order_id);
         } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($renewal_order_id)) {
