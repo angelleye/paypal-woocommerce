@@ -344,7 +344,18 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function free_signup_order_payment($order_id) {
         try {
-            
+            if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') || (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new' && $this->enable_separate_payment_method === false) || $this->is_subscription($order_id)) {
+                $order = wc_get_order($order_id);
+                $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
+                $token = WC_Payment_Tokens::get($token_id);
+                $order->payment_complete($token->get_token());
+                $this->payment_request->save_payment_token($order, $token->get_token());
+                WC()->cart->empty_cart();
+                return array(
+                    'result' => 'success',
+                    'redirect' => $this->get_return_url($order)
+                );
+            }
         } catch (Exception $ex) {
             
         }
