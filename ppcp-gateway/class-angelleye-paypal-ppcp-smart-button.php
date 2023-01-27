@@ -284,6 +284,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function enqueue_scripts() {
         global $post, $wp, $product;
         $this->angelleye_ppcp_smart_button_style_properties();
+        if( angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true ) {
+            return false;
+        }
         $smart_js_arg = array();
         $enable_funding = array();
         $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;

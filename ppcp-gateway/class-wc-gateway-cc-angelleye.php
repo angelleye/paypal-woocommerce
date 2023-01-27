@@ -180,10 +180,10 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function payment_fields() {
         try {
-            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_has_active_session() === false && angelleye_ppcp_get_order_total() > 0) {
+            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_has_active_session() === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
                 angelleye_ppcp_add_css_js();
             }
-            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_get_order_total() > 0) {
+            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
                 parent::payment_fields();
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
@@ -191,8 +191,11 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->tokenization_script();
                 $this->saved_payment_methods();
                 $this->angelleye_ppcp_cc_form();
-            }
-            if (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
+            } elseif (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
+                $this->tokenization_script();
+                $this->saved_payment_methods();
+                $this->angelleye_ppcp_cc_form();
+            } elseif (angelleye_ppcp_is_subs_change_payment() === true) {
                 $this->tokenization_script();
                 $this->saved_payment_methods();
                 $this->angelleye_ppcp_cc_form();
