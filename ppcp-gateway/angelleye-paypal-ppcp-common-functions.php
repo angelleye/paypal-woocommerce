@@ -784,6 +784,9 @@ if (!function_exists('angelleye_ppcp_get_order_total')) {
             $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 0;
         } elseif (0 < $order_id) {
             $order = wc_get_order($order_id);
+            if($order === false ) {
+                return 0;
+            }
             $total = (float) $order->get_total();
         } elseif (isset(WC()->cart) && 0 < WC()->cart->total) {
             $total = (float) WC()->cart->total;
