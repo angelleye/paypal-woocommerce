@@ -335,8 +335,21 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function subscription_change_payment($order_id) {
         try {
-            $posted_card = $this->get_posted_card();
-            return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens_sub_change_payment($posted_card, $order_id);
+            if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') || (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new' && $this->enable_separate_payment_method === false) || $this->is_subscription($order_id)) {
+                $order = wc_get_order($order_id);
+                $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
+                $token = WC_Payment_Tokens::get($token_id);
+                $order->add_payment_token($token);
+                $order->payment_complete($token->get_token());
+                $this->payment_request->save_payment_token($order, $token->get_token());
+                return array(
+                    'result' => 'success',
+                    'redirect' => angelleye_ppcp_get_view_sub_order_url($order_id)
+                );
+            } else {
+                $posted_card = $this->get_posted_card();
+                return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens_sub_change_payment($posted_card, $order_id);
+            }
         } catch (Exception $ex) {
             
         }
