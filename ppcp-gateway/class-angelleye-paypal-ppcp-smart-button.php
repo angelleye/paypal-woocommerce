@@ -392,7 +392,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
             }
         }
-        $smart_js_arg['debug'] = 'true';
+       // $smart_js_arg['debug'] = 'true';
         if ($this->enabled_pay_later_messaging) {
             array_push($components, 'messages');
         }
@@ -546,7 +546,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if ($is_shortcode === 'yes') {
                 echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_checkout_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout"></div>' . $separator . '</div></div>';
             } else {
-                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout"></div>' . $separator . '</div>';
+                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout" class="wc-payment-form"></div>' . $separator . '</div>';
             }
         }
     }

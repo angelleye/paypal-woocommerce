@@ -201,6 +201,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             $this->saved_payment_methods();
         }
         if ($this->checkout_disable_smart_button === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
+            $this->tokenization_script();
+            $this->saved_payment_methods();
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
         }
         if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false && $this->advanced_card_payments === true && angelleye_ppcp_get_order_total() > 0) {
