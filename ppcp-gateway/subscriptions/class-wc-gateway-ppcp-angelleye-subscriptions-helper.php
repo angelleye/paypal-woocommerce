@@ -95,6 +95,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                     if ($token->validate()) {
                         $this->save_payment_token($order, $payment_token);
                         $save_result = $token->save();
+                        update_metadata( 'payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card' );
                         if ($save_result) {
                             $order->add_payment_token($token);
                         }
@@ -119,6 +120,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                     if ($token->validate()) {
                         $this->save_payment_token($order, $payment_token);
                         $save_result = $token->save();
+                        update_metadata( 'payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout' );
                         if ($save_result) {
                             $order->add_payment_token($token);
                         }
@@ -143,6 +145,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                     if ($token->validate()) {
                         $this->save_payment_token($order, $payment_token);
                         $save_result = $token->save();
+                        update_metadata( 'payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Venmo' );
                         if ($save_result) {
                             $order->add_payment_token($token);
                         }
