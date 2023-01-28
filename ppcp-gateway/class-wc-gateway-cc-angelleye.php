@@ -45,9 +45,9 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
             $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
             $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');
-            $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'no');
+            $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'yes');
             if ($this->advanced_card_payments) {
-                $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'no');
+                $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'yes');
                 if ($this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
                     $this->enable_separate_payment_method = true;
                 }

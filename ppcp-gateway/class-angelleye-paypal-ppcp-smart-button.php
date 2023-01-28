@@ -76,10 +76,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->order_review_page_description = apply_filters('angelleye_ppcp_order_review_page_description', __("<strong>You're almost done!</strong><br>Review your information before you place your order.", 'paypal-for-woocommerce'));
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
         $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
-        $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'no');
+        $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'yes');
         $this->cart_button_position = $this->setting_obj->get('cart_button_position', 'bottom');
         if ($this->advanced_card_payments) {
-            $this->advanced_card_payments_display_position = $this->setting_obj->get('advanced_card_payments_display_position', 'after');
+            $this->advanced_card_payments_display_position = $this->setting_obj->get('advanced_card_payments_display_position', 'before');
             if ($this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
                 $this->enable_separate_payment_method = true;
             }
@@ -546,7 +546,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if ($is_shortcode === 'yes') {
                 echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_checkout_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout"></div>' . $separator . '</div></div>';
             } else {
-                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout" class="wc-payment-form"></div>' . $separator . '</div>';
+                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout" ></div>' . $separator . '</div>';
             }
         }
     }
