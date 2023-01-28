@@ -2934,7 +2934,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                     update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'card');
                     $token->set_token($this->api_response['id']);
-                    $token->set_gateway_id('angelleye_ppcp_cc');
+                    $token->set_gateway_id($order->get_payment_method());
                     $token->set_card_type($this->api_response['payment_source']['card']['brand']);
                     $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
                     if (isset($this->api_response['payment_source']['card']['expiry'])) {
@@ -3188,7 +3188,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                     update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'card');
                     $token->set_token($this->api_response['id']);
-                    $token->set_gateway_id('angelleye_ppcp_cc');
+                    $token->set_gateway_id($order->get_payment_method());
                     $token->set_card_type($this->api_response['payment_source']['card']['brand']);
                     $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
                     if (isset($this->api_response['payment_source']['card']['expiry'])) {
