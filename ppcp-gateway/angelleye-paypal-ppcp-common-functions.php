@@ -834,3 +834,21 @@ if (!function_exists('angelleye_ppcp_is_cart_subscription')) {
     }
 
 }
+
+if (!function_exists('angelleye_ppcp_is_save_payment_method')) {
+
+    function angelleye_ppcp_is_save_payment_method($enable_tokenized_payments) {
+        $is_enable = false;
+        if (angelleye_ppcp_is_cart_subscription() && $enable_tokenized_payments === true) {
+            $is_enable = true;
+        } elseif (isset($_POST['wc-angelleye_ppcp-new-payment-method']) && 'true' === $_POST['wc-angelleye_ppcp-new-payment-method']) {
+            $is_enable = true;
+        } elseif (isset($_POST['wc-angelleye_ppcp_cc-new-payment-method']) && 'true' === $_POST['wc-angelleye_ppcp_cc-new-payment-method']) {
+            $is_enable = true;
+        }
+        return apply_filters('angelleye_ppcp_is_save_payment_method', $is_enable);
+    }
+
+}
+
+

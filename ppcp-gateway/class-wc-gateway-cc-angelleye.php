@@ -205,7 +205,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->tokenization_script();
                 $this->saved_payment_methods();
                 $this->form();
-                if(angelleye_ppcp_is_cart_subscription() === false) {
+                if(angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
                     $this->save_payment_method_checkbox();
                 }
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';

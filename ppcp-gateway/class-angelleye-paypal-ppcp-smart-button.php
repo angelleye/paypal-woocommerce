@@ -467,7 +467,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_cart_page($is_shortcode = "") {
-        if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription() && $this->enable_tokenized_payments === false) {
+        if (angelleye_ppcp_is_cart_subscription() && $this->enable_tokenized_payments === false) {
             return false;
         }
         if (angelleye_ppcp_get_order_total() === 0) {
@@ -485,7 +485,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_cart_page_top() {
-        if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
+        if (angelleye_ppcp_is_cart_subscription()) {
             return false;
         }
         if (angelleye_ppcp_get_order_total() === 0) {
@@ -499,7 +499,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_top_checkout_page() {
-        if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
+        if (angelleye_ppcp_is_cart_subscription()) {
             return false;
         }
         if (angelleye_ppcp_get_order_total() === 0) {
