@@ -213,7 +213,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->enable_product_button) {
             add_action('woocommerce_after_add_to_cart_form', array($this, 'display_paypal_button_product_page'), 10);
         }
-        if ($this->enable_cart_button ) {
+        if ($this->enable_cart_button) {
             if ($this->cart_button_position === 'both') {
                 add_action('woocommerce_before_cart_table', array($this, 'display_paypal_button_cart_page_top'));
                 add_action('woocommerce_proceed_to_checkout', array($this, 'display_paypal_button_cart_page'), 11);
@@ -284,7 +284,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function enqueue_scripts() {
         global $post, $wp, $product;
         $this->angelleye_ppcp_smart_button_style_properties();
-        if( angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true ) {
+        if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
             return false;
         }
         $smart_js_arg = array();
@@ -383,7 +383,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $last_name = $old_wc ? $order->billing_last_name : $order->get_billing_last_name();
             }
         }
-        if (angelleye_ppcp_is_cart_contains_subscription() || angelleye_ppcp_is_subs_change_payment()) {
+        if (angelleye_ppcp_is_vault_required($this->enable_tokenized_payments)) {
             $smart_js_arg['vault'] = 'true';
             $this->enabled_pay_later_messaging = false;
             foreach ($enable_funding as $key => $value) {
@@ -392,7 +392,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
             }
         }
-       // $smart_js_arg['debug'] = 'true';
         if ($this->enabled_pay_later_messaging) {
             array_push($components, 'messages');
         }
@@ -471,7 +470,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription() && $this->enable_tokenized_payments === false) {
             return false;
         }
-        if(angelleye_ppcp_get_order_total() === 0) {
+        if (angelleye_ppcp_get_order_total() === 0) {
             return false;
         }
         $this->angelleye_ppcp_smart_button_style_properties();
@@ -489,7 +488,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
             return false;
         }
-        if(angelleye_ppcp_get_order_total() === 0) {
+        if (angelleye_ppcp_get_order_total() === 0) {
             return false;
         }
         $this->angelleye_ppcp_smart_button_style_properties();
@@ -503,7 +502,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
             return false;
         }
-        if(angelleye_ppcp_get_order_total() === 0) {
+        if (angelleye_ppcp_get_order_total() === 0) {
             return false;
         }
         if (angelleye_ppcp_has_active_session() === false) {

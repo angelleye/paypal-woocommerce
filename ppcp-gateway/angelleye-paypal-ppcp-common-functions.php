@@ -808,3 +808,29 @@ if (!function_exists('angelleye_ppcp_get_view_sub_order_url')) {
     }
 
 }
+
+if (!function_exists('angelleye_ppcp_is_vault_required')) {
+
+    function angelleye_ppcp_is_vault_required($enable_tokenized_payments) {
+        $is_enable = false;
+        if (angelleye_ppcp_is_cart_subscription()) {
+            $is_enable = true;
+        } elseif ((is_checkout() || is_checkout_pay_page()) && $enable_tokenized_payments === true) {
+            $is_enable = true;
+        }
+        return apply_filters('angelleye_ppcp_vault_attribute', $is_enable);
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_is_cart_subscription')) {
+
+    function angelleye_ppcp_is_cart_subscription() {
+        $is_enable = false;
+        if (angelleye_ppcp_is_cart_contains_subscription() || angelleye_ppcp_is_subs_change_payment()) {
+            $is_enable = true;
+        }
+        return apply_filters('angelleye_ppcp_is_cart_subscription', $is_enable);
+    }
+
+}

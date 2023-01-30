@@ -201,10 +201,13 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_has_active_session() === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
                 angelleye_ppcp_add_css_js();
             }
-            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
+            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_get_order_total() > 0) {
                 $this->tokenization_script();
                 $this->saved_payment_methods();
                 $this->form();
+                if(angelleye_ppcp_is_cart_subscription() === false) {
+                    $this->save_payment_method_checkbox();
+                }
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
             if (is_account_page()) {
