@@ -58,6 +58,9 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     $this->enable_separate_payment_method = false;
                 }
             }
+            if( $this->enable_tokenized_payments ) {
+                $this->enable_separate_payment_method = true;
+            }
         } catch (Exception $ex) {
             
         }
