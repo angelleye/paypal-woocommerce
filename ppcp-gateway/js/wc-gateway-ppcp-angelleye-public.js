@@ -96,6 +96,7 @@
         var is_from_product = 'product' === angelleye_ppcp_manager.page;
         var is_sale = 'capture' === angelleye_ppcp_manager.paymentaction;
         var smart_button_render = function () {
+            console.log("hello");
             $.each(angelleye_ppcp_manager.button_selector, function (key, angelleye_ppcp_button_selector) {
                 if (!$(angelleye_ppcp_button_selector).length || $(angelleye_ppcp_button_selector).children().length) {
                     return;

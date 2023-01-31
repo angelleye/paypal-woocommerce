@@ -521,9 +521,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         try {
             global $product;
             $this->angelleye_ppcp_smart_button_style_properties();
-            if (angelleye_ppcp_is_cart_contains_subscription() === true) {
-                return false;
-            }
             if (angelleye_ppcp_is_product_purchasable($product) === true) {
                 angelleye_ppcp_add_css_js();
                 if ($is_shortcode === 'yes') {

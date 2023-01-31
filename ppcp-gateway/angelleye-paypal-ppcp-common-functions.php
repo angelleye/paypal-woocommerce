@@ -649,10 +649,8 @@ if (!function_exists('angelleye_ppcp_get_payment_method_title')) {
 if (!function_exists('angelleye_ppcp_is_product_purchasable')) {
 
     function angelleye_ppcp_is_product_purchasable($product) {
-        if (is_a($product, 'WC_Product') === false) {
-            return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
-        }
-        if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || $product->is_type('subscription') || ($product->get_price() == '' || $product->get_price() == 0)) {
+        
+        if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || ($product->get_price() == '' || $product->get_price() == 0)) {
             return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
         }
         return apply_filters('angelleye_ppcp_is_product_purchasable', true, $product);
@@ -782,7 +780,7 @@ if (!function_exists('angelleye_ppcp_get_order_total')) {
             $total = 0;
             $order_id = absint(get_query_var('order-pay'));
             if (is_product()) {
-                $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 0;
+                $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 1;
             } elseif (0 < $order_id) {
                 $order = wc_get_order($order_id);
                 if ($order === false) {
@@ -812,11 +810,18 @@ if (!function_exists('angelleye_ppcp_get_view_sub_order_url')) {
 if (!function_exists('angelleye_ppcp_is_vault_required')) {
 
     function angelleye_ppcp_is_vault_required($enable_tokenized_payments) {
+        global $post, $product;
         $is_enable = false;
         if (angelleye_ppcp_is_cart_subscription()) {
             $is_enable = true;
         } elseif ((is_checkout() || is_checkout_pay_page()) && $enable_tokenized_payments === true) {
             $is_enable = true;
+        } elseif(is_product()) {
+            $product_id = $post->ID;
+            $product = wc_get_product( $product_id );
+            if($product->is_type('subscription')) {
+                $is_enable = true;
+            }
         }
         return apply_filters('angelleye_ppcp_vault_attribute', $is_enable);
     }

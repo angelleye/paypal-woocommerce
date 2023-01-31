@@ -16,7 +16,24 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->angelleye_ppcp_load_class();
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit card'));
             $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
-            if ($this->enable_tokenized_payments) {
+            if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
+               $this->supports = array(
+                    'products',
+                    'refunds',
+                    'pay_button',
+                    'subscriptions',
+                    'subscription_cancellation',
+                    'subscription_reactivation',
+                    'subscription_suspension',
+                    'subscription_amount_changes',
+                    'subscription_payment_method_change', // Subs 1.n compatibility.
+                    'subscription_payment_method_change_customer',
+                    'subscription_payment_method_change_admin',
+                    'subscription_date_changes',
+                    'multiple_subscriptions',
+                    'add_payment_method'
+                );
+            } elseif ($this->enable_tokenized_payments) {
                 $this->supports = array(
                     'products',
                     'refunds',
@@ -58,7 +75,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     $this->enable_separate_payment_method = false;
                 }
             }
-            if( $this->enable_tokenized_payments ) {
+            if ($this->enable_tokenized_payments) {
                 $this->enable_separate_payment_method = true;
             }
         } catch (Exception $ex) {
@@ -205,23 +222,31 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 angelleye_ppcp_add_css_js();
             }
             if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_get_order_total() > 0) {
-                $this->tokenization_script();
-                $this->saved_payment_methods();
+                if ($this->supports( 'tokenization' )) {
+                    $this->tokenization_script();
+                    $this->saved_payment_methods();
+                }
                 $this->form();
-                if(angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
-                    $this->save_payment_method_checkbox();
+                if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
+                    if ($this->supports( 'tokenization' )) {
+                        $this->save_payment_method_checkbox();
+                    }
                 }
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
             if (is_account_page()) {
                 $this->angelleye_ppcp_cc_form();
             } elseif (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
-                $this->tokenization_script();
-                $this->saved_payment_methods();
+                if ($this->supports( 'tokenization' )) {
+                    $this->tokenization_script();
+                    $this->saved_payment_methods();
+                }
                 $this->angelleye_ppcp_cc_form();
             } elseif (angelleye_ppcp_is_subs_change_payment() === true) {
-                $this->tokenization_script();
-                $this->saved_payment_methods();
+                if ($this->supports( 'tokenization' )) {
+                    $this->tokenization_script();
+                    $this->saved_payment_methods();
+                }
                 $this->angelleye_ppcp_cc_form();
             }
         } catch (Exception $ex) {
