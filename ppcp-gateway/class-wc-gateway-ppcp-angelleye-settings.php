@@ -102,7 +102,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $credit_messaging_text = __('PayPal Pay Later Messaging - Buy Now Pay Later is not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
             }
             if ($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
-                $enable_tokenized_payments_text = __('Payment tokenization is not available when using the PayPal Multi-Account add-on, and it has been disabled.', 'paypal-for-woocommerce');
+                $enable_tokenized_payments_text = __('', 'paypal-for-woocommerce');
             } elseif ($was_enable_tokenized_payments == 'no' && $this->is_multi_account_active == 'yes') {
                 $enable_tokenized_payments_text = __('Token payments are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
             } else {
