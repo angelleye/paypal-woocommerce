@@ -46,7 +46,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 'IT' => array('paypal' => '3,50% + 35¢', 'acc' => '1,30% + 35¢'),
                 'ES' => array('paypal' => '3,00% + 05¢', 'acc' => '1,30% + 35¢'),
                 'default' => array('paypal' => '3.59% + 49¢', 'acc' => '2.69% + 49¢'),
-                );
+            );
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -75,7 +75,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function angelleye_ppcp_load_variable() {
         if (isset($_GET['testmode'])) {
-            if(($_GET['testmode'] === 'yes')) {
+            if (($_GET['testmode'] === 'yes')) {
                 $this->sandbox = true;
             } else {
                 $this->sandbox = false;
@@ -135,12 +135,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 } else {
                     if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
-                        $this->setting_obj->set('enable_advanced_card_payments', 'yes');
-                        $this->setting_obj->persist();
                     } else {
                         $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
-                        $this->setting_obj->set('enable_advanced_card_payments', 'no');
-                        $this->setting_obj->persist();
                     }
                     if ($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
                         set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
@@ -174,12 +170,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 } else {
                     if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
-                        $this->setting_obj->set('enable_advanced_card_payments', 'yes');
-                        $this->setting_obj->persist();
                     } else {
                         $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
-                        $this->setting_obj->set('enable_advanced_card_payments', 'no');
-                        $this->setting_obj->persist();
                     }
                     if ($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
                         set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
@@ -252,14 +244,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
                             }
                             ?>
-                                <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
-                                    <br><br>
-                                    <?php if($this->ppcp_paypal_country === 'DE') { ?>
+                            <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
+                                <br><br>
+                                <?php if ($this->ppcp_paypal_country === 'DE') { ?>
                                     <?php echo sprintf(__('Fees on Visa/MasterCard/Discover transactions <br>transactions are a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
-                                    <?php } else { ?>
+                                <?php } else { ?>
                                     <?php echo sprintf(__('Save money on Visa/MasterCard/Discover transactions <br>with a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
-                                    <?php } ?>
-                                    <br><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/"><small style="font-size:12px;">Learn More</small></a></p>
+                                <?php } ?>
+                                <br><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/"><small style="font-size:12px;">Learn More</small></a></p>
                         </div>
                     </div>
                 </div>
@@ -336,16 +328,17 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         </div>
         <?php
     }
-    
+
     public function angelleye_ppcp_get_paypal_fee_structure($country, $product) {
         try {
-            if(isset($this->paypal_fee_structure[$country])) {
+            if (isset($this->paypal_fee_structure[$country])) {
                 return $this->paypal_fee_structure[$country][$product];
             } else {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-
+            
         }
     }
+
 }
