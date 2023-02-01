@@ -471,6 +471,27 @@
             hide_show_place_order_button();
         });
 
+        $(document.body).on('click', '#wc-angelleye_ppcp-new-payment-method', function () {
+            const checkbox = document.getElementById("wc-angelleye_ppcp-new-payment-method");
+            let vault = "";
+            if (checkbox.checked) {
+                vault = "&vault=true";
+            }
+            var paypal_js_sdk_script = document.getElementById('angelleye-paypal-checkout-sdk-js');
+            paypal_js_sdk_script.src = paypal_js_sdk_script.src.replace("&vault=true", "") + vault;
+            const url = new URL(paypal_js_sdk_script.src);
+            const searchParams = url.searchParams;
+            searchParams.delete("enable-funding");
+            paypal_js_sdk_script.src = url.toString();
+            paypal_js_sdk_script.setAttribute("async", true);
+            document.body.appendChild(paypal_js_sdk_script);
+             $.each(angelleye_ppcp_manager.button_selector, function (key, angelleye_ppcp_button_selector) {
+                if ($(angelleye_ppcp_button_selector).length || $(angelleye_ppcp_button_selector).children().length) {
+                    $(angelleye_ppcp_button_selector).children().remove();
+                }
+            });
+            $( document.body ).trigger( 'update_checkout' );
+        });
         $(document.body).on('removed_coupon_in_checkout', function () {
             window.location.href = window.location.href;
         });
