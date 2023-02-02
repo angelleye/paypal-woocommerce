@@ -149,7 +149,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->disable_cards = $this->setting_obj->get('disable_cards', array());
         $this->minified_version = ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
         $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
-        if($this->enable_tokenized_payments) {
+        if ($this->enable_tokenized_payments) {
             $this->enable_separate_payment_method = true;
         }
     }
@@ -521,7 +521,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         try {
             global $product;
             $this->angelleye_ppcp_smart_button_style_properties();
-            if (angelleye_ppcp_is_product_purchasable($product) === true) {
+            if (angelleye_ppcp_is_product_purchasable($product, $this->enable_tokenized_payments) === true) {
                 angelleye_ppcp_add_css_js();
                 if ($is_shortcode === 'yes') {
                     echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_product_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_product_shortcode"></div></div></div>';

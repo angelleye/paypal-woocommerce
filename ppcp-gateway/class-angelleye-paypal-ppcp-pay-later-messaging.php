@@ -154,7 +154,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
             if (angelleye_ppcp_is_cart_contains_subscription() === true) {
                 return false;
             }
-            if (angelleye_ppcp_is_product_purchasable($product) === true) {
+            if (angelleye_ppcp_is_product_purchasable($product, $this->enable_tokenized_payments) === true) {
                 angelleye_ppcp_add_css_js();
                 wp_enqueue_script('angelleye-pay-later-messaging-product', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/product.js', array('jquery'), VERSION_PFW, true);
                 $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'product');
