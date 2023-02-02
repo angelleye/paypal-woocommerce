@@ -826,7 +826,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
                     $client_token = "data-client-token='{$this->client_token}'";
                 }
-                if ((is_checkout() || is_checkout_pay_page()) && $this->enable_tokenized_payments) {
+                if ($this->enable_tokenized_payments) {
                     $this->id_token = $this->payment_request->angelleye_ppcp_get_generate_id_token();
                     $user_id_token = " data-user-id-token='{$this->id_token}'";
                 }

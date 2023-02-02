@@ -231,7 +231,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             }
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
             if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
-                if ($this->supports('tokenization')) {
+                if ($this->supports('tokenization') && is_account_page() === false) {
                     $this->save_payment_method_checkbox();
                 }
             }
