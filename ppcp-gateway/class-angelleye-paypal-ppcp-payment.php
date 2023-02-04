@@ -3364,7 +3364,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         try {
             $all_payment_tokens = $this->angelleye_ppcp_get_all_payment_tokens();
             $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
-            if (!empty($all_payment_tokens)) {
+            if (!empty($all_payment_tokens) && !empty($payment_tokens_id)) {
                 foreach ($all_payment_tokens as $key => $paypal_payment_token) {
                     if ($paypal_payment_token['id'] === $payment_tokens_id) {
                         foreach ($paypal_payment_token['payment_source'] as $type_key => $payment_tokens_data) {
@@ -3380,10 +3380,20 @@ class AngellEYE_PayPal_PPCP_Payment {
                 foreach ($all_payment_tokens as $key => $paypal_payment_token) {
                     foreach ($paypal_payment_token['payment_source'] as $type_key => $payment_tokens_data) {
                         update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', $type_key);
-                        $body_request['payment_source'] = array($type_key => array('vault_id' => $payment_tokens_id));
+                        $body_request['payment_source'] = array($type_key => array('vault_id' => $paypal_payment_token['id']));
                         return $body_request;
                     }
                 }
+            } elseif(empty($all_payment_tokens) && !empty($payment_tokens_id)) {
+                $used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+                if('PayPal Checkout' === $used_payment_method) {
+                    $payment_method = 'paypal';
+                } elseif('PayPal Credit' === $used_payment_method) {
+                    $payment_method = 'paypal';
+                } elseif('card' === $used_payment_method) {
+                    $payment_method = 'card';
+                }
+                $body_request['payment_source'] = array($payment_method => array('vault_id' => $payment_tokens_id));
             }
         } catch (Exception $ex) {
             return $body_request;
