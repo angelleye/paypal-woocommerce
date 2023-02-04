@@ -76,7 +76,6 @@
         var is_from_product = 'product' === angelleye_ppcp_manager.page;
         var is_sale = 'capture' === angelleye_ppcp_manager.paymentaction;
         var smart_button_render = function () {
-            console.log("hello");
             $.each(angelleye_ppcp_manager.button_selector, function (key, angelleye_ppcp_button_selector) {
                 if (!$(angelleye_ppcp_button_selector).length || $(angelleye_ppcp_button_selector).children().length) {
                     return;
@@ -479,64 +478,3 @@
 
     });
 })(jQuery);
-
-
-jQuery(function ($) {
-    var angelleye_ppcp_tokenization_form = function ($target) {
-        this.$target = $target;
-        this.$formWrap = $target.closest('.payment_box');
-        this.onDisplay = this.onDisplay.bind(this);
-        this.hideForm = this.hideForm.bind(this);
-        this.showForm = this.showForm.bind(this);
-        this.$target.on(
-                'click change',
-                ':input.woocommerce-SavedPaymentMethods-tokenInput',
-                {tokenizationForm: this},
-                this.onTokenChange
-                );
-        this.onDisplay();
-    };
-    angelleye_ppcp_tokenization_form.prototype.onDisplay = function () {
-        if (0 === $(':input.woocommerce-SavedPaymentMethods-tokenInput:checked', this.$target).length) {
-            $(':input.woocommerce-SavedPaymentMethods-tokenInput:last', this.$target).prop('checked', true);
-        }
-        if (0 === this.$target.data('count')) {
-            $('.woocommerce-SavedPaymentMethods-new', this.$target).remove();
-        }
-        $(':input.woocommerce-SavedPaymentMethods-tokenInput:checked', this.$target).trigger('change');
-    };
-    angelleye_ppcp_tokenization_form.prototype.onTokenChange = function (event) {
-        if ('wc-angelleye_ppcp-payment-token' === $(this).attr("name")) {
-            if ('new' === $(this).val()) {
-                $('#place_order').hide();
-            } else {
-                $('#place_order').show();
-            }
-        }
-        if ('new' === $(this).val()) {
-            event.data.tokenizationForm.showForm();
-        } else {
-            event.data.tokenizationForm.hideForm();
-        }
-    };
-    angelleye_ppcp_tokenization_form.prototype.hideForm = function () {
-        $('#angelleye_ppcp_checkout', this.$formWrap).hide();
-    };
-    angelleye_ppcp_tokenization_form.prototype.showForm = function () {
-        $('#angelleye_ppcp_checkout', this.$formWrap).show();
-
-    };
-    $.fn.angelleye_ppcp_tokenization_form = function (args) {
-        new angelleye_ppcp_tokenization_form(this, args);
-        return this;
-    };
-    $(document.body).on('updated_checkout wc-credit-card-form-init', function () {
-        if ('checkout' !== angelleye_ppcp_manager.page) {
-            console.log("555");
-            var $saved_payment_methods = $('ul.woocommerce-SavedPaymentMethods');
-            $saved_payment_methods.each(function () {
-                $(this).angelleye_ppcp_tokenization_form();
-            });
-        }
-    });
-});
