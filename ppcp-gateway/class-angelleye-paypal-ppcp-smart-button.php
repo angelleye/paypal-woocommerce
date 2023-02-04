@@ -371,7 +371,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
             $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
         }
-        $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
+        $smart_js_arg['commit'] = 'true';//$this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
         $smart_js_arg['intent'] = ( $this->paymentaction === 'capture' ) ? 'capture' : 'authorize';
         $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
         $components = array("buttons");
@@ -391,7 +391,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->enabled_pay_later_messaging = false;
             foreach ($enable_funding as $key => $value) {
                 if ($value === 'paylater') {
-                    unset($enable_funding[$key]);
+                 //   unset($enable_funding[$key]);
                 }
             }
         }
@@ -447,7 +447,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'advanced_card_payments_title' => $this->advanced_card_payments_title
                 )
         );
-        if (is_checkout() && !empty($this->checkout_details)) {
+        if (is_checkout() && angelleye_ppcp_has_active_session() === true) {
             wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-capture', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-capture.js', array('jquery'), $this->version, false);
         }
     }
@@ -551,7 +551,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_endpoint_page_titles($title) {
-        if (!is_admin() && is_main_query() && in_the_loop() && is_page() && is_checkout() && !empty($this->checkout_details)) {
+        if (!is_admin() && is_main_query() && in_the_loop() && is_page() && is_checkout() && angelleye_ppcp_has_active_session() === true) {
             $title = $this->order_review_page_title;
             remove_filter('the_title', array($this, 'angelleye_ppcp_endpoint_page_titles'));
         }
@@ -634,7 +634,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function maybe_disable_other_gateways($gateways) {
-        if (empty($this->checkout_details) || (isset($_GET['from']) && 'checkout' === $_GET['from'])) {
+        if (angelleye_ppcp_has_active_session() === false || (isset($_GET['from']) && 'checkout' === $_GET['from'])) {
             return $gateways;
         }
         foreach ($gateways as $id => $gateway) {
@@ -823,12 +823,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $user_id_token = '';
             if (!isset($_GET['paypal_order_id'])) {
                 if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
-                    $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
-                    $client_token = "data-client-token='{$this->client_token}'";
+                    
                 }
+                $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
+                    $client_token = "data-client-token='{$this->client_token}'";
                 if ($this->enable_tokenized_payments) {
-                    $this->id_token = $this->payment_request->angelleye_ppcp_get_generate_id_token();
-                    $user_id_token = " data-user-id-token='{$this->id_token}'";
+                   // $this->id_token = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                   // $user_id_token = " data-user-id-token='{$this->id_token}'";
                 }
             }
             $tag = str_replace(' src=', ' ' . $client_token . $user_id_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
@@ -948,7 +949,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_short_gateway($methods) {
-        if (!empty($this->checkout_details)) {
+        if (angelleye_ppcp_has_active_session() === true) {
             return $methods;
         }
         $new_method = array();
