@@ -37,35 +37,15 @@
                         $('#place_order').hide();
                     }
                 } else if (angelleye_ppcp_manager.enable_separate_payment_method === 'yes') {
-                    var used_save_method = false;
-                    if ($('input[name="wc-angelleye_ppcp_cc-payment-token"]').length) {
-                        if ('new' !== $('input[name="wc-angelleye_ppcp-payment-token"]:checked').val()) {
-                            used_save_method = true;
-                        }
-                    }
                     if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
-                        if (used_save_method) {
-                            $('#place_order').show();
-                        } else {
-                            $('#place_order').hide();
-                        }
+                        $('#place_order').hide();
                     } else {
                         $('#place_order').show();
                     }
                 }
             } else {
-                var used_save_method = false;
-                if ($('input[name="wc-angelleye_ppcp-payment-token"]').length) {
-                    if ('new' !== $('input[name="wc-angelleye_ppcp-payment-token"]:checked').val()) {
-                        used_save_method = true;
-                    }
-                }
                 if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
-                    if (used_save_method) {
-                        $('#place_order').show();
-                    } else {
-                        $('#place_order').hide();
-                    }
+                    $('#place_order').hide();
                 } else {
                     $('#place_order').show();
                 }
@@ -551,9 +531,12 @@ jQuery(function ($) {
         return this;
     };
     $(document.body).on('updated_checkout wc-credit-card-form-init', function () {
-        var $saved_payment_methods = $('ul.woocommerce-SavedPaymentMethods');
-        $saved_payment_methods.each(function () {
-            $(this).angelleye_ppcp_tokenization_form();
-        });
+        if ('checkout' !== angelleye_ppcp_manager.page) {
+            console.log("555");
+            var $saved_payment_methods = $('ul.woocommerce-SavedPaymentMethods');
+            $saved_payment_methods.each(function () {
+                $(this).angelleye_ppcp_tokenization_form();
+            });
+        }
     });
 });
