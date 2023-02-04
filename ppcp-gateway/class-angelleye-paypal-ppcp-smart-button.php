@@ -371,7 +371,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
             $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
         }
-        $smart_js_arg['commit'] = 'true';//$this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
+        $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
         $smart_js_arg['intent'] = ( $this->paymentaction === 'capture' ) ? 'capture' : 'authorize';
         $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
         $components = array("buttons");
@@ -391,7 +391,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->enabled_pay_later_messaging = false;
             foreach ($enable_funding as $key => $value) {
                 if ($value === 'paylater') {
-                 //   unset($enable_funding[$key]);
+                    unset($enable_funding[$key]);
                 }
             }
         }
@@ -823,13 +823,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $user_id_token = '';
             if (!isset($_GET['paypal_order_id'])) {
                 if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
-                    
-                }
-                $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
+                    $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
                     $client_token = "data-client-token='{$this->client_token}'";
+                }
                 if ($this->enable_tokenized_payments) {
-                   // $this->id_token = $this->payment_request->angelleye_ppcp_get_generate_id_token();
-                   // $user_id_token = " data-user-id-token='{$this->id_token}'";
+                    $this->id_token = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                    $user_id_token = " data-user-id-token='{$this->id_token}'";
                 }
             }
             $tag = str_replace(' src=', ' ' . $client_token . $user_id_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
