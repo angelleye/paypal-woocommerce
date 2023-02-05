@@ -61,7 +61,9 @@ if (!function_exists('angelleye_ppcp_has_active_session')) {
     function angelleye_ppcp_has_active_session() {
         $checkout_details = angelleye_ppcp_get_session('angelleye_ppcp_paypal_transaction_details');
         $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
-        if (!empty($checkout_details) && !empty($angelleye_ppcp_paypal_order_id) && isset($_GET['paypal_order_id'])) {
+        if(is_ajax() && !empty($checkout_details) && !empty($angelleye_ppcp_paypal_order_id)) {
+            return true;
+        } elseif (!empty($checkout_details) && !empty($angelleye_ppcp_paypal_order_id) && isset($_GET['paypal_order_id'])) {
             return true;
         }
         return false;

@@ -12,8 +12,8 @@ class WC_Gateway_CC_AngellEYE_Subscriptions extends WC_Gateway_CC_AngellEYE {
         parent::__construct();
         if (class_exists('WC_Subscriptions_Order')) {
             add_action('woocommerce_scheduled_subscription_payment_' . $this->id, array($this, 'scheduled_subscription_payment'), 10, 2);
-            add_filter('woocommerce_subscription_payment_meta', array($this, 'add_subscription_payment_meta'), 10, 2);
-            add_filter('woocommerce_subscription_validate_payment_meta', array($this, 'validate_subscription_payment_meta'), 10, 3);
+            //add_filter('woocommerce_subscription_payment_meta', array($this, 'add_subscription_payment_meta'), 10, 2);
+            //add_filter('woocommerce_subscription_validate_payment_meta', array($this, 'validate_subscription_payment_meta'), 10, 3);
             add_action('wcs_resubscribe_order_created', array($this, 'delete_resubscribe_meta'), 10);
             add_action('woocommerce_subscription_failing_payment_method_updated_' . $this->id, array($this, 'update_failing_payment_method'), 10, 2);
         }
@@ -142,6 +142,11 @@ class WC_Gateway_CC_AngellEYE_Subscriptions extends WC_Gateway_CC_AngellEYE {
                     if (!empty($payment_tokens_id)) {
                         update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
                         update_post_meta($renewal_order_id, '_payment_tokens_id', $payment_tokens_id);
+                    }
+                    $angelleye_ppcp_used_payment_method = get_post_meta($subscription_parent_id, '_angelleye_ppcp_used_payment_method', true);
+                    if (!empty($angelleye_ppcp_used_payment_method)) {
+                        update_post_meta($renewal_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                        update_post_meta($subscription_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
                     }
                 }
             }
