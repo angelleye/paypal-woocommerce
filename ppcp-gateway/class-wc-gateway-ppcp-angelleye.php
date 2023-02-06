@@ -217,15 +217,16 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             if ($this->supports('tokenization')) {
                 $this->tokenization_script();
             }
+            if(angelleye_ppcp_get_order_total() === 0 && angelleye_ppcp_is_cart_subscription() === true) {
+                $this->saved_payment_methods();
+            }             
+
         } elseif (angelleye_ppcp_is_subs_change_payment() === true) {
             if ($this->supports('tokenization')) {
                 $this->tokenization_script();
             }
         }
         if ($this->checkout_disable_smart_button === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
-            if ($this->supports('tokenization')) {
-               // $this->tokenization_script();
-            }
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
             if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
                 if ($this->supports('tokenization') && is_account_page() === false) {
