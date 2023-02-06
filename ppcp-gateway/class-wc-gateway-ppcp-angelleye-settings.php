@@ -66,7 +66,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             $this->setting_obj = get_option($this->gateway_key, array());
             $defaults = array(
-                'title' => __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'),
+                'title' => __('PayPal Commerce Platform - Built by Angelleye', 'paypal-for-woocommerce'),
                 'description' => __(
                         'The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce'
                 )
@@ -144,14 +144,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'label' => __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'),
+                    'label' => __('PayPal Commerce Platform - Built by Angelleye', 'paypal-for-woocommerce'),
                     'default' => 'no',
                 ),
                 'title' => array(
                     'title' => __('Title', 'paypal-for-woocommerce'),
                     'type' => 'text',
                     'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
-                    'default' => __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'),
+                    'default' => __('PayPal Commerce Platform - Built by Angelleye', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
                 'description' => array(
