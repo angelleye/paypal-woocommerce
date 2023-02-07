@@ -17,7 +17,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit card'));
             $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
             if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
-               $this->supports = array(
+                $this->supports = array(
                     'products',
                     'refunds',
                     'pay_button',
@@ -222,13 +222,13 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 angelleye_ppcp_add_css_js();
             }
             if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_get_order_total() > 0) {
-                if ($this->supports( 'tokenization' )) {
+                if ($this->supports('tokenization')) {
                     $this->tokenization_script();
                     $this->saved_payment_methods();
                 }
                 $this->form();
                 if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
-                    if ($this->supports( 'tokenization' )) {
+                    if ($this->supports('tokenization')) {
                         $this->save_payment_method_checkbox();
                     }
                 }
@@ -237,13 +237,13 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             if (is_account_page()) {
                 $this->angelleye_ppcp_cc_form();
             } elseif (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
-                if ($this->supports( 'tokenization' )) {
+                if ($this->supports('tokenization')) {
                     $this->tokenization_script();
                     $this->saved_payment_methods();
                 }
                 $this->angelleye_ppcp_cc_form();
             } elseif (angelleye_ppcp_is_subs_change_payment() === true) {
-                if ($this->supports( 'tokenization' )) {
+                if ($this->supports('tokenization')) {
                     $this->tokenization_script();
                     $this->saved_payment_methods();
                 }
@@ -493,6 +493,19 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             <div class="clear"></div>
         </fieldset>
         <?php
+    }
+
+    public function save_payment_method_checkbox() {
+        $html = sprintf(
+                '<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+				<input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" value="true" style="width:auto;" />
+				<label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
+			</p>',
+                esc_attr($this->id),
+                esc_html__('Save payment method to my account.', 'paypal-for-woocommerce')
+        );
+
+        echo apply_filters('woocommerce_payment_gateway_save_new_payment_method_option_html', $html, $this); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     }
 
 }
