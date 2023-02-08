@@ -20,7 +20,6 @@
             });
         }
         var hide_show_place_order_button = function () {
-            console.log('23');
             if (is_angelleye_ppcp_selected() === true) {
                 $('.wcf-pre-checkout-offer-action').val('');
             }
@@ -28,39 +27,28 @@
                 $('.payment_method_angelleye_ppcp_cc').hide();
             }
             if (angelleye_ppcp_manager.advanced_card_payments === 'yes') {
-                console.log('31');
                 if (angelleye_ppcp_manager.enable_separate_payment_method === 'no') {
-                    console.log('33');
                     if (is_hosted_field_eligible() === true) {
-                        console.log('35');
                         $('#place_order').show();
                     } else if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'yes') {
-                        console.log('37');
                         $('#place_order').show();
                     } else {
-                        console.log('41');
                         $('#angelleye_ppcp_checkout').hide();
                         $('#place_order').hide();
                     }
                 } else if (angelleye_ppcp_manager.enable_separate_payment_method === 'yes') {
-                    console.log('46');
                     if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
-                        console.log('47');
                         $('#place_order').hide();
                         $('#angelleye_ppcp_checkout').show();
                     } else {
-                        console.log('51');
                         $('#angelleye_ppcp_checkout').hide();
                         $('#place_order').show();
                     }
                 }
             } else {
-                console.log('57');
                 if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
-                    console.log('59');
                     $('#place_order').hide();
                 } else {
-                    console.log('62');
                     $('#angelleye_ppcp_checkout').hide();
                     $('#place_order').show();
                 }
@@ -70,16 +58,16 @@
             var scrollElement = $('.woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout');
             if (!scrollElement.length) {
                 scrollElement = $('form.checkout');
-            } 
-            if(!scrollElement.length) {
+            }
+            if (!scrollElement.length) {
                 scrollElement = $('form#order_review');
             }
-            if ( scrollElement.length ) {
-			$( 'html, body' ).animate( {
-				scrollTop: ( scrollElement.offset().top - 100 )
-			}, 1000 );
-		}
-            
+            if (scrollElement.length) {
+                $('html, body').animate({
+                    scrollTop: (scrollElement.offset().top - 100)
+                }, 1000);
+            }
+
         };
         var showError = function (error_message) {
             $(checkout_selector).prepend('<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' + error_message + '</div>');
@@ -392,28 +380,28 @@
                         contingencies: contingencies,
                         cardholderName: firstName + ' ' + lastName
                     }).then(
-                        function (payload) {
-                            if (payload.orderId) {
-                                $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page, function (data) {
-                                    window.location.href = data.data.redirect;
-                                });
-                            }
-                        }, function (error) {
-                            $(checkout_selector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
-                            var error_message = '';
-                            if (Array.isArray(error.details) && error.details[0]['description']) {
-                                error_message = error.details[0]['description'];
-                            } else if(error.message) {
-                                error_message = error.message;
-                            }
-                            if (Array.isArray(error.details) && error.details[0]['issue'] === 'INVALID_RESOURCE_ID') {
-                                error_message = '';
-                            }
-
-                            if (error_message !== '') {
-                                showError('<div class="woocommerce-error">' + error_message + '</div>');
-                            }
+                            function (payload) {
+                                if (payload.orderId) {
+                                    $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page, function (data) {
+                                        window.location.href = data.data.redirect;
+                                    });
+                                }
+                            }, function (error) {
+                        $(checkout_selector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
+                        var error_message = '';
+                        if (Array.isArray(error.details) && error.details[0]['description']) {
+                            error_message = error.details[0]['description'];
+                        } else if (error.message) {
+                            error_message = error.message;
                         }
+                        if (Array.isArray(error.details) && error.details[0]['issue'] === 'INVALID_RESOURCE_ID') {
+                            error_message = '';
+                        }
+
+                        if (error_message !== '') {
+                            showError('<div class="woocommerce-error">' + error_message + '</div>');
+                        }
+                    }
                     );
                 });
             }).catch(function (err) {
@@ -428,15 +416,12 @@
             setTimeout(function () {
                 smart_button_render();
                 if (is_hosted_field_eligible() === true) {
-                    console.log('431');
                     if ($('#angelleye_ppcp-card-number iframe').length === 0) {
                         $(checkout_selector).removeClass('HostedFields');
                     }
                     $('.checkout_cc_separator').show();
                     $('#wc-angelleye_ppcp-cc-form').show();
                     hosted_button_render();
-                } else {
-                    console.log('439');
                 }
             }, 300);
         }
@@ -451,8 +436,6 @@
                     $('.checkout_cc_separator').show();
                     $('#wc-angelleye_ppcp-cc-form').show();
                     hosted_button_render();
-                } else {
-                    console.log('455');
                 }
             }, 300);
         });
