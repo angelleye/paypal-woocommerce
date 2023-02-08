@@ -216,7 +216,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         if ($this->checkout_disable_smart_button === false) {
-            add_action('angelleye_ppcp_display_paypal_button_checkout_page', array($this, 'display_paypal_button_checkout_page'));
+            add_action('woocommerce_review_order_before_submit', array($this, 'display_paypal_button_checkout_page'));
         }
         add_action('init', array($this, 'init'));
         add_filter('script_loader_tag', array($this, 'angelleye_ppcp_clean_url'), 10, 2);

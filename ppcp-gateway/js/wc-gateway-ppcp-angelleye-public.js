@@ -422,7 +422,7 @@
                 }
             }, 300);
         }
-        $(document.body).on('updated_cart_totals updated_checkout', function () {
+        $(document.body).on('updated_cart_totals updated_checkout payment_method_selected', function () {
             hide_show_place_order_button();
             setTimeout(function () {
                 smart_button_render();
@@ -435,9 +435,6 @@
                     hosted_button_render();
                 }
             }, 300);
-        });
-        $(checkout_selector).on('click', 'input[name="payment_method"]', function () {
-            hide_show_place_order_button();
         });
 
         $(document.body).on('removed_coupon_in_checkout', function () {
