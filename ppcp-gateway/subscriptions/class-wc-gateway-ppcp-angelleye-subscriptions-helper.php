@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
 
     protected static $_instance = null;
+    public $payment_request;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -14,6 +15,17 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
         }
 
         return self::$_instance;
+    }
+
+    public function angelleye_ppcp_load_class() {
+        try {
+            if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
+            }
+            $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
+        } catch (Exception $ex) {
+            
+        }
     }
 
     public function angelleye_ppcp_is_save_payment_token($current, $order_id) {
@@ -89,8 +101,26 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 $token->set_gateway_id($order->get_payment_method());
                 $token->set_card_type($api_response['payment_source']['card']['brand']);
                 $token->set_last4($api_response['payment_source']['card']['last_digits']);
-                $token->set_expiry_month('05');
-                $token->set_expiry_year('2025');
+                if (isset($api_response['payment_source']['card']['expiry'])) {
+                    $card_expiry = array_map('trim', explode('-', $api_response['payment_source']['card']['expiry']));
+                    $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                    $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                    $token->set_expiry_month($card_exp_month);
+                    $token->set_expiry_year($card_exp_year);
+                } else {
+                    $this->angelleye_ppcp_load_class();
+                    $card_details = $this->payment_request->angelleye_ppcp_get_payment_token_details($api_response['payment_source']['card']['attributes']['vault']['id']);
+                    if (isset($card_details['payment_source']['card']['expiry'])) {
+                        $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                        $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                        $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                        $token->set_expiry_month($card_exp_month);
+                        $token->set_expiry_year($card_exp_year);
+                    } else {
+                        $token->set_expiry_month(date('m'));
+                        $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                    }
+                }
                 $token->set_user_id($customer_id);
                 if ($token->validate()) {
                     $this->save_payment_token($order, $payment_token);

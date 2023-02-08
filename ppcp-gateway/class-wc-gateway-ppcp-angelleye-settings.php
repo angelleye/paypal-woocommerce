@@ -1415,14 +1415,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'description' => __('3D Secure benefits cardholders and merchants by providing an additional layer of verification using Verified by Visa, MasterCard SecureCode and American Express SafeKey.', 'paypal-for-woocommerce'),
                 ),
-                'enable_separate_payment_method' => array(
-                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('Enable separate payment method as Advanced Credit Cards.', 'paypal-for-woocommerce'),
-                    'default' => 'yes',
-                    'desc_tip' => true,
-                    'description' => __('Enable this option if you would like to use separate payment method as Advanced Credit Cards in WooCommerce checkout page.', 'paypal-for-woocommerce'),
-                ),
                 'advanced_card_payments_title' => array(
                     'title' => __('Advanced Credit Cards Title', 'paypal-for-woocommerce'),
                     'type' => 'text',

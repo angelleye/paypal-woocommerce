@@ -60,23 +60,23 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit card');
             $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
-            $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
             $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');
-            $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'yes');
-            if ($this->advanced_card_payments) {
-                $this->enable_separate_payment_method = 'yes' === $this->setting_obj->get('enable_separate_payment_method', 'yes');
-                if ($this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
-                    $this->enable_separate_payment_method = true;
-                }
+            $this->sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
+            $this->sandbox_merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
+            $this->live_merchant_id = $this->setting_obj->get('live_merchant_id', '');
+            $this->sandbox_client_id = $this->setting_obj->get('sandbox_client_id', '');
+            $this->sandbox_secret_id = $this->setting_obj->get('sandbox_api_secret', '');
+            $this->live_client_id = $this->setting_obj->get('api_client_id', '');
+            $this->live_secret_id = $this->setting_obj->get('api_secret', '');
+            $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
+            if ($this->sandbox) {
+                $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
+                $this->client_id = $this->sandbox_client_id;
+                $this->secret_id = $this->sandbox_secret_id;
             } else {
-                if ($this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
-                    $this->enable_separate_payment_method = true;
-                } else {
-                    $this->enable_separate_payment_method = false;
-                }
-            }
-            if ($this->enable_tokenized_payments) {
-                $this->enable_separate_payment_method = true;
+                $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
+                $this->client_id = $this->live_client_id;
+                $this->secret_id = $this->live_secret_id;
             }
         } catch (Exception $ex) {
             
@@ -205,12 +205,25 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
+    public function is_credentials_set() {
+
+        if (!empty($this->merchant_id) || (!empty($this->client_id) && !empty($this->secret_id))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function is_available() {
         try {
-            if ($this->enable_separate_payment_method) {
-                return true;
+            if ($this->advanced_card_payments == true) {
+                if ($this->is_credentials_set()) {
+                    return true;
+                }
+                return false;
+            } else {
+                return false;
             }
-            return false;
         } catch (Exception $ex) {
             
         }
@@ -218,12 +231,14 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function payment_fields() {
         try {
-            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_has_active_session() === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
+            if ($this->supports('tokenization')) {
+                $this->tokenization_script();
+            }
+            if ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_has_active_session() === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
                 angelleye_ppcp_add_css_js();
             }
-            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === true && angelleye_ppcp_get_order_total() > 0) {
+            if ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_get_order_total() > 0) {
                 if ($this->supports('tokenization')) {
-                    $this->tokenization_script();
                     $this->saved_payment_methods();
                 }
                 $this->form();
@@ -238,13 +253,11 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->angelleye_ppcp_cc_form();
             } elseif (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
                 if ($this->supports('tokenization')) {
-                    $this->tokenization_script();
                     $this->saved_payment_methods();
                 }
                 $this->angelleye_ppcp_cc_form();
             } elseif (angelleye_ppcp_is_subs_change_payment() === true) {
                 if ($this->supports('tokenization')) {
-                    $this->tokenization_script();
                     $this->saved_payment_methods();
                 }
                 $this->angelleye_ppcp_cc_form();
@@ -256,36 +269,35 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function form() {
         try {
-            $this->cc_id = 'angelleye_ppcp';
             wp_enqueue_script('wc-credit-card-form');
             $fields = array();
             $cvc_field = '<div class="form-row form-row-last">
-                        <label for="' . esc_attr($this->cc_id) . '-card-cvc">' . apply_filters('cc_form_label_card_code', __('Card Security Code', 'paypal-for-woocommerce'), $this->cc_id) . ' </label>
-                        <div id="' . esc_attr($this->cc_id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc hosted-field-braintree"></div>
+                        <label for="' . esc_attr($this->id) . '-card-cvc">' . apply_filters('cc_form_label_card_code', __('Card Security Code', 'paypal-for-woocommerce'), $this->id) . ' </label>
+                        <div id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc hosted-field-braintree"></div>
                     </div>';
             $default_fields = array(
                 'card-number-field' => '<div class="form-row form-row-wide">
-                        <label for="' . esc_attr($this->cc_id) . '-card-number">' . apply_filters('cc_form_label_card_number', __('Card number', 'paypal-for-woocommerce'), $this->cc_id) . '</label>
-                        <div id="' . esc_attr($this->cc_id) . '-card-number"  class="input-text wc-credit-card-form-card-number hosted-field-braintree"></div>
+                        <label for="' . esc_attr($this->id) . '-card-number">' . apply_filters('cc_form_label_card_number', __('Card number', 'paypal-for-woocommerce'), $this->id) . '</label>
+                        <div id="' . esc_attr($this->id) . '-card-number"  class="input-text wc-credit-card-form-card-number hosted-field-braintree"></div>
                     </div>',
                 'card-expiry-field' => '<div class="form-row form-row-first">
-                        <label for="' . esc_attr($this->cc_id) . '-card-expiry">' . apply_filters('cc_form_label_expiry', __('Expiration Date', 'paypal-for-woocommerce'), $this->cc_id) . ' </label>
-                        <div id="' . esc_attr($this->cc_id) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry hosted-field-braintree"></div>
+                        <label for="' . esc_attr($this->id) . '-card-expiry">' . apply_filters('cc_form_label_expiry', __('Expiration Date', 'paypal-for-woocommerce'), $this->id) . ' </label>
+                        <div id="' . esc_attr($this->id) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry hosted-field-braintree"></div>
                     </div>',
             );
             if (!$this->supports('credit_card_form_cvc_on_saved_method')) {
                 $default_fields['card-cvc-field'] = $cvc_field;
             }
-            $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->cc_id));
+            $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->id));
             ?>
-            <fieldset id="wc-<?php echo esc_attr($this->cc_id); ?>-cc-form" class='wc-credit-card-form wc-payment-form' style="display:none;">
-                <?php do_action('woocommerce_credit_card_form_start', $this->cc_id); ?>
+            <fieldset id="wc-<?php echo esc_attr($this->id); ?>-form" class='wc-credit-card-form wc-payment-form'>
+                <?php do_action('woocommerce_credit_card_form_start', $this->id); ?>
                 <?php
                 foreach ($fields as $field) {
                     echo $field;
                 }
                 ?>
-                <?php do_action('woocommerce_credit_card_form_end', $this->cc_id); ?>
+                <?php do_action('woocommerce_credit_card_form_end', $this->id); ?>
                 <div class="clear"></div>
             </fieldset>
             <?php
@@ -386,7 +398,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function subscription_change_payment($order_id) {
         try {
-            if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') || (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new' && $this->enable_separate_payment_method === false) || $this->is_subscription($order_id)) {
+            if ((!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new')) {
                 $order = wc_get_order($order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
@@ -407,7 +419,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function free_signup_order_payment($order_id) {
         try {
-            if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') || (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new' && $this->enable_separate_payment_method === false) || $this->is_subscription($order_id)) {
+            if (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new') {
                 $order = wc_get_order($order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
