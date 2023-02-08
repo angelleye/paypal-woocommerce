@@ -139,7 +139,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $this->three_d_secure_contingency = $this->setting_obj->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
         $this->disable_cards = $this->setting_obj->get('disable_cards', array());
-        $this->minified_version = ''; //( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
+        $this->minified_version = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
         $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
     }
 
