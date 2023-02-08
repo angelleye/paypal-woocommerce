@@ -27,19 +27,14 @@
             if (is_hosted_field_eligible() === false) {
                 $('.payment_method_angelleye_ppcp_cc').hide();
             }
-            if (angelleye_ppcp_manager.advanced_card_payments === 'yes') {
-                if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
-                    $('#place_order').hide();
-                } else {
-                    $('#place_order').show();
-                }
+            if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
+                $('#place_order').hide();
+                $('#angelleye_ppcp_checkout').show();
             } else {
-                if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
-                    $('#place_order').hide();
-                } else {
-                    $('#place_order').show();
-                }
+                $('#angelleye_ppcp_checkout').hide();
+                $('#place_order').show();
             }
+
         };
         $.angelleye_ppcp_scroll_to_notices = function () {
             var scrollElement = $('.woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout');
