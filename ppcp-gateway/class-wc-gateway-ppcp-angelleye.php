@@ -73,7 +73,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function angelleye_get_settings() {
-        $this->title = $this->get_option('title', 'PayPal Commerce Platform - Built by Angelleye');
+        $this->title = $this->get_option('title', 'PayPal');
+        if(isset($_GET['page']) && 'wc-settings' === $_GET['page'] && isset($_GET['tab']) && 'checkout' === $_GET['tab']) {
+            $this->title = __('PayPal Commerce Platform - Built by Angelleye', 'paypal-for-woocommerce');
+        }
         $this->description = $this->get_option('description', '');
         $this->enabled = $this->get_option('enabled', 'no');
         $this->sandbox = 'yes' === $this->get_option('testmode', 'no');
