@@ -281,7 +281,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $smart_js_arg = array();
         $enable_funding = array();
-        $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
+        //$smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
         if (!isset($this->disable_funding['venmo'])) {
             array_push($enable_funding, 'venmo');
         }
@@ -308,7 +308,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         if ($this->is_sandbox) {
             if (is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen(WC()->customer->get_billing_country())) {
-                $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
+                //      $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
             }
         }
         $page = '';
@@ -360,9 +360,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
             $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
         }
-        $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
-        $smart_js_arg['intent'] = ( $this->paymentaction === 'capture' ) ? 'capture' : 'authorize';
-        $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
+        //$smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
+        //$smart_js_arg['intent'] = ( $this->paymentaction === 'capture' ) ? 'capture' : 'authorize';
+        //$smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
         $components = array("buttons");
         if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
             array_push($components, "hosted-fields");
@@ -376,11 +376,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         if (angelleye_ppcp_is_vault_required($this->enable_tokenized_payments)) {
-            $smart_js_arg['vault'] = 'true';
+            //  $smart_js_arg['vault'] = 'true';
+            $smart_js_arg['debug'] = 'true';
             $this->enabled_pay_later_messaging = false;
             foreach ($enable_funding as $key => $value) {
                 if ($value === 'paylater') {
-                    unset($enable_funding[$key]);
+                    //          unset($enable_funding[$key]);
                 }
             }
         }
@@ -388,7 +389,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             array_push($components, 'messages');
         }
         if (!empty($components)) {
-            $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
+            //$smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
         }
 
         if (!empty($enable_funding) && count($enable_funding) > 0) {
@@ -799,6 +800,45 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             <?php
         }
     }
+    
+    
+    public function angelleye_ppcp_paypalauthassertion() {
+        $temp = array(
+            "alg" => "none"
+        );
+        $returnData = base64_encode(json_encode($temp)) . '.';
+        $temp = array(
+            "iss" => 'AaYsUf4lXeKOnLmKhDWbak0YYWNk5SW0Lt1lk22gFvsgu74h1Vawg1y6rcmt60f8JIx-x81J5bMA-q7O',
+            "payer_id" => 'RJF5WHEUN3Z4C'
+        );
+        $returnData .= base64_encode(json_encode($temp)) . '.';
+        return $returnData;
+    }
+
+    public function kaila() {
+        $client_id = "AaYsUf4lXeKOnLmKhDWbak0YYWNk5SW0Lt1lk22gFvsgu74h1Vawg1y6rcmt60f8JIx-x81J5bMA-q7O";
+        $secret = "EENMpXmduyaHOCdzfKos3S0lrKyhXLZKn0Jn9ULNnHaGM7n8fuBPG-anlQNa2pUcPvf3oYOZvYDQBr43";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://api-m.sandbox.paypal.com/v1/oauth2/token');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=client_credentials&response_type=id_token&target_customer_id=ZxmjtmLCLL");
+        curl_setopt($ch, CURLOPT_USERPWD, $client_id . ':' . $secret);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $headers = array();
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'PayPal-Auth-Assertion: ' . $this->angelleye_ppcp_paypalauthassertion();
+        $headers[] = 'Accept-Language: en_US';
+        $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+        $response = json_decode($result, true);
+        return $response['id_token'];
+    }
 
     public function angelleye_ppcp_clean_url($tag, $handle) {
         if ('angelleye-paypal-checkout-sdk' === $handle) {
@@ -806,11 +846,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $user_id_token = '';
             if (!isset($_GET['paypal_order_id'])) {
                 if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
-                    $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
+                    // $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
                     $client_token = "data-client-token='{$this->client_token}'";
                 }
                 if ($this->enable_tokenized_payments) {
-                    $this->id_token = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                    $this->id_token = $this->kaila();
                     $user_id_token = " data-user-id-token='{$this->id_token}'";
                 }
             }
