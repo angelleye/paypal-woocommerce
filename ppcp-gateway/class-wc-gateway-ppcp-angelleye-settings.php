@@ -167,7 +167,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 54 => __('51 px', 'paypal-for-woocommerce'),
                 55 => __('55 px', 'paypal-for-woocommerce')
             );
-            if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
+           /* if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
                 if (!empty($this->merchant_id)) {
                     $available_endpoints = AngellEYE_PayPal_PPCP_Request::angelleye_ppcp_get_available_endpoints($this->merchant_id);
                 } else {
@@ -185,7 +185,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             } elseif (empty($available_endpoints)) {
                 $advanced_cc_text = 'Advanced Credit Cards not enable.';
                 $advanced_cc_text = '';
-            }
+            }*/
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
