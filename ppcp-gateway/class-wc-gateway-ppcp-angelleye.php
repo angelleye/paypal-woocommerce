@@ -1,6 +1,6 @@
 <?php
 
-class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
+class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public $setting_obj;
     public $settings_fields;
@@ -15,8 +15,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function __construct() {
         try {
-            $this->angelleye_ppcp_load_class();
+            $this->id = 'angelleye_ppcp';
             $this->setup_properties();
+            $this->angelleye_ppcp_load_class();
             $this->init_form_fields();
             $this->init_settings();
             $this->angelleye_get_settings();
@@ -103,7 +104,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function setup_properties() {
-        $this->id = 'angelleye_ppcp';
         $this->icon = apply_filters('woocommerce_angelleye_paypal_checkout_icon', 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png');
         $this->has_fields = true;
         $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'));
@@ -154,17 +154,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->paymentaction = $this->get_option('paymentaction', 'capture');
         $this->advanced_card_payments = 'yes' === $this->get_option('enable_advanced_card_payments', 'no');
-        $this->enable_separate_payment_method = 'yes' === $this->get_option('enable_separate_payment_method', 'no');
-        if ($this->advanced_card_payments === false) {
-            $this->enable_separate_payment_method = false;
-        }
         $this->enable_tokenized_payments = 'yes' === $this->get_option('enable_tokenized_payments', 'no');
         $this->three_d_secure_contingency = $this->get_option('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
         $this->is_enabled = 'yes' === $this->get_option('enabled', 'no');
         $this->minified_version = ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
-        if ($this->enable_tokenized_payments) {
-            $this->enable_separate_payment_method = true;
-        }
     }
 
     public function is_available() {
@@ -209,36 +202,28 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function payment_fields() {
+        if ($this->supports('tokenization')) {
+            $this->tokenization_script();
+        }
         $description = $this->get_description();
         if ($description) {
             echo wpautop(wp_kses_post($description));
         }
         if (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
-            if ($this->supports('tokenization')) {
-                $this->tokenization_script();
-            }
-        } elseif (angelleye_ppcp_is_subs_change_payment() === true) {
-            if ($this->supports('tokenization')) {
-                $this->tokenization_script();
+            if (angelleye_ppcp_get_order_total() === 0 && angelleye_ppcp_is_cart_subscription() === true) {
+                $this->saved_payment_methods();
             }
         }
         if ($this->checkout_disable_smart_button === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
-            if ($this->supports('tokenization')) {
-               // $this->tokenization_script();
-            }
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
             if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
                 if ($this->supports('tokenization') && is_account_page() === false) {
+                    $html = '<ul class="woocommerce-SavedPaymentMethods wc-saved-payment-methods" data-count="">';
+                    $html .= '</ul>';
+                    echo $html;
                     $this->save_payment_method_checkbox();
                 }
             }
-        }
-        if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false && $this->advanced_card_payments === true && angelleye_ppcp_get_order_total() > 0) {
-            if (angelleye_ppcp_has_active_session() === false) {
-                angelleye_ppcp_add_css_js();
-            }
-            parent::payment_fields();
-            echo '<div id="payments-sdk__contingency-lightbox"></div>';
         }
     }
 
@@ -264,68 +249,68 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->id));
         ?>
-        <fieldset id="wc-<?php echo esc_attr($this->id); ?>-cc-form" class='wc-credit-card-form wc-payment-form' style="display:none;">
-        <?php do_action('woocommerce_credit_card_form_start', $this->id); ?>
-        <?php
-        foreach ($fields as $field) {
-            echo $field;
-        }
-        ?>
+        <fieldset id="wc-<?php echo esc_attr($this->id); ?>-cc-form" class='wc-credit-card-form wc-payment-form' >
+            <?php do_action('woocommerce_credit_card_form_start', $this->id); ?>
+            <?php
+            foreach ($fields as $field) {
+                echo $field;
+            }
+            ?>
             <?php do_action('woocommerce_credit_card_form_end', $this->id); ?>
             <div class="clear"></div>
         </fieldset>
-            <?php
-            if ($this->supports('credit_card_form_cvc_on_saved_method')) {
-                echo '<fieldset>' . $cvc_field . '</fieldset>';
-            }
+        <?php
+        if ($this->supports('credit_card_form_cvc_on_saved_method')) {
+            echo '<fieldset>' . $cvc_field . '</fieldset>';
         }
+    }
 
-        public function is_valid_for_use() {
-            return in_array(
-                    get_woocommerce_currency(), apply_filters(
-                            'woocommerce_paypal_supported_currencies', array('AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'TRY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP', 'RMB', 'RUB', 'INR')
-                    ), true
+    public function is_valid_for_use() {
+        return in_array(
+                get_woocommerce_currency(), apply_filters(
+                        'woocommerce_paypal_supported_currencies', array('AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'TRY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP', 'RMB', 'RUB', 'INR')
+                ), true
+        );
+    }
+
+    public function is_credentials_set() {
+
+        if (!empty($this->merchant_id) || (!empty($this->client_id) && !empty($this->secret_id))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function enqueue_scripts() {
+        if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
+            wp_enqueue_style('wc-gateway-ppcp-angelleye-settings-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-gateway-admin' . $this->minified_version . '.css', array(), VERSION_PFW, 'all');
+            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
+            wp_localize_script('wc-gateway-ppcp-angelleye-settings', 'ppcp_angelleye_param', array(
+                'angelleye_ppcp_is_local_server' => ( angelleye_ppcp_is_local_server() == true) ? 'yes' : 'no',
+                'angelleye_ppcp_onboarding_endpoint' => WC_AJAX::get_endpoint('ppcp_login_seller'),
+                'angelleye_ppcp_onboarding_endpoint_nonce' => wp_create_nonce('ppcp_login_seller'),
+                'is_sandbox_first_party_used' => $this->is_sandbox_first_party_used,
+                'is_sandbox_third_party_used' => $this->is_sandbox_third_party_used,
+                'is_live_first_party_used' => $this->is_live_first_party_used,
+                'is_live_third_party_used' => $this->is_live_third_party_used,
+                'is_advanced_card_payments' => ($this->dcc_applies->for_country_currency() === false) ? 'no' : 'yes',
+                'woocommerce_enable_guest_checkout' => get_option('woocommerce_enable_guest_checkout', 'yes'),
+                'disable_terms' => ( apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled() && get_option('woocommerce_enable_guest_checkout', 'yes') === 'yes') ? 'yes' : 'no'
+                    )
             );
         }
+        wp_enqueue_script('wc-gateway-ppcp-angelleye-settings-list', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings-list' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
+    }
 
-        public function is_credentials_set() {
-
-            if (!empty($this->merchant_id) || (!empty($this->client_id) && !empty($this->secret_id))) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        public function enqueue_scripts() {
-            if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
-                wp_enqueue_style('wc-gateway-ppcp-angelleye-settings-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-gateway-admin' . $this->minified_version . '.css', array(), VERSION_PFW, 'all');
-                wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
-                wp_localize_script('wc-gateway-ppcp-angelleye-settings', 'ppcp_angelleye_param', array(
-                    'angelleye_ppcp_is_local_server' => ( angelleye_ppcp_is_local_server() == true) ? 'yes' : 'no',
-                    'angelleye_ppcp_onboarding_endpoint' => WC_AJAX::get_endpoint('ppcp_login_seller'),
-                    'angelleye_ppcp_onboarding_endpoint_nonce' => wp_create_nonce('ppcp_login_seller'),
-                    'is_sandbox_first_party_used' => $this->is_sandbox_first_party_used,
-                    'is_sandbox_third_party_used' => $this->is_sandbox_third_party_used,
-                    'is_live_first_party_used' => $this->is_live_first_party_used,
-                    'is_live_third_party_used' => $this->is_live_third_party_used,
-                    'is_advanced_card_payments' => ($this->dcc_applies->for_country_currency() === false) ? 'no' : 'yes',
-                    'woocommerce_enable_guest_checkout' => get_option('woocommerce_enable_guest_checkout', 'yes'),
-                    'disable_terms' => ( apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled() && get_option('woocommerce_enable_guest_checkout', 'yes') === 'yes') ? 'yes' : 'no'
-                        )
-                );
-            }
-            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings-list', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings-list' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
-        }
-
-        public function generate_angelleye_ppcp_text_html($field_key, $data) {
-            if (isset($data['type']) && $data['type'] === 'angelleye_ppcp_text') {
-                $field_key = $this->get_field_key($field_key);
-                ob_start();
-                ?>
+    public function generate_angelleye_ppcp_text_html($field_key, $data) {
+        if (isset($data['type']) && $data['type'] === 'angelleye_ppcp_text') {
+            $field_key = $this->get_field_key($field_key);
+            ob_start();
+            ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                              ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                            ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <div class="ppcp_paypal_connection_image">
@@ -355,52 +340,52 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                              ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                            ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
-            <?php
-            if (($this->is_live_first_party_used !== 'yes' && $this->is_live_third_party_used !== 'yes' && $testmode === 'no') || ($this->is_sandbox_first_party_used !== 'yes' && $this->is_sandbox_third_party_used !== 'yes' && $testmode === 'yes')) {
-                $setup_url = add_query_arg(array('testmode' => $testmode, 'utm_nooverride' => '1'), untrailingslashit(admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products')));
-                ?>
+                    <?php
+                    if (($this->is_live_first_party_used !== 'yes' && $this->is_live_third_party_used !== 'yes' && $testmode === 'no') || ($this->is_sandbox_first_party_used !== 'yes' && $this->is_sandbox_third_party_used !== 'yes' && $testmode === 'yes')) {
+                        $setup_url = add_query_arg(array('testmode' => $testmode, 'utm_nooverride' => '1'), untrailingslashit(admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products')));
+                        ?>
                         <a class="button-primary" href="<?php echo $setup_url; ?>"><?php echo __('Go To Setup', 'paypal-for-woocommerce'); ?></a>
                         <?php
                     }
                     ?>
                 </td>
             </tr>
-                    <?php
-                    return ob_get_clean();
-                }
-            }
+            <?php
+            return ob_get_clean();
+        }
+    }
 
-            public function generate_copy_text_html($key, $data) {
-                $field_key = $this->get_field_key($key);
-                $defaults = array(
-                    'title' => '',
-                    'disabled' => false,
-                    'class' => '',
-                    'css' => '',
-                    'placeholder' => '',
-                    'type' => 'text',
-                    'desc_tip' => false,
-                    'description' => '',
-                    'custom_attributes' => array(),
-                );
+    public function generate_copy_text_html($key, $data) {
+        $field_key = $this->get_field_key($key);
+        $defaults = array(
+            'title' => '',
+            'disabled' => false,
+            'class' => '',
+            'css' => '',
+            'placeholder' => '',
+            'type' => 'text',
+            'desc_tip' => false,
+            'description' => '',
+            'custom_attributes' => array(),
+        );
 
-                $data = wp_parse_args($data, $defaults);
+        $data = wp_parse_args($data, $defaults);
 
-                ob_start();
-                ?>
+        ob_start();
+        ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                              ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                                   ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                                                 ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
-        <?php echo $this->get_description_html($data); // WPCS: XSS ok.              ?>
+                    <?php echo $this->get_description_html($data); // WPCS: XSS ok.                 ?>
                 </fieldset>
             </td>
         </tr>
@@ -541,8 +526,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <tr>
             <td class="label stripe-fee">
-        <?php echo wc_help_tip(__('This represents the fee PayPal collects for the transaction.', 'paypal-for-woocommerce')); ?>
-        <?php esc_html_e('PayPal Fee:', 'paypal-for-woocommerce'); ?>
+                <?php echo wc_help_tip(__('This represents the fee PayPal collects for the transaction.', 'paypal-for-woocommerce')); ?>
+                <?php esc_html_e('PayPal Fee:', 'paypal-for-woocommerce'); ?>
             </td>
             <td width="1%"></td>
             <td class="total">
@@ -617,7 +602,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function subscription_change_payment($order_id) {
         try {
-            if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') || (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new' && $this->enable_separate_payment_method === false) || $this->is_subscription($order_id)) {
+            if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new')) {
                 $order = wc_get_order($order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
@@ -637,7 +622,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function free_signup_order_payment($order_id) {
         try {
-            if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') || (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new' && $this->enable_separate_payment_method === false) || $this->is_subscription($order_id)) {
+            if ((!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new')) {
                 $order = wc_get_order($order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
@@ -668,6 +653,19 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         } catch (Exception $ex) {
             
         }
+    }
+
+    public function save_payment_method_checkbox() {
+        $html = sprintf(
+                '<p class="form-row woocommerce-SavedPaymentMethods-saveNew">
+				<input id="wc-%1$s-new-payment-method" name="wc-%1$s-new-payment-method" type="checkbox" value="true" style="width:auto;" />
+				<label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
+			</p>',
+                esc_attr($this->id),
+                esc_html__('Save payment method to my account.', 'paypal-for-woocommerce')
+        );
+
+        echo apply_filters('woocommerce_payment_gateway_save_new_payment_method_option_html', $html, $this); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     }
 
 }

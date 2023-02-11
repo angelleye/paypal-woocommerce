@@ -80,7 +80,7 @@
     box-sizing: content-box;
     border-radius: 5px;
 }
-.woocommerce-checkout #payment div.payment_box #wc-angelleye_ppcp-cc-form.wc-credit-card-form div.form-row,  .woocommerce #payment div.payment_box #wc-angelleye_ppcp-cc-form.wc-credit-card-form div.form-row{
+.woocommerce-checkout #payment div.payment_box #wc-angelleye_ppcp_cc-form.wc-credit-card-form div.form-row,  .woocommerce #payment div.payment_box #wc-angelleye_ppcp_cc-form.wc-credit-card-form div.form-row{
     padding: 3px;
 }
 .angelleye_ppcp-proceed-to-checkout-button-separator.checkout_cc_separator {

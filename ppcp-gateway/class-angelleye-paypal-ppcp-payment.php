@@ -2851,8 +2851,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $token->set_expiry_month($card_exp_month);
                         $token->set_expiry_year($card_exp_year);
                     } else {
-                        $token->set_expiry_month(date('m'));
-                        $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                        $card_details = $this->payment_request->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
+                        if (isset($card_details['payment_source']['card']['expiry'])) {
+                            $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                            $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                            $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                            $token->set_expiry_month($card_exp_month);
+                            $token->set_expiry_year($card_exp_year);
+                        } else {
+                            $token->set_expiry_month(date('m'));
+                            $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                        }
                     }
                     $token->set_user_id($customer_id);
                     if ($token->validate()) {
@@ -2922,8 +2931,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $token->set_expiry_month($card_exp_month);
                         $token->set_expiry_year($card_exp_year);
                     } else {
-                        $token->set_expiry_month(date('m'));
-                        $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                        $card_details = $this->payment_request->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
+                        if (isset($card_details['payment_source']['card']['expiry'])) {
+                            $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                            $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                            $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                            $token->set_expiry_month($card_exp_month);
+                            $token->set_expiry_year($card_exp_year);
+                        } else {
+                            $token->set_expiry_month(date('m'));
+                            $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                        }
                     }
                     $token->set_user_id($customer_id);
                     if ($token->validate()) {
@@ -3176,8 +3194,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $token->set_expiry_month($card_exp_month);
                         $token->set_expiry_year($card_exp_year);
                     } else {
-                        $token->set_expiry_month(date('m'));
-                        $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                        $card_details = $this->payment_request->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
+                        if (isset($card_details['payment_source']['card']['expiry'])) {
+                            $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                            $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                            $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                            $token->set_expiry_month($card_exp_month);
+                            $token->set_expiry_year($card_exp_year);
+                        } else {
+                            $token->set_expiry_month(date('m'));
+                            $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                        }
                     }
                     $token->set_user_id($customer_id);
                     if ($token->validate()) {
@@ -3348,12 +3375,31 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'body' => array()
             );
             $payment_tokens_url = add_query_arg(array('customer_id' => $paypal_generated_customer_id), untrailingslashit($this->payment_tokens_url));
-            $this->api_response = $this->api_request->request($payment_tokens_url, $args, 'list_all_payment_tokens');
+            $api_response = $this->api_request->request($payment_tokens_url, $args, 'list_all_payment_tokens');
             if (ob_get_length()) {
                 ob_end_clean();
             }
-            if (!empty($this->api_response['customer']['id']) && isset($this->api_response['payment_tokens'])) {
-                return $this->api_response['payment_tokens'];
+            if (!empty($api_response['customer']['id']) && isset($api_response['payment_tokens'])) {
+                return $api_response['payment_tokens'];
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+    
+    public function angelleye_ppcp_get_payment_token_details($id) {
+        try {
+            $args = array(
+                'method' => 'GET',
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                'body' => array()
+            );
+            $api_response = $this->api_request->request($this->payment_tokens_url .'/' . $id, $args, 'get_payment_token_details');
+            if (ob_get_length()) {
+                ob_end_clean();
+            }
+            if (!empty($api_response['customer']['id']) && isset($api_response['payment_source'])) {
+                return $api_response;
             }
         } catch (Exception $ex) {
             
