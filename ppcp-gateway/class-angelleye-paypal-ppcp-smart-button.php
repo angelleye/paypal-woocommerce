@@ -399,6 +399,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } else {
             $pre_checkout_offer = "no";
         }
+        unset($smart_js_arg);
+        $smart_js_arg['client-id'] = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
         $js_url = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
 
         wp_register_script('angelleye-paypal-checkout-sdk', $js_url, array(), null, false);
