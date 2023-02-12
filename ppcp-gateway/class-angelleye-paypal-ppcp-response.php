@@ -106,8 +106,10 @@ class AngellEYE_PayPal_PPCP_Response {
         if ($action_name === 'generate_signup_link') {
             $this->angelleye_ppcp_signup_link_write_log($request);
         } elseif (!empty($request['body']) && is_array($request['body'])) {
+            $this->api_log->log('Request headers: ' . wc_print_r($request['headers'], true));
             $this->api_log->log('Request Body: ' . wc_print_r($request['body'], true));
         } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
+            $this->api_log->log('Request headers: ' . wc_print_r($request['headers'], true));
             $this->api_log->log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
         }
         if (!empty($response_body['headers'])) {
