@@ -816,7 +816,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $user_id_token = " data-user-id-token='{$this->id_token}'";
                 }
             }
-            $tag = str_replace(' src=', ' ' . $client_token . $user_id_token . '" src=', $tag);
+            $tag = str_replace(' src=', ' ' . $client_token . $user_id_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
         }
         return $tag;
     }
