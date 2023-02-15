@@ -5,7 +5,7 @@
 .angelleye_ppcp-proceed-to-checkout-button-separator {
     display:inline-block;
     opacity: .8;
-    margin: 0 0 1em;
+    margin: 10px 0px 12px;
     text-align: center;
 }
 .angelleye_ppcp-order-review .woocommerce-checkout #payment ul.payment_methods {
