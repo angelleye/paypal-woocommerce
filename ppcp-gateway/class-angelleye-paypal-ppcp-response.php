@@ -95,6 +95,9 @@ class AngellEYE_PayPal_PPCP_Response {
         if($action_name === 'list_all_payment_tokens') {
             return false;
         }
+        if($action_name === 'seller_onboarding_status' && !isset($_GET['merchantIdInPayPal'])) {
+            return false;
+        }
         $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
         $this->api_log->log('PayPal Environment: ' . $environment);
         $this->api_log->log('WordPress Version: ' . $wp_version);
