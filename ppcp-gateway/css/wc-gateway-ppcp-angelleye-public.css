@@ -237,6 +237,9 @@
   margin: 0 auto;
   min-width: auto;
 }
+#angelleye_ppcp_checkout {
+    margin-top: 25px;
+}
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_vertical_responsive, .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large, .angelleye_ppcp_horizontal_responsive {
         width: 100%;
