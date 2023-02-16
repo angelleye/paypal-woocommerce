@@ -20,8 +20,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 'pay_button'
             );
             $this->angelleye_ppcp_load_class();
-            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit card'));
-            $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit card');
+            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit Card'));
+            $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
             $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
             $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
             $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');
