@@ -220,7 +220,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
                         <br><br>
                         <div class="paypal_woocommerce_product_onboard_content">
-                            <p><?php echo __('Welcome to the most Complete Payments solution available for WooCommerce. <br> Powered by PayPal - Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('Welcome to the most PayPal Commerce Platform solution available for WooCommerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                             <?php
                             if (isset($_GET['testmode'])) {
                                 $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
@@ -277,7 +277,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                            <p><?php echo __('You’re currently setup and enjoying the benefits of Complete Payments. <br> Powered by PayPal - Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('You’re currently setup and enjoying the benefits of PayPal Commerce Platform. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo sprintf(__('However, we need additional verification to approve you for the reduced <br>rate of %s on debit/credit cards.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?></p>
                             <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
                             <br>
@@ -296,7 +296,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <div class="paypal_woocommerce_product_onboard_content">
                             <br>
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                            <p><?php echo __('You’re currently setup and enjoying the benefits of Complete Payments. <br> Powered by PayPal - Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('You’re currently setup and enjoying the benefits of PayPal Commerce Platform. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
                             <br>
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
