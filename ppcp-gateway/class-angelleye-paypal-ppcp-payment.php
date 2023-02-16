@@ -52,7 +52,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
             $this->partner_client_id = PAYPAL_PPCP_PARTNER_CLIENT_ID;
         }
-        $this->title = $this->setting_obj->get('title', 'Complete Payments - Powered by PayPal');
+        $this->title = $this->setting_obj->get('title', 'PayPal Commerce Platform - Built by Angelleye');
         $this->brand_name = $this->setting_obj->get('brand_name', get_bloginfo('name'));
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
         $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
@@ -1524,10 +1524,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $billing_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details);
             angelleye_ppcp_update_customer_addresses_from_paypal($shipping_details, $billing_details);
         }
-        $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
-        if (empty($order_id)) {
-            $order_id = absint(WC()->session->get('order_awaiting_payment'));
-        }
+        $order_id = (int) WC()->session->get('order_awaiting_payment');
         $order = wc_get_order($order_id);
         $this->checkout_details = $this->checkout_details;
         $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
@@ -1879,7 +1876,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         if (function_exists('WC')) {
             try {
                 $mailer = WC()->mailer();
-                $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'Complete Payments - Powered by PayPal Error Notification');
+                $error_email_notify_subject = apply_filters('ae_ppec_error_email_subject', 'PayPal Commerce Platform - Built by Angelleye Error Notification');
                 $message = '';
                 if (!empty($error_email_notification_param['request'])) {
                     $message .= "<strong>" . __('Action: ', 'paypal-for-woocommerce') . "</strong>" . ucwords(str_replace('_', ' ', $error_email_notification_param['request'])) . PHP_EOL;
