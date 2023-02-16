@@ -14,7 +14,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->method_description = __('Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce');
             $this->has_fields = true;
             $this->angelleye_ppcp_load_class();
-            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit card'));
+            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit Card'));
             $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
             if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
                 $this->supports = array(
@@ -58,7 +58,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     'pay_button'
                 );
             }
-            $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit card');
+            $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit Card'));
             $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
             $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
