@@ -1367,7 +1367,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('Advanced Credit Cards Title', 'paypal-for-woocommerce'),
                     'type' => 'text',
                     'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
-                    'default' => __('Credit card', 'paypal-for-woocommerce'),
+                    'default' => __('Credit Card', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
                 'advanced_card_payments_display_position' => array(
