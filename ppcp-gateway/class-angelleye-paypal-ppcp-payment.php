@@ -1454,10 +1454,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $billing_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details);
             angelleye_ppcp_update_customer_addresses_from_paypal($shipping_details, $billing_details);
         }
-        $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
-        if (empty($order_id)) {
-            $order_id = absint(WC()->session->get('order_awaiting_payment'));
-        }
+        $order_id = (int) WC()->session->get('order_awaiting_payment');
         $order = wc_get_order($order_id);
         $this->checkout_details = $this->checkout_details;
         $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
