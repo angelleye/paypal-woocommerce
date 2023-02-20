@@ -522,6 +522,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function get_saved_payment_method_option_html($token) {
         $card_type = strtolower($token->get_card_type());
+        $card_type = str_replace('-', '', $card_type);
+        $card_type = str_replace('_', '', $card_type);
         $icon_url = array(
             'visa' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/visa.png',
             'amex' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/amex.png',

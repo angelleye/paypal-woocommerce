@@ -48,9 +48,12 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                                     if ($method['method']['gateway'] === 'angelleye_ppcp') {
                                         $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png';
                                         ?> <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='Credit card'><?php
-                                        echo '&nbsp;&nbsp;&nbsp;&nbsp;'. esc_html(wc_get_credit_card_type_label($method['method']['brand']));
+                                        echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
                                     } elseif ($method['method']['gateway'] === 'angelleye_ppcp_cc') {
                                         $brand = strtolower($method['method']['brand']);
+                                        $brand = str_replace('-', '', $brand);
+                                        $brand = str_replace('_', '', $brand);
+
                                         $icon_url = array(
                                             'visa' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/visa.png',
                                             'amex' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/amex.png',
@@ -83,13 +86,13 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                             }
                             ?>
                         </td>
-                <?php endforeach; ?>
+                        <?php endforeach; ?>
                 </tr>
+                    <?php endforeach; ?>
             <?php endforeach; ?>
-    <?php endforeach; ?>
     </table>
 
-<?php else : ?>
+    <?php else : ?>
 
     <p class="woocommerce-Message woocommerce-Message--info woocommerce-info"><?php esc_html_e('No saved methods found.', 'woocommerce'); ?></p>
 
