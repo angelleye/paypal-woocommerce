@@ -2625,6 +2625,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (isset($customer_id) && !empty($customer_id)) {
                         $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
+                    if (isset($this->api_response['payment_source']['paypal']['email_address'])) {
+                        $email_address = $this->api_response['payment_source']['paypal']['email_address'];
+                    } elseif ($this->api_response['payment_source']['paypal']['payer_id']) {
+                        $email_address = $this->api_response['payment_source']['paypal']['payer_id'];
+                    } else {
+                        $email_address = 'PayPal Vault';
+                    }
                     $order_id = wc_clean($_GET['order_id']);
                     $order = wc_get_order(wc_clean($_GET['order_id']));
                     $token = new WC_Payment_Token_CC();
@@ -2636,7 +2643,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
                     $token->set_token($this->api_response['id']);
                     $token->set_gateway_id($order->get_payment_method());
-                    $token->set_card_type('PayPal Vault');
+                    $token->set_card_type($email_address);
                     $token->set_last4(substr($this->api_response['id'], -4));
                     $token->set_expiry_month(date('m'));
                     $token->set_expiry_year(date('Y', strtotime('+20 years')));
@@ -2694,17 +2701,24 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (isset($customer_id) && !empty($customer_id)) {
                         $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
+                    if (isset($this->api_response['payment_source']['paypal']['email_address'])) {
+                        $email_address = $this->api_response['payment_source']['paypal']['email_address'];
+                    } elseif ($this->api_response['payment_source']['paypal']['payer_id']) {
+                        $email_address = $this->api_response['payment_source']['paypal']['payer_id'];
+                    } else {
+                        $email_address = 'PayPal Vault';
+                    }
                     $token = new WC_Payment_Token_CC();
-                    $customer_id = get_current_user_id();
+                    $wc_customer_id = get_current_user_id();
                     $token->set_token($this->api_response['id']);
                     $token->set_gateway_id('angelleye_ppcp');
-                    $token->set_card_type('PayPal Vault');
+                    $token->set_card_type($email_address);
                     $token->set_last4(substr($this->api_response['id'], -4));
                     $token->set_expiry_month(date('m'));
                     $token->set_expiry_year(date('Y', strtotime('+20 years')));
-                    $token->set_user_id($customer_id);
+                    $token->set_user_id($wc_customer_id);
                     if ($token->validate()) {
-                        $save_result = $token->save();
+                        $token->save();
                         update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
                         wc_add_notice(__('Payment method successfully added.', 'woocommerce'));
                     } else {
@@ -2836,7 +2850,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
                     $token = new WC_Payment_Token_CC();
-                    $customer_id = get_current_user_id();
+                    $wc_customer_id = get_current_user_id();
                     $token->set_token($this->api_response['id']);
                     $token->set_gateway_id('angelleye_ppcp_cc');
                     $token->set_card_type($this->api_response['payment_source']['card']['brand']);
@@ -2860,9 +2874,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $token->set_expiry_year(date('Y', strtotime('+5 years')));
                         }
                     }
-                    $token->set_user_id($customer_id);
+                    $token->set_user_id($wc_customer_id);
                     if ($token->validate()) {
-                        $save_result = $token->save();
+                        $token->save();
                         update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
                         wc_add_notice(__('Payment method successfully added.', 'woocommerce'));
                     } else {
@@ -3319,9 +3333,16 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                     $token = new WC_Payment_Token_CC();
                     if (0 != $order->get_user_id()) {
-                        $customer_id = $order->get_user_id();
+                        $wc_customer_id = $order->get_user_id();
                     } else {
-                        $customer_id = get_current_user_id();
+                        $wc_customer_id = get_current_user_id();
+                    }
+                    if (isset($this->api_response['payment_source']['paypal']['email_address'])) {
+                        $email_address = $this->api_response['payment_source']['paypal']['email_address'];
+                    } elseif ($this->api_response['payment_source']['paypal']['payer_id']) {
+                        $email_address = $this->api_response['payment_source']['paypal']['payer_id'];
+                    } else {
+                        $email_address = 'PayPal Vault';
                     }
                     update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
                     $token->set_token($this->api_response['id']);
@@ -3330,7 +3351,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $token->set_last4(substr($this->api_response['id'], -4));
                     $token->set_expiry_month(date('m'));
                     $token->set_expiry_year(date('Y', strtotime('+20 years')));
-                    $token->set_user_id($customer_id);
+                    $token->set_user_id($wc_customer_id);
                     if ($token->validate()) {
                         $this->save_payment_token($order, $this->api_response['id']);
                         $save_result = $token->save();
@@ -3383,7 +3404,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             
         }
     }
-    
+
     public function angelleye_ppcp_get_payment_token_details($id) {
         try {
             $args = array(
@@ -3391,7 +3412,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                 'body' => array()
             );
-            $api_response = $this->api_request->request($this->payment_tokens_url .'/' . $id, $args, 'get_payment_token_details');
+            $api_response = $this->api_request->request($this->payment_tokens_url . '/' . $id, $args, 'get_payment_token_details');
             if (ob_get_length()) {
                 ob_end_clean();
             }
@@ -3447,4 +3468,4 @@ class AngellEYE_PayPal_PPCP_Payment {
         return $body_request;
     }
 
-}
+}           

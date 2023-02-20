@@ -520,4 +520,36 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         echo apply_filters('woocommerce_payment_gateway_save_new_payment_method_option_html', $html, $this); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     }
 
+    public function get_saved_payment_method_option_html($token) {
+        $card_type = strtolower($token->get_card_type());
+        $icon_url = array(
+            'visa' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/visa.png',
+            'amex' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/amex.png',
+            'diners' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/diners.png',
+            'discover' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/discover.png',
+            'jcb' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/jcb.png',
+            'laser' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/laser.png',
+            'maestro' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/maestro.png',
+            'mastercard' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/mastercard.png'
+        );
+        if (isset($icon_url[$card_type])) {
+            $image_path = '<img class="ppcp_payment_method_icon" src="'.$icon_url[$card_type] .'" alt="Credit card">';
+        } else {
+            $image_path = '';
+        }
+        $html = sprintf(
+                '<li class="woocommerce-SavedPaymentMethods-token">
+				<input id="wc-%1$s-payment-token-%2$s" type="radio" name="wc-%1$s-payment-token" value="%2$s" style="width:auto;" class="woocommerce-SavedPaymentMethods-tokenInput" %4$s />
+				<label for="wc-%1$s-payment-token-%2$s">%5$s %3$s</label>
+			</li>',
+                esc_attr($this->id),
+                esc_attr($token->get_id()),
+                esc_html($token->get_display_name()),
+                checked($token->is_default(), true, false),
+                $image_path
+        );
+
+        return apply_filters('woocommerce_payment_gateway_get_saved_payment_method_option_html', $html, $token, $this);
+    }
+
 }

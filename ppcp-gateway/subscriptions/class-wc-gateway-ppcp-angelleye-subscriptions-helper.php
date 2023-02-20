@@ -140,9 +140,16 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 } else {
                     $customer_id = get_current_user_id();
                 }
+                if (isset($api_response['payment_source']['paypal']['email_address'])) {
+                    $email_address = $api_response['payment_source']['paypal']['email_address'];
+                } elseif ($api_response['payment_source']['paypal']['payer_id']) {
+                    $email_address = $api_response['payment_source']['paypal']['payer_id'];
+                } else {
+                    $email_address = 'PayPal Vault';
+                }
                 $token->set_token($payment_token);
                 $token->set_gateway_id($order->get_payment_method());
-                $token->set_card_type('PayPal vault');
+                $token->set_card_type($email_address);
                 $token->set_last4(substr($payment_token, -4));
                 $token->set_expiry_month(date('m'));
                 $token->set_expiry_year(date('Y', strtotime('+20 years')));
@@ -165,9 +172,16 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 } else {
                     $customer_id = get_current_user_id();
                 }
+                if (isset($api_response['payment_source']['paypal']['email_address'])) {
+                    $email_address = $api_response['payment_source']['paypal']['email_address'];
+                } elseif ($api_response['payment_source']['paypal']['payer_id']) {
+                    $email_address = $api_response['payment_source']['paypal']['payer_id'];
+                } else {
+                    $email_address = 'PayPal Vault';
+                }
                 $token->set_token($payment_token);
                 $token->set_gateway_id($order->get_payment_method());
-                $token->set_card_type('PayPal vault');
+                $token->set_card_type($email_address);
                 $token->set_last4(substr($payment_token, -4));
                 $token->set_expiry_month(date('m'));
                 $token->set_expiry_year(date('Y', strtotime('+20 years')));
