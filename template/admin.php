@@ -26,7 +26,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
             ?>
             <div class="wrap angelleye_addons_wrap">
                 <?php
-                $admin_onboarding->view();
+                $admin_onboarding->display_view();
                 ?>
             </div>
         <?php

@@ -46,7 +46,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 'IT' => array('paypal' => '3,50% + 35¢', 'acc' => '1,30% + 35¢'),
                 'ES' => array('paypal' => '3,00% + 05¢', 'acc' => '1,30% + 35¢'),
                 'default' => array('paypal' => '3.59% + 49¢', 'acc' => '2.69% + 49¢'),
-                );
+            );
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -75,7 +75,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function angelleye_ppcp_load_variable() {
         if (isset($_GET['testmode'])) {
-            if(($_GET['testmode'] === 'yes')) {
+            if (($_GET['testmode'] === 'yes')) {
                 $this->sandbox = true;
             } else {
                 $this->sandbox = false;
@@ -210,6 +210,22 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         }
     }
 
+    public function display_view() {
+        $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+
+        foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+            if ($gateway->supports('add_payment_method') || $gateway->supports('tokenization')) {
+                $support_payment_methods = true;
+                break;
+            }
+        }
+        echo '<pre>' . print_r($available_gateways, true) . '</pre>';
+    }
+
+    public function migration_view() {
+        
+    }
+
     public function view() {
         $this->angelleye_ppcp_load_variable();
         ?>
@@ -252,14 +268,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
                             }
                             ?>
-                                <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
-                                    <br><br>
-                                    <?php if($this->ppcp_paypal_country === 'DE') { ?>
+                            <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
+                                <br><br>
+                                <?php if ($this->ppcp_paypal_country === 'DE') { ?>
                                     <?php echo sprintf(__('Fees on Visa/MasterCard/Discover transactions <br>transactions are a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
-                                    <?php } else { ?>
+                                <?php } else { ?>
                                     <?php echo sprintf(__('Save money on Visa/MasterCard/Discover transactions <br>with a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
-                                    <?php } ?>
-                                    <br><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/"><small style="font-size:12px;">Learn More</small></a></p>
+                                <?php } ?>
+                                <br><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/"><small style="font-size:12px;">Learn More</small></a></p>
                         </div>
                     </div>
                 </div>
@@ -336,16 +352,17 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         </div>
         <?php
     }
-    
+
     public function angelleye_ppcp_get_paypal_fee_structure($country, $product) {
         try {
-            if(isset($this->paypal_fee_structure[$country])) {
+            if (isset($this->paypal_fee_structure[$country])) {
                 return $this->paypal_fee_structure[$country][$product];
             } else {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-
+            
         }
     }
+
 }
