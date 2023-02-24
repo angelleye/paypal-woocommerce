@@ -8,7 +8,7 @@
                         <h4><?php echo __('Great new features and cost savings!', 'paypal-for-woocommerce'); ?></h4>
                     </div>
                     <div class="pt-5">
-                        <p><?php echo __('Everything PayPal Express Checkout includes and more.', 'paypal-for-woocommerce'); ?></p>
+                        <p><?php echo __('Everything PayPal Pro includes and more.', 'paypal-for-woocommerce'); ?></p>
                     </div>
                     <div class="pt-15 font-bold">
                         <ul>
@@ -34,12 +34,17 @@
                 <div class="mr-auto">
                     <h3 class="pb-30"><?php echo __('Current PayPal Integration', 'paypal-for-woocommerce'); ?></h3>
                     <ul>
-                        <li><?php echo __('Classic Express Checkout', 'paypal-for-woocommerce'); ?></li>
-                        <li><?php echo __('PayPal Checkout | Venmo | Pay Later', 'paypal-for-woocommerce'); ?></li>
-                        <li><?php echo __('Credit Cards via PayPal Branded Checkout', 'paypal-for-woocommerce'); ?></li>
+                        <li><?php echo __('Credit Cards via PayPal Pro ($30/mo Fee)', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('Processing Fee of 2.9%', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('No Longer Officially Supported by PayPal', 'paypal-for-woocommerce'); ?></li>
                     </ul>
+                    <div>
+                        <p><strong>PayPal Payments</strong></p>
+                        <p>We notice that you do not have Express Checkout<br> 
+                            enabled.&nbsp; By updating you still have the option to leave<br> 
+                            PayPal buttons disabled and only use Direct Credit Card<br> 
+                            Processing on your site.&nbsp;&nbsp;</p>
+                    </div>
                 </div>
                 <div class="ml-auto">
                     <h3 class="pb-30"><?php echo __('Updated PayPal Integration', 'paypal-for-woocommerce'); ?></h3>
@@ -48,6 +53,7 @@
                         <li><?php echo __('PayPal Checkout | Venmo | Pay Later', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('Direct Credit Card Processing – No Branding', 'paypal-for-woocommerce'); ?></li>
                         <li><strong><?php echo __('Reduced Fee of 2.69% for Credit Cards!', 'paypal-for-woocommerce'); ?></strong></li>
+                        <li><strong><?php echo __('No Monthly Fee!', 'paypal-for-woocommerce'); ?></strong></li>
                         <li><?php echo __('Fully Supported Now and with Future Improvements', 'paypal-for-woocommerce'); ?></li>
                     </ul>
                 </div>

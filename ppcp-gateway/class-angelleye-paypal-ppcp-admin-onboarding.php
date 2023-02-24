@@ -231,6 +231,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function migration_view($active_classic_gateway_list) {
         try {
+            
             wp_enqueue_style('ppcp_account_request_form_css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-admin-migration.css', null, time());
             $layout_type = '';
             if (isset($active_classic_gateway_list['paypal_express']) && isset($active_classic_gateway_list['paypal_pro'])) {
