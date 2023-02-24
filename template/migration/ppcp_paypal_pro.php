@@ -27,7 +27,7 @@
             </div>
             <div class="pt-30 pb-50 text-center">
                 <div class="angella_button_bg text-center">
-                    <a class="angella_button" href="https://www.angelleye.com/how-to-migrate-classic-paypal-to-complete-payments/"><?php echo __('Update to PayPal Complete Payments', 'paypal-for-woocommerce'); ?></a>
+                    <a class="angella_button" href="https://www.angelleye.com/how-to-migrate-classic-paypal-to-complete-payments/"><?php echo __('Update to PayPal Commerce Platform', 'paypal-for-woocommerce'); ?></a>
                 </div>
             </div>
             <div class="d-flex d-md-flex">
