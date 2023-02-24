@@ -34,7 +34,7 @@
     padding: 0 20px 10px;
     width: 824px;
     border: 1px solid #dedede;
-    box-shadow: 0 20px 30px rgba(143, 163, 184, 0.15);
+    box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.3);
     border-radius: 3px;
 }
 
@@ -525,7 +525,7 @@ hr {
     position: relative;
     outline: none;
     border: 1px solid #dedede;
-    box-shadow: 0 20px 30px rgba(143, 163, 184, 0.15);
+    box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.3);
     border-radius: 3px;
     width: 50%;
     float: left;
@@ -539,7 +539,7 @@ hr {
     margin-bottom: 30px;
     background: #fff;
     border-radius: 3px;
-    box-shadow: 0 20px 30px rgb(143 163 184 / 15%);
+    box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.3);
     transition: all .25s ease;
     border: 1px solid #dedede;
 }
