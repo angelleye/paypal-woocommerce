@@ -210,8 +210,26 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         }
     }
 
+    public function angelleye_get_signup_link_for_migration($testmode, $products) {
+        try {
+            $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link_for_migration($testmode, $products);
+            if (isset($seller_onboarding_result['links'])) {
+                foreach ($seller_onboarding_result['links'] as $link) {
+                    if (isset($link['rel']) && 'action_url' === $link['rel']) {
+                        return isset($link['href']) ? $link['href'] : false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
     public function display_view() {
         try {
+            $this->angelleye_ppcp_load_variable();
             $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
             $active_classic_gateway_list = array();
             foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
@@ -231,22 +249,37 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function migration_view($active_classic_gateway_list) {
         try {
-            
+            $products_data = array();
             wp_enqueue_style('ppcp_account_request_form_css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-admin-migration.css', null, time());
             $layout_type = '';
-            if (isset($active_classic_gateway_list['paypal_express']) && isset($active_classic_gateway_list['paypal_pro'])) {
+            if (isset($active_classic_gateway_list['paypal_express']) && (isset($active_classic_gateway_list['paypal_pro']) || isset($active_classic_gateway_list['paypal_pro_payflow']))) {
                 $layout_type = 'paypal_express_paypal_pro';
+                if (isset($active_classic_gateway_list['paypal_pro'])) {
+                    $products_data = array('paypal_express', 'paypal_pro');
+                } else {
+                    $products_data = array('paypal_express', 'paypal_pro_payflow');
+                }
             } elseif (isset($active_classic_gateway_list['paypal_express']) && isset($active_classic_gateway_list['paypal_credit_card_rest'])) {
                 $layout_type = 'paypal_express_paypal_credit_card_rest';
-            } elseif (isset($active_classic_gateway_list['paypal_pro'])) {
+                $products_data = array('paypal_express', 'paypal_credit_card_rest');
+            } elseif ((isset($active_classic_gateway_list['paypal_pro']) || isset($active_classic_gateway_list['paypal_pro_payflow']))) {
                 $layout_type = 'paypal_pro';
+                if (isset($active_classic_gateway_list['paypal_pro'])) {
+                    $products_data = array('paypal_pro');
+                } else {
+                    $products_data = array('paypal_pro_payflow');
+                }
             } elseif (isset($active_classic_gateway_list['paypal_credit_card_rest'])) {
                 $layout_type = 'paypal_credit_card_rest';
+                $products_data = array('paypal_credit_card_rest');
             } elseif (isset($active_classic_gateway_list['paypal_advanced'])) {
                 $layout_type = 'paypal_advanced';
+                $products_data = array('paypal_advanced');
             } elseif (isset($active_classic_gateway_list['paypal_express'])) {
                 $layout_type = 'paypal_express';
+                $products_data = array('paypal_express');
             }
+            $products = http_build_query($products_data);
             if (!empty($layout_type)) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
@@ -392,6 +425,42 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure[$country][$product];
             } else {
                 return $this->paypal_fee_structure['default'][$product];
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_generate_onboard_button($products = null) {
+        try {
+            if (isset($_GET['testmode'])) {
+                $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
+            } else {
+                $testmode = $this->sandbox ? 'yes' : 'no';
+            }
+            $signup_link = $this->angelleye_get_signup_link_for_migration($testmode, $products);
+            if ($signup_link) {
+                $args = array(
+                    'displayMode' => 'minibrowser',
+                );
+                $url = add_query_arg($args, $signup_link);
+                ?>
+                <h3 class="pb-30"><a class="angella_button" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Update to PayPal Commerce Platform', 'paypal-for-woocommerce'); ?></a></h3>
+                <?php
+                $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
+                ?>
+                <script type="text/javascript">
+                                        document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                            element.addEventListener('click', (e) => {
+                                                if ('undefined' === typeof PAYPAL) {
+                                                    e.preventDefault();
+                                                    alert('PayPal');
+                                                }
+                                            });
+                                        });</script>
+                <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
+            } else {
+                echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
             

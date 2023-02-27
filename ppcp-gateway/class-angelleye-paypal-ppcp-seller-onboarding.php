@@ -102,6 +102,28 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return $this->api_request->request($host_url, $args, 'generate_signup_link');
     }
 
+    public function angelleye_generate_signup_link_for_migration($testmode, $products) {
+        $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
+        $body = $this->data();
+        $body['return_url'] = add_query_arg(array('place' => 'admin_settings_onboarding', 'utm_nooverride' => '1', 'products' => $products, 'is_migration' => 'yes'), untrailingslashit($body['return_url']));
+        if ($this->is_sandbox) {
+            $tracking_id = angelleye_key_generator();
+            $body['tracking_id'] = $tracking_id;
+            update_option('angelleye_ppcp_sandbox_tracking_id', $tracking_id);
+        } else {
+            $tracking_id = angelleye_key_generator();
+            $body['tracking_id'] = $tracking_id;
+            update_option('angelleye_ppcp_live_tracking_id', $tracking_id);
+        }
+        $host_url = $this->ppcp_host . 'generate-signup-link';
+        $args = array(
+            'method' => 'POST',
+            'body' => wp_json_encode($body),
+            'headers' => array('Content-Type' => 'application/json'),
+        );
+        return $this->api_request->request($host_url, $args, 'generate_signup_link');
+    }
+
     private function default_data() {
         $testmode = ($this->is_sandbox) ? 'yes' : 'no';
         return array(

@@ -195,7 +195,6 @@ img {
 .angella_button:before {
     font-size: 32px;
     line-height: 1em;
-    content: "\35";
     opacity: 0;
     position: absolute;
     margin-left: -1em;
