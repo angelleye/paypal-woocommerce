@@ -16,6 +16,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     protected static $_instance = null;
     public $api_log;
     public $is_sandbox;
+    public $ppcp_migration;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -213,11 +214,41 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->setting_obj->set('enabled', 'yes');
             }
             $this->setting_obj->persist();
-            $this->angelleye_get_seller_onboarding_status();
+            $seller_onboarding_status = $this->angelleye_get_seller_onboarding_status();
             if (isset($_GET['place']) && $_GET['place'] === 'gateway_settings') {
                 $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
             } else {
                 $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products');
+            }
+            if (isset($_GET['is_migration']) && 'yes' === $_GET['is_migration'] && isset($_GET['products'])) {
+                parse_str($_GET['products'], $products);
+                if (!empty($products) && is_array($products)) {
+                    if (!class_exists('AngellEYE_PayPal_PPCP_Migration')) {
+                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration.php');
+                    }
+                    $this->ppcp_migration = AngellEYE_PayPal_PPCP_Migration::instance();
+                    foreach ($products as $key => $product) {
+                        switch ($product) {
+                            case 'paypal_express':
+                                $this->ppcp_migration->angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status);
+                                break;
+                            case 'paypal_pro':
+                                $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
+                                break;
+                            case 'paypal_pro_payflow':
+                                $this->ppcp_migration->angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status);
+                                break;
+                            case 'paypal_advanced':
+                                $this->ppcp_migration->angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status);
+                                break;
+                            case 'paypal_credit_card_rest':
+                                $this->ppcp_migration->angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
             }
             wp_safe_redirect($redirect_url, 302);
             exit;
@@ -280,6 +311,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->api_log->log($ex->getMessage(), 'error');
             return false;
         }
+        return $seller_onboarding_status;
     }
 
     public function angelleye_track_seller_onboarding_status($merchant_id) {
