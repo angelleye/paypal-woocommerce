@@ -182,6 +182,8 @@ class AngellEYE_PayPal_PPCP_Migration {
                 } else {
                     $woocommerce_angelleye_ppcp_settings['enable_paypal_checkout_page'] = '';
                 }
+                $woocommerce_paypal_express_settings['enabled'] = 'no';
+                update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
                 update_option('woocommerce_angelleye_ppcp_settings', $woocommerce_angelleye_ppcp_settings);
             }
         } catch (Exception $ex) {
