@@ -29,7 +29,11 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status) {
         try {
-            
+            if(!empty(angelleye_is_acdc_payments_enable($seller_onboarding_status))) {
+                $woocommerce_paypal_pro_settings = get_option('woocommerce_paypal_pro_settings');
+                $woocommerce_paypal_pro_settings['enabled'] = 'no';
+                update_option('woocommerce_paypal_pro_settings', $woocommerce_paypal_pro_settings);
+            }
         } catch (Exception $ex) {
             
         }
@@ -37,7 +41,11 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status) {
         try {
-            
+            if(!empty(angelleye_is_acdc_payments_enable($seller_onboarding_status))) {
+                $woocommerce_paypal_pro_settings = get_option('woocommerce_paypal_pro_settings');
+                $woocommerce_paypal_pro_settings['enabled'] = 'no';
+                update_option('woocommerce_paypal_pro_settings', $woocommerce_paypal_pro_settings);
+            }
         } catch (Exception $ex) {
             
         }
@@ -45,7 +53,11 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status) {
         try {
-            
+            if(!empty(angelleye_is_acdc_payments_enable($seller_onboarding_status))) {
+                $woocommerce_paypal_pro_settings = get_option('woocommerce_paypal_pro_settings');
+                $woocommerce_paypal_pro_settings['enabled'] = 'no';
+                update_option('woocommerce_paypal_pro_settings', $woocommerce_paypal_pro_settings);
+            }
         } catch (Exception $ex) {
             
         }
@@ -53,7 +65,11 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status) {
         try {
-            
+            if(!empty(angelleye_is_acdc_payments_enable($seller_onboarding_status))) {
+                $woocommerce_paypal_pro_settings = get_option('woocommerce_paypal_pro_settings');
+                $woocommerce_paypal_pro_settings['enabled'] = 'no';
+                update_option('woocommerce_paypal_pro_settings', $woocommerce_paypal_pro_settings);
+            }
         } catch (Exception $ex) {
             
         }

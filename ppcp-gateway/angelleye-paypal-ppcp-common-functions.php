@@ -754,3 +754,21 @@ if (!function_exists('angelleye_ppcp_get_value')) {
 
 }
 
+if (!function_exists('angelleye_is_acdc_payments_enable')) {
+
+    function angelleye_is_acdc_payments_enable($result) {
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('CUSTOM_CARD_PROCESSING', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $key => $capabilities) {
+                        if (isset($capabilities['name']) && 'CUSTOM_CARD_PROCESSING' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+}

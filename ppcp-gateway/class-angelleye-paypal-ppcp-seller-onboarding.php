@@ -293,7 +293,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 if (!empty($this->result['primary_email'])) {
                     own_angelleye_sendy_list($this->result['primary_email']);
                 }
-                if ($this->angelleye_is_acdc_payments_enable($this->result)) {
+                if (angelleye_is_acdc_payments_enable($this->result)) {
                     $this->setting_obj->set('enable_advanced_card_payments', 'yes');
                     $this->setting_obj->persist();
                 } else {
@@ -311,7 +311,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->api_log->log($ex->getMessage(), 'error');
             return false;
         }
-        return $seller_onboarding_status;
+        return $this->result;
     }
 
     public function angelleye_track_seller_onboarding_status($merchant_id) {

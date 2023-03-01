@@ -133,7 +133,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
                 } else {
-                    if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
+                    if (angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
                         $this->setting_obj->set('enable_advanced_card_payments', 'yes');
                         $this->setting_obj->persist();
@@ -172,7 +172,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
                 } else {
-                    if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
+                    if (angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
                         $this->setting_obj->set('enable_advanced_card_payments', 'yes');
                         $this->setting_obj->persist();
