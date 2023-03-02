@@ -98,9 +98,9 @@
                     style: angelleye_ppcp_style,
                     createOrder: function (data, actions) {
                         $('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
-                        var data;
+                        let formData;
                         if (is_from_checkout) {
-                            data = $(angelleye_ppcp_button_selector).closest('form').serialize();
+                            formData = $(angelleye_ppcp_button_selector).closest('form').serialize();
                         } else if (is_from_product) {
                             var add_to_cart = $("[name='add-to-cart']").val();
                             $('<input>', {
@@ -108,16 +108,16 @@
                                 name: 'angelleye_ppcp-add-to-cart',
                                 value: add_to_cart
                             }).appendTo('form.cart');
-                            data = $('form.cart').serialize();
+                            formData = $('form.cart').serialize();
                         } else {
-                            data = $('form.woocommerce-cart-form').serialize();
+                            formData = $('form.woocommerce-cart-form').serialize();
                         }
                         return fetch(angelleye_ppcp_manager.create_order_url, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded'
                             },
-                            body: data
+                            body: formData
                         }).then(function (res) {
                             return res.json();
                         }).then(function (data) {
