@@ -63,7 +63,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $this->id = 'angelleye_ppcp';
         $this->icon = apply_filters('woocommerce_angelleye_paypal_checkout_icon', 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png');
         $this->has_fields = true;
-        $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', __('Complete Payments - Powered by PayPal', 'paypal-for-woocommerce'));
+        $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', __('PayPal Commerce Platform - Built by Angelleye', 'paypal-for-woocommerce'));
         $this->method_description = __('The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce');
         $this->supports = array(
             'products',
@@ -73,7 +73,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function angelleye_get_settings() {
-        $this->title = $this->get_option('title', 'Complete Payments - Powered by PayPal');
+        $this->title = $this->get_option('title', 'PayPal');
+        if(isset($_GET['page']) && 'wc-settings' === $_GET['page'] && isset($_GET['tab']) && 'checkout' === $_GET['tab']) {
+            $this->title = __('PayPal Commerce Platform - Built by Angelleye', 'paypal-for-woocommerce');
+        }
         $this->description = $this->get_option('description', '');
         $this->enabled = $this->get_option('enabled', 'no');
         $this->sandbox = 'yes' === $this->get_option('testmode', 'no');
@@ -301,7 +304,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                     </div>
                     <div class="ppcp_paypal_connection">
                         <div class="ppcp_paypal_connection_status">
-                            <h3><?php echo __('Congratulations, WooCommerce Complete Payments - Powered by PayPal is Connected.', 'paypal-for-woocommerce'); ?></h3>
+                            <h3><?php echo __('Congratulations, WooCommerce PayPal Commerce Platform - Built by Angelleye is Connected.', 'paypal-for-woocommerce'); ?></h3>
                         </div>
                     </div>
                     <button type="button" class="button angelleye-ppcp-disconnect"><?php echo __('Disconnect', 'paypal-for-woocommerce'); ?></button>
@@ -385,7 +388,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $is_success = false;
         if (isset($_GET['from']) && 'checkout' === $_GET['from']) {
             angelleye_ppcp_set_session('angelleye_ppcp_checkout_post', isset($_POST) ? wc_clean($_POST) : false);
-            angelleye_ppcp_set_session('angelleye_ppcp_woo_order_id', $woo_order_id);
             $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
             exit();
         } elseif (!empty($angelleye_ppcp_paypal_order_id)) {
@@ -411,8 +413,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
                     'redirect' => wc_get_cart_url()
                 );
             }
-        } elseif ($this->checkout_disable_smart_button === true && $this->advanced_card_payments === false) {
-            angelleye_ppcp_set_session('angelleye_ppcp_woo_order_id', $woo_order_id);
+        } elseif ($this->checkout_disable_smart_button === true) {
             $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
             return $result;
             exit();
@@ -508,7 +509,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         }
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
             echo '<div class="error notice-warning"><p>';
-            echo __("Complete Payments - Powered by PayPal is not yet compatible with Woo Subscriptions. You will need to use <a target='_blank' href='" . admin_url("admin.php?page=wc-settings&tab=checkout&section=paypal_express") . "'>Classic Express Checkout</a> for now, and make sure you have <a target='_blank' href='https://www.angelleye.com/how-to-enable-paypal-billing-agreements-for-reference-transactions/'>Billing Agreements enabled on your account</a> in order to use this with Woo Subscriptions.", '');
+            echo __("PayPal Commerce Platform - Built by Angelleye is not yet compatible with Woo Subscriptions. You will need to use <a target='_blank' href='" . admin_url("admin.php?page=wc-settings&tab=checkout&section=paypal_express") . "'>Classic Express Checkout</a> for now, and make sure you have <a target='_blank' href='https://www.angelleye.com/how-to-enable-paypal-billing-agreements-for-reference-transactions/'>Billing Agreements enabled on your account</a> in order to use this with Woo Subscriptions.", '');
             echo '</p></div>';
         }
 
@@ -541,7 +542,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
 
         $message = sprintf(
                 __(
-                        'Complete Payments - Powered by PayPal is almost ready. To get started, <a href="%1$s">connect your account</a>.', 'paypal-for-woocommerce'
+                        'PayPal Commerce Platform - Built by Angelleye is almost ready. To get started, <a href="%1$s">connect your account</a>.', 'paypal-for-woocommerce'
                 ), admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products')
         );
         ?>

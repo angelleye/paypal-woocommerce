@@ -88,6 +88,7 @@ if (class_exists('WC_Checkout')) {
                     foreach ($messages as $message) {
                         wc_add_notice($message, 'error', $data);
                     }
+                    return false;
                 }
                 if (empty($posted_data['woocommerce_checkout_update_totals']) && 0 === wc_notice_count('error')) {
                     $this->process_customer($posted_data);
@@ -102,24 +103,9 @@ if (class_exists('WC_Checkout')) {
                     return $order_id;
                 }
             } catch (Exception $ex) {
-                
+                return false;
             }
-            if (wp_doing_ajax()) {
-                $this->send_ajax_failure_response();
-            } else {
-                $return_arg_url = array();
-                $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
-                $paypal_payer_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_payer_id');
-                $return_arg_url['utm_nooverride'] = '1';
-                if(!empty($paypal_order_id)) {
-                    $return_arg_url['paypal_order_id'] = $paypal_order_id;
-                }
-                if(!empty($paypal_payer_id)) {
-                    $return_arg_url['paypal_payer_id'] = $paypal_payer_id;
-                }
-                wp_safe_redirect(add_query_arg($return_arg_url, untrailingslashit(wc_get_checkout_url())));
-                exit();
-            }
+            
         }
 
     }

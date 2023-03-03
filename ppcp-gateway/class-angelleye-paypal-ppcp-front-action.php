@@ -24,7 +24,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
         $this->angelleye_ppcp_load_class();
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
-        $this->title = $this->setting_obj->get('title', 'Complete Payments - Powered by PayPal');
+        $this->title = $this->setting_obj->get('title', 'PayPal Commerce Platform - Built by Angelleye');
         $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         if ($this->dcc_applies->for_country_currency() === false) {
@@ -72,16 +72,15 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "create_order":
                     if (isset($_GET['from']) && 'pay_page' === $_GET['from']) {
                         $woo_order_id = $_POST['woo_order_id'];
-                        angelleye_ppcp_set_session('angelleye_ppcp_woo_order_id', $woo_order_id);
                         $order = wc_get_order($woo_order_id);
                         do_action('woocommerce_before_pay_action', $order);
                         $error_messages = wc_get_notices('error');
                         wc_clear_notices();
-                        if(empty($error_messages)){
+                        if (empty($error_messages)) {
                             $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
-                        }else{
+                        } else {
                             $errors = [];
-                            foreach($error_messages as $error){
+                            foreach ($error_messages as $error) {
                                 $errors[] = $error['notice'];
                             }
                             ob_start();
@@ -92,8 +91,8 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         if (isset($_POST) && !empty($_POST)) {
                             add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), 10, 2);
                             WC()->checkout->process_checkout();
-                            if( wc_notice_count( 'error' ) > 0 ) {
-                                WC()->session->set( 'reload_checkout', true );
+                            if (wc_notice_count('error') > 0) {
+                                WC()->session->set('reload_checkout', true);
                                 $error_messages_data = wc_get_notices('error');
                                 $error_messages = array();
                                 foreach ($error_messages_data as $key => $value) {
@@ -161,10 +160,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             wp_redirect(wc_get_checkout_url());
             exit();
         }
-        $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
-        if (empty($order_id)) {
-            $order_id = absint(WC()->session->get('order_awaiting_payment'));
-        }
+        $order_id = (int) WC()->session->get('order_awaiting_payment');
         if (angelleye_ppcp_is_valid_order($order_id) === false || empty($order_id)) {
             wp_redirect(wc_get_checkout_url());
             exit();
@@ -204,10 +200,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
             $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
             if (!empty($angelleye_ppcp_paypal_order_id)) {
-                $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
-                if (empty($order_id)) {
-                    $order_id = absint(WC()->session->get('order_awaiting_payment'));
-                }
+                $order_id = (int) WC()->session->get('order_awaiting_payment');
                 $order = wc_get_order($order_id);
                 if ($order === false) {
                     if (!class_exists('AngellEYE_PayPal_PPCP_Checkout')) {
@@ -216,10 +209,19 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     $ppcp_checkout = AngellEYE_PayPal_PPCP_Checkout::instance();
                     $order_id = $ppcp_checkout->angelleye_ppcp_create_order();
                     $order = wc_get_order($order_id);
-                    $this->payment_request->angelleye_ppcp_update_order($order);
+                    if ($order === false) {
+                        unset(WC()->session->angelleye_ppcp_session);
+                        wp_send_json_success(array(
+                            'result' => 'failure',
+                            'redirect' => wc_get_checkout_url()
+                        ));
+                        exit();
+                    } else {
+                        $this->payment_request->angelleye_ppcp_update_order($order);
+                    }
                 }
                 $liability_shift_result = 1;
-                if( $this->advanced_card_payments ) {
+                if ($this->advanced_card_payments) {
                     $api_response = $this->payment_request->angelleye_ppcp_get_checkout_details($angelleye_ppcp_paypal_order_id);
                     $liability_shift_result = $this->angelleye_ppcp_liability_shift($order, $api_response);
                 }
@@ -253,7 +255,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
-                    if(isset($_GET['is_pay_page']) && 'yes' === $_GET['is_pay_page'] ) {
+                    if (isset($_GET['is_pay_page']) && 'yes' === $_GET['is_pay_page']) {
                         wp_send_json_success(array(
                             'result' => 'failure',
                             'redirect' => $order->get_checkout_payment_url()
@@ -276,10 +278,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     public function angelleye_ppcp_display_order_page() {
         try {
-            $order_id = angelleye_ppcp_get_session('angelleye_ppcp_woo_order_id');
-            if (empty($order_id)) {
-                $order_id = absint(WC()->session->get('order_awaiting_payment'));
-            }
+            $order_id = (int) WC()->session->get('order_awaiting_payment');
             if (angelleye_ppcp_is_valid_order($order_id) === false || empty($order_id)) {
                 wp_redirect(wc_get_cart_url());
                 exit();

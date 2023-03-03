@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.1.1
-Stable tag: 3.1.5
+Stable tag: 3.1.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,18 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.1.8 - 02.16.2022 =
+* Fix - Resolves PPCP WC order session mixed up issue. ([PFW-1378](https://github.com/angelleye/paypal-woocommerce/pull/1787))
+* Tweak - PPCP - Gateway Name. ([PFW-1324](https://github.com/angelleye/paypal-woocommerce/pull/1785))
+* Tweak - PPCP - Order Receipt Payment Method. ([PFW-1289](https://github.com/angelleye/paypal-woocommerce/pull/1783))
+
+= 3.1.7 - 02.16.2022 =
+* Tweak - Add new hooks for multi-account plugins. ([#1781](https://github.com/angelleye/paypal-woocommerce/pull/1781))
+
+= 3.1.6 - 01.10.2022 =
+* Fix - Resolves PPCP PayPal checkout failed when smart button disable. ([PFW-1269](https://github.com/angelleye/paypal-woocommerce/pull/1781))
+* Fix - Resolves PPCP - PHP notice. ([PFW-1290](https://github.com/angelleye/paypal-woocommerce/pull/1782))
 
 = 3.1.5 - 01.04.2022 =
 * Tweak - PPCP Onboarding Localization. ([PFW-1251](https://github.com/angelleye/paypal-woocommerce/pull/1779))

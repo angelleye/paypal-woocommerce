@@ -357,6 +357,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             if ($this->response_helper->ec_is_response_success($this->paypal_response)) {
                 $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 $order->save();
+                update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 do_action('ae_add_custom_order_note', $order, $card = null, $token = null, $this->paypal_response);
                 do_action('woocommerce_before_pay_action', $order);
                 do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
@@ -365,7 +366,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
                 }
                 $this->angelleye_ec_save_billing_agreement($order_id);
-                update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 if (empty($this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'])) {
                     $this->paypal_response['PAYMENTINFO_0_PAYMENTSTATUS'] = '';
                 }
@@ -414,6 +414,11 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } elseif ($this->response_helper->ec_is_response_successwithwarning($this->paypal_response)) {
                 $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 $order->save();
+                if ($old_wc) {
+                    update_post_meta($order_id, 'is_sandbox', $this->testmode);
+                } else {
+                    update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
+                }
                 do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
                 do_action('woocommerce_before_pay_action', $order);
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
@@ -421,11 +426,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     $this->angelleye_ec_sellerprotection_handler($this->confirm_order_id);
                 }
                 $this->angelleye_ec_save_billing_agreement($order_id);
-                if ($old_wc) {
-                    update_post_meta($order_id, 'is_sandbox', $this->testmode);
-                } else {
-                    update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
-                }
                 if (!empty($this->paypal_response['L_ERRORCODE0']) && '11607' == $this->paypal_response['L_ERRORCODE0']) {
                     $order->update_status('cancelled', empty($this->paypal_response['L_LONGMESSAGE0']) ? $this->paypal_response['L_SHORTMESSAGE0'] : $this->paypal_response['L_LONGMESSAGE0']);
                 } elseif ($this->is_angelleye_baid_required() == true) {
@@ -469,17 +469,17 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } elseif ($this->response_helper->ec_is_response_partialsuccess($this->paypal_response)) {
                 $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 $order->save();
-                do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
-                do_action('woocommerce_before_pay_action', $order);
-                update_post_meta($order_id, 'is_sandbox', $this->testmode);
-                $order->update_status('wc-partial-payment');
                 if ($old_wc) {
-                    if (!get_post_meta($orderid, '_order_stock_reduced', true)) {
+                    if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
                         $order->reduce_order_stock();
                     }
                 } else {
-                    wc_maybe_reduce_stock_levels($orderid);
+                    wc_maybe_reduce_stock_levels($order_id);
                 }
+                update_post_meta($order_id, 'is_sandbox', $this->testmode);
+                do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
+                do_action('woocommerce_before_pay_action', $order);
+                $order->update_status('wc-partial-payment');
                 WC()->cart->empty_cart();
                 wc_clear_notices();
                 $this->angelleye_wp_safe_redirect(add_query_arg('utm_nooverride', '1', $this->gateway->get_return_url($order)), 'do_express_checkout_payment');
