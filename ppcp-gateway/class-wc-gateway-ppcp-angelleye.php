@@ -358,8 +358,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
         $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
         $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
         if (!empty($angelleye_ppcp_payment_method_title)) {
-            update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
-            update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
+            angelleye_ppcp_update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+            angelleye_ppcp_update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
         }
         $is_success = false;
         if (isset($_GET['from']) && 'checkout' === $_GET['from']) {
