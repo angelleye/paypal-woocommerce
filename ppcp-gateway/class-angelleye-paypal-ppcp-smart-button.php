@@ -313,7 +313,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if ($this->is_first_party_used === 'yes') {
                 $smart_js_arg['client-id'] = $this->client_id;
             } else {
-                $smart_js_arg['client-id'] = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
+                $smart_js_arg['client-id'] = PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID;
                 $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
             }
         } else {

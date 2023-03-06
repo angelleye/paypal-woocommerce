@@ -30,7 +30,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->auth = 'https://api-m.sandbox.paypal.com/v2/payments/authorizations/';
             $this->generate_token_url = 'https://api-m.sandbox.paypal.com/v1/identity/generate-token';
             $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
-            $this->partner_client_id = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
+            $this->partner_client_id = PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID;
         } else {
             $this->token_url = 'https://api-m.paypal.com/v1/oauth2/token';
             $this->order_url = 'https://api-m.paypal.com/v2/checkout/orders/';

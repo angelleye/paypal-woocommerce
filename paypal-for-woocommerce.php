@@ -57,14 +57,14 @@ if (!defined('AEU_ZIP_URL')) {
     define('AEU_ZIP_URL', 'https://updates.angelleye.com/ae-updater/angelleye-updater/angelleye-updater.zip');
 }
 
-if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID')) {
-    define('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID', 'LSLG4YR3NS6T4');
+if (!defined('PAYPAL_PPCP_SANDBOX_PARTNER_MERCHANT_ID')) {
+    define('PAYPAL_PPCP_SANDBOX_PARTNER_MERCHANT_ID', 'B82TS7QWRJ6TS');
 }
 if (!defined('PAYPAL_PPCP_PARTNER_MERCHANT_ID')) {
     define('PAYPAL_PPCP_PARTNER_MERCHANT_ID', 'J9L24TCUDZ6ZS');
 }
-if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID')) {
-    define('PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID', 'AWZDKZJkjTiV_JsjxODtR0bseOY9yOgSGgpzxyVNCTwdW8xSQXKSFkJYLZ80JY2M4avl1uLnCpA9zAix');
+if (!defined('PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID')) {
+    define('PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID', 'AaYsUf4lXeKOnLmKhDWbak0YYWNk5SW0Lt1lk22gFvsgu74h1Vawg1y6rcmt60f8JIx-x81J5bMA-q7O');
 }
 if (!defined('PAYPAL_PPCP_PARTNER_CLIENT_ID')) {
     define('PAYPAL_PPCP_PARTNER_CLIENT_ID', 'ATgw55qRjaDSlPur2FAkdAiB-QQuG5jlLsees-8dcxLiLla_nwbBSvSnCbUaGlmzxq9t2b8R9JGGSz1e');
