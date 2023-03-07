@@ -118,7 +118,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($payment_method)) {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method);
                 angelleye_ppcp_set_session('angelleye_ppcp_payment_method_title', $payment_method_title);
-            } elseif(!empty($_POST['angelleye_ppcp_cc_payment_method_title'])) {
+            } elseif (!empty($_POST['angelleye_ppcp_cc_payment_method_title'])) {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title(wc_clean($_POST['angelleye_ppcp_cc_payment_method_title']));
                 angelleye_ppcp_set_session('angelleye_ppcp_payment_method_title', $payment_method_title);
             }
@@ -412,7 +412,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (strlen($desc) > 127) {
                     $desc = substr($desc, 0, 124) . '...';
                 }
-                
+
                 $desc = strip_shortcodes($desc);
 
                 $item = array(
@@ -568,13 +568,13 @@ class AngellEYE_PayPal_PPCP_Payment {
         $page = null;
         if (isset($_GET) && !empty($_GET['from'])) {
             $page = $_GET['from'];
-        } elseif(is_cart() && !WC()->cart->is_empty()) {
+        } elseif (is_cart() && !WC()->cart->is_empty()) {
             $page = 'cart';
         } elseif (is_checkout() || is_checkout_pay_page()) {
             $page = 'checkout';
         } elseif (is_product()) {
             $page = 'product';
-        } 
+        }
         if ($page === null) {
             return $shipping_preference = WC()->cart->needs_shipping() ? 'GET_FROM_FILE' : 'NO_SHIPPING';
         }
@@ -793,7 +793,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/capture', $args, 'capture_order');
             $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
             if (!empty($angelleye_ppcp_payment_method_title)) {
-                angelleye_ppcp_update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
+                $order->save();
                 angelleye_ppcp_update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
             }
             if (isset($this->api_response['id']) && !empty($this->api_response['id'])) {
@@ -1191,7 +1192,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/authorize', $args, 'authorize_order');
             $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
             if (!empty($angelleye_ppcp_payment_method_title)) {
-                angelleye_ppcp_update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
+                $order->save();
                 angelleye_ppcp_update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
             }
             if (!empty($this->api_response['id'])) {
@@ -1341,7 +1343,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'currency_code' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 ),
                 'invoice_id' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number()),
-                'payment_instruction'=> array('payee' => array('merchant_id' => $this->merchant_id)),
+                'payment_instruction' => array('payee' => array('merchant_id' => $this->merchant_id)),
                 'final_capture' => true,
             );
             $body_request = angelleye_ppcp_remove_empty_key($capture_arg);
@@ -1359,7 +1361,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
             $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
             if (!empty($angelleye_ppcp_payment_method_title)) {
-                angelleye_ppcp_update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
+                $order->save();
                 angelleye_ppcp_update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
             }
             if (!empty($this->api_response['id'])) {
@@ -1468,7 +1471,8 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
         $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
         if (!empty($angelleye_ppcp_payment_method_title)) {
-            angelleye_ppcp_update_post_meta($order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+            $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
+            $order->save();
             angelleye_ppcp_update_post_meta($order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
         }
         if ($this->paymentaction === 'capture' && !empty($this->checkout_details->status) && $this->checkout_details->status == 'COMPLETED' && $order !== false) {
@@ -1983,7 +1987,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'currency_code' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
                 ),
                 'note_to_payer' => $note_to_payer,
-                'payment_instruction'=> array('payee' => array('merchant_id' => $this->merchant_id)),
+                'payment_instruction' => array('payee' => array('merchant_id' => $this->merchant_id)),
                 'invoice_id' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number()),
                 'final_capture' => $final_capture,
             );

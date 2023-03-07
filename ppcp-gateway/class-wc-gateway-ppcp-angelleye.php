@@ -354,11 +354,13 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function process_payment($woo_order_id) {
+        $order = wc_get_order($woo_order_id);
         $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
         $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
         $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
         if (!empty($angelleye_ppcp_payment_method_title)) {
-            angelleye_ppcp_update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+            $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
+            $order->save();
             angelleye_ppcp_update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
         }
         $is_success = false;
@@ -367,7 +369,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
             exit();
         } elseif (!empty($angelleye_ppcp_paypal_order_id)) {
-            $order = wc_get_order($woo_order_id);
             if ($this->paymentaction === 'capture') {
                 $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($woo_order_id);
             } else {
@@ -402,7 +403,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway_CC {
             if (isset($_GET['post'])) {
                 $theorder = wc_get_order($_GET['post']);
                 if ($theorder) {
-                    $payment_method_title = angelleye_ppcp_get_post_meta($theorder, '_payment_method_title', true);
+                    $payment_method_title = $theorder->get_payment_method_title();
                 }
             }
             if (!empty($payment_method_title)) {
