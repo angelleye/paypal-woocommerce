@@ -385,7 +385,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         if (angelleye_ppcp_is_vault_required($this->enable_tokenized_payments)) {
-           // $smart_js_arg['vault'] = 'true';
+            $smart_js_arg['vault'] = 'true';
             $this->enabled_pay_later_messaging = false;
             foreach ($enable_funding as $key => $value) {
                 if ($value === 'paylater') {
