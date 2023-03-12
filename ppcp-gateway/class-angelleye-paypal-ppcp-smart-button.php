@@ -279,6 +279,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function enqueue_scripts() {
         global $post, $wp, $product;
         $this->angelleye_ppcp_smart_button_style_properties();
+        $default_country = wc_get_base_location();
         if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
             return false;
         }
@@ -291,6 +292,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!isset($this->disable_funding['paylater'])) {
             array_push($enable_funding, 'paylater');
         }
+
+        // add the ideal payment method for Netherland country by default otherwise it's not visible until user is logged in
+        if (isset($default_country['country']) && $default_country['country'] == 'NL') {
+            array_push($enable_funding, 'ideal');
+        }
         if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
             $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
         }
@@ -298,7 +304,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if ($this->is_first_party_used === 'yes') {
                 $smart_js_arg['client-id'] = $this->client_id;
             } else {
-                $smart_js_arg['client-id'] = PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID;
+                $smart_js_arg['client-id'] = PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID;
                 $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
             }
         } else {
@@ -920,7 +926,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_hide_show_gateway($methods) {
         if ((isset($_GET['page']) && 'wc-settings' === $_GET['page'])) {
-            
+
         } else {
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');

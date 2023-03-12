@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable Complete Payments - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           3.1.8
+ * Version:           3.1.9
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -15,7 +15,7 @@
  * Requires at least: 5.8
  * Tested up to: 6.1.1
  * WC requires at least: 3.0.0
- * WC tested up to: 7.4.0
+ * WC tested up to: 7.4.1
  *
  *************
  * Attribution
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '3.1.8');
+    define('VERSION_PFW', '3.1.9');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -57,14 +57,14 @@ if (!defined('AEU_ZIP_URL')) {
     define('AEU_ZIP_URL', 'https://updates.angelleye.com/ae-updater/angelleye-updater/angelleye-updater.zip');
 }
 
-if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID')) {
-    define('PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID', 'B82TS7QWRJ6TS');
+if (!defined('PAYPAL_PPCP_SANDBOX_PARTNER_MERCHANT_ID')) {
+    define('PAYPAL_PPCP_SANDBOX_PARTNER_MERCHANT_ID', 'B82TS7QWRJ6TS');
 }
 if (!defined('PAYPAL_PPCP_PARTNER_MERCHANT_ID')) {
     define('PAYPAL_PPCP_PARTNER_MERCHANT_ID', 'J9L24TCUDZ6ZS');
 }
-if (!defined('PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID')) {
-    define('PAYPAL_PPCP_SNADBOX_PARTNER_CLIENT_ID', 'AaYsUf4lXeKOnLmKhDWbak0YYWNk5SW0Lt1lk22gFvsgu74h1Vawg1y6rcmt60f8JIx-x81J5bMA-q7O');
+if (!defined('PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID')) {
+    define('PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID', 'AaYsUf4lXeKOnLmKhDWbak0YYWNk5SW0Lt1lk22gFvsgu74h1Vawg1y6rcmt60f8JIx-x81J5bMA-q7O');
 }
 if (!defined('PAYPAL_PPCP_PARTNER_CLIENT_ID')) {
     define('PAYPAL_PPCP_PARTNER_CLIENT_ID', 'ATgw55qRjaDSlPur2FAkdAiB-QQuG5jlLsees-8dcxLiLla_nwbBSvSnCbUaGlmzxq9t2b8R9JGGSz1e');
