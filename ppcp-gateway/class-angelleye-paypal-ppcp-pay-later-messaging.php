@@ -8,6 +8,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     public $api_log;
     public $settings;
     public $minified_version;
+    public $enable_tokenized_payments;
     protected static $_instance = null;
 
     public static function instance() {
@@ -58,9 +59,13 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
             $this->client_id = $this->live_client_id;
             $this->secret_id = $this->live_secret_id;
         }
+        $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
         $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');
         $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
         if (empty($this->pay_later_messaging_page_type)) {
+            $this->enabled_pay_later_messaging = false;
+        }
+        if($this->enable_tokenized_payments) {
             $this->enabled_pay_later_messaging = false;
         }
         $this->minified_version = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';

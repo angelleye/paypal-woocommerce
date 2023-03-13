@@ -125,7 +125,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     $this->email_confirm_text_1 = __('We see that your PayPal email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>';
                 }
                 $admin_email = get_option("admin_email");
-                if ($this->result['primary_email'] != $admin_email) {
+                if (isset($this->result['primary_email']) && $this->result['primary_email'] != $admin_email) {
                     $this->email_confirm_text_2 = __('We see that your site admin email address is', 'paypal-for-woocommerce') . ' <b>' . $admin_email . '</b>';
                 } else {
                     $this->email_confirm_text_1 = __('We see that your email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
