@@ -1657,11 +1657,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                 'cookies' => array()
             );
-            $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
-            if (!empty($paypal_generated_customer_id)) {
-                $args['body'] = array(
-                    'customer_id' => $paypal_generated_customer_id,
-                );
+            if($this->enable_tokenized_payments) {
+                $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
+                if (!empty($paypal_generated_customer_id)) {
+                    $args['body'] = array(
+                        'customer_id' => $paypal_generated_customer_id,
+                    );
+                }
             }
             $response = $this->api_request->request($this->generate_token_url, $args, 'get_client_token');
             if (!empty($response['client_token'])) {
@@ -1685,11 +1687,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                 'cookies' => array()
             );
-            $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
-            if (!empty($paypal_generated_customer_id)) {
-                $args['body'] = array(
-                    'target_customer_id' => $paypal_generated_customer_id,
-                );
+            if($this->enable_tokenized_payments) {
+                $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
+                if (!empty($paypal_generated_customer_id)) {
+                    $args['body'] = array(
+                        'target_customer_id' => $paypal_generated_customer_id,
+                    );
+                }
             }
             $response = $this->api_request->request($this->generate_id_token, $args, 'generate_id_token');
             if (!empty($response['id_token'])) {

@@ -18,6 +18,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $checkout_page_display_option;
     public $minified_version;
     public $enable_tokenized_payments;
+    public $vault_supported_payment_method = array('card', 'venmo');
+    public $vault_not_supported_payment_method = array('credit', 'paylater', 'bancontact', 'blik', 'eps', 'giropay', 'ideal', 'mercadopago', 'mybank', 'p24', 'sepa', 'sofort');
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -292,13 +294,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!isset($this->disable_funding['paylater'])) {
             array_push($enable_funding, 'paylater');
         }
-
-        // add the ideal payment method for Netherland country by default otherwise it's not visible until user is logged in
         if (isset($default_country['country']) && $default_country['country'] == 'NL') {
             array_push($enable_funding, 'ideal');
-        }
-        if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
-            $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
         }
         if ($this->is_sandbox) {
             if ($this->is_first_party_used === 'yes') {
@@ -385,12 +382,18 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         if (angelleye_ppcp_is_vault_required($this->enable_tokenized_payments)) {
-           // $smart_js_arg['vault'] = 'true';
             $this->enabled_pay_later_messaging = false;
-            foreach ($enable_funding as $key => $value) {
-                if ($value === 'paylater') {
-                    unset($enable_funding[$key]);
-                }
+            foreach ($this->disable_funding as $key => $value) {
+                unset($this->vault_supported_payment_method[$key]);
+            }
+            $smart_js_arg['enable-funding'] = implode(',', $this->vault_supported_payment_method);
+            $smart_js_arg['disable-funding'] = implode(',', $this->vault_not_supported_payment_method);
+        } else {
+            if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
+                $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
+            }
+            if (!empty($enable_funding) && count($enable_funding) > 0) {
+                $smart_js_arg['enable-funding'] = implode(',', $enable_funding);
             }
         }
         if ($this->enabled_pay_later_messaging) {
@@ -398,10 +401,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         if (!empty($components)) {
             $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
-        }
-
-        if (!empty($enable_funding) && count($enable_funding) > 0) {
-            $smart_js_arg['enable-funding'] = implode(',', $enable_funding);
         }
         if (isset($post->ID) && 'yes' == get_post_meta($post->ID, 'wcf-pre-checkout-offer', true)) {
             $pre_checkout_offer = "yes";
@@ -450,7 +449,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function enqueue_styles() {
         wp_register_style($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/wc-gateway-ppcp-angelleye-public.css', array(), $this->version, 'all');
-        if(is_account_page()) {
+        if (is_account_page()) {
             wp_enqueue_style($this->angelleye_ppcp_plugin_name . '-myaccount', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-myaccount.css', array(), $this->version, 'all');
         }
         if (angelleye_ppcp_has_active_session() && is_checkout()) {
@@ -926,7 +925,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_hide_show_gateway($methods) {
         if ((isset($_GET['page']) && 'wc-settings' === $_GET['page'])) {
-
+            
         } else {
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
