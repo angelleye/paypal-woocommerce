@@ -2254,6 +2254,20 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
+    public function get_token_id_by_token($token_id) {
+        try {
+            global $wpdb;
+            return $wpdb->get_row(
+                            $wpdb->prepare(
+                                    "SELECT token_id FROM {$wpdb->prefix}woocommerce_payment_tokens WHERE token = %s",
+                                    $token_id
+                            )
+            );
+        } catch (Exception $ex) {
+            
+        }
+    }
+
     public function angelleye_ppcp_capture_order_using_payment_method_token($order_id) {
         try {
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
@@ -2379,11 +2393,50 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (ob_get_length()) {
                 ob_end_clean();
             }
-
             if (isset($this->api_response['id']) && !empty($this->api_response['id'])) {
                 if ($this->api_response['status'] == 'COMPLETED') {
                     $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
                     if (!empty($payment_source['card'])) {
+                        if (isset($this->api_response['payment_source']['card']['from_request']['expiry'])) {
+                            $token_id = '';
+                            if (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new') {
+                                $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
+                            } else {
+                                get_post_meta($order_id, '_payment_tokens_id', true);
+                                $token_id = $this->get_token_id_by_token($token_id);
+
+
+
+
+                                
+                            }
+                            if (!empty($token_id)) {
+                                $token = WC_Payment_Tokens::get($token_id);
+                                $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
+                                if (isset($this->api_response['payment_source']['card']['expiry'])) {
+                                    $card_expiry = array_map('trim', explode('-', $this->api_response['payment_source']['card']['expiry']));
+                                    $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                                    $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                                    $token->set_expiry_month($card_exp_month);
+                                    $token->set_expiry_year($card_exp_year);
+                                } else {
+                                    $card_details = $this->angelleye_ppcp_get_payment_token_details($token->get_token());
+                                    if (isset($card_details['payment_source']['card']['expiry'])) {
+                                        $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                                        $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                                        $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                                        $token->set_expiry_month($card_exp_month);
+                                        $token->set_expiry_year($card_exp_year);
+                                    } else {
+                                        $token->set_expiry_month(date('m'));
+                                        $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                                    }
+                                }
+                                if ($token->validate()) {
+                                    $token->update();
+                                }
+                            }
+                        }
                         $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
                         $card_response_order_note .= "\n";
                         $card_response_order_note .= 'Last digits : ' . $payment_source['card']['last_digits'];
@@ -2873,7 +2926,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $token->set_expiry_month($card_exp_month);
                         $token->set_expiry_year($card_exp_year);
                     } else {
-                        $card_details = $this->payment_request->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
+                        $card_details = $this->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
                         if (isset($card_details['payment_source']['card']['expiry'])) {
                             $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
                             $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
@@ -2953,7 +3006,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $token->set_expiry_month($card_exp_month);
                         $token->set_expiry_year($card_exp_year);
                     } else {
-                        $card_details = $this->payment_request->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
+                        $card_details = $this->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
                         if (isset($card_details['payment_source']['card']['expiry'])) {
                             $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
                             $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
@@ -3216,7 +3269,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $token->set_expiry_month($card_exp_month);
                         $token->set_expiry_year($card_exp_year);
                     } else {
-                        $card_details = $this->payment_request->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
+                        $card_details = $this->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
                         if (isset($card_details['payment_source']['card']['expiry'])) {
                             $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
                             $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
