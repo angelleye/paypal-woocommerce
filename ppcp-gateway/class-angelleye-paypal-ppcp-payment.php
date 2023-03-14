@@ -493,7 +493,26 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'phone' => $old_wc ? $customer->billing_phone : $customer->get_billing_phone(),
                 );
             } else {
-                return array();
+                $billing_first_name = $old_wc ? $customer->billing_first_name : $customer->get_billing_first_name();
+                $billing_last_name = $old_wc ? $customer->billing_last_name : $customer->get_billing_last_name();
+                $billing_address_1 = $old_wc ? $customer->get_address() : $customer->get_billing_address_1();
+                $billing_address_2 = $old_wc ? $customer->get_address_2() : $customer->get_billing_address_2();
+                $billing_city = $old_wc ? $customer->get_city() : $customer->get_billing_city();
+                $billing_state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
+                $billing_postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
+                $billing_country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
+                return array(
+                    'first_name' => $billing_first_name,
+                    'last_name' => $billing_last_name,
+                    'company' => '',
+                    'address_1' => $billing_address_1,
+                    'address_2' => $billing_address_2,
+                    'city' => $billing_city,
+                    'state' => $billing_state,
+                    'postcode' => $billing_postcode,
+                    'country' => $billing_country,
+                    'phone' => $old_wc ? $customer->billing_phone : $customer->get_billing_phone(),
+                );
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -575,7 +594,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'amount' => angelleye_ppcp_round($amount, $decimals),
             );
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -774,7 +793,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
         }
         if (!empty($message)) {
-
+            
         } else if (!empty($error['message'])) {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
@@ -2004,7 +2023,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             endswitch;
             return;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2123,7 +2142,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
             if (!empty($this->api_response['id'])) {
-
+                
             } else {
                 $error_email_notification_param = array(
                     'request' => 'capture_authorized',
@@ -2171,7 +2190,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
             if (isset($this->api_response['status'])) {
-
+                
             } else {
                 $error_email_notification_param = array(
                     'request' => 'refund_order',
@@ -2267,7 +2286,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $request;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2285,7 +2304,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return '';
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2619,7 +2638,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2679,7 +2698,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2755,7 +2774,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2818,7 +2837,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2903,7 +2922,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2976,7 +2995,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3063,7 +3082,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3151,7 +3170,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3239,7 +3258,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3323,7 +3342,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3383,7 +3402,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3457,7 +3476,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3481,7 +3500,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response['payment_tokens'];
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3500,7 +3519,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
