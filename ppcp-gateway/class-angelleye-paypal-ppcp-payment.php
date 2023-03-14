@@ -267,7 +267,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
                     $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
                 }
-                if ($order->needs_shipping_address() || WC()->cart->needs_shipping_address()) {
+                if ($order->needs_shipping_address() || WC()->cart->needs_shipping()) {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
@@ -282,7 +282,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     );
                 }
             } else {
-                if (true === WC()->cart->needs_shipping_address()) {
+                if (true === WC()->cart->needs_shipping()) {
                     if (is_user_logged_in()) {
                         if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                             $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
@@ -1068,7 +1068,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
                 $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
             }
-            if ($order->needs_shipping_address() || WC()->cart->needs_shipping_address()) {
+            if ($order->needs_shipping_address() || WC()->cart->needs_shipping()) {
                 if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                     $purchase_units['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                 }
@@ -1836,7 +1836,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
                     $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
                 }
-                if ($order->needs_shipping_address() || WC()->cart->needs_shipping_address()) {
+                if ($order->needs_shipping_address() || WC()->cart->needs_shipping()) {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
@@ -1851,7 +1851,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     );
                 }
             } else {
-                if (true === WC()->cart->needs_shipping_address()) {
+                if (true === WC()->cart->needs_shipping()) {
                     if (is_user_logged_in()) {
                         if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                             $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
