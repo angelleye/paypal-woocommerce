@@ -46,9 +46,15 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                             } elseif ('method' === $column_id) {
                                 if (!empty($method['method']['last4'])) {
                                     if ($method['method']['gateway'] === 'angelleye_ppcp') {
-                                        $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png';
-                                        ?> <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='Credit card'><?php
-                                        echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
+                                        if ($method['method']['card_type'] === 'PayPal') {
+                                            $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png'; ?>
+                                            <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='PayPal'><?php
+                                            echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
+                                        } elseif ($method['method']['card_type'] === 'Venmo') {
+                                            $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/venmo.png'; ?>
+                                            <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='Venmo'><?php
+                                            echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
+                                        }
                                     } elseif ($method['method']['gateway'] === 'angelleye_ppcp_cc') {
                                         $brand = strtolower($method['method']['brand']);
                                         $brand = str_replace('-', '', $brand);
@@ -89,16 +95,16 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                         <?php endforeach; ?>
                 </tr>
                     <?php endforeach; ?>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
     </table>
 
-    <?php else : ?>
+            <?php else : ?>
 
     <p class="woocommerce-Message woocommerce-Message--info woocommerce-info"><?php esc_html_e('No saved methods found.', 'woocommerce'); ?></p>
 
-<?php endif; ?>
+    <?php endif; ?>
 
-<?php do_action('woocommerce_after_account_payment_methods', $has_methods); ?>
+    <?php do_action('woocommerce_after_account_payment_methods', $has_methods); ?>
 
 <?php if (WC()->payment_gateways->get_available_payment_gateways()) : ?>
     <a class="button" href="<?php echo esc_url(wc_get_endpoint_url('add-payment-method')); ?>"><?php esc_html_e('Add payment method', 'woocommerce'); ?></a>

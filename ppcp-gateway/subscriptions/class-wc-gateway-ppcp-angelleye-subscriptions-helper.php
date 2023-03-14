@@ -145,7 +145,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 } elseif ($api_response['payment_source']['paypal']['payer_id']) {
                     $email_address = $api_response['payment_source']['paypal']['payer_id'];
                 } else {
-                    $email_address = 'PayPal Vault';
+                    $email_address = 'PayPal';
                 }
                 $token->set_token($payment_token);
                 $token->set_gateway_id($order->get_payment_method());
@@ -177,7 +177,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 } elseif ($api_response['payment_source']['paypal']['payer_id']) {
                     $email_address = $api_response['payment_source']['paypal']['payer_id'];
                 } else {
-                    $email_address = 'PayPal Vault';
+                    $email_address = 'Venmo';
                 }
                 $token->set_token($payment_token);
                 $token->set_gateway_id($order->get_payment_method());
