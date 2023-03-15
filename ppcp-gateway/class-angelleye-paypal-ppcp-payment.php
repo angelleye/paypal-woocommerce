@@ -337,6 +337,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
+                if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
+                    $order->add_order_note($error_message);
+                }
                 wp_send_json_error($error_message);
             }
         } catch (Exception $ex) {
@@ -977,6 +980,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
+                $order->add_order_note($error_message);
                 return false;
             }
         } catch (Exception $ex) {
@@ -1386,6 +1390,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'order_id' => $woo_order_id
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                $order->add_order_note($error_message);
                 wc_add_notice($error_message, 'error');
                 return false;
             }
@@ -1916,7 +1921,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'request' => 'create_order',
                     'order_id' => $woo_order_id
                 );
-                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response);
+                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
+                    $order->add_order_note($error_message);
+                }
                 wc_add_notice($error_message, 'error');
                 return array(
                     'result' => 'fail',
