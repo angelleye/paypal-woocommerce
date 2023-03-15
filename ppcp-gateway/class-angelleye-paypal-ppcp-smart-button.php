@@ -74,7 +74,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         $this->order_review_page_enable_coupons = 'yes' === $this->setting_obj->get('order_review_page_enable_coupons', 'yes');
-        $this->order_review_page_title = apply_filters('angelleye_ppcp_order_review_page_title', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
+        $this->order_review_page_title = apply_filters('angelleye_ppcp_order_review_page_title', __('Complete Order Payment', 'paypal-for-woocommerce'));
         $this->order_review_page_description = apply_filters('angelleye_ppcp_order_review_page_description', __("<strong>You're almost done!</strong><br>Review your information before you place your order.", 'paypal-for-woocommerce'));
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
         $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');

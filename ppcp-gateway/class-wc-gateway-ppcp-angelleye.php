@@ -23,7 +23,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $this->angelleye_get_settings();
             $this->angelleye_defind_hooks();
             if (angelleye_ppcp_has_active_session()) {
-                $this->order_button_text = apply_filters('angelleye_ppcp_order_review_page_place_order_button_text', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
+                $this->order_button_text = apply_filters('angelleye_ppcp_order_review_page_place_order_button_text', __('Complete Order Payment', 'paypal-for-woocommerce'));
             }
             $this->enable_tokenized_payments = 'yes' === $this->get_option('enable_tokenized_payments', 'no');
             if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
