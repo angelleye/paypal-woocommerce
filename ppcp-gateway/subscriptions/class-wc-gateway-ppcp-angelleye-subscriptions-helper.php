@@ -172,10 +172,10 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 } else {
                     $customer_id = get_current_user_id();
                 }
-                if (isset($api_response['payment_source']['paypal']['email_address'])) {
-                    $email_address = $api_response['payment_source']['paypal']['email_address'];
-                } elseif ($api_response['payment_source']['paypal']['payer_id']) {
-                    $email_address = $api_response['payment_source']['paypal']['payer_id'];
+                if (isset($api_response['payment_source']['venmo']['email_address'])) {
+                    $email_address = $api_response['payment_source']['venmo']['email_address'];
+                } elseif ($api_response['payment_source']['venmo']['payer_id']) {
+                    $email_address = $api_response['payment_source']['venmo']['payer_id'];
                 } else {
                     $email_address = 'Venmo';
                 }

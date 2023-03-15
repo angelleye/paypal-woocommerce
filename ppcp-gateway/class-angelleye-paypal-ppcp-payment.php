@@ -16,6 +16,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public $enable_tokenized_payments;
     public $setup_tokens_url;
     public $payment_tokens_url;
+    public $angelleye_ppcp_used_payment_method;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -140,10 +141,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method);
                 angelleye_ppcp_set_session('angelleye_ppcp_payment_method_title', $payment_method_title);
                 angelleye_ppcp_set_session('angelleye_ppcp_used_payment_method', $payment_method_title);
+                $this->angelleye_ppcp_used_payment_method = $payment_method_title;
             } elseif (!empty($_POST['angelleye_ppcp_cc_payment_method_title'])) {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title(wc_clean($_POST['angelleye_ppcp_cc_payment_method_title']));
                 angelleye_ppcp_set_session('angelleye_ppcp_payment_method_title', $payment_method_title);
                 angelleye_ppcp_set_session('angelleye_ppcp_used_payment_method', 'card');
+                $this->angelleye_ppcp_used_payment_method = 'card';
             }
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
             $body_request = array(
@@ -183,7 +186,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                 ];
                 $body_request['processing_instruction'] = 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL';
             }
-
             $body_request['purchase_units'][0]['soft_descriptor'] = angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor);
             $body_request['purchase_units'][0]['payee']['merchant_id'] = $this->merchant_id;
             if ($this->send_items === true) {
@@ -217,7 +219,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                         'value' => $cart['discount'],
                     );
                 }
-
                 if (isset($cart['items']) && !empty($cart['items'])) {
                     foreach ($cart['items'] as $key => $order_items) {
                         $description = !empty($order_items['description']) ? strip_shortcodes($order_items['description']) : '';
@@ -284,7 +285,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             } else {
                 if (true === WC()->cart->needs_shipping()) {
                     if (is_user_logged_in()) {
-                        $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
                         if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                             $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
                         }
@@ -298,7 +298,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                                 'country_code' => $cart['shipping_address']['country'],
                             );
                             angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
-                            
                         }
                     }
                 }
@@ -306,6 +305,13 @@ class AngellEYE_PayPal_PPCP_Payment {
             $body_request = $this->angelleye_ppcp_set_payer_details($woo_order_id, $body_request);
             if (angelleye_ppcp_is_save_payment_method($this->enable_tokenized_payments)) {
                 $body_request = $this->angelleye_ppcp_add_payment_source_parameter($body_request);
+            } elseif ($this->angelleye_ppcp_used_payment_method === 'PayPal Venmo') {
+                if (isset($body_request['purchase_units'][0]['shipping']['address'])) {
+                    $body_request['payment_source']['venmo']['experience_context']['shipping_preference'] = 'SET_PROVIDED_ADDRESS';
+                } else {
+                    $body_request['payment_source']['venmo']['experience_context']['shipping_preference'] = $this->angelleye_ppcp_shipping_preference();
+                }
+                unset($body_request['application_context']);
             }
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $args = array(
@@ -1873,7 +1879,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             $body_request = $this->angelleye_ppcp_set_payer_details($woo_order_id, $body_request);
-            $body_request = $this->angelleye_ppcp_add_payment_source_parameter($body_request);
+            if (angelleye_ppcp_is_save_payment_method($this->enable_tokenized_payments)) {
+                $body_request = $this->angelleye_ppcp_add_payment_source_parameter($body_request);
+            } 
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $args = array(
                 'method' => 'POST',
@@ -2278,10 +2286,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $attributes['customer'] = array('id' => $paypal_generated_customer_id);
                         }
                         $request['payment_source'][$payment_method_name]['attributes'] = $attributes;
-                        
+
                         $request['payment_source'][$payment_method_name]['experience_context']['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
                         $request['payment_source'][$payment_method_name]['experience_context']['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
-                        if(isset($request['purchase_units'][0]['shipping']['address'])) {
+                        if (isset($request['purchase_units'][0]['shipping']['address'])) {
                             $request['payment_source'][$payment_method_name]['experience_context']['shipping_preference'] = 'SET_PROVIDED_ADDRESS';
                         } else {
                             $request['payment_source'][$payment_method_name]['experience_context']['shipping_preference'] = $this->angelleye_ppcp_shipping_preference();

@@ -46,12 +46,14 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                             } elseif ('method' === $column_id) {
                                 if (!empty($method['method']['last4'])) {
                                     if ($method['method']['gateway'] === 'angelleye_ppcp') {
-                                        if ($method['method']['brand'] === 'PayPal') {
-                                            $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png'; ?>
+                                        if ($method['_angelleye_ppcp_used_payment_method'] === 'PayPal Checkout') {
+                                            $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png';
+                                            ?>
                                             <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='PayPal'><?php
                                             echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
-                                        } elseif ($method['method']['brand'] === 'Venmo') {
-                                            $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/venmo.png'; ?>
+                                        } elseif ($method['_angelleye_ppcp_used_payment_method'] === 'PayPal Venmo') {
+                                            $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/venmo.png';
+                                            ?>
                                             <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='Venmo'><?php
                                             echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
                                         }
@@ -84,7 +86,11 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                                     echo esc_html(wc_get_credit_card_type_label($method['method']['brand']));
                                 }
                             } elseif ('expires' === $column_id) {
-                                echo esc_html($method['expires']);
+                                if ($method['method']['gateway'] !== 'angelleye_ppcp') {
+                                    echo esc_html($method['expires']);
+                                } else {
+                                    echo 'N/A';
+                                }
                             } elseif ('actions' === $column_id) {
                                 foreach ($method['actions'] as $key => $action) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
                                     echo '<a href="' . esc_url($action['url']) . '" class="button ' . sanitize_html_class($key) . '">' . esc_html($action['name']) . '</a>&nbsp;';
@@ -92,19 +98,19 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                             }
                             ?>
                         </td>
-                        <?php endforeach; ?>
-                </tr>
-                    <?php endforeach; ?>
                 <?php endforeach; ?>
+                </tr>
+        <?php endforeach; ?>
+    <?php endforeach; ?>
     </table>
 
-            <?php else : ?>
+<?php else : ?>
 
     <p class="woocommerce-Message woocommerce-Message--info woocommerce-info"><?php esc_html_e('No saved methods found.', 'woocommerce'); ?></p>
 
-    <?php endif; ?>
+<?php endif; ?>
 
-    <?php do_action('woocommerce_after_account_payment_methods', $has_methods); ?>
+<?php do_action('woocommerce_after_account_payment_methods', $has_methods); ?>
 
 <?php if (WC()->payment_gateways->get_available_payment_gateways()) : ?>
     <a class="button" href="<?php echo esc_url(wc_get_endpoint_url('add-payment-method')); ?>"><?php esc_html_e('Add payment method', 'woocommerce'); ?></a>
