@@ -4,7 +4,7 @@
         if (typeof angelleye_ppcp_manager === 'undefined') {
             return false;
         }
-        var checkout_selector = '';
+        var checkout_selector = '.woocommerce';
         if (angelleye_ppcp_manager.page === 'checkout') {
             if (angelleye_ppcp_manager.is_pay_page === 'yes') {
                 checkout_selector = 'form#order_review';
@@ -166,9 +166,10 @@
                         console.log(err);
                         $('.woocommerce').unblock();
                         $(document.body).trigger('angelleye_paypal_onerror');
+                        showError('<div class="woocommerce-error">' + err + '</div>');
                         $.angelleye_ppcp_scroll_to_notices();
                         if (is_from_checkout === false) {
-                            window.location.href = window.location.href;
+                          //  window.location.href = window.location.href;
                         }
                     }
                 }).render(angelleye_ppcp_button_selector);
