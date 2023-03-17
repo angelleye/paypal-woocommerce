@@ -61,7 +61,7 @@ if (!function_exists('angelleye_ppcp_has_active_session')) {
     function angelleye_ppcp_has_active_session() {
         $checkout_details = angelleye_ppcp_get_session('angelleye_ppcp_paypal_transaction_details');
         $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
-        if(is_ajax() && !empty($checkout_details) && !empty($angelleye_ppcp_paypal_order_id)) {
+        if (is_ajax() && !empty($checkout_details) && !empty($angelleye_ppcp_paypal_order_id)) {
             return true;
         } elseif (!empty($checkout_details) && !empty($angelleye_ppcp_paypal_order_id) && isset($_GET['paypal_order_id'])) {
             return true;
@@ -651,7 +651,7 @@ if (!function_exists('angelleye_ppcp_get_payment_method_title')) {
 if (!function_exists('angelleye_ppcp_is_product_purchasable')) {
 
     function angelleye_ppcp_is_product_purchasable($product, $enable_tokenized_payments) {
-        if( $enable_tokenized_payments === false && $product->is_type('subscription')) {
+        if ($enable_tokenized_payments === false && $product->is_type('subscription')) {
             return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
         }
         if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || ($product->get_price() == '' || $product->get_price() == 0)) {
@@ -863,5 +863,26 @@ if (!function_exists('angelleye_ppcp_is_save_payment_method')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
+
+    function angelleye_ppcp_get_token_id_by_token($token_id) {
+        try {
+            global $wpdb;
+            $tokens = $wpdb->get_row(
+                    $wpdb->prepare(
+                            "SELECT token_id FROM {$wpdb->prefix}woocommerce_payment_tokens WHERE token = %s",
+                            $token_id
+                    )
+            );
+            if (isset($tokens->token_id)) {
+                return $tokens->token_id;
+            }
+            return '';
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+}
 
     

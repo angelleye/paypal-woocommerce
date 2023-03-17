@@ -70,19 +70,9 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
         } elseif (isset($api_response['payment_source']['venmo']['attributes']['vault']['id'])) {
             $payment_token = $api_response['payment_source']['venmo']['attributes']['vault']['id'];
         }
-        if (!empty($_POST['wc-angelleye_ppcp_cc-payment-token']) && $_POST['wc-angelleye_ppcp_cc-payment-token'] != 'new') {
-            $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
-            $token = WC_Payment_Tokens::get($token_id);
-            if ($this->is_subscription($order_id)) {
-                $this->save_payment_token($order, $payment_token);
-            }
-        } elseif (!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') {
-            $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
-            $token = WC_Payment_Tokens::get($token_id);
-            if ($this->is_subscription($order_id)) {
-                $this->save_payment_token($order, $payment_token);
-            }
-        } else {
+        $order = wc_get_order($order_id);
+        $this->save_payment_token($order, $payment_token);
+        if (angelleye_ppcp_get_token_id_by_token($payment_token) === '') {
             if (!empty($api_response['payment_source']['card']['attributes']['vault']['id'])) {
                 $token = new WC_Payment_Token_CC();
                 $order = wc_get_order($order_id);
@@ -117,7 +107,6 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 }
                 $token->set_user_id($customer_id);
                 if ($token->validate()) {
-                    $this->save_payment_token($order, $payment_token);
                     $token->save();
                     update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
                 } else {
@@ -146,7 +135,6 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 $token->set_expiry_year(date('Y', strtotime('+20 years')));
                 $token->set_user_id($customer_id);
                 if ($token->validate()) {
-                    $this->save_payment_token($order, $payment_token);
                     $token->save();
                     update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
                 } else {
@@ -175,7 +163,6 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 $token->set_expiry_year(date('Y', strtotime('+20 years')));
                 $token->set_user_id($customer_id);
                 if ($token->validate()) {
-                    $this->save_payment_token($order, $payment_token);
                     $token->save();
                     update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Venmo');
                 } else {

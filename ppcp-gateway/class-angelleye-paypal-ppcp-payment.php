@@ -2313,24 +2313,6 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function get_token_id_by_token($token_id) {
-        try {
-            global $wpdb;
-            $tokens = $wpdb->get_row(
-                    $wpdb->prepare(
-                            "SELECT token_id FROM {$wpdb->prefix}woocommerce_payment_tokens WHERE token = %s",
-                            $token_id
-                    )
-            );
-            if (isset($tokens->token_id)) {
-                return $tokens->token_id;
-            }
-            return '';
-        } catch (Exception $ex) {
-
-        }
-    }
-
     public function angelleye_ppcp_capture_order_using_payment_method_token($order_id) {
         try {
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
@@ -2466,7 +2448,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                                 $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
                             } else {
                                 $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
-                                $token_id = $this->get_token_id_by_token($payment_tokens_id);
+                                $token_id = angelleye_ppcp_get_token_id_by_token($payment_tokens_id);
                             }
                             if (!empty($token_id)) {
                                 $token = WC_Payment_Tokens::get($token_id);
@@ -2747,39 +2729,46 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (isset($customer_id) && !empty($customer_id)) {
                         $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
-                    if (isset($this->api_response['payment_source']['paypal']['email_address'])) {
-                        $email_address = $this->api_response['payment_source']['paypal']['email_address'];
-                    } elseif ($this->api_response['payment_source']['paypal']['payer_id']) {
-                        $email_address = $this->api_response['payment_source']['paypal']['payer_id'];
-                    } else {
-                        $email_address = 'PayPal Vault';
-                    }
                     $order_id = wc_clean($_GET['order_id']);
                     $order = wc_get_order(wc_clean($_GET['order_id']));
-                    $token = new WC_Payment_Token_CC();
-                    if (0 != $order->get_user_id()) {
-                        $customer_id = $order->get_user_id();
-                    } else {
-                        $customer_id = get_current_user_id();
-                    }
                     update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
-                    $token->set_token($this->api_response['id']);
-                    $token->set_gateway_id($order->get_payment_method());
-                    $token->set_card_type($email_address);
-                    $token->set_last4(substr($this->api_response['id'], -4));
-                    $token->set_expiry_month(date('m'));
-                    $token->set_expiry_year(date('Y', strtotime('+20 years')));
-                    $token->set_user_id($customer_id);
-                    if ($token->validate()) {
-                        $this->save_payment_token($order, $this->api_response['id']);
-                        $token->save();
-                        update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
+                    $this->save_payment_token($order, $this->api_response['id']);
+                    if (angelleye_ppcp_get_token_id_by_token($this->api_response['id']) === '') {
+                        $token = new WC_Payment_Token_CC();
+                        if (0 != $order->get_user_id()) {
+                            $customer_id = $order->get_user_id();
+                        } else {
+                            $customer_id = get_current_user_id();
+                        }
+                        if (isset($this->api_response['payment_source']['paypal']['email_address'])) {
+                            $email_address = $this->api_response['payment_source']['paypal']['email_address'];
+                        } elseif ($this->api_response['payment_source']['paypal']['payer_id']) {
+                            $email_address = $this->api_response['payment_source']['paypal']['payer_id'];
+                        } else {
+                            $email_address = 'PayPal Vault';
+                        }
+                        $token->set_token($this->api_response['id']);
+                        $token->set_gateway_id($order->get_payment_method());
+                        $token->set_card_type($email_address);
+                        $token->set_last4(substr($this->api_response['id'], -4));
+                        $token->set_expiry_month(date('m'));
+                        $token->set_expiry_year(date('Y', strtotime('+20 years')));
+                        $token->set_user_id($customer_id);
+                        if ($token->validate()) {
+                            $token->save();
+                            update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
+                            $order->payment_complete();
+                            WC()->cart->empty_cart();
+                            wp_redirect($this->angelleye_ppcp_get_order_return_url($order));
+                            exit();
+                        } else {
+                            $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
+                        }
+                    } else {
                         $order->payment_complete();
                         WC()->cart->empty_cart();
                         wp_redirect($this->angelleye_ppcp_get_order_return_url($order));
                         exit();
-                    } else {
-                        $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
                     }
                     wp_redirect(wc_get_checkout_url());
                     exit();
@@ -2820,28 +2809,32 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (isset($customer_id) && !empty($customer_id)) {
                         $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
-                    if (isset($this->api_response['payment_source']['paypal']['email_address'])) {
-                        $email_address = $this->api_response['payment_source']['paypal']['email_address'];
-                    } elseif ($this->api_response['payment_source']['paypal']['payer_id']) {
-                        $email_address = $this->api_response['payment_source']['paypal']['payer_id'];
+                    if (angelleye_ppcp_get_token_id_by_token($this->api_response['id']) === '') {
+                        $token = new WC_Payment_Token_CC();
+                        $wc_customer_id = get_current_user_id();
+                        if (isset($this->api_response['payment_source']['paypal']['email_address'])) {
+                            $email_address = $this->api_response['payment_source']['paypal']['email_address'];
+                        } elseif ($this->api_response['payment_source']['paypal']['payer_id']) {
+                            $email_address = $this->api_response['payment_source']['paypal']['payer_id'];
+                        } else {
+                            $email_address = 'PayPal Vault';
+                        }
+                        $token->set_token($this->api_response['id']);
+                        $token->set_gateway_id('angelleye_ppcp');
+                        $token->set_card_type($email_address);
+                        $token->set_last4(substr($this->api_response['id'], -4));
+                        $token->set_expiry_month(date('m'));
+                        $token->set_expiry_year(date('Y', strtotime('+20 years')));
+                        $token->set_user_id($wc_customer_id);
+                        if ($token->validate()) {
+                            $token->save();
+                            update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
+                            wc_add_notice(__('Payment method successfully added.', 'woocommerce'));
+                        } else {
+                            wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                        }
                     } else {
-                        $email_address = 'PayPal Vault';
-                    }
-                    $token = new WC_Payment_Token_CC();
-                    $wc_customer_id = get_current_user_id();
-                    $token->set_token($this->api_response['id']);
-                    $token->set_gateway_id('angelleye_ppcp');
-                    $token->set_card_type($email_address);
-                    $token->set_last4(substr($this->api_response['id'], -4));
-                    $token->set_expiry_month(date('m'));
-                    $token->set_expiry_year(date('Y', strtotime('+20 years')));
-                    $token->set_user_id($wc_customer_id);
-                    if ($token->validate()) {
-                        $token->save();
-                        update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
-                        wc_add_notice(__('Payment method successfully added.', 'woocommerce'));
-                    } else {
-                        wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                        wc_add_notice(__('Payment method already exist in your account.', 'woocommerce'), 'notice');
                     }
                     wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                     exit();
@@ -2968,38 +2961,42 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (isset($customer_id) && !empty($customer_id)) {
                         $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
-                    $token = new WC_Payment_Token_CC();
-                    $wc_customer_id = get_current_user_id();
-                    $token->set_token($this->api_response['id']);
-                    $token->set_gateway_id('angelleye_ppcp_cc');
-                    $token->set_card_type($this->api_response['payment_source']['card']['brand']);
-                    $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
-                    if (isset($this->api_response['payment_source']['card']['expiry'])) {
-                        $card_expiry = array_map('trim', explode('-', $this->api_response['payment_source']['card']['expiry']));
-                        $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
-                        $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
-                        $token->set_expiry_month($card_exp_month);
-                        $token->set_expiry_year($card_exp_year);
-                    } else {
-                        $card_details = $this->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
-                        if (isset($card_details['payment_source']['card']['expiry'])) {
-                            $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                    if (angelleye_ppcp_get_token_id_by_token($this->api_response['id']) === '') {
+                        $token = new WC_Payment_Token_CC();
+                        $wc_customer_id = get_current_user_id();
+                        $token->set_token($this->api_response['id']);
+                        $token->set_gateway_id('angelleye_ppcp_cc');
+                        $token->set_card_type($this->api_response['payment_source']['card']['brand']);
+                        $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
+                        if (isset($this->api_response['payment_source']['card']['expiry'])) {
+                            $card_expiry = array_map('trim', explode('-', $this->api_response['payment_source']['card']['expiry']));
                             $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
                             $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
                             $token->set_expiry_month($card_exp_month);
                             $token->set_expiry_year($card_exp_year);
                         } else {
-                            $token->set_expiry_month(date('m'));
-                            $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                            $card_details = $this->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
+                            if (isset($card_details['payment_source']['card']['expiry'])) {
+                                $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                                $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                                $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                                $token->set_expiry_month($card_exp_month);
+                                $token->set_expiry_year($card_exp_year);
+                            } else {
+                                $token->set_expiry_month(date('m'));
+                                $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                            }
                         }
-                    }
-                    $token->set_user_id($wc_customer_id);
-                    if ($token->validate()) {
-                        $token->save();
-                        update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
-                        wc_add_notice(__('Payment method successfully added.', 'woocommerce'));
+                        $token->set_user_id($wc_customer_id);
+                        if ($token->validate()) {
+                            $token->save();
+                            update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
+                            wc_add_notice(__('Payment method successfully added.', 'woocommerce'));
+                        } else {
+                            wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                        }
                     } else {
-                        wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                        wc_add_notice(__('Payment method already exist in your account.', 'woocommerce'), 'notice');
                     }
                     wp_redirect(wc_get_account_endpoint_url('payment-methods'));
                     exit();
@@ -3043,47 +3040,54 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                     $order_id = wc_clean($_GET['order_id']);
                     $order = wc_get_order(wc_clean($_GET['order_id']));
-                    $token = new WC_Payment_Token_CC();
-                    if (0 != $order->get_user_id()) {
-                        $customer_id = $order->get_user_id();
-                    } else {
-                        $customer_id = get_current_user_id();
-                    }
                     update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'card');
-                    $token->set_token($this->api_response['id']);
-                    $token->set_gateway_id($order->get_payment_method());
-                    $token->set_card_type($this->api_response['payment_source']['card']['brand']);
-                    $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
-                    if (isset($this->api_response['payment_source']['card']['expiry'])) {
-                        $card_expiry = array_map('trim', explode('-', $this->api_response['payment_source']['card']['expiry']));
-                        $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
-                        $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
-                        $token->set_expiry_month($card_exp_month);
-                        $token->set_expiry_year($card_exp_year);
-                    } else {
-                        $card_details = $this->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
-                        if (isset($card_details['payment_source']['card']['expiry'])) {
-                            $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                    $this->save_payment_token($order, $this->api_response['id']);
+                    if (angelleye_ppcp_get_token_id_by_token($this->api_response['id']) === '') {
+                        $token = new WC_Payment_Token_CC();
+                        if (0 != $order->get_user_id()) {
+                            $customer_id = $order->get_user_id();
+                        } else {
+                            $customer_id = get_current_user_id();
+                        }
+                        $token->set_token($this->api_response['id']);
+                        $token->set_gateway_id($order->get_payment_method());
+                        $token->set_card_type($this->api_response['payment_source']['card']['brand']);
+                        $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
+                        if (isset($this->api_response['payment_source']['card']['expiry'])) {
+                            $card_expiry = array_map('trim', explode('-', $this->api_response['payment_source']['card']['expiry']));
                             $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
                             $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
                             $token->set_expiry_month($card_exp_month);
                             $token->set_expiry_year($card_exp_year);
                         } else {
-                            $token->set_expiry_month(date('m'));
-                            $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                            $card_details = $this->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
+                            if (isset($card_details['payment_source']['card']['expiry'])) {
+                                $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                                $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                                $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                                $token->set_expiry_month($card_exp_month);
+                                $token->set_expiry_year($card_exp_year);
+                            } else {
+                                $token->set_expiry_month(date('m'));
+                                $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                            }
                         }
-                    }
-                    $token->set_user_id($customer_id);
-                    if ($token->validate()) {
-                        $this->save_payment_token($order, $this->api_response['id']);
-                        $token->save();
-                        update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
+                        $token->set_user_id($customer_id);
+                        if ($token->validate()) {
+                            $token->save();
+                            update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
+                            $order->payment_complete();
+                            WC()->cart->empty_cart();
+                            wp_redirect($this->angelleye_ppcp_get_order_return_url($order));
+                            exit();
+                        } else {
+                            wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
+                        }
+                    } else {
                         $order->payment_complete();
                         WC()->cart->empty_cart();
                         wp_redirect($this->angelleye_ppcp_get_order_return_url($order));
                         exit();
-                    } else {
-                        wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
                     }
                     wp_redirect(wc_get_checkout_url());
                     exit();
@@ -3303,45 +3307,47 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (isset($customer_id) && !empty($customer_id)) {
                         $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
-                    $token = new WC_Payment_Token_CC();
-                    if (0 != $order->get_user_id()) {
-                        $customer_id = $order->get_user_id();
-                    } else {
-                        $customer_id = get_current_user_id();
-                    }
                     update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'card');
-                    $token->set_token($this->api_response['id']);
-                    $token->set_gateway_id($order->get_payment_method());
-                    $token->set_card_type($this->api_response['payment_source']['card']['brand']);
-                    $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
-                    if (isset($this->api_response['payment_source']['card']['expiry'])) {
-                        $card_expiry = array_map('trim', explode('-', $this->api_response['payment_source']['card']['expiry']));
-                        $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
-                        $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
-                        $token->set_expiry_month($card_exp_month);
-                        $token->set_expiry_year($card_exp_year);
-                    } else {
-                        $card_details = $this->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
-                        if (isset($card_details['payment_source']['card']['expiry'])) {
-                            $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                    $this->save_payment_token($order, $this->api_response['id']);
+                    if (angelleye_ppcp_get_token_id_by_token($this->api_response['id']) === '') {
+                        $token = new WC_Payment_Token_CC();
+                        if (0 != $order->get_user_id()) {
+                            $customer_id = $order->get_user_id();
+                        } else {
+                            $customer_id = get_current_user_id();
+                        }
+                        $token->set_token($this->api_response['id']);
+                        $token->set_gateway_id($order->get_payment_method());
+                        $token->set_card_type($this->api_response['payment_source']['card']['brand']);
+                        $token->set_last4($this->api_response['payment_source']['card']['last_digits']);
+                        if (isset($this->api_response['payment_source']['card']['expiry'])) {
+                            $card_expiry = array_map('trim', explode('-', $this->api_response['payment_source']['card']['expiry']));
                             $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
                             $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
                             $token->set_expiry_month($card_exp_month);
                             $token->set_expiry_year($card_exp_year);
                         } else {
-                            $token->set_expiry_month(date('m'));
-                            $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                            $card_details = $this->angelleye_ppcp_get_payment_token_details($this->api_response['id']);
+                            if (isset($card_details['payment_source']['card']['expiry'])) {
+                                $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
+                                $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                                $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                                $token->set_expiry_month($card_exp_month);
+                                $token->set_expiry_year($card_exp_year);
+                            } else {
+                                $token->set_expiry_month(date('m'));
+                                $token->set_expiry_year(date('Y', strtotime('+5 years')));
+                            }
                         }
-                    }
-                    $token->set_user_id($customer_id);
-                    if ($token->validate()) {
-                        $this->save_payment_token($order, $this->api_response['id']);
-                        $token->save();
-                        update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
-                        wp_redirect(angelleye_ppcp_get_view_sub_order_url($order_id));
-                        exit();
-                    } else {
-                        wc_add_notice(__('Unable to change payment method.', 'woocommerce'), 'error');
+                        $token->set_user_id($customer_id);
+                        if ($token->validate()) {
+                            $token->save();
+                            update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
+                            wp_redirect(angelleye_ppcp_get_view_sub_order_url($order_id));
+                            exit();
+                        } else {
+                            wc_add_notice(__('Unable to change payment method.', 'woocommerce'), 'error');
+                        }
                     }
                     wp_redirect(angelleye_ppcp_get_view_sub_order_url($order_id));
                     exit();
@@ -3444,35 +3450,38 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (isset($customer_id) && !empty($customer_id)) {
                         $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                     }
-                    $token = new WC_Payment_Token_CC();
-                    if (0 != $order->get_user_id()) {
-                        $wc_customer_id = $order->get_user_id();
-                    } else {
-                        $wc_customer_id = get_current_user_id();
-                    }
-                    if (isset($this->api_response['payment_source']['paypal']['email_address'])) {
-                        $email_address = $this->api_response['payment_source']['paypal']['email_address'];
-                    } elseif ($this->api_response['payment_source']['paypal']['payer_id']) {
-                        $email_address = $this->api_response['payment_source']['paypal']['payer_id'];
-                    } else {
-                        $email_address = 'PayPal Vault';
-                    }
                     update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
-                    $token->set_token($this->api_response['id']);
-                    $token->set_gateway_id($order->get_payment_method());
-                    $token->set_card_type('PayPal Vault');
-                    $token->set_last4(substr($this->api_response['id'], -4));
-                    $token->set_expiry_month(date('m'));
-                    $token->set_expiry_year(date('Y', strtotime('+20 years')));
-                    $token->set_user_id($wc_customer_id);
-                    if ($token->validate()) {
-                        $this->save_payment_token($order, $this->api_response['id']);
-                        $token->save();
-                        update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
-                        wp_redirect(angelleye_ppcp_get_view_sub_order_url($order_id));
-                        exit();
-                    } else {
-                        $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
+                    $this->save_payment_token($order, $this->api_response['id']);
+                    if (angelleye_ppcp_get_token_id_by_token($this->api_response['id']) === '') {
+                        $token = new WC_Payment_Token_CC();
+                        if (0 != $order->get_user_id()) {
+                            $wc_customer_id = $order->get_user_id();
+                        } else {
+                            $wc_customer_id = get_current_user_id();
+                        }
+                        if (isset($this->api_response['payment_source']['paypal']['email_address'])) {
+                            $email_address = $this->api_response['payment_source']['paypal']['email_address'];
+                        } elseif ($this->api_response['payment_source']['paypal']['payer_id']) {
+                            $email_address = $this->api_response['payment_source']['paypal']['payer_id'];
+                        } else {
+                            $email_address = 'PayPal Vault';
+                        }
+                        $token->set_token($this->api_response['id']);
+                        $token->set_gateway_id($order->get_payment_method());
+                        $token->set_card_type('PayPal Vault');
+                        $token->set_last4(substr($this->api_response['id'], -4));
+                        $token->set_expiry_month(date('m'));
+                        $token->set_expiry_year(date('Y', strtotime('+20 years')));
+                        $token->set_user_id($wc_customer_id);
+                        if ($token->validate()) {
+
+                            $token->save();
+                            update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
+                            wp_redirect(angelleye_ppcp_get_view_sub_order_url($order_id));
+                            exit();
+                        } else {
+                            $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
+                        }
                     }
                     wp_redirect(angelleye_ppcp_get_view_sub_order_url($order_id));
                     exit();
