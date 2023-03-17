@@ -313,7 +313,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                       ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <div class="ppcp_paypal_connection_image">
@@ -343,7 +343,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                       ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
@@ -381,12 +381,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                  ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                         ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                                                     ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                                                            ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
                     <?php echo $this->get_description_html($data); // WPCS: XSS ok.                 ?>
                 </fieldset>
@@ -457,7 +457,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -476,7 +476,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 return parent::get_title();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -592,7 +592,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -611,7 +611,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 return $this->payment_request->angelleye_ppcp_paypal_setup_tokens_sub_change_payment($order_id);
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -630,7 +630,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -638,7 +638,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         try {
             return $this->payment_request->angelleye_ppcp_paypal_setup_tokens();
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -646,7 +646,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         try {
             return $this->payment_request->angelleye_ppcp_paypal_setup_tokens_free_signup_with_free_trial($order_id);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -661,6 +661,36 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         );
 
         echo apply_filters('woocommerce_payment_gateway_save_new_payment_method_option_html', $html, $this); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    }
+
+    public function get_saved_payment_method_option_html($token) {
+        try {
+            $angelleye_ppcp_used_payment_method = get_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', true);
+            if (!empty($angelleye_ppcp_used_payment_method)) {
+                if ($angelleye_ppcp_used_payment_method === 'PayPal Checkout') {
+                    $image_url = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png';
+                } elseif ($angelleye_ppcp_used_payment_method === 'PayPal Venmo') {
+                    $image_url = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/venmo.png';
+                }
+                $image_path = '<img class="ppcp_payment_method_icon" src="' . $image_url . '" alt="Credit card">';
+                $html = sprintf(
+                        '<li class="woocommerce-SavedPaymentMethods-token">
+				<input id="wc-%1$s-payment-token-%2$s" type="radio" name="wc-%1$s-payment-token" value="%2$s" style="width:auto;" class="woocommerce-SavedPaymentMethods-tokenInput" %4$s />
+				<label for="wc-%1$s-payment-token-%2$s">%5$s  %3$s</label>
+			</li>',
+                        esc_attr($this->id),
+                        esc_attr($token->get_id()),
+                        esc_html($token->get_card_type()),
+                        checked($token->is_default(), true, false),
+                        $image_path
+                );
+                return apply_filters('woocommerce_payment_gateway_get_saved_payment_method_option_html', $html, $token, $this);
+            } else {
+                parent::get_saved_payment_method_option_html($token);
+            }
+        } catch (Exception $ex) {
+            parent::get_saved_payment_method_option_html($token);
+        }
     }
 
 }
