@@ -30,6 +30,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->version = VERSION_PFW;
         $this->angelleye_ppcp_load_class();
         $this->angelleye_ppcp_get_properties();
+        if (defined('WCU_WP_PLUGIN_NAME')) {
+            add_filter('woocommerce_currency', array($this, 'angelleye_ppcp_woocommerce_currency'), 99999);
+        }
         $this->angelleye_ppcp_default_set_properties();
         if ($this->is_valid_for_use() === true) {
             $this->angelleye_ppcp_add_hooks();
@@ -268,6 +271,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_action('woocommerce_get_checkout_url', array($this, 'angelleye_ppcp_woocommerce_get_checkout_url'), 9999, 1);
         add_filter('angelleye_ppcp_gateway_method_title', array($this, 'angelleye_ppcp_gateway_method_title'), 999, 1);
         add_filter('woocommerce_get_order_item_totals', array($this, 'angelleye_ppcp_woocommerce_get_order_item_totals'), 999, 3);
+        
     }
 
     /*
@@ -1294,6 +1298,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $total_rows['payment_method']['value'] = $payment_method_title;
         }
         return $total_rows;
+    }
+    
+    public function angelleye_ppcp_woocommerce_currency($currency) {
+        try {
+            $woocommerce_currency = get_option( 'woocommerce_currency' );
+            return $woocommerce_currency;
+        } catch (Exception $ex) {
+            return $currency;
+        }
     }
 
 }
