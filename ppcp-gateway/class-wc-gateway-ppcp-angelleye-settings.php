@@ -90,12 +90,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'elo' => _x('Elo', 'Name of credit card', 'paypal-for-woocommerce'),
                 'hiper' => _x('Hiper', 'Name of credit card', 'paypal-for-woocommerce'),
             );
-            foreach ($cards_list as $card_key => $card_value) {
-                if ($this->dcc_applies->can_process_card($card_key)) {
-                    continue;
-                }
-                unset($cards_list[$card_key]);
-            }
             $skip_final_review_option_not_allowed_guest_checkout = '';
             $skip_final_review_option_not_allowed_terms = '';
             $skip_final_review_option_not_allowed_tokenized_payments = '';
