@@ -2260,6 +2260,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $request['payment_source'][$payment_method_name]['name'] = $billing_full_name;
                         $request['payment_source'][$payment_method_name]['billing_address'] = $billing_address;
                         $request['payment_source'][$payment_method_name]['attributes'] = $attributes;
+                        $request['payment_source'][$payment_method_name]['stored_credential'] = array(
+                            'payment_initiator' => 'CUSTOMER',
+                            'payment_type' => 'UNSCHEDULED',
+                            'usage' => 'SUBSEQUENT'
+                        );
                         break;
                     case 'PayPal Checkout':
                         $payment_method_name = 'paypal';
