@@ -605,7 +605,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'amount' => angelleye_ppcp_round($amount, $decimals),
             );
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -804,7 +804,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
         }
         if (!empty($message)) {
-
+            
         } else if (!empty($error['message'])) {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
@@ -2040,7 +2040,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             endswitch;
             return;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2159,7 +2159,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
             if (!empty($this->api_response['id'])) {
-
+                
             } else {
                 $error_email_notification_param = array(
                     'request' => 'capture_authorized',
@@ -2207,7 +2207,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
             if (isset($this->api_response['status'])) {
-
+                
             } else {
                 $error_email_notification_param = array(
                     'request' => 'refund_order',
@@ -2314,7 +2314,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $request;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2648,7 +2648,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2708,7 +2708,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2788,7 +2788,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2855,7 +2855,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2894,6 +2894,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'locale' => 'en-US',
                 'return_url' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
                 'cancel_url' => wc_get_account_endpoint_url('add-payment-method')
+            );
+            $body_request['payment_source']['card']['stored_credential'] = array(
+                'payment_initiator' => 'CUSTOMER',
+                'payment_type' => 'UNSCHEDULED',
+                'usage' => 'SUBSEQUENT'
             );
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
             if (!empty($paypal_generated_customer_id)) {
@@ -2940,7 +2945,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3017,7 +3022,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3108,7 +3113,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3147,6 +3152,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'locale' => 'en-US',
                 'return_url' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token_free_signup_with_free_trial', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id(), 'order_id' => $order_id), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
                 'cancel_url' => wc_get_checkout_url()
+            );
+            $body_request['payment_source']['card']['stored_credential'] = array(
+                'payment_initiator' => 'CUSTOMER',
+                'payment_type' => 'UNSCHEDULED',
+                'usage' => 'SUBSEQUENT'
             );
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
             if (!empty($paypal_generated_customer_id)) {
@@ -3196,7 +3206,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3236,6 +3246,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'locale' => 'en-US',
                 'return_url' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token_sub_change_payment', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id(), 'order_id' => $order_id), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
                 'cancel_url' => wc_get_checkout_url()
+            );
+            $body_request['payment_source']['card']['stored_credential'] = array(
+                'payment_initiator' => 'CUSTOMER',
+                'payment_type' => 'UNSCHEDULED',
+                'usage' => 'SUBSEQUENT'
             );
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
             if (!empty($paypal_generated_customer_id)) {
@@ -3284,7 +3299,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3367,7 +3382,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3427,7 +3442,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3501,7 +3516,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3525,7 +3540,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response['payment_tokens'];
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3544,7 +3559,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
