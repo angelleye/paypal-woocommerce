@@ -33,7 +33,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE;
             }
             $this->angelleye_ppcp_load_class();
-            $this->sandbox_partner_merchant_id = PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID;
+            $this->sandbox_partner_merchant_id = PAYPAL_PPCP_SANDBOX_PARTNER_MERCHANT_ID;
             $this->partner_merchant_id = PAYPAL_PPCP_PARTNER_MERCHANT_ID;
             //add_action('wc_ajax_ppcp_login_seller', array($this, 'angelleye_ppcp_login_seller'));
             add_action('admin_init', array($this, 'angelleye_ppcp_listen_for_merchant_id'));
