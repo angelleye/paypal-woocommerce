@@ -231,6 +231,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                         switch ($product) {
                             case 'paypal_express':
                                 $this->ppcp_migration->angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status);
+                                $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_express', 'angelleye_ppcp');
                                 break;
                             case 'paypal_pro':
                                 $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
@@ -248,6 +249,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                 break;
                         }
                     }
+                    
                 }
             }
             wp_safe_redirect($redirect_url, 302);
