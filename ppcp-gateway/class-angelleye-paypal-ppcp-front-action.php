@@ -149,6 +149,25 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     wp_redirect(wc_get_checkout_url());
                     exit();
                     break;
+                case "paypal_create_payment_token":
+                    $this->payment_request->angelleye_ppcp_paypal_create_payment_token();
+                    exit();
+                case "paypal_create_payment_token_free_signup_with_free_trial":
+                    $this->payment_request->angelleye_ppcp_paypal_create_payment_token_free_signup_with_free_trial();
+                    exit();
+                case "advanced_credit_card_create_payment_token":
+                    $this->payment_request->angelleye_ppcp_advanced_credit_card_create_payment_token();
+                    exit();
+                case "advanced_credit_card_create_payment_token_free_signup_with_free_trial":
+                    $this->payment_request->angelleye_ppcp_advanced_credit_card_create_payment_token_free_signup_with_free_trial();
+                    exit();
+                case "advanced_credit_card_create_payment_token_sub_change_payment":
+                    $this->payment_request->angelleye_ppcp_advanced_credit_card_create_payment_token_sub_change_payment();
+                    exit();
+                case "paypal_create_payment_token_sub_change_payment":
+                    $this->payment_request->angelleye_ppcp_paypal_create_payment_token_sub_change_payment();
+                    exit();
+                    
             }
         }
     }

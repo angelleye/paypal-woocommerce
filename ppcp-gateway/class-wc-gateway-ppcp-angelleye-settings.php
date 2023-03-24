@@ -29,6 +29,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
                 }
+                if (!class_exists('AngellEYE_PayPal_PPCP_Request')) {
+                    include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
+                }
                 $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             } catch (Exception $ex) {
                 
@@ -39,7 +42,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             if (!$this->has($id)) {
                 return $default;
             }
-            return $this->setting_obj[$id];
+            return empty($this->setting_obj[$id]) ? $default : $this->setting_obj[$id];
         }
 
         public function get_load() {
@@ -211,6 +214,30 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
         public function angelleye_ppcp_setting_fields() {
+            $this->is_sandbox = 'yes' === $this->get('testmode', 'no');
+            if ($this->is_sandbox) {
+                $this->merchant_id = $this->get('sandbox_merchant_id', '');
+            } else {
+                $this->merchant_id = $this->get('live_merchant_id', '');
+            }
+            $this->enable_tokenized_payments = $was_enable_tokenized_payments = $this->get('enable_tokenized_payments', 'no');
+            if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+                $this->enable_tokenized_payments = 'no';
+                $this->is_multi_account_active = 'yes';
+            } else {
+                $this->is_multi_account_active = 'no';
+            }
+            $credit_messaging_text = '';
+            if ($this->is_multi_account_active == 'yes') {
+                $credit_messaging_text = __('PayPal Pay Later Messaging - Buy Now Pay Later is not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+            }
+            if ($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
+                $enable_tokenized_payments_text = __('', 'paypal-for-woocommerce');
+            } elseif ($was_enable_tokenized_payments == 'no' && $this->is_multi_account_active == 'yes') {
+                $enable_tokenized_payments_text = __('Token payments are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+            } else {
+                $enable_tokenized_payments_text = __('Allow buyers to securely save payment details to their account. This enables features like Subscriptions, Auto-Ship, and token payments of any kind.', 'paypal-for-woocommerce');
+            }
             $cards_list = array(
                 'visa' => _x('Visa', 'Name of credit card', 'paypal-for-woocommerce'),
                 'mastercard' => _x('Mastercard', 'Name of credit card', 'paypal-for-woocommerce'),
@@ -270,6 +297,25 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 54 => __('51 px', 'paypal-for-woocommerce'),
                 55 => __('55 px', 'paypal-for-woocommerce')
             );
+           /* if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
+                if (!empty($this->merchant_id)) {
+                    $available_endpoints = AngellEYE_PayPal_PPCP_Request::angelleye_ppcp_get_available_endpoints($this->merchant_id);
+                } else {
+                    $available_endpoints = false;
+                }
+            } else {
+                $available_endpoints = false;
+            }
+            $advanced_cc_text = '';
+            $advanced_cc_text = '';
+            $vaulting_advanced_text = '';
+            if ($available_endpoints === false) {
+                $advanced_cc_text = '';
+                $advanced_cc_text = '';
+            } elseif (empty($available_endpoints)) {
+                $advanced_cc_text = 'Advanced Credit Cards not enable.';
+                $advanced_cc_text = '';
+            }*/
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -1376,6 +1422,20 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'custom_attributes' => array('readonly' => 'readonly'),
                     'default' => '[aepfw_bnpl_message placement="payment"]'
                 ),
+                'tokenization_subscriptions' => array(
+                    'title' => __('Tokenization / Subscriptions', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'enable_tokenized_payments' => array(
+                    'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                    'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'description' => $enable_tokenized_payments_text,
+                    'default' => 'no',
+                    'class' => 'enable_tokenized_payments'
+                ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
                     'type' => 'title',
@@ -1485,14 +1545,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'description' => __('3D Secure benefits cardholders and merchants by providing an additional layer of verification using Verified by Visa, MasterCard SecureCode and American Express SafeKey.', 'paypal-for-woocommerce'),
                 ),
-                'enable_separate_payment_method' => array(
-                    'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('Enable separate payment method as Advanced Credit Cards.', 'paypal-for-woocommerce'),
-                    'default' => 'no',
-                    'desc_tip' => true,
-                    'description' => __('Enable this option if you would like to use separate payment method as Advanced Credit Cards in WooCommerce checkout page.', 'paypal-for-woocommerce'),
-                ),
                 'advanced_card_payments_title' => array(
                     'title' => __('Advanced Credit Cards Title', 'paypal-for-woocommerce'),
                     'type' => 'text',
@@ -1508,7 +1560,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'before' => __('Before PayPal Smart Button', 'paypal-for-woocommerce'),
                         'after' => __('After PayPal Smart Button', 'paypal-for-woocommerce'),
                     ),
-                    'default' => 'after',
+                    'default' => 'before',
                     'desc_tip' => true,
                     'description' => __('This controls the gateway position which the user sees during checkout.', 'paypal-for-woocommerce'),
                 ),

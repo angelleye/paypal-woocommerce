@@ -125,7 +125,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     $this->email_confirm_text_1 = __('We see that your PayPal email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>';
                 }
                 $admin_email = get_option("admin_email");
-                if ($this->result['primary_email'] != $admin_email) {
+                if (isset($this->result['primary_email']) && $this->result['primary_email'] != $admin_email) {
                     $this->email_confirm_text_2 = __('We see that your site admin email address is', 'paypal-for-woocommerce') . ' <b>' . $admin_email . '</b>';
                 } else {
                     $this->email_confirm_text_1 = __('We see that your email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
@@ -135,12 +135,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 } else {
                     if (angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
-                        $this->setting_obj->set('enable_advanced_card_payments', 'yes');
-                        $this->setting_obj->persist();
                     } else {
                         $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
-                        $this->setting_obj->set('enable_advanced_card_payments', 'no');
-                        $this->setting_obj->persist();
                     }
                     if ($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
                         set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
@@ -174,12 +170,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 } else {
                     if (angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
-                        $this->setting_obj->set('enable_advanced_card_payments', 'yes');
-                        $this->setting_obj->persist();
                     } else {
                         $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
-                        $this->setting_obj->set('enable_advanced_card_payments', 'no');
-                        $this->setting_obj->persist();
                     }
                     if ($this->seller_onboarding->angelleye_ppcp_is_fee_enable($this->result)) {
                         set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
@@ -331,17 +323,17 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                     echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
                                 }
                                 ?>
-                                <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
-                                    <br><br>
-                                    <?php if ($this->ppcp_paypal_country === 'DE') { ?>
-                                        <?php echo sprintf(__('Fees on Visa/MasterCard/Discover transactions <br>transactions are a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
-                                    <?php } else { ?>
-                                        <?php echo sprintf(__('Save money on Visa/MasterCard/Discover transactions <br>with a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
-                                    <?php } ?>
-                                    <br><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/"><small style="font-size:12px;">Learn More</small></a></p>
-                            </div>
+                            <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
+                                <br><br>
+                                <?php if ($this->ppcp_paypal_country === 'DE') { ?>
+                                    <?php echo sprintf(__('Fees on Visa/MasterCard/Discover transactions <br>transactions are a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
+                                <?php } else { ?>
+                                    <?php echo sprintf(__('Save money on Visa/MasterCard/Discover transactions <br>with a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
+                                <?php } ?>
+                                <br><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/"><small style="font-size:12px;">Learn More</small></a></p>
                         </div>
                     </div>
+                </div>
                     <?php
                 } elseif ($this->on_board_status === 'CONNECTED_BUT_NOT_ACC') {
                     wp_enqueue_style('ppcp_account_request_form_css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/ppcp_account_request_form.css', null, time());
@@ -427,7 +419,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-            
         }
     }
 

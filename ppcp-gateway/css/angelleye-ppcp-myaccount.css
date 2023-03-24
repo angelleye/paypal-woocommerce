@@ -1,0 +1,9 @@
+.woocommerce-page .ppcp_payment_method_icon {
+    height: auto;
+    vertical-align: middle;
+    margin: 0px 5px 0px 0px;
+    display: inline;
+}
+.woocommerce-PaymentMethod.woocommerce-PaymentMethod--method.payment-method-method {
+  min-width: 280px;
+}
