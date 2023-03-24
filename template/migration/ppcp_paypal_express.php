@@ -67,23 +67,6 @@
     </div>
 </div>
 <ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard ppcp_email_confirm">
-    <?php if (($this->on_board_status === 'CONNECTED_BUT_NOT_ACC' || $this->on_board_status === 'FULLY_CONNECTED') && !empty($this->email_confirm_text_1)) { ?>
-        <li>
-            <?php echo '<p>' . $this->email_confirm_text_1 . '</p>'; ?>
-            <?php if (!empty($this->email_confirm_text_2)) { ?>
-                <?php echo '<p>' . $this->email_confirm_text_2 . '</p>'; ?>
-                <p>
-                    <?php echo __('Please verify which email is best for us to send future notices about PayPal and payments in general so that you are always informed.', 'paypal-for-woocommerce'); ?>
-                </p>
-            <?php } ?>
-            <br>
-            <div class="ppcp_sendy_confirm_parent">
-                <input type="text" class="ppcp_sendy_confirm" id="angelleye_ppcp_sendy_email" placeholder="Your Email Address" value="<?php echo!empty($this->result['primary_email']) ? $this->result['primary_email'] : 'paypal-for-woocommerce' ?>">
-                <button id="angelleye_ppcp_email_confirm" type="button" class="button button-primary button-primary-own"><?php echo __('Submit', 'paypal-for-woocommerce'); ?></button>
-            </div>
-            <div id="angelleye_ppcp_sendy_msg"></div>
-        </li>
-    <?php } ?>
     <li>
         <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
         <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
