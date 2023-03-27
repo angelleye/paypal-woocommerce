@@ -82,6 +82,8 @@ class PayPalHttpConnection
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLINFO_HEADER_OUT, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getHttpHeaders());
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
 
         //Determine Curl Options based on Method
         switch ($this->httpConfig->getMethod()) {
@@ -107,6 +109,7 @@ class PayPalHttpConnection
             // $this->logger->debug($header);
         }
 
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         //Execute Curl Request
         $result = curl_exec($ch);
         //Retrieve Response Status
