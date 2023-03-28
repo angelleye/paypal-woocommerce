@@ -3581,6 +3581,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
+            
             if (!empty($all_payment_tokens)) {
                 foreach ($all_payment_tokens as $key => $paypal_payment_token) {
                     foreach ($paypal_payment_token['payment_source'] as $type_key => $payment_tokens_data) {
