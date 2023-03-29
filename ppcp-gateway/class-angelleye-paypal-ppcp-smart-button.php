@@ -1370,7 +1370,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $used_payment_method = get_metadata('payment_token', $payment_token->get_id(), '_angelleye_ppcp_used_payment_method', true);
             if(!empty($used_payment_method)) {
                 $list['_angelleye_ppcp_used_payment_method'] = $used_payment_method;
+                $list['vault_id'] = $payment_token->get_token();
             }
+            $list['id'] = $payment_token->get_id();
         }
         return $list;
     }
