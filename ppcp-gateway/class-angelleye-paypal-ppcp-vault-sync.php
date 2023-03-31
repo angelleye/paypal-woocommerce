@@ -24,11 +24,6 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
         $this->angelleye_ppcp_load_class();
     }
 
-    public function kaila() {
-        $paypal_payment_list = $this->payment_request->angelleye_ppcp_get_all_payment_tokens();
-        return $paypal_payment_list;
-    }
-
     public function angelleye_ppcp_wc_get_customer_saved_methods_list() {
         $saved_methods = wc_get_customer_saved_methods_list(get_current_user_id());
         $paypal_payment_list = $this->payment_request->angelleye_ppcp_get_all_payment_tokens();

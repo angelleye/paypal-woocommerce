@@ -23,9 +23,6 @@ if (!class_exists('AngellEYE_PayPal_PPCP_Vault_Sync')) {
 }
 
 $vault_sync = AngellEYE_PayPal_PPCP_Vault_Sync::instance();
-$data = $vault_sync->kaila();
-echo '<pre>' . print_r($data, true) . '</pre>';
-
 $saved_methods = $vault_sync->angelleye_ppcp_wc_get_customer_saved_methods_list();
 
 $has_methods = (bool) $saved_methods;

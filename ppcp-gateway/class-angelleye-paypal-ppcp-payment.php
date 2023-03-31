@@ -93,6 +93,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             "U" => "Service Unavailable - N/A",
             "X" => "No Response - N/A"
         );
+        $this->angelleye_ppcp_get_all_payment_tokens();
     }
 
     public function angelleye_ppcp_load_class() {
