@@ -3602,6 +3602,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                         foreach ($paypal_payment_token['payment_source'] as $type_key => $payment_tokens_data) {
                             update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', $type_key);
                             $body_request['payment_source'] = array($type_key => array('vault_id' => $payment_tokens_id));
+                            if ($type_key === 'card') {
+                                $body_request['payment_source'][$type_key]['stored_credential'] = array(
+                                    'payment_initiator' => 'MERCHANT',
+                                    'payment_type' => 'UNSCHEDULED',
+                                    'usage' => 'SUBSEQUENT'
+                                );
+                            }
                             return $body_request;
                         }
                     }
@@ -3613,6 +3620,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                         update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', $type_key);
                         update_post_meta($order_id, '_payment_tokens_id', $paypal_payment_token['id']);
                         $body_request['payment_source'] = array($type_key => array('vault_id' => $paypal_payment_token['id']));
+                        if ($type_key === 'card') {
+                            $body_request['payment_source'][$type_key]['stored_credential'] = array(
+                                'payment_initiator' => 'MERCHANT',
+                                'payment_type' => 'UNSCHEDULED',
+                                'usage' => 'SUBSEQUENT'
+                            );
+                        }
                         return $body_request;
                     }
                 }
@@ -3627,6 +3641,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $payment_method = 'card';
                 }
                 $body_request['payment_source'] = array($payment_method => array('vault_id' => $payment_tokens_id));
+                if ($payment_method === 'card') {
+                    $body_request['payment_source'][$payment_method]['stored_credential'] = array(
+                        'payment_initiator' => 'MERCHANT',
+                        'payment_type' => 'UNSCHEDULED',
+                        'usage' => 'SUBSEQUENT'
+                    );
+                }
             }
         } catch (Exception $ex) {
             return $body_request;
