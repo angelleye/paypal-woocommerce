@@ -25,7 +25,26 @@ class WC_AngellEYE_PayPal_PPCP_Payment_Token {
                 update_user_meta($user_id, $prefix_ppcp_paypal_customer_id . 'angelleye_ppcp_paypal_customer_id', $customer_id);
             }
         } catch (Exception $ex) {
-            
+
+        }
+    }
+
+    public function angelleye_ppcp_get_paypal_generated_customer_id_for_renewal($is_sandbox, $user_id) {
+        try {
+            $angelleye_ppcp_paypal_customer_id = '';
+            $prefix_ppcp_paypal_customer_id = ($is_sandbox === true) ? 'sandbox_' : '';
+            if (!get_user_meta($user_id, $prefix_ppcp_paypal_customer_id . 'angelleye_ppcp_paypal_customer_id')) {
+                return false;
+            } else {
+                $angelleye_ppcp_paypal_customer_id = get_user_meta($user_id, $prefix_ppcp_paypal_customer_id . 'angelleye_ppcp_paypal_customer_id', true);
+            }
+            if (!empty($angelleye_ppcp_paypal_customer_id)) {
+                return $angelleye_ppcp_paypal_customer_id;
+            } else {
+                return false;
+            }
+        } catch (Exception $ex) {
+            return false;
         }
     }
 
@@ -53,7 +72,7 @@ class WC_AngellEYE_PayPal_PPCP_Payment_Token {
             return false;
         }
     }
-    
+
     public function angelleye_ppcp_is_paypal_generated_customer_id_exist($is_sandbox) {
         try {
             if (is_user_logged_in()) {
@@ -73,7 +92,5 @@ class WC_AngellEYE_PayPal_PPCP_Payment_Token {
             return false;
         }
     }
-    
-    
 
 }
