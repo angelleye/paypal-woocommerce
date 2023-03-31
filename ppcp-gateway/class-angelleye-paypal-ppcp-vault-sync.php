@@ -31,6 +31,8 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
             if (isset($paypal_payment_list_data['id'])) {
                 if (empty($saved_methods) || $this->angelleye_ppcp_is_paypal_vault_id_exist_in_woo_payment_list($saved_methods, $paypal_payment_list_data['id']) === false) {
                     $this->angelleye_ppcp_wc_add_payment_token($paypal_payment_list_data);
+                } else {
+                    $this->angelleye_ppcp_wc_update_payment_token($paypal_payment_list_data);
                 }
             }
         }
@@ -122,6 +124,70 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                 $token->set_expiry_year(date('Y', strtotime('+20 years')));
                 if ($token->validate()) {
                     $token->save();
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Venmo');
+                }
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+    
+    public function angelleye_ppcp_wc_update_payment_token($api_response) {
+        try {
+            $payment_token = '';
+            if (isset($api_response['id'])) {
+                $payment_token = $api_response['id'];
+            }
+            $token_id = angelleye_ppcp_get_token_id_by_token($payment_token);
+            $token = WC_Payment_Tokens::get($token_id);
+            $customer_id = get_current_user_id();
+            $token->set_token($payment_token);
+            $token->set_user_id($customer_id);
+            if (!empty($api_response['payment_source']['card'])) {
+                $token->set_gateway_id('angelleye_ppcp_cc');
+                $token->set_card_type($api_response['payment_source']['card']['brand']);
+                $token->set_last4($api_response['payment_source']['card']['last_digits']);
+                $card_expiry = array_map('trim', explode('-', $api_response['payment_source']['card']['expiry']));
+                $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
+                $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
+                $token->set_expiry_month($card_exp_month);
+                $token->set_expiry_year($card_exp_year);
+                if ($token->validate()) {
+                    $token->update();
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
+                }
+            } elseif (!empty($api_response['payment_source']['paypal'])) {
+                if (isset($api_response['payment_source']['paypal']['email_address'])) {
+                    $email_address = $api_response['payment_source']['paypal']['email_address'];
+                } elseif ($api_response['payment_source']['paypal']['payer_id']) {
+                    $email_address = $api_response['payment_source']['paypal']['payer_id'];
+                } else {
+                    $email_address = 'PayPal';
+                }
+                $token->set_gateway_id('angelleye_ppcp');
+                $token->set_card_type($email_address);
+                $token->set_last4(substr($payment_token, -4));
+                $token->set_expiry_month(date('m'));
+                $token->set_expiry_year(date('Y', strtotime('+20 years')));
+                if ($token->validate()) {
+                    $token->update();
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
+                }
+            } elseif (!empty($api_response['payment_source']['venmo'])) {
+                if (isset($api_response['payment_source']['venmo']['email_address'])) {
+                    $email_address = $api_response['payment_source']['venmo']['email_address'];
+                } elseif ($api_response['payment_source']['venmo']['payer_id']) {
+                    $email_address = $api_response['payment_source']['venmo']['payer_id'];
+                } else {
+                    $email_address = 'Venmo';
+                }
+                $token->set_gateway_id('angelleye_ppcp');
+                $token->set_card_type($email_address);
+                $token->set_last4(substr($payment_token, -4));
+                $token->set_expiry_month(date('m'));
+                $token->set_expiry_year(date('Y', strtotime('+20 years')));
+                if ($token->validate()) {
+                    $token->update();
                     update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Venmo');
                 }
             }
