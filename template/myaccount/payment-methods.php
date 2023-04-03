@@ -57,7 +57,7 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                                             ?>
                                             <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='PayPal'><?php
                                             echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
-                                        } elseif ($method['_angelleye_ppcp_used_payment_method'] === 'PayPal Venmo') {
+                                        } elseif ($method['_angelleye_ppcp_used_payment_method'] === 'Venmo') {
                                             $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/venmo.png';
                                             ?>
                                             <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='Venmo'><?php
