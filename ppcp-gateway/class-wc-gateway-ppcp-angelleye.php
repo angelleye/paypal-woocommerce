@@ -669,7 +669,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (!empty($angelleye_ppcp_used_payment_method)) {
                 if ($angelleye_ppcp_used_payment_method === 'PayPal Checkout') {
                     $image_url = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png';
-                } elseif ($angelleye_ppcp_used_payment_method === 'PayPal Venmo') {
+                } elseif ($angelleye_ppcp_used_payment_method === 'Venmo') {
                     $image_url = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/venmo.png';
                 }
                 $image_path = '<img class="ppcp_payment_method_icon" src="' . $image_url . '" alt="Credit card">';

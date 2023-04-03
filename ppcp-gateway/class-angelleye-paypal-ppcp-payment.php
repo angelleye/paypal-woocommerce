@@ -302,7 +302,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
-            if ($this->angelleye_ppcp_used_payment_method === 'PayPal Venmo') {
+            if ($this->angelleye_ppcp_used_payment_method === 'Venmo') {
                 if (is_user_logged_in()) {
                     if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . '' . $cart['shipping_address']['last_name'];
@@ -323,7 +323,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $body_request = $this->angelleye_ppcp_set_payer_details($woo_order_id, $body_request);
             if (angelleye_ppcp_is_save_payment_method($this->enable_tokenized_payments)) {
                 $body_request = $this->angelleye_ppcp_add_payment_source_parameter($body_request);
-            } elseif ($this->angelleye_ppcp_used_payment_method === 'PayPal Venmo') {
+            } elseif ($this->angelleye_ppcp_used_payment_method === 'Venmo') {
                 if (isset($body_request['purchase_units'][0]['shipping']['address'])) {
                     $body_request['payment_source']['venmo']['experience_context']['shipping_preference'] = 'SET_PROVIDED_ADDRESS';
                 } else {
@@ -2308,7 +2308,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $request['payment_source'][$payment_method_name]['experience_context']['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
                         $request['payment_source'][$payment_method_name]['experience_context']['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
                         break;
-                    case 'PayPal Venmo':
+                    case 'Venmo':
                         $payment_method_name = 'venmo';
                         $attributes = array('vault' => array('store_in_vault' => 'ON_SUCCESS', 'usage_type' => 'MERCHANT', 'permit_multiple_payment_tokens ' => true));
                         $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);

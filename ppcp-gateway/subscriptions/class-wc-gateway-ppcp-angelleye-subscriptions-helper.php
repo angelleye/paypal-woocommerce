@@ -164,7 +164,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 $token->set_user_id($customer_id);
                 if ($token->validate()) {
                     $token->save();
-                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Venmo');
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'Venmo');
                 } else {
                     $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
                 }
