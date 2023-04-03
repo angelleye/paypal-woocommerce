@@ -302,6 +302,24 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
+            if ($this->angelleye_ppcp_used_payment_method === 'PayPal Venmo') {
+                if (is_user_logged_in()) {
+                    if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
+                        $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . '' . $cart['shipping_address']['last_name'];
+                    }
+                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
+                        $body_request['purchase_units'][0]['shipping']['address'] = array(
+                            'address_line_1' => $cart['shipping_address']['address_1'],
+                            'address_line_2' => $cart['shipping_address']['address_2'],
+                            'admin_area_2' => $cart['shipping_address']['city'],
+                            'admin_area_1' => $cart['shipping_address']['state'],
+                            'postal_code' => $cart['shipping_address']['postcode'],
+                            'country_code' => $cart['shipping_address']['country'],
+                        );
+                        angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                    }
+                }
+            }
             $body_request = $this->angelleye_ppcp_set_payer_details($woo_order_id, $body_request);
             if (angelleye_ppcp_is_save_payment_method($this->enable_tokenized_payments)) {
                 $body_request = $this->angelleye_ppcp_add_payment_source_parameter($body_request);
@@ -605,7 +623,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'amount' => angelleye_ppcp_round($amount, $decimals),
             );
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -804,7 +822,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
         }
         if (!empty($message)) {
-
+            
         } else if (!empty($error['message'])) {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
@@ -2040,7 +2058,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             endswitch;
             return;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2159,7 +2177,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
             if (!empty($this->api_response['id'])) {
-
+                
             } else {
                 $error_email_notification_param = array(
                     'request' => 'capture_authorized',
@@ -2207,7 +2225,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
             if (isset($this->api_response['status'])) {
-
+                
             } else {
                 $error_email_notification_param = array(
                     'request' => 'refund_order',
@@ -2314,7 +2332,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $request;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2648,7 +2666,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2708,7 +2726,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2788,7 +2806,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2855,7 +2873,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -2945,7 +2963,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3022,7 +3040,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3113,7 +3131,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3206,7 +3224,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3299,7 +3317,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3382,7 +3400,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3442,7 +3460,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3516,7 +3534,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3540,7 +3558,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response['payment_tokens'];
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3564,7 +3582,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response['payment_tokens'];
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -3583,7 +3601,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
