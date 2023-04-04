@@ -284,6 +284,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         global $post, $wp, $product;
         $this->angelleye_ppcp_smart_button_style_properties();
         $default_country = wc_get_base_location();
+        if (is_checkout() && angelleye_ppcp_has_active_session() === true) {
+            wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-capture', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-capture.js', array('jquery'), $this->version, false);
+        }
         if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
             return false;
         }
@@ -457,9 +460,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'advanced_card_payments_title' => $this->advanced_card_payments_title
                 )
         );
-        if (is_checkout() && angelleye_ppcp_has_active_session() === true) {
-            wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-capture', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-capture.js', array('jquery'), $this->version, false);
-        }
+        
     }
 
     public function enqueue_styles() {
