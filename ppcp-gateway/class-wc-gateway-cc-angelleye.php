@@ -240,22 +240,22 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             if ($this->supports('tokenization')) {
                 $this->tokenization_script();
             }
+            angelleye_ppcp_add_css_js();
             if ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_has_active_session() === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
-                angelleye_ppcp_add_css_js();
+                
             }
             if ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_get_order_total() > 0) {
                 if ($this->supports('tokenization')) {
                     $this->saved_payment_methods();
                 }
-                $this->form();
+                $this->angelleye_ppcp_cc_form();
                 if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
                     if ($this->supports('tokenization')) {
                         $this->save_payment_method_checkbox();
                     }
                 }
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
-            }
-            if (is_account_page()) {
+            } elseif(is_account_page()) {
                 $this->angelleye_ppcp_cc_form();
             } elseif (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
                 if ($this->supports('tokenization')) {
@@ -408,6 +408,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $order = wc_get_order($order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
+                update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'Credit or Debit Card');
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 return array(
                     'result' => 'success',

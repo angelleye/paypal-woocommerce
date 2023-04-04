@@ -602,6 +602,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 $order = wc_get_order($order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
+                update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'Credit or Debit Card');
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 return array(
                     'result' => 'success',

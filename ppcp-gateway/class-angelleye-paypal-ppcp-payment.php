@@ -2580,7 +2580,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function save_payment_token($order, $payment_tokens_id) {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+        
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
             $subscriptions = wcs_get_subscriptions_for_order($order_id);
         } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order_id)) {
@@ -3068,7 +3068,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                     $order_id = wc_clean($_GET['order_id']);
                     $order = wc_get_order(wc_clean($_GET['order_id']));
-                    update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'card');
+                    update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'Credit or Debit Card');
                     $this->save_payment_token($order, $this->api_response['id']);
                     if (angelleye_ppcp_get_token_id_by_token($this->api_response['id']) === '') {
                         $token = new WC_Payment_Token_CC();
