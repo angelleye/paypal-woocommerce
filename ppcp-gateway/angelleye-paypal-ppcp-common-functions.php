@@ -114,6 +114,15 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
             } else {
                 $order_meta_value = $order->get_meta('_paymentaction', $bool);
             }
+        } elseif ($key === '_payment_method_title') {
+            if ($old_wc) {
+                $angelleye_ppcp_used_payment_method = get_post_meta($order->id, '_angelleye_ppcp_used_payment_method', $bool);
+            } else {
+                $angelleye_ppcp_used_payment_method = $order->get_meta('_angelleye_ppcp_used_payment_method', $bool);
+            }
+            if(!empty($angelleye_ppcp_used_payment_method)) {
+                return $angelleye_ppcp_used_payment_method;
+            }
         }
         return $order_meta_value;
     }
