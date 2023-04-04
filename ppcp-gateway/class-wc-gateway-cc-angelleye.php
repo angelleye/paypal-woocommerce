@@ -163,6 +163,12 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order),
                     );
+                } else {
+                    unset(WC()->session->angelleye_ppcp_session);
+                    return array(
+                        'result' => 'failure',
+                        'redirect' => wc_get_cart_url()
+                    );
                 }
                 exit();
             }
