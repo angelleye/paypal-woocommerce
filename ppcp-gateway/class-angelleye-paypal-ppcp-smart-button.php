@@ -265,6 +265,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('woocommerce_locate_template', array($this, 'angelleye_ppcp_woocommerce_locate_template'), 11, 3);
         add_filter('woocommerce_payment_methods_list_item', array($this, 'angelleye_ppcp_woocommerce_payment_methods_list_item'), 10, 2);
         add_filter('woocommerce_subscription_payment_method_to_display', array($this, 'angelleye_ppcp_woocommerce_subscription_payment_method_to_display'), 10, 2);
+        add_action('wp', array($this, 'angelleye_ppcp_delete_payment_method_action'), 9);
     }
 
     /*
@@ -460,7 +461,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'advanced_card_payments_title' => $this->advanced_card_payments_title
                 )
         );
-        
     }
 
     public function enqueue_styles() {
@@ -1387,10 +1387,34 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } else {
             $angelleye_ppcp_used_payment_method = $subscription->get_meta('_angelleye_ppcp_used_payment_method', true);
         }
-        if(!empty($angelleye_ppcp_used_payment_method)) {
+        if (!empty($angelleye_ppcp_used_payment_method)) {
             return $angelleye_ppcp_used_payment_method;
         }
         return $payment_method_to_display;
+    }
+
+    public function angelleye_ppcp_delete_payment_method_action() {
+        try {
+            global $wp;
+            if (isset($wp->query_vars['delete-payment-method'])) {
+                wc_nocache_headers();
+                $token_id = absint($wp->query_vars['delete-payment-method']);
+                $token = WC_Payment_Tokens::get($token_id);
+                
+                if (is_null($token) || get_current_user_id() !== $token->get_user_id() || !isset($_REQUEST['_wpnonce']) || false === wp_verify_nonce(wp_unslash($_REQUEST['_wpnonce']), 'delete-payment-method-' . $token_id)) {
+                    wc_add_notice(__('Invalid payment method.', 'woocommerce'), 'error');
+                } else {
+                    $payment_token_id = $token->get_token();
+                    $this->payment_request->angelleye_ppcp_delete_payment_token($payment_token_id);
+                    WC_Payment_Tokens::delete($token_id);
+                    wc_add_notice(__('Payment method deleted.', 'woocommerce'));
+                }
+                wp_safe_redirect(wc_get_account_endpoint_url('payment-methods'));
+                exit();
+            }
+        } catch (Exception $ex) {
+            
+        }
     }
 
 }

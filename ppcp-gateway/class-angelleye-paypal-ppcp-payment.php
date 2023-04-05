@@ -3678,5 +3678,18 @@ class AngellEYE_PayPal_PPCP_Payment {
         update_post_meta($order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
         return $body_request;
     }
+    
+    public function angelleye_ppcp_delete_payment_token($payment_token) {
+        try {
+            $args = array(
+                'method' => 'DELETE',
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                'body' => array()
+            );
+            $this->api_request->request($this->payment_tokens_url . '/' . $payment_token, $args, 'delete_payment_token');
+        } catch (Exception $ex) {
+
+        }
+    }
 
 }
