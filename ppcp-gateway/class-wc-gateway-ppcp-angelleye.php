@@ -213,10 +213,13 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             echo wpautop(wp_kses_post($description));
         }
         if (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
-            if (angelleye_ppcp_get_order_total() === 0 && angelleye_ppcp_is_cart_subscription() === true) {
+            if (angelleye_ppcp_get_order_total() === 0 && angelleye_ppcp_is_cart_subscription() === true || angelleye_ppcp_is_subs_change_payment() === true) {
                 $this->saved_payment_methods();
             }
+        } elseif(angelleye_ppcp_is_subs_change_payment() === true) {
+            $this->saved_payment_methods();
         }
+
         if ($this->checkout_disable_smart_button === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
             if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
@@ -313,7 +316,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                       ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                        ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <div class="ppcp_paypal_connection_image">
@@ -343,7 +346,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                       ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                        ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
@@ -381,12 +384,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                         ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                          ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                                                            ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                                                             ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
                     <?php echo $this->get_description_html($data); // WPCS: XSS ok.                 ?>
                 </fieldset>
@@ -457,7 +460,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -476,7 +479,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 return parent::get_title();
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -592,7 +595,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -602,7 +605,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 $order = wc_get_order($order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
-                update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'Credit or Debit Card');
+                update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 return array(
                     'result' => 'success',
@@ -612,7 +615,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 return $this->payment_request->angelleye_ppcp_paypal_setup_tokens_sub_change_payment($order_id);
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -631,7 +634,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -639,7 +642,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         try {
             return $this->payment_request->angelleye_ppcp_paypal_setup_tokens();
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -647,7 +650,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         try {
             return $this->payment_request->angelleye_ppcp_paypal_setup_tokens_free_signup_with_free_trial($order_id);
         } catch (Exception $ex) {
-
+            
         }
     }
 
