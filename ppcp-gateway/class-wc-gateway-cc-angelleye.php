@@ -240,32 +240,19 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             if ($this->supports('tokenization')) {
                 $this->tokenization_script();
             }
-            angelleye_ppcp_add_css_js();
-            if ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_has_active_session() === false && angelleye_ppcp_get_order_total() > 0 && angelleye_ppcp_is_subs_change_payment() === false) {
-                
-            }
-            if ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_get_order_total() > 0) {
-                if ($this->supports('tokenization')) {
-                    $this->saved_payment_methods();
-                }
+            if (angelleye_ppcp_is_subs_change_payment() === true) {
+                $this->saved_payment_methods();
                 $this->angelleye_ppcp_cc_form();
+            } elseif ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_get_order_total() > 0) {
+                $this->form();
+                angelleye_ppcp_add_css_js();
                 if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
                     if ($this->supports('tokenization')) {
                         $this->save_payment_method_checkbox();
                     }
                 }
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
-            } elseif(is_account_page()) {
-                $this->angelleye_ppcp_cc_form();
-            } elseif (is_checkout() && angelleye_ppcp_get_order_total() === 0) {
-                if ($this->supports('tokenization')) {
-                    $this->saved_payment_methods();
-                }
-                $this->angelleye_ppcp_cc_form();
-            } elseif (angelleye_ppcp_is_subs_change_payment() === true) {
-                if ($this->supports('tokenization')) {
-                    $this->saved_payment_methods();
-                }
+            } elseif ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_get_order_total() === 0) {
                 $this->angelleye_ppcp_cc_form();
             }
         } catch (Exception $ex) {
@@ -541,7 +528,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             'mastercard' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/mastercard.png'
         );
         if (isset($icon_url[$card_type])) {
-            $image_path = '<img class="ppcp_payment_method_icon" src="'.$icon_url[$card_type] .'" alt="Credit card">';
+            $image_path = '<img class="ppcp_payment_method_icon" src="' . $icon_url[$card_type] . '" alt="Credit card">';
         } else {
             $image_path = '';
         }

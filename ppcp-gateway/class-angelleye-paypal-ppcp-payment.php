@@ -2255,7 +2255,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $billing_full_name = '';
                 $attributes = array();
                 switch ($angelleye_ppcp_used_payment_method) {
-                    case 'card':
+                    case 'Credit Card':
                         $payment_method_name = 'card';
                         $attributes = array('vault' => array('store_in_vault' => 'ON_SUCCESS', 'usage_type' => 'MERCHANT'));
                         if (!empty($request['payer']['address'])) {
