@@ -404,16 +404,18 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
             $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+            update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
-                update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
             }
             $is_success = false;
             if (!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') {
                 $order = wc_get_order($woo_order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
-                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
+                $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
+                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);
                 update_post_meta($woo_order_id, '_payment_tokens_id', $token->get_token());
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 $is_success = $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($woo_order_id);
@@ -605,7 +607,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 $order = wc_get_order($order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
-                update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
+                $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
+                update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 return array(
                     'result' => 'success',
@@ -671,9 +674,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         try {
             $angelleye_ppcp_used_payment_method = get_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', true);
             if (!empty($angelleye_ppcp_used_payment_method)) {
-                if ($angelleye_ppcp_used_payment_method === 'PayPal Checkout') {
+                if ($angelleye_ppcp_used_payment_method === 'paypal') {
                     $image_url = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png';
-                } elseif ($angelleye_ppcp_used_payment_method === 'Venmo') {
+                } elseif ($angelleye_ppcp_used_payment_method === 'venmo') {
                     $image_url = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/venmo.png';
                 }
                 $image_path = '<img class="ppcp_payment_method_icon" src="' . $image_url . '" alt="Credit card">';

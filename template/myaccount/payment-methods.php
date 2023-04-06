@@ -52,12 +52,12 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                             } elseif ('method' === $column_id) {
                                 if (!empty($method['method']['last4'])) {
                                     if ($method['method']['gateway'] === 'angelleye_ppcp') {
-                                        if ($method['_angelleye_ppcp_used_payment_method'] === 'PayPal Checkout') {
+                                        if ($method['_angelleye_ppcp_used_payment_method'] === 'paypal') {
                                             $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png';
                                             ?>
                                             <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='PayPal'><?php
                                             echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
-                                        } elseif ($method['_angelleye_ppcp_used_payment_method'] === 'Venmo') {
+                                        } elseif ($method['_angelleye_ppcp_used_payment_method'] === 'venmo') {
                                             $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/venmo.png';
                                             ?>
                                             <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='Venmo'><?php

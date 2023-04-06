@@ -1321,8 +1321,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_gateway_method_title($method_title) {
         if (is_admin() && isset($_GET['post'])) {
-            $payment_method_title = get_post_meta(wc_clean($_GET['post']), 'payment_method_title', true);
-            return $payment_method_title;
+            $payment_method_title = get_post_meta(wc_clean($_GET['post']), '_angelleye_ppcp_used_payment_method', true);
+            if(!empty($payment_method_title)) {
+                $payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method_title);
+                if(!empty($payment_method_title)) {
+                    return $payment_method_title;
+                }
+            }
         }
         return $method_title;
     }
@@ -1342,9 +1347,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!$order->get_id()) {
             return $total_rows;
         }
-        $payment_method_title = get_post_meta($order->get_id(), 'payment_method_title', true);
+        $payment_method_title = get_post_meta($order->get_id(), '_angelleye_ppcp_used_payment_method', true);
         if (!empty($payment_method_title)) {
-            $total_rows['payment_method']['value'] = $payment_method_title;
+            $payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method_title);
+            if(!empty($payment_method_title)) {
+                $total_rows['payment_method']['value'] = $payment_method_title;
+            }
         }
         return $total_rows;
     }
@@ -1388,7 +1396,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $angelleye_ppcp_used_payment_method = $subscription->get_meta('_angelleye_ppcp_used_payment_method', true);
         }
         if (!empty($angelleye_ppcp_used_payment_method)) {
-            return $angelleye_ppcp_used_payment_method;
+            return angelleye_ppcp_get_payment_method_title($angelleye_ppcp_used_payment_method);
         }
         return $payment_method_to_display;
     }

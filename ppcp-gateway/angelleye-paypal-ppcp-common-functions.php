@@ -121,7 +121,7 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
                 $angelleye_ppcp_used_payment_method = $order->get_meta('_angelleye_ppcp_used_payment_method', $bool);
             }
             if(!empty($angelleye_ppcp_used_payment_method)) {
-                return $angelleye_ppcp_used_payment_method;
+                return angelleye_ppcp_get_payment_method_title($angelleye_ppcp_used_payment_method);
             }
         }
         return $order_meta_value;

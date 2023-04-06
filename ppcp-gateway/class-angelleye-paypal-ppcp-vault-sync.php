@@ -90,7 +90,7 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                 $token->set_expiry_year($card_exp_year);
                 if ($token->validate()) {
                     $token->save();
-                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'Credit or Debit Card');
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
                 }
             } elseif (!empty($api_response['payment_source']['paypal'])) {
                 if (isset($api_response['payment_source']['paypal']['email_address'])) {
@@ -107,7 +107,7 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                 $token->set_expiry_year(date('Y', strtotime('+20 years')));
                 if ($token->validate()) {
                     $token->save();
-                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'paypal');
                 }
             } elseif (!empty($api_response['payment_source']['venmo'])) {
                 if (isset($api_response['payment_source']['venmo']['email_address'])) {
@@ -124,7 +124,7 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                 $token->set_expiry_year(date('Y', strtotime('+20 years')));
                 if ($token->validate()) {
                     $token->save();
-                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'Venmo');
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'venmo');
                 }
             }
         } catch (Exception $ex) {
@@ -154,7 +154,7 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                 $token->set_expiry_year($card_exp_year);
                 if ($token->validate()) {
                     $token->save();
-                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'Credit or Debit Card');
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
                 }
             } elseif (!empty($api_response['payment_source']['paypal'])) {
                 if (isset($api_response['payment_source']['paypal']['email_address'])) {
@@ -171,7 +171,7 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                 $token->set_expiry_year(date('Y', strtotime('+20 years')));
                 if ($token->validate()) {
                     $token->save();
-                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'PayPal Checkout');
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'paypal');
                 }
             } elseif (!empty($api_response['payment_source']['venmo'])) {
                 if (isset($api_response['payment_source']['venmo']['email_address'])) {
@@ -188,7 +188,7 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                 $token->set_expiry_year(date('Y', strtotime('+20 years')));
                 if ($token->validate()) {
                     $token->save();
-                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'Venmo');
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'venmo');
                 }
             }
         } catch (Exception $ex) {
