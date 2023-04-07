@@ -240,15 +240,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         echo '<div id="ppcp_payment_field_bottom">';
         if ($this->checkout_disable_smart_button === false) {
             do_action('angelleye_ppcp_display_paypal_button_checkout_page');
-        } else {
-            if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false && angelleye_ppcp_has_active_session() === false) {
-                wp_enqueue_script('angelleye-paypal-checkout-sdk');
-                wp_enqueue_script($this->id);
-            }
-        }
-        if ((is_checkout() || is_checkout_pay_page()) && $this->enable_separate_payment_method === false) {
-            parent::payment_fields();
-            echo '<div id="payments-sdk__contingency-lightbox"></div>';
         }
         echo '</div>';
     }
@@ -336,7 +327,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                         ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                          ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <div class="ppcp_paypal_connection_image">
@@ -366,7 +357,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                         ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                          ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
@@ -404,12 +395,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                               ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                               ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
                     <?php echo $this->get_description_html($data); // WPCS: XSS ok.         ?>
                 </fieldset>
