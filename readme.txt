@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.1.1
-Stable tag: 3.1.9
+Tested up to: 6.2
+Stable tag: 3.1.10
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 3.1.10 - 04.07.2023 =
+* PPCP - CheckoutWC Compatibility. ([PFW-1253](https://github.com/angelleye/paypal-woocommerce/pull/1789))
+* Hiding individual CC icons - Missing Amex in CA. ([PFW-1393](https://github.com/angelleye/paypal-woocommerce/pull/1790))
+* Currency not processing correctly - customer pays wrong prices. ([PFW-1328](https://github.com/angelleye/paypal-woocommerce/pull/1791))
 
 = 3.1.9 - 03.06.2022 =
 * Fix - Fixes the automatic iDeal payment order complete issue. ([PFW-1066](https://github.com/angelleye/paypal-woocommerce/pull/1788))
