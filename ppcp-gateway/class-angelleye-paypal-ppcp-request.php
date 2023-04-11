@@ -197,12 +197,14 @@ class AngellEYE_PayPal_PPCP_Request {
         if (empty($merchant_id)) {
             return $available_endpoints = false;
         }
-        $available_endpoints = array();
         if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
             include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php';
         }
         $seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
         $result = $seller_onboarding->angelleye_track_seller_onboarding_status($merchant_id);
+        if(!isset($result['products'])) {
+            return false;
+        }
         if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
             foreach ($result['products'] as $key => $product) {
                 if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('CUSTOM_CARD_PROCESSING', $product['capabilities'])) {
