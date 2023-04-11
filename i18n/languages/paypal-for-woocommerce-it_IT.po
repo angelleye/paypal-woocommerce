@@ -2,11 +2,11 @@
 # This file is distributed under the same license as the PayPal for WooCommerce package.
 msgid ""
 msgstr ""
-"Project-Id-Version: PayPal for WooCommerce 3.1.5\n"
+"Project-Id-Version: PayPal for WooCommerce 4.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/paypal-for-"
 "woocommerce\n"
-"POT-Creation-Date: 2023-01-04 13:09:13+00:00\n"
-"PO-Revision-Date: 2023-01-04 19:02+0530\n"
+"POT-Creation-Date: 2023-04-11 21:28+0530\n"
+"PO-Revision-Date: 2023-04-11 21:36+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -113,7 +113,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1492
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2114
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2185
-#: paypal-for-woocommerce.php:745
+#: paypal-for-woocommerce.php:746
 msgid "Detailed Error Message: "
 msgstr ""
 
@@ -236,19 +236,18 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-angelleye.php:488
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:224
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:531
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:145
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:260
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:387
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:528
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:550
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:677
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:804
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:889
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:975
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1061
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1147
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1233
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1359
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:189
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:304
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:431
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:572
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:594
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:721
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:848
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:933
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1019
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1105
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1191
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1277
 msgid "Enable/Disable"
 msgstr ""
 
@@ -263,7 +262,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1169
 #: classes/wc-gateway-paypal-pro-angelleye.php:214
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:231
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:151
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:195
 msgid "Title"
 msgstr ""
 
@@ -274,8 +273,8 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1171
 #: classes/wc-gateway-paypal-pro-angelleye.php:216
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:233
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:153
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1369
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:197
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1421
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
@@ -290,7 +289,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1176
 #: classes/wc-gateway-paypal-pro-angelleye.php:220
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:237
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:158
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:202
 msgid "Description"
 msgstr ""
 
@@ -326,7 +325,7 @@ msgid ""
 msgstr ""
 
 #: angelleye-includes/angelleye-utility.php:872
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:231
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:275
 msgid "Sandbox Client ID"
 msgstr ""
 
@@ -358,10 +357,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1557
 #: classes/wc-gateway-paypal-pro-angelleye.php:273
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:309
-#: paypal-for-woocommerce.php:1300 paypal-for-woocommerce.php:1324
+#: paypal-for-woocommerce.php:1301 paypal-for-woocommerce.php:1325
 #: ppcp-gateway/class-angelleye-paypal-ppcp-admin-action.php:478
 #: ppcp-gateway/class-angelleye-paypal-ppcp-admin-action.php:487
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1256
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1315
 #: template/admin.php:72
 msgid "Payment Action"
 msgstr ""
@@ -399,6 +398,8 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-angelleye.php:419
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:516
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:517
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1300
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1301
 msgid "Enable Tokenized Payments"
 msgstr ""
 
@@ -414,13 +415,13 @@ msgstr ""
 
 #: angelleye-includes/angelleye-utility.php:921
 #: classes/wc-gateway-paypal-advanced-angelleye.php:913
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1268
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1327
 msgid "Invoice Prefix"
 msgstr ""
 
 #: angelleye-includes/angelleye-utility.php:923
 #: classes/wc-gateway-paypal-advanced-angelleye.php:915
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1270
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1329
 msgid ""
 "Please enter a prefix for your invoice numbers. If you use your PayPal "
 "account for multiple stores ensure this prefix is unique as PayPal will not "
@@ -441,7 +442,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1439
 #: classes/wc-gateway-paypal-pro-angelleye.php:455
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:461
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1398
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1450
 msgid "Credit Card Statement Name"
 msgstr ""
 
@@ -451,7 +452,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1441
 #: classes/wc-gateway-paypal-pro-angelleye.php:457
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:463
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1400
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1452
 msgid ""
 "The value entered here will be displayed on the buyer's credit card "
 "statement."
@@ -499,8 +500,8 @@ msgstr ""
 #: angelleye-includes/angelleye-utility.php:1013
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:462
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:465
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:555
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:586
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:603
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:634
 msgid "Edit"
 msgstr ""
 
@@ -721,7 +722,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1494
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2116
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2187
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1796
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2011
 msgid "User IP: "
 msgstr ""
 
@@ -732,7 +733,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:939
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1495
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2117
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1789
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2004
 msgid "Order ID: "
 msgstr ""
 
@@ -789,10 +790,12 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-angelleye.php:1974
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1340
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2025
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:808
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1208
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1372
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1485
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:939
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1382
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1550
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1659
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2550
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2602
 msgid "Address Verification Result"
 msgstr ""
 
@@ -819,10 +822,12 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-angelleye.php:1981
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1360
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2045
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:817
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1217
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1381
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1494
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:948
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1391
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1559
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1668
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2559
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2611
 msgid "Card Security Code Result"
 msgstr ""
 
@@ -897,14 +902,13 @@ msgstr ""
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:830
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:856
 #: classes/wc-gateway-braintree-angelleye.php:3120
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:468
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:523
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:504
 msgid "OR"
 msgstr ""
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:1001
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:1028
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:868
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:931
 msgid "Cancel order"
 msgstr ""
 
@@ -925,7 +929,7 @@ msgstr ""
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:1185
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:1205
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:586
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:634
 msgid "Shipping details"
 msgstr ""
 
@@ -1065,7 +1069,7 @@ msgstr ""
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php:1046
 #: classes/wc-gateway-paypal-pro-angelleye.php:2204
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1853
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2068
 msgid "No pending reason provided."
 msgstr ""
 
@@ -1147,6 +1151,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1413
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1872
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:2444
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2882
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:3614
+#: ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-subscriptions-helper.php:113
+#: ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-subscriptions-helper.php:141
+#: ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-subscriptions-helper.php:169
 msgid "Invalid or missing payment token fields."
 msgstr ""
 
@@ -1357,6 +1366,7 @@ msgid "Enable Braintree Payment Gateway"
 msgstr ""
 
 #: classes/wc-gateway-braintree-angelleye.php:274
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1422
 msgid "Credit Card"
 msgstr ""
 
@@ -1380,7 +1390,7 @@ msgid "Sandbox"
 msgstr ""
 
 #: classes/wc-gateway-braintree-angelleye.php:293
-#: paypal-for-woocommerce.php:699 template/admin.php:64
+#: paypal-for-woocommerce.php:700 template/admin.php:64
 msgid "Enable Sandbox Mode"
 msgstr ""
 
@@ -1408,7 +1418,7 @@ msgid "Sandbox Private Key"
 msgstr ""
 
 #: classes/wc-gateway-braintree-angelleye.php:315
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:245
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:289
 msgid "Sandbox Merchant ID"
 msgstr ""
 
@@ -1421,7 +1431,7 @@ msgid "Live Private Key"
 msgstr ""
 
 #: classes/wc-gateway-braintree-angelleye.php:339
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:223
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:267
 msgid "Live Merchant ID"
 msgstr ""
 
@@ -1613,6 +1623,8 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2702
 #: classes/wc-gateway-paypal-pro-angelleye.php:667
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1553
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:516
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:683
 msgid "Save payment method to my account."
 msgstr ""
 
@@ -1770,18 +1782,21 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-angelleye.php:1614
 #: classes/wc-gateway-paypal-pro-angelleye.php:1631
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1722
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:188
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:196
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:279
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:484
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:260
 msgid "Card number"
 msgstr ""
 
 #: classes/wc-gateway-braintree-angelleye.php:2033
 #: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:330
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:488
 msgid "Expiry (MM/YY)"
 msgstr ""
 
 #: classes/wc-gateway-braintree-angelleye.php:2037
 #: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:334
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:478
 msgid "Card code"
 msgstr ""
 
@@ -2088,7 +2103,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1600
 #: classes/wc-gateway-paypal-pro-angelleye.php:339
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:412
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1333
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1392
 msgid "Send Item Details"
 msgstr ""
 
@@ -2097,7 +2112,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1601
 #: classes/wc-gateway-paypal-pro-angelleye.php:340
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:413
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1334
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1393
 msgid "Send line item details to PayPal"
 msgstr ""
 
@@ -2106,7 +2121,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1603
 #: classes/wc-gateway-paypal-pro-angelleye.php:342
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:415
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1336
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1395
 msgid ""
 "Include all line item details in the payment request to PayPal so that they "
 "can be seen from the PayPal transaction details page."
@@ -2296,6 +2311,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:331
 #: classes/wc-gateway-paypal-pro-angelleye.php:1624
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:489
 msgid "MM / YY"
 msgstr ""
 
@@ -2303,6 +2319,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-angelleye.php:1620
 #: classes/wc-gateway-paypal-pro-angelleye.php:1637
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1728
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:479
 msgid "CVC"
 msgstr ""
 
@@ -2336,139 +2353,140 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:43
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:65
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:45
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:621
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:276
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:417
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:566
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:693
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:632
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:320
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:461
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:610
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:737
 msgid "Credit or Debit Card"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:44
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:44
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:622
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:277
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:418
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:567
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:694
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:633
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:321
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:462
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:611
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:738
 msgid "PayPal Credit"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:45
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:66
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:47
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:623
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:279
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:420
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:569
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:696
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:634
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:323
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:464
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:613
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:740
 msgid "Bancontact"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:46
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:67
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:48
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:624
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:280
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:421
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:570
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:697
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:635
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:324
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:465
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:614
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:741
 msgid "BLIK"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:47
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:68
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:49
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:625
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:281
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:422
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:571
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:698
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:636
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:325
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:466
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:615
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:742
 msgid "eps"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:48
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:69
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:50
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:626
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:282
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:423
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:572
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:699
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:637
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:326
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:467
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:616
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:743
 msgid "giropay"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:49
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:70
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:51
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:627
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:283
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:424
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:573
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:700
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:638
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:327
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:468
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:617
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:744
 msgid "iDEAL"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:50
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:71
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:628
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:284
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:425
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:574
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:701
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:639
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:328
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:469
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:618
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:745
 msgid "Mercado Pago"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:51
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:72
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:52
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:629
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:285
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:426
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:575
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:702
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:640
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:329
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:470
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:619
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:746
 msgid "MyBank"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:52
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:73
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:53
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:630
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:286
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:427
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:576
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:703
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:641
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:330
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:471
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:620
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:747
 msgid "Przelewy24"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:53
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:74
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:55
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:632
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:288
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:429
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:578
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:705
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:643
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:332
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:473
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:622
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:749
 msgid "Sofort"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:54
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:75
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:56
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:289
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:430
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:579
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:706
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:644
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:333
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:474
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:623
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:750
 msgid "Venmo"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:57
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:78
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:59
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:363
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:504
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:653
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:780
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:407
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:548
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:697
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:824
 msgid "Checkout"
 msgstr ""
 
@@ -2479,27 +2497,29 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:59
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:79
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:60
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:365
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:506
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:655
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:782
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:409
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:550
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:699
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:826
 msgid "Pay"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:60
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:80
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:61
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:364
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:505
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:654
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:781
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:408
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:549
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:698
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:825
 msgid "Buy Now"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:61
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:81
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:62
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:652
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:72
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:198
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:696
 msgid "PayPal"
 msgstr ""
 
@@ -2554,6 +2574,7 @@ msgid ""
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:849
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:102
 msgid ""
 "PayPal Pay Later Messaging - Buy Now Pay Later is not available when using "
 "the PayPal Multi-Account add-on."
@@ -2570,6 +2591,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:854
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1096
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:216
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:107
 msgid ""
 "Token payments are not available when using the PayPal Multi-Account add-on."
 msgstr ""
@@ -2589,157 +2611,157 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:863
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1105
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:111
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:132
 msgid "25 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:864
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1106
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:112
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:133
 msgid "26 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:865
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1107
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:113
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:134
 msgid "27 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:866
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1108
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:114
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:135
 msgid "28 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:867
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1109
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:115
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:136
 msgid "29 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:868
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1110
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:116
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:137
 msgid "30 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:869
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1111
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:117
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:138
 msgid "31 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:870
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1112
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:118
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:139
 msgid "32 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:871
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1113
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:119
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:140
 msgid "33 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:872
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1114
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:120
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:141
 msgid "34 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:873
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1115
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:121
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:142
 msgid "35 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:874
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1116
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:122
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:143
 msgid "36 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:875
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1117
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:123
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:144
 msgid "37 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:876
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1118
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:124
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:145
 msgid "38 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:877
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1119
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:125
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:146
 msgid "39 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:878
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1120
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:126
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:147
 msgid "40 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:879
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1121
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:127
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:148
 msgid "41 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:880
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1122
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:128
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:149
 msgid "42 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:881
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1123
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:129
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:150
 msgid "43 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:882
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1124
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:130
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:151
 msgid "44 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:883
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1125
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:131
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:152
 msgid "45 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:884
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1126
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:132
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:153
 msgid "46 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:885
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1127
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:133
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:154
 msgid "47 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:886
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1128
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:134
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:155
 msgid "48 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:887
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1129
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:135
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:156
 msgid "49 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:888
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1130
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:136
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:157
 msgid "50 px"
 msgstr ""
 
@@ -2747,26 +2769,26 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:892
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1131
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1134
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:137
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:140
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:158
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:161
 msgid "51 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:890
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1132
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:138
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:159
 msgid "52 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:891
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1133
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:139
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:160
 msgid "53 px"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:893
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1135
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:141
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:162
 msgid "55 px"
 msgstr ""
 
@@ -2795,13 +2817,13 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:946
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1188
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:243
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:171
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:215
 msgid "PayPal Sandbox"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:948
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1190
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:173
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:217
 msgid "Enable PayPal Sandbox"
 msgstr ""
 
@@ -2970,7 +2992,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1048
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1290
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1078
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1122
 msgid "Cart Page"
 msgstr ""
 
@@ -2998,7 +3020,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1061
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1303
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:396
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:440
 msgid "Cart Button Position"
 msgstr ""
 
@@ -3014,7 +3036,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1075
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1317
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:537
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:581
 msgid "Checkout Page Display"
 msgstr ""
 
@@ -3025,19 +3047,19 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1079
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1321
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:540
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:584
 msgid "Display at the top of the checkout page."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1080
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1322
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:541
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:585
 msgid "Display in general list of enabled gateways on checkout page."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1081
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1323
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:542
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:586
 msgid ""
 "Display both at the top and in the general list of gateways on the checkout "
 "page."
@@ -3045,7 +3067,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1084
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1326
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:545
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:589
 msgid ""
 "Displaying the checkout button at the top of the checkout page will allow "
 "users to skip filling out the forms and can potentially increase conversion "
@@ -3066,7 +3088,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1095
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1337
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:992
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1036
 msgid "Product Page"
 msgstr ""
 
@@ -3129,7 +3151,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1134
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1376
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1304
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1363
 msgid "Landing Page"
 msgstr ""
 
@@ -3142,13 +3164,13 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1138
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1380
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1308
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1367
 msgid "Login"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1139
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1381
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1309
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1368
 msgid "Billing"
 msgstr ""
 
@@ -3213,13 +3235,13 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1169
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1411
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1297
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1356
 msgid "Brand Name"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1171
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1413
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1299
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1358
 msgid ""
 "This controls what users see as the brand / company name on PayPal review "
 "pages."
@@ -3260,6 +3282,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1204
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1446
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1294
 msgid "Tokenization / Subscriptions"
 msgstr ""
 
@@ -3399,7 +3422,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1527
 #: classes/wc-gateway-paypal-pro-angelleye.php:358
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:430
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1406
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1458
 msgid "Error Email Notifications"
 msgstr ""
 
@@ -3407,7 +3430,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1529
 #: classes/wc-gateway-paypal-pro-angelleye.php:360
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:432
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1408
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1460
 msgid "Enable admin email notifications for errors."
 msgstr ""
 
@@ -3415,7 +3438,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1531
 #: classes/wc-gateway-paypal-pro-angelleye.php:362
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:434
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1410
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1462
 msgid ""
 "This will send a detailed error email to the WordPress site administrator if "
 "a PayPal API error occurs."
@@ -3440,13 +3463,13 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1300
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1542
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1275
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1334
 msgid "Skip Final Review"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1301
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1543
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1276
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1335
 msgid "Enables the option to skip the final review page."
 msgstr ""
 
@@ -3460,19 +3483,19 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1307
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1549
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1289
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1348
 msgid "Disable Terms and Conditions"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1308
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1550
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1290
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1349
 msgid "Disable Terms and Conditions for Express Checkout orders."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1309
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1551
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1291
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1350
 msgid ""
 "By default, if a Terms and Conditions page is set in WooCommerce, this would "
 "require the review page and would override the Skip Final Review option.  "
@@ -3505,13 +3528,13 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1342
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1584
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1325
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1384
 msgid "Billing Address"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1343
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1585
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1326
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1385
 msgid ""
 "Set billing address in WooCommerce using the address returned by PayPal."
 msgstr ""
@@ -3624,10 +3647,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1971
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2049
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2130
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:269
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:410
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:559
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:686
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:313
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:454
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:603
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:730
 msgid "Hide Funding Method(s)"
 msgstr ""
 
@@ -3643,10 +3666,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1974
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2052
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2133
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:272
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:413
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:562
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:689
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:316
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:457
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:606
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:733
 msgid ""
 "Funding methods selected here will be hidden from buyers during checkout."
 msgstr ""
@@ -3673,10 +3696,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1927
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2005
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2086
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:293
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:434
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:583
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:710
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:337
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:478
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:627
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:754
 msgid "Button Layout"
 msgstr ""
 
@@ -3692,10 +3715,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1930
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2008
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2089
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:296
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:437
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:586
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:713
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:340
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:481
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:630
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:757
 msgid ""
 "Select Vertical for stacked buttons, and Horizontal for side-by-side buttons."
 msgstr ""
@@ -3712,9 +3735,9 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1934
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2012
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2093
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:442
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:591
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:718
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:486
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:635
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:762
 msgid "Horizontal"
 msgstr ""
 
@@ -3730,7 +3753,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1935
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2013
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2094
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:301
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:345
 msgid "Vertical"
 msgstr ""
 
@@ -3746,10 +3769,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1939
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2017
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2098
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:332
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:473
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:622
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:749
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:376
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:517
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:666
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:793
 msgid "Button Size"
 msgstr ""
 
@@ -3782,10 +3805,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1946
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2024
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2105
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:339
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:480
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:629
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:756
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:383
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:524
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:673
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:800
 msgid "Small"
 msgstr ""
 
@@ -3801,10 +3824,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1947
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2025
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2106
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:340
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:481
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:630
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:757
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:384
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:525
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:674
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:801
 msgid "Medium"
 msgstr ""
 
@@ -3820,10 +3843,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1948
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2026
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2107
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:341
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:482
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:631
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:758
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:385
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:526
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:675
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:802
 msgid "Large"
 msgstr ""
 
@@ -3854,10 +3877,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1953
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2031
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2112
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:346
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:487
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:636
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:763
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:390
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:531
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:680
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:807
 msgid "Button Height"
 msgstr ""
 
@@ -3873,10 +3896,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1956
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2034
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2115
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:349
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:490
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:639
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:766
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:393
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:534
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:683
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:810
 msgid "Set the height of the buttons you would like displayed."
 msgstr ""
 
@@ -3892,10 +3915,10 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1962
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2040
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2121
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:355
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:496
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:645
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:772
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:399
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:540
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:689
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:816
 msgid "Button Label"
 msgstr ""
 
@@ -3911,28 +3934,28 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1965
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2043
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2124
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:358
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:499
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:648
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:775
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:402
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:543
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:692
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:819
 msgid "Set the label type you would like to use for the PayPal button."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1488
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1727
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:305
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:446
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:595
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:722
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:349
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:490
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:639
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:766
 msgid "Button Color"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1491
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1730
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:308
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:449
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:598
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:725
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:352
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:493
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:642
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:769
 msgid "Set the color you would like to use for the PayPal button."
 msgstr ""
 
@@ -3948,24 +3971,24 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2450
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2541
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2632
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:313
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:454
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:603
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:730
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:877
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:963
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1049
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1135
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1221
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:357
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:498
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:647
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:774
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:921
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1007
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1093
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1179
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1265
 msgid "Blue"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1497
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1736
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:314
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:455
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:604
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:731
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:358
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:499
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:648
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:775
 msgid "Silver"
 msgstr ""
 
@@ -3981,20 +4004,20 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2541
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2623
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2632
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:315
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:456
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:605
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:732
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:868
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:877
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:954
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:963
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1040
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1049
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1126
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1135
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1212
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1221
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:359
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:500
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:649
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:776
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:912
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:921
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:998
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1007
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1084
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1093
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1170
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1179
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1256
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1265
 msgid "White"
 msgstr ""
 
@@ -4010,47 +4033,47 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2541
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2623
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2632
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:316
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:457
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:606
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:733
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:868
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:877
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:954
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:963
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1040
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1049
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1126
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1135
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1212
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1221
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:360
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:501
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:650
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:777
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:912
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:921
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:998
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1007
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1084
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1093
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1170
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1179
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1256
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1265
 msgid "Black"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1503
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1742
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:320
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:461
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:610
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:737
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:364
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:505
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:654
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:781
 msgid "Button Shape"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1506
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1745
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:323
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:464
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:613
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:740
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:367
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:508
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:657
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:784
 msgid "Set the shape you would like to use for the buttons."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1510
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1749
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:328
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:469
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:618
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:745
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:372
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:513
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:662
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:789
 msgid "Pill"
 msgstr ""
 
@@ -4207,7 +4230,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:1778
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1999
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:553
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:597
 msgid "Disable smart buttons in the regular list of payment gateways."
 msgstr ""
 
@@ -4267,23 +4290,26 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:2854
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:3591
+#: template/myaccount/payment-methods.php:84
+#: template/myaccount/payment-methods.php:86
+#: template/myaccount/payment-methods.php:89
 msgid "%1$s ending in %2$s"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:46
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:278
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:419
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:568
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:695
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:322
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:463
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:612
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:739
 msgid "Pay Later"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:54
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:631
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:287
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:428
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:577
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:704
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:642
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:331
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:472
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:621
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:748
 msgid "SEPA-Lastschrift"
 msgstr ""
 
@@ -4295,33 +4321,33 @@ msgid ""
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2160
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:811
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:855
 msgid "Page Type"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2165
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:816
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:860
 msgid "Home"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2165
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:816
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:860
 #: template/admin.php:122
 msgid "Category"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2165
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:816
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:860
 msgid "Product"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2165
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:816
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:860
 msgid "Cart"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2165
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:816
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:860
 msgid "Payment"
 msgstr ""
 
@@ -4339,11 +4365,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2399
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2490
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2581
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:826
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:912
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:998
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1084
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1170
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:870
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:956
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1042
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1128
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1214
 msgid "Layout Type"
 msgstr ""
 
@@ -4352,11 +4378,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2405
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2496
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2587
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:832
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:918
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1004
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1090
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1176
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:876
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:962
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1048
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1134
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1220
 msgid "Text Layout"
 msgstr ""
 
@@ -4365,11 +4391,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2405
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2496
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2587
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:832
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:918
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1004
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1090
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1176
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:876
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:962
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1048
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1134
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1220
 msgid "Flex Layout"
 msgstr ""
 
@@ -4378,11 +4404,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2408
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2499
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2590
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:835
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:921
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1007
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1093
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1179
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:879
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:965
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1051
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1137
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1223
 msgid "Logo Type"
 msgstr ""
 
@@ -4391,11 +4417,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2414
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2505
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2596
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:841
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:927
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1013
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1099
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1185
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:885
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:971
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1057
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1143
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1229
 msgid "Primary"
 msgstr ""
 
@@ -4404,11 +4430,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2414
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2505
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2596
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:841
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:927
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1013
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1099
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1185
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:885
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:971
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1057
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1143
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1229
 msgid "Alternative"
 msgstr ""
 
@@ -4417,11 +4443,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2414
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2505
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2596
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:841
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:927
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1013
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1099
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1185
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:885
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:971
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1057
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1143
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1229
 msgid "Inline"
 msgstr ""
 
@@ -4430,11 +4456,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2414
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2505
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2596
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:841
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:927
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1013
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1099
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1185
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:885
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:971
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1057
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1143
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1229
 msgid "None"
 msgstr ""
 
@@ -4443,11 +4469,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2417
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2508
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2599
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:844
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:930
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1016
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1102
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1188
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:888
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:974
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1060
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1146
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1232
 msgid "Logo Position"
 msgstr ""
 
@@ -4456,11 +4482,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2423
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2514
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2605
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:850
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:936
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1022
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1108
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1194
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:894
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:980
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1066
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1152
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1238
 msgid "Left"
 msgstr ""
 
@@ -4469,11 +4495,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2423
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2514
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2605
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:850
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:936
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1022
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1108
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1194
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:894
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:980
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1066
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1152
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1238
 msgid "Right"
 msgstr ""
 
@@ -4482,11 +4508,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2423
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2514
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2605
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:850
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:936
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1022
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1108
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1194
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:894
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:980
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1066
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1152
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1238
 msgid "Top"
 msgstr ""
 
@@ -4495,11 +4521,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2426
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2517
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2608
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:853
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:939
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1025
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1111
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1197
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:897
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:983
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1069
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1155
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1241
 msgid "Text Size"
 msgstr ""
 
@@ -4508,11 +4534,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2432
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2523
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2614
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:859
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:945
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1031
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1117
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1203
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:903
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:989
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1075
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1161
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1247
 msgid "10 px"
 msgstr ""
 
@@ -4521,11 +4547,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2432
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2523
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2614
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:859
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:945
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1031
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1117
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1203
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:903
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:989
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1075
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1161
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1247
 msgid "11 px"
 msgstr ""
 
@@ -4534,11 +4560,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2432
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2523
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2614
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:859
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:945
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1031
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1117
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1203
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:903
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:989
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1075
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1161
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1247
 msgid "12 px"
 msgstr ""
 
@@ -4547,11 +4573,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2432
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2523
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2614
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:859
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:945
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1031
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1117
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1203
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:903
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:989
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1075
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1161
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1247
 msgid "13 px"
 msgstr ""
 
@@ -4560,11 +4586,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2432
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2523
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2614
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:859
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:945
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1031
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1117
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1203
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:903
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:989
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1075
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1161
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1247
 msgid "14 px"
 msgstr ""
 
@@ -4573,11 +4599,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2432
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2523
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2614
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:859
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:945
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1031
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1117
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1203
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:903
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:989
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1075
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1161
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1247
 msgid "15 px"
 msgstr ""
 
@@ -4586,11 +4612,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2432
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2523
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2614
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:859
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:945
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1031
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1117
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1203
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:903
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:989
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1075
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1161
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1247
 msgid "16 px"
 msgstr ""
 
@@ -4599,11 +4625,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2435
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2526
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2617
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:862
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:948
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1034
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1120
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1206
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:906
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:992
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1078
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1164
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1250
 msgid "Text Color"
 msgstr ""
 
@@ -4617,16 +4643,16 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2541
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2623
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2632
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:868
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:877
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:954
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:963
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1040
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1049
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1126
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1135
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1212
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1221
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:912
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:921
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:998
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1007
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1084
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1093
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1170
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1179
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1256
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1265
 msgid "Monochrome"
 msgstr ""
 
@@ -4640,16 +4666,16 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2541
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2623
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2632
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:868
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:877
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:954
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:963
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1040
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1049
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1126
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1135
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1212
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1221
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:912
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:921
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:998
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1007
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1084
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1093
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1170
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1179
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1256
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1265
 msgid "Grayscale"
 msgstr ""
 
@@ -4658,11 +4684,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2444
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2535
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2626
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:871
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:957
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1043
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1129
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1215
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:915
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1001
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1087
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1173
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1259
 msgid "Color"
 msgstr ""
 
@@ -4671,11 +4697,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2450
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2541
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2632
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:877
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:963
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1049
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1135
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1221
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:921
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1007
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1093
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1179
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1265
 msgid "White (No Border)"
 msgstr ""
 
@@ -4684,11 +4710,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2450
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2541
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2632
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:877
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:963
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1049
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1135
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1221
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:921
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1007
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1093
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1179
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1265
 msgid "Gray"
 msgstr ""
 
@@ -4697,11 +4723,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2453
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2544
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2635
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:880
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:966
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1052
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1138
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1224
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:924
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1010
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1096
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1182
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1268
 msgid "Ratio"
 msgstr ""
 
@@ -4710,11 +4736,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2459
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2550
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2641
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:886
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:972
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1058
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1144
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1230
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:930
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1016
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1102
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1188
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1274
 msgid "Flexes between 120px and 300px wide"
 msgstr ""
 
@@ -4723,11 +4749,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2459
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2550
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2641
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:886
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:972
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1058
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1144
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1230
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:930
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1016
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1102
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1188
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1274
 msgid "160px wide"
 msgstr ""
 
@@ -4736,11 +4762,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2459
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2550
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2641
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:886
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:972
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1058
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1144
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1230
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:930
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1016
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1102
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1188
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1274
 msgid "Flexes between 250px and 768px wide"
 msgstr ""
 
@@ -4749,16 +4775,16 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2459
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2550
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2641
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:886
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:972
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1058
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1144
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1230
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:930
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1016
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1102
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1188
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1274
 msgid "Flexes between 250px and 1169px wide"
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2281
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:890
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:934
 msgid ""
 "I need a shortcode so that I can place the message in a better spot on Home "
 "page."
@@ -4769,11 +4795,11 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2470
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2561
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2652
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:897
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:983
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1069
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1155
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1241
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:941
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1027
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1113
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1199
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1285
 msgid "Shortcode"
 msgstr ""
 
@@ -4793,7 +4819,7 @@ msgid ""
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2387
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:253
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:297
 msgid "Product Page Settings"
 msgstr ""
 
@@ -4809,7 +4835,7 @@ msgid ""
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:2478
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:380
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:424
 msgid "Cart Page Settings"
 msgstr ""
 
@@ -4851,7 +4877,6 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:217
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:234
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1370
 msgid "Credit card"
 msgstr ""
 
@@ -5072,8 +5097,8 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:674
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1560
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:192
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:200
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:283
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:264
 msgid "Expiration Date"
 msgstr ""
 
@@ -5193,8 +5218,8 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-angelleye.php:1619
 #: classes/wc-gateway-paypal-pro-angelleye.php:1636
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1727
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:183
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:191
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:274
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:255
 msgid "Card Security Code"
 msgstr ""
 
@@ -5301,7 +5326,7 @@ msgid "The password that you defined while registering for the account."
 msgstr ""
 
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:321
-#: paypal-for-woocommerce.php:1339 template/admin.php:82
+#: paypal-for-woocommerce.php:1340 template/admin.php:82
 msgid "Authorization Type"
 msgstr ""
 
@@ -5478,58 +5503,59 @@ msgstr ""
 msgid "No thanks."
 msgstr ""
 
-#: paypal-for-woocommerce.php:462
+#: paypal-for-woocommerce.php:463
 msgid "Choose Image"
 msgstr ""
 
-#: paypal-for-woocommerce.php:642
+#: paypal-for-woocommerce.php:643
 msgid "PayPal for WooCommerce - Settings"
 msgstr ""
 
-#: paypal-for-woocommerce.php:643
-msgid "Complete Payments"
-msgstr ""
-
-#: paypal-for-woocommerce.php:685
-msgid "No Shipping Required"
+#: paypal-for-woocommerce.php:644
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:191
+msgid "PayPal Commerce"
 msgstr ""
 
 #: paypal-for-woocommerce.php:686
+msgid "No Shipping Required"
+msgstr ""
+
+#: paypal-for-woocommerce.php:687
 msgid "Disables shipping requirements in the PayPal checkout flow."
 msgstr ""
 
-#: paypal-for-woocommerce.php:692 template/admin.php:60
+#: paypal-for-woocommerce.php:693 template/admin.php:60
 msgid "Enable PayPal Billing Agreement"
 msgstr ""
 
-#: paypal-for-woocommerce.php:693
+#: paypal-for-woocommerce.php:694
 msgid ""
 "Adds a billing agreement to the product.  The user must agree to the billing "
 "agreement on the PayPal checkout pages, and then you can process future "
 "payments for the buyer using reference transactions."
 msgstr ""
 
-#: paypal-for-woocommerce.php:700
+#: paypal-for-woocommerce.php:701
 msgid ""
 "If this product is included in the cart the order will be processed in the "
 "PayPal sandbox for testing purposes."
 msgstr ""
 
-#: paypal-for-woocommerce.php:714 template/admin.php:62
+#: paypal-for-woocommerce.php:715 template/admin.php:62
 msgid "Enable Express Checkout Button"
 msgstr ""
 
-#: paypal-for-woocommerce.php:715
+#: paypal-for-woocommerce.php:716
 msgid ""
 "Adds the PayPal Express Checkout button to the product page allowing buyers "
 "to checkout directly from the product page."
 msgstr ""
 
-#: paypal-for-woocommerce.php:744
+#: paypal-for-woocommerce.php:745
 msgid "Error Code: 0"
 msgstr ""
 
-#: paypal-for-woocommerce.php:1109
+#: paypal-for-woocommerce.php:1110
 msgid ""
 "In order to better support the different countries and international "
 "features that PayPal Plus provides we have created a new, separate plugin. "
@@ -5537,48 +5563,44 @@ msgid ""
 "target='_blank'>Get the New PayPal Plus Plugin!</a>"
 msgstr ""
 
-#: paypal-for-woocommerce.php:1110
+#: paypal-for-woocommerce.php:1111
 msgid "Dismiss"
 msgstr ""
 
-#: paypal-for-woocommerce.php:1318 template/admin.php:66
+#: paypal-for-woocommerce.php:1319 template/admin.php:66
 msgid "Enable Payment Action"
 msgstr ""
 
-#: paypal-for-woocommerce.php:1331
+#: paypal-for-woocommerce.php:1332
 msgid ""
 "Immediate Capture will capture the funds immediately when the order is "
 "placed. Authorization for Delayed Capture will Authorize the payment to "
 "ensure valid funds - process (capture) the payment at a later day/time."
 msgstr ""
 
-#: paypal-for-woocommerce.php:1344
+#: paypal-for-woocommerce.php:1345
 msgid ""
 "This option will only work with <b>PayPal Payments Pro 2.0 (PayFlow)</b> "
 "payment method."
 msgstr ""
 
-#: paypal-for-woocommerce.php:1534 paypal-for-woocommerce.php:1540
+#: paypal-for-woocommerce.php:1535 paypal-for-woocommerce.php:1541
 msgctxt "Order status"
 msgid "Partially Paid"
 msgstr ""
 
-#: paypal-for-woocommerce.php:1545
+#: paypal-for-woocommerce.php:1546
 msgid "Partially Paid <span class=\"count\">(%s)</span>"
 msgid_plural "Partially Paid <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:633
-msgid "PayPal Venmo"
-msgstr ""
-
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:634
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:645
 msgid "PayPal Pay Later"
 msgstr ""
 
-#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:635
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:492
+#: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:646
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:547
 msgid "PayPal Checkout"
 msgstr ""
 
@@ -5619,7 +5641,7 @@ msgid "Refund"
 msgstr ""
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-admin-action.php:248
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1263
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1322
 msgid "Capture"
 msgstr ""
 
@@ -5633,7 +5655,7 @@ msgid "Capture Funds"
 msgstr ""
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-admin-action.php:301
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1264
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1323
 msgid "Authorize"
 msgstr ""
 
@@ -5716,135 +5738,130 @@ msgstr ""
 msgid "Expired Date"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:125
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:164
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:126
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:162
 msgid "We see that your PayPal email address is"
-msgstr "Vediamo che il tuo indirizzo email PayPal è"
-
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:129
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:168
-msgid "We see that your site admin email address is"
-msgstr "Vediamo che il tuo indirizzo email per l'amministratore del sito è"
-
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:131
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:170
-msgid "We see that your email address is"
-msgstr "Vediamo che il tuo indirizzo email è"
-
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:223
-msgid ""
-"Welcome to the most Complete Payments solution available for WooCommerce. "
-"<br> Powered by PayPal - Built by Angelleye."
 msgstr ""
-"Benvenuti nella soluzione di pagamento più completa disponibile per "
-"WooCommerce. <br> Potenziata da PayPal - Sviluppata da Angelleye."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:237
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:130
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:166
+msgid "We see that your site admin email address is"
+msgstr ""
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:132
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:168
+msgid "We see that your email address is"
+msgstr ""
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:218
+msgid ""
+"Welcome to the most PayPal Commerce solution available for WooCommerce. <br> "
+"Built by Angelleye."
+msgstr ""
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:232
 msgid "Start Now"
-msgstr "Inizia subito"
+msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:252
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:247
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:312
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:364
 msgid "We could not properly connect to PayPal"
-msgstr "Non siamo riusciti a connetterci correttamente a PayPal"
+msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:255
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:250
 msgid ""
 "Increase average order totals and conversion rates with <br>PayPal Checkout, "
 "PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee "
 "of only %s."
 msgstr ""
-"Aumenta il totale degli ordini medi e le tassi di conversione con <br>PayPal "
-"Checkout, PayPal Credit, Acquista ora, paga dopo, Venmo e altro ancora! "
-"<br>Tutto per una commissione totale di soli %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:258
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:253
 msgid ""
 "Fees on Visa/MasterCard/Discover transactions <br>transactions are a total "
 "fee of only %s."
 msgstr ""
-"Le commissioni sugli acquisti con Visa/MasterCard/Discover sono una "
-"commissione totale di soli %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:260
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:255
 msgid ""
 "Save money on Visa/MasterCard/Discover transactions <br>with a total fee of "
 "only %s."
 msgstr ""
-"Risparmia sugli acquisti con Visa/MasterCard/Discover con una commissione "
-"totale di soli %s."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:280
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:299
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:275
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:329
 msgid ""
-"You’re currently setup and enjoying the benefits of Complete Payments. <br> "
-"Powered by PayPal - Built by Angelleye."
+"You’re currently setup and enjoying the benefits of PayPal Commerce. <br> "
+"Built by Angelleye."
 msgstr ""
-"Al momento sei configurato e puoi godere dei vantaggi del sistema di "
-"pagamento completo. <br> Potenziata da PayPal - Sviluppata da Angelleye."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:281
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:276
 msgid ""
 "However, we need additional verification to approve you for the reduced "
 "<br>rate of %s on debit/credit cards."
 msgstr ""
-"Tuttavia, abbiamo bisogno di ulteriori verifiche per approvare la tua "
-"richiesta di tasso ridotto del %s su carte di debito/credito."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:282
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:277
 msgid ""
 "To apply for a reduced rate, modify your setup, <br>or learn more about "
 "additional options, please use the buttons below."
 msgstr ""
-"Per richiedere un tasso ridotto, modificare la tua configurazione o "
-"conoscere altre opzioni, utilizza i pulsanti sottostanti."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:284
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:279
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:332
+msgid ""
+"Your PayPal account is not approved for the Vault functionality<br>which is "
+"required for Subscriptions (token payments). <br>Please Reconnect your "
+"PayPal account to apply for this feature."
+msgstr ""
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:282
 msgid "Apply for Cheaper Fees!"
-msgstr "Richiedi commissioni più convenienti!"
+msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:285
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:302
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:283
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:335
 msgid "Modify Setup"
-msgstr "Modifica configurazione"
+msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:286
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:303
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:297
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:349
+msgid "Reconnect PayPal Account"
+msgstr ""
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:316
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:368
 msgid "Learn More"
-msgstr "Ulteriori informazioni"
+msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:300
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:330
 msgid ""
 "To modify your setup or learn more about additional options, <br> please use "
 "the buttons below."
 msgstr ""
-"Per modificare la tua configurazione o conoscere altre opzioni, utilizza i "
-"pulsanti sottostanti."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:316
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:381
 msgid ""
 "Please verify which email is best for us to send future notices about PayPal "
 "and payments in general so that you are always informed."
 msgstr ""
-"Si prega di verificare quale indirizzo email sia meglio utilizzare per "
-"inviare avvisi futuri riguardanti PayPal e i pagamenti in generale in modo "
-"da essere sempre informati."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:322
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:387
 msgid "Submit"
-msgstr "Invia"
+msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:328
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:393
 msgid "Have A Question Or Need Expert Help?"
-msgstr "Hai una domanda o hai bisogno di aiuto da parte di un esperto?"
+msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:329
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:394
 msgid "Contact Support"
-msgstr "Contatta il supporto"
+msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:332
-#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:333
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:397
+#: ppcp-gateway/class-angelleye-paypal-ppcp-admin-onboarding.php:398
 msgid "Plugin Documentation"
-msgstr "Documentazione del plugin"
+msgstr ""
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php:20
 #: ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php:78
@@ -5854,150 +5871,162 @@ msgid ""
 msgstr ""
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php:42
-#: ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php:100
+#: ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php:101
 msgid "Unable to create order."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php:236
+#: ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php:257
 msgid ""
 "We cannot process your order with the payment information that you provided. "
 "Please use an alternate payment method."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php:239
+#: ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php:260
 msgid "Something went wrong. Please try again."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php:398
+#: ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php:416
 msgid "3D Secure response"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:797
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1197
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1361
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1474
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:928
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1371
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1539
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1648
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2538
 msgid "Card Details"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:826
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1226
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1390
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1503
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:957
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1400
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1568
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1677
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2568
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2620
 msgid "Processor response code Result"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:844
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1244
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1411
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:975
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1418
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1589
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2586
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2638
 msgid "Payment via %s: %s."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:846
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1246
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1413
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1815
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:977
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1420
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1591
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2030
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2588
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2640
 msgid "Payment via %s declined."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:847
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1247
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1263
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1415
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:978
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1421
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1437
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1593
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2589
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2641
 msgid ""
 "Unfortunately your order cannot be processed as the originating bank/"
 "merchant has declined your transaction. Please attempt your purchase again."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:854
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1257
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1407
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1524
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1538
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:985
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1431
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1585
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1698
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1712
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2596
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2651
 msgid "%s Transaction ID: %s"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1135
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1267
 msgid "Refunded %1$s - Refund ID: %2$s"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1141
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1273
 msgid "Payment via %s Pending. Pending reason: %s."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1143
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1275
 msgid "Refund Amount %1$s - Refund ID: %2$s"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1260
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1434
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2654
 msgid ""
 "Payment authorized. Change payment status to processing or complete to "
 "capture funds."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1519
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1693
 msgid "Payment via %s: %s ."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1532
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1706
 msgid "Payment via %s Pending. PayPal reason: %s."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1541
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1715
 msgid ""
 "Payment authorized. Change order status to processing or complete for "
 "capture funds."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1783
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1998
 msgid "Action: "
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1786
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2001
 msgid "Error: "
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1793
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2008
 msgid "User ID: "
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1794
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2009
 msgid "User Email: "
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1819
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2034
 msgid ""
 "BUYER_COMPLAINT: The payer initiated a dispute for this captured payment "
 "with PayPal."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1822
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2037
 msgid ""
 "CHARGEBACK: The captured funds were reversed in response to the payer "
 "disputing this captured payment with the issuer of the financial instrument "
 "used to pay for this captured payment."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1825
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2040
 msgid "ECHECK: The payer paid by an eCheck that has not yet cleared."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1828
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2043
 msgid ""
 "INTERNATIONAL_WITHDRAWAL: Visit your online account. In your **Account "
 "Overview**, accept and deny this payment."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1831
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2046
 msgid ""
 "No additional specific reason can be provided. For more information about "
 "this captured payment, visit your account online or contact PayPal."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1834
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2049
 msgid "PENDING_REVIEW: The captured payment is pending manual review."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1837
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2052
 msgid ""
 "RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION: The payee has not yet set up "
 "appropriate receiving preferences for their account. For more information "
@@ -6006,46 +6035,69 @@ msgid ""
 "captured payment is different from the primary holding currency of the payee."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1840
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2055
 msgid "REFUNDED: The captured funds were refunded."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1843
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2058
 msgid ""
 "TRANSACTION_APPROVED_AWAITING_FUNDING: The payer must send the funds for "
 "this captured payment. This code generally appears for manual EFTs."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1846
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2061
 msgid "UNILATERAL: The payee does not have a PayPal account."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1849
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2064
 msgid "VERIFICATION_REQUIRED: The payee's PayPal account is not verified."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1857
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2072
 msgid "Payment via %s Pending. PayPal Pending reason: %s."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1860
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2075
 msgid "Payment via %s declined. PayPal declined reason: %s."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1865
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2080
 msgid "Payment via %s partially refunded. PayPal reason: %s."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1868
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2083
 msgid "Payment via %s refunded. PayPal reason: %s."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1870
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2085
 msgid "Payment via %s failed. PayPal reason: %s."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:1873
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2088
 msgid "Payment via %s Voided."
+msgstr ""
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2949
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:3116
+msgid "Payment method successfully added."
+msgstr ""
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2951
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2964
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:3118
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:3131
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:3206
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:3222
+msgid "Unable to add payment method to your account."
+msgstr ""
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:2954
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:3121
+msgid "Payment method already exist in your account."
+msgstr ""
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-payment.php:3481
+msgid "Unable to change payment method."
 msgstr ""
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-product.php:87
@@ -6075,406 +6127,427 @@ msgstr[1] ""
 msgid "Return to your shop."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:74
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:25
-msgid "Confirm Your PayPal Order"
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:83
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:26
+msgid "Complete Order Payment"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:75
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:84
 msgid ""
 "<strong>You're almost done!</strong><br>Review your information before you "
 "place your order."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:427
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:460
 msgid ""
 "Unfortunately, we do not support this credit card type. Please try another "
 "card type."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:428
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:461
 msgid ""
 "Unfortunately, your credit card details are not valid. Please review the "
 "card details and try again."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:559
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:607
 msgid "Billing &amp; Shipping"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:563
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:611
 msgid "Billing details"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:598
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:646
 msgid "Create an account?"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:605
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:653
 msgid ""
 "Create an account by entering the information below. If you are a returning "
 "customer please login at the top of the page."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1070
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1139
 msgid "Payment method:"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:15
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:161
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1459
+msgid "Invalid payment method."
+msgstr ""
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1464
+msgid "Payment method deleted."
+msgstr ""
+
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:14
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:205
 msgid "Accept PayPal, PayPal Credit and alternative payment types."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:69
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:85
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:111
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:112
 msgctxt "Name of credit card"
 msgid "Visa"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:74
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:86
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:116
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:113
 msgctxt "Name of credit card"
 msgid "Mastercard"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:79
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:87
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:121
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:114
 msgctxt "Name of credit card"
 msgid "American Express"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:84
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:88
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:126
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:115
 msgctxt "Name of credit card"
 msgid "Discover"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:89
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:89
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:131
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:116
 msgctxt "Name of credit card"
 msgid "JCB"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:94
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:90
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:136
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:117
 msgctxt "Name of credit card"
 msgid "Elo"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:99
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:91
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:141
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:118
 msgctxt "Name of credit card"
 msgid "Hiper"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:260
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:438
+#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:351
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:525
 msgid "Refund failed."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:69
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:147
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:154
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:66 template/admin.php:16
-msgid "Complete Payments - Powered by PayPal"
-msgstr ""
-
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:70
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:67
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:73
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:110
 msgid ""
 "The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit "
 "Cards with cheaper fees than other processors!"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:110
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:109
+msgid ""
+"Allow buyers to securely save payment details to their account. This enables "
+"features like Subscriptions, Auto-Ship, and token payments of any kind."
+msgstr ""
+
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:131
 msgid "Default Height (Recommended)"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:160
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:179
+msgid ""
+"The Advanced Credit Cards feature is not yet active on your PayPal account. "
+"Please <a href=\"%s\">return to the PayPal Connect screen</a> to apply for "
+"this feature and get cheaper rates."
+msgstr ""
+
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:184
+msgid ""
+"The Vault functionality required for this feature is not enabled on your "
+"PayPal account. Please <a href=\"%s\">return to the PayPal Connect screen</"
+"a> to enable this functionality."
+msgstr ""
+
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:204
 msgid "Payment method description that the customer will see on your checkout."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:165
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:209
 msgid "PayPal Account Settings"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:175
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:219
 msgid ""
 "Check this box to enable test mode so that all transactions will hit "
 "PayPal’s sandbox server instead of the live server. This should only be used "
 "during development as no real transactions will occur when this is enabled."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:179
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:223
 msgid "Connect to PayPal"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:183
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:198
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:227
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:242
 msgid "Setup or link an existing PayPal account."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:187
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:202
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:231
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:246
 msgid "PayPal Connection"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:190
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:205
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:234
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:249
 msgid "Click to reset current credentials and use another account."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:194
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:238
 msgid "Connect to PayPal Sandbox"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:209
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:253
 msgid "PayPal Client ID"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:211
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:255
 msgid "Enter your PayPal Client ID."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:216
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:260
 msgid "PayPal Secret"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:218
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:262
 msgid "Enter your PayPal Secret."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:233
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:277
 msgid "Enter your PayPal Sandbox Client ID."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:238
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:282
 msgid "Sandbox Secret"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:240
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:284
 msgid "Enter your PayPal Sandbox Secret."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:255
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:299
 msgid ""
 "Enable the Product specific button settings, and the options set will be "
 "applied to the PayPal Smart buttons on your Product pages."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:263
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:307
 msgid "Enable PayPal Smart Button on the Product Pages."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:300
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:344
 msgid "Horizontal (Recommended)"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:312
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:453
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:602
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:729
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:356
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:497
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:646
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:773
 msgid "Gold (Recommended)"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:327
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:468
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:617
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:744
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:371
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:512
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:661
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:788
 msgid "Rect (Recommended)"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:335
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:476
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:625
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:752
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:379
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:520
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:669
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:796
 msgid ""
 "Set the size of the buttons you would like displayed. Responsive will fit to "
 "the current element on the page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:342
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:483
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:632
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:759
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:386
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:527
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:676
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:803
 msgid "Responsive (Recommended)"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:362
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:503
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:779
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:406
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:547
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:823
 msgid "PayPal (Recommended)"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:369
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:510
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:659
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:786
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:413
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:554
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:703
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:830
 msgid "Tagline"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:373
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:514
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:663
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:790
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:417
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:558
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:707
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:834
 msgid "Enable tagline"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:375
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:516
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:665
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:792
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:419
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:560
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:709
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:836
 msgid ""
 "Add the tagline. This line will only show up, if you select a horizontal "
 "layout."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:382
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:426
 msgid ""
 "Enable the Cart specific button settings, and the options set will be "
 "applied to the PayPal buttons on your Cart page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:390
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:434
 msgid "Enable PayPal Smart Button on the Cart page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:397
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:441
 msgid "Where to display PayPal Smart button(s)."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:398
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:442
 msgid "Set where to display the PayPal Smart button(s)."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:441
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:590
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:717
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:485
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:634
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:761
 msgid "Vertical (Recommended)"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:521
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:565
 msgid "Checkout Page Settings"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:523
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:567
 msgid ""
 "Enable the checkout specific button settings, and the options set will be "
 "applied to the PayPal buttons on your checkout page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:531
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:575
 msgid "Enable PayPal Payments on the Checkout page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:534
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:578
 msgid "if this option is disable, PayPal will be not display in checkout page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:670
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:714
 msgid "Mini Cart Page Settings"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:672
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:716
 msgid ""
 "Enable the Mini Cart specific button settings, and the options set will be "
 "applied to the PayPal buttons on your Mini Cart page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:680
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:724
 msgid "Enable PayPal Smart Button on the Mini Cart page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:797
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:841
 msgid "Pay Later Messaging Settings"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:805
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:849
 msgid "Enable Pay Later Messaging"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:820
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:864
 msgid "Home Page"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:822
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:866
 msgid ""
 "Customize the appearance of <a target=\"_blank\" href=\"https://www.paypal."
 "com/us/business/buy-now-pay-later\">Pay Later Messaging</a> on the Home page "
 "to promote special financing offers which help increase sales."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:906
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:950
 msgid "Category Page"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:907
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:951
 msgid ""
 "Customize the appearance of <a target=\"_blank\" href=\"https://www.paypal."
 "com/us/business/buy-now-pay-later\">Pay Later Messaging</a> on the Category "
 "page to promote special financing offers which help increase sales."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:976
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1020
 msgid ""
 "I need a shortcode so that I can place the message in a better spot on "
 "category page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:993
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1037
 msgid ""
 "Customize the appearance of <a target=\"_blank\" href=\"https://www.paypal."
 "com/us/business/buy-now-pay-later\">Pay Later Messaging</a> on the Product "
 "page to promote special financing offers which help increase sales."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1062
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1106
 msgid ""
 "I need a shortcode so that I can place the message in a better spot on "
 "product page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1079
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1123
 msgid ""
 "Customize the appearance of <a target=\"_blank\" href=\"https://www.paypal."
 "com/us/business/buy-now-pay-later\">Pay Later Messaging</a> on the Cart page "
 "to promote special financing offers which help increase sales."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1148
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1192
 msgid ""
 "I need a shortcode so that I can place the message in a better spot on cart "
 "page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1164
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1208
 msgid "Payment Page"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1165
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1209
 msgid ""
 "Customize the appearance of <a target=\"_blank\" href=\"https://www.paypal."
 "com/us/business/buy-now-pay-later\">Pay Later Messaging</a> on the Payment "
 "page to promote special financing offers which help increase sales."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1234
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1278
 msgid ""
 "I need a shortcode so that I can place the message in a better spot on "
 "payment page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1250
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1309
 msgid "Advanced Settings"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1259
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1318
 msgid ""
 "Choose whether you wish to capture funds immediately or authorize payment "
 "only."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1277
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1336
 msgid ""
 "By default, users will be returned from PayPal and presented with a final "
 "review page which includes shipping and tax in the order details. Enable "
@@ -6483,29 +6556,29 @@ msgid ""
 "checkout page is used, the final review page will always be skipped."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1282
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1341
 msgid "Coupon Codes"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1284
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1343
 msgid "Enable the use of coupon codes on the final review page."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1307
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1366
 msgid ""
 "The type of landing page to show on the PayPal site for customer checkout. "
 "PayPal Account Optional must be checked for this option to be used."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1310
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1369
 msgid "No Preference"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1315
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1374
 msgid "Instant Payments "
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1319
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1378
 msgid ""
 "If you enable this setting, PayPal will be instructed not to allow the buyer "
 "to use funding sources that take additional time to complete (for example, "
@@ -6513,132 +6586,133 @@ msgid ""
 "source, such as an instant transfer, a credit/debit card, or PayPal Credit."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1322
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1381
 msgid "Require Instant Payment"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1327
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1386
 msgid ""
 "This does not apply when a billing address is provided by WooCommerce "
 "through the checkout page or from a logged in user profile."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1340
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1399
 msgid "Advanced Credit Cards"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1342
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1401
 msgid "Enable advanced credit and debit card payments."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1347
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1407
 msgid "Contingency for 3D Secure"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1351
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1411
 msgid "3D Secure when required"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1352
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1412
 msgid "Always trigger 3D Secure"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1356
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1416
 msgid ""
 "3D Secure benefits cardholders and merchants by providing an additional "
 "layer of verification using Verified by Visa, MasterCard SecureCode and "
 "American Express SafeKey."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1361
-msgid "Enable separate payment method as Advanced Credit Cards."
-msgstr ""
-
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1364
-msgid ""
-"Enable this option if you would like to use separate payment method as "
-"Advanced Credit Cards in WooCommerce checkout page."
-msgstr ""
-
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1367
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1419
 msgid "Advanced Credit Cards Title"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1374
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1426
 msgid "Advanced Credit Cards Position"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1378
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1430
 msgid "Before PayPal Smart Button"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1379
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1431
 msgid "After PayPal Smart Button"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1383
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1435
 msgid "This controls the gateway position which the user sees during checkout."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1386
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1438
 msgid "Disable specific credit cards"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1391
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1443
 msgid ""
 "By default all possible credit cards will be accepted. You can disable some "
 "cards, if you wish."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1414
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1466
 msgid "Debug log"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1417
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1469
 msgid ""
 "Log PayPal events, such as Payment, Refund inside %s Note: this may log "
 "personal information. We recommend using this for debugging purposes only "
 "and deleting the logs when finished."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1419
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1471
 msgid "Everything"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1420
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1472
 msgid "Errors and Warnings Only"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1421
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1473
 msgid "Disabled"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:280
-msgid ""
-"Congratulations, WooCommerce Complete Payments - Powered by PayPal is "
-"Connected."
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:109
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:116 template/admin.php:16
+msgid "PayPal Commerce - Built by Angelleye"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:283
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:344
+msgid "Congratulations, PayPal Commerce is Connected!"
+msgstr ""
+
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:347
 msgid "Disconnect"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:307
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:371
 msgid "Go To Setup"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:459
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:546
 msgid "This represents the fee PayPal collects for the transaction."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:460
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:547
 msgid "PayPal Fee:"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:519
+#: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:600
 msgid ""
-"Complete Payments - Powered by PayPal is almost ready. To get started, <a "
+"PayPal Commerce - Built by Angelleye is almost ready. To get started, <a "
 "href=\"%1$s\">connect your account</a>."
+msgstr ""
+
+#: ppcp-gateway/compatibility/ppcp-checkout-for-woocommerce.php:113
+msgid "Billing address"
+msgstr ""
+
+#: ppcp-gateway/compatibility/ppcp-checkout-for-woocommerce.php:263
+msgid "Logged in with PayPal. Please continue your order below."
 msgstr ""
 
 #: template/admin.php:17
@@ -6889,6 +6963,14 @@ msgid ""
 "being processed:"
 msgstr ""
 
+#: template/myaccount/payment-methods.php:115
+msgid "No saved methods found."
+msgstr ""
+
+#: template/myaccount/payment-methods.php:122
+msgid "Add payment method"
+msgstr ""
+
 #: template/ppcp_account_request_form.php:19
 msgid "PPCP Account Request"
 msgstr ""
@@ -6903,9 +6985,9 @@ msgstr ""
 
 #. Description of the plugin/theme
 msgid ""
-"Easily enable Complete Payments - Powered by PayPal, PayPal Express "
-"Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  "
-"Each option is available separately so you can enable them individually."
+"Easily enable PayPal Commerce - Powered by PayPal, PayPal Express Checkout, "
+"PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option "
+"is available separately so you can enable them individually."
 msgstr ""
 
 #. Author of the plugin/theme

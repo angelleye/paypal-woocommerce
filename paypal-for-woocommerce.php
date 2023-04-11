@@ -3,8 +3,8 @@
  * @wordpress-plugin
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
- * Description:       Easily enable Complete Payments - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           3.1.10
+ * Description:       Easily enable PayPal Commerce - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
+ * Version:           4.0.0
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '3.1.10');
+    define('VERSION_PFW', '4.0.0');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -424,6 +424,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-angelleye.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
             AngellEYE_PayPal_PPCP_Smart_Button::instance();
             Angelleye_PayPal_Express_Checkout_Helper::instance();
             AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
@@ -574,14 +575,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-pro-subscriptions-angelleye.php');
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-braintree-subscriptions-angelleye.php');
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-credit-cards-rest-subscriptions-angelleye.php');
-                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
+                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-subscriptions.php');
                         $methods[] = 'WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_Braintree_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE';
-                        $methods[] = 'WC_Gateway_PPCP_AngellEYE';
+                        $methods[] = 'WC_Gateway_PPCP_AngellEYE_Subscriptions';
                     }
                 } else {
                     if ((isset($_GET['tab']) && 'checkout' === $_GET['tab']) && !isset($_GET['section'])) {
@@ -614,14 +615,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-pro-subscriptions-angelleye.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-braintree-subscriptions-angelleye.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-credit-cards-rest-subscriptions-angelleye.php');
-                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-subscriptions.php');
                     $methods[] = 'WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_Braintree_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE';
-                    $methods[] = 'WC_Gateway_PPCP_AngellEYE';
+                    $methods[] = 'WC_Gateway_PPCP_AngellEYE_Subscriptions';
                 } else {
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
                     $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
@@ -640,7 +641,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         	$this->plugin_screen_hook_suffix = add_submenu_page(
 			'options-general.php', 
 			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),
-			__( 'Complete Payments', 'paypal-for-woocommerce' ),
+			__( 'PayPal Commerce', 'paypal-for-woocommerce' ),
 			'manage_options',
 			'paypal-for-woocommerce',
 			array( $this, 'display_plugin_admin_page'));	

@@ -116,7 +116,11 @@ class AngellEYE_PayPal_PPCP_Request {
             }
         }
         $args['headers']['plugin_version_id'] = VERSION_PFW;
-        $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request', $args);
+        if ('generate_id_token' === $action_name) {
+            $this->result = wp_remote_get($this->ppcp_host . 'generate-id-token', $args);
+        } else {
+            $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request', $args);
+        }
         return $this->result;
     }
 
@@ -188,4 +192,41 @@ class AngellEYE_PayPal_PPCP_Request {
         }
     }
 
+    public static function angelleye_ppcp_get_available_endpoints($merchant_id) {
+        $available_endpoints = array();
+        if (empty($merchant_id)) {
+            return $available_endpoints = false;
+        }
+        if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
+            include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php';
+        }
+        $seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
+        $result = $seller_onboarding->angelleye_track_seller_onboarding_status($merchant_id);
+        if(!isset($result['products'])) {
+            return false;
+        }
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('CUSTOM_CARD_PROCESSING', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $key => $capabilities) {
+                        if (isset($capabilities['name']) && 'CUSTOM_CARD_PROCESSING' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            $available_endpoints['advanced_cc'] = 'advanced_cc';
+                        }
+                    }
+                }
+            }
+        }
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $key => $capabilities) {
+                        if (isset($capabilities['name']) && 'PAYPAL_WALLET_VAULTING_ADVANCED' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            $available_endpoints['vaulting_advanced'] = 'vaulting_advanced';
+                        }
+                    }
+                }
+            }
+        }
+        return $available_endpoints;
+    }
 }

@@ -24,7 +24,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
         $this->angelleye_ppcp_load_class();
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
-        $this->title = $this->setting_obj->get('title', 'PayPal Commerce Platform - Built by Angelleye');
+        $this->title = $this->setting_obj->get('title', 'PayPal Commerce - Built by Angelleye');
         $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         if ($this->dcc_applies->for_country_currency() === false) {
@@ -149,6 +149,25 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     wp_redirect(wc_get_checkout_url());
                     exit();
                     break;
+                case "paypal_create_payment_token":
+                    $this->payment_request->angelleye_ppcp_paypal_create_payment_token();
+                    exit();
+                case "paypal_create_payment_token_free_signup_with_free_trial":
+                    $this->payment_request->angelleye_ppcp_paypal_create_payment_token_free_signup_with_free_trial();
+                    exit();
+                case "advanced_credit_card_create_payment_token":
+                    $this->payment_request->angelleye_ppcp_advanced_credit_card_create_payment_token();
+                    exit();
+                case "advanced_credit_card_create_payment_token_free_signup_with_free_trial":
+                    $this->payment_request->angelleye_ppcp_advanced_credit_card_create_payment_token_free_signup_with_free_trial();
+                    exit();
+                case "advanced_credit_card_create_payment_token_sub_change_payment":
+                    $this->payment_request->angelleye_ppcp_advanced_credit_card_create_payment_token_sub_change_payment();
+                    exit();
+                case "paypal_create_payment_token_sub_change_payment":
+                    $this->payment_request->angelleye_ppcp_paypal_create_payment_token_sub_change_payment();
+                    exit();
+                    
             }
         }
     }
