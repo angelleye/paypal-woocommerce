@@ -281,9 +281,38 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <br>
                             <a class="green-button open_ppcp_account_request_form" ><?php echo __('Apply for Cheaper Fees!', 'paypal-for-woocommerce'); ?></a>
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
-                            <?php if($this->is_paypal_vault_approved === false) { ?>
-                            <a class="green-button open_ppcp_account_request_form" ><?php echo __('Reconnect PayPal Account', 'paypal-for-woocommerce'); ?></a>
-                            <?php } ?>
+                            <?php if($this->is_paypal_vault_approved === false) { 
+                                if (isset($_GET['testmode'])) {
+                                    $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
+                                } else {
+                                    $testmode = $this->sandbox ? 'yes' : 'no';
+                                }
+                                $signup_link = $this->angelleye_get_signup_link($testmode, 'admin_settings_onboarding');
+                                if ($signup_link) {
+                                    $args = array(
+                                        'displayMode' => 'minibrowser',
+                                    );
+                                    $url = add_query_arg($args, $signup_link);
+                                    ?>
+                                    <a target="_blank" class="green-button" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Reconnect PayPal Account', 'paypal-for-woocommerce'); ?></a>
+                                    <?php
+                                    $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
+                                    ?>
+                                    <script type="text/javascript">
+                                        document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                            element.addEventListener('click', (e) => {
+                                                if ('undefined' === typeof PAYPAL) {
+                                                    e.preventDefault();
+                                                    alert('PayPal');
+                                                }
+                                            });
+                                        });</script>
+                                    <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
+                                } else {
+                                    echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                                }
+                            } 
+                            ?>
                             <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                             <br><br>
                         </div>
@@ -304,9 +333,38 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <?php } ?>
                             <br>
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
-                            <?php if($this->is_paypal_vault_approved === false) { ?>
-                            <a class="green-button open_ppcp_account_request_form" ><?php echo __('Reconnect PayPal Account', 'paypal-for-woocommerce'); ?></a>
-                            <?php } ?>
+                            <?php if($this->is_paypal_vault_approved === false) { 
+                                if (isset($_GET['testmode'])) {
+                                    $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
+                                } else {
+                                    $testmode = $this->sandbox ? 'yes' : 'no';
+                                }
+                                $signup_link = $this->angelleye_get_signup_link($testmode, 'admin_settings_onboarding');
+                                if ($signup_link) {
+                                    $args = array(
+                                        'displayMode' => 'minibrowser',
+                                    );
+                                    $url = add_query_arg($args, $signup_link);
+                                    ?>
+                                    <a target="_blank" class="green-button" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Reconnect PayPal Account', 'paypal-for-woocommerce'); ?></a>
+                                    <?php
+                                    $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
+                                    ?>
+                                    <script type="text/javascript">
+                                        document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                            element.addEventListener('click', (e) => {
+                                                if ('undefined' === typeof PAYPAL) {
+                                                    e.preventDefault();
+                                                    alert('PayPal');
+                                                }
+                                            });
+                                        });</script>
+                                    <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
+                                } else {
+                                    echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                                }
+                            } 
+                            ?>
                             <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                             <br><br>
                         </div>
