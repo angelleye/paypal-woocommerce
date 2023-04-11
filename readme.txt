@@ -15,7 +15,7 @@ One plugin for all things PayPal!  Express Checkout with Smart Payment Buttons, 
 = Introduction =
 
 Easily add PayPal payment options to your WordPress / WooCommerce website.
- * Complete Payments - Powered by PayPal
+ * PayPal Commerce - Powered by PayPal
  * PayPal Express Checkout / PayPal Smart Payment Buttons
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayPal Manager / PayFlow Gateway)
@@ -405,7 +405,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves Gateway setting page issue. ([PFW-893](https://github.com/angelleye/paypal-woocommerce/pull/1604))
 
 = 3.0.0 - 11.02.2021 =
-* Feature - Adds PayPal Complete Payments. ([PFW-27](https://github.com/angelleye/paypal-woocommerce/pull/1603))
+* Feature - Adds PayPal PayPal Commerce. ([PFW-27](https://github.com/angelleye/paypal-woocommerce/pull/1603))
 
 = 2.5.19 - 18.10.2021 =
 * Feature - Re-Added required hooks for our PayPal for WooCommerce Multi-Account extension. ([PFW-813](https://github.com/angelleye/paypal-woocommerce/pull/1557))
