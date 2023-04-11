@@ -2496,6 +2496,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 ob_end_clean();
             }
             if (isset($this->api_response['id']) && !empty($this->api_response['id'])) {
+                angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
                 if ($this->api_response['status'] == 'COMPLETED') {
                     $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
                     if (!empty($payment_source['card'])) {
@@ -2641,7 +2642,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                             return false;
                         } else {
                             $payment_status_reason = isset($this->api_response['purchase_units']['0']['payments']['authorizations']['0']['status_details']['reason']) ? $this->api_response['purchase_units']['0']['payments']['authorizations']['0']['status_details']['reason'] : '';
-                            $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
+                            $this->angelleye_ppcp_update_woo_order_status($order_id, $payment_status, $payment_status_reason);
                         }
                         angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
                         angelleye_ppcp_update_post_meta($order, '_transaction_id', $transaction_id);
