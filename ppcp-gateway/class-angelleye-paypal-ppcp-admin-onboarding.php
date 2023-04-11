@@ -25,6 +25,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public $email_confirm_text_1;
     public $email_confirm_text_2;
     public $paypal_fee_structure;
+    public $is_paypal_vault_approved = false;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -144,6 +145,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
                     }
                 }
+                $this->is_paypal_vault_approved = $this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result);
             } elseif ($this->is_sandbox_first_party_used === 'yes') {
                 $this->on_board_status = 'USED_FIRST_PARTY';
             }
@@ -179,6 +181,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
                     }
                 }
+                $this->is_paypal_vault_approved = $this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result);
             } elseif ($this->is_live_first_party_used === 'yes' || $this->is_sandbox_third_party_used === 'yes') {
                 $this->on_board_status = 'USED_FIRST_PARTY';
             }
@@ -272,9 +275,15 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <p><?php echo __('You’re currently setup and enjoying the benefits of PayPal Commerce Platform. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo sprintf(__('However, we need additional verification to approve you for the reduced <br>rate of %s on debit/credit cards.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?></p>
                             <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
+                            <?php if($this->is_paypal_vault_approved === false) { ?>
+                            <p><?php echo __('Your PayPal account is not approved for the Vault functionality<br>which is required for Subscriptions (token payments). <br>Please Reconnect your PayPal account to apply for this feature.', 'paypal-for-woocommerce'); ?></p>
+                            <?php } ?>
                             <br>
                             <a class="green-button open_ppcp_account_request_form" ><?php echo __('Apply for Cheaper Fees!', 'paypal-for-woocommerce'); ?></a>
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
+                            <?php if($this->is_paypal_vault_approved === false) { ?>
+                            <a class="green-button open_ppcp_account_request_form" ><?php echo __('Reconnect PayPal Account', 'paypal-for-woocommerce'); ?></a>
+                            <?php } ?>
                             <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                             <br><br>
                         </div>
@@ -290,8 +299,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
                             <p><?php echo __('You’re currently setup and enjoying the benefits of PayPal Commerce Platform. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                             <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
+                            <?php if($this->is_paypal_vault_approved === false) { ?>
+                            <p><?php echo __('Your PayPal account is not approved for the Vault functionality<br>which is required for Subscriptions (token payments). <br>Please Reconnect your PayPal account to apply for this feature.', 'paypal-for-woocommerce'); ?></p>
+                            <?php } ?>
                             <br>
                             <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
+                            <?php if($this->is_paypal_vault_approved === false) { ?>
+                            <a class="green-button open_ppcp_account_request_form" ><?php echo __('Reconnect PayPal Account', 'paypal-for-woocommerce'); ?></a>
+                            <?php } ?>
                             <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                             <br><br>
                         </div>
