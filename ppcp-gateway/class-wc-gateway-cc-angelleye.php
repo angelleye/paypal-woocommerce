@@ -242,10 +242,14 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->tokenization_script();
             }
             if (angelleye_ppcp_is_subs_change_payment() === true) {
-                $this->saved_payment_methods();
+                if( count( $this->get_tokens() ) > 0 ) {
+                    $this->saved_payment_methods();
+                }
                 $this->angelleye_ppcp_cc_form();
             } elseif ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_get_order_total() > 0) {
-                $this->saved_payment_methods();
+                if( count( $this->get_tokens() ) > 0 ) {
+                    $this->saved_payment_methods();
+                }
                 $this->form();
                 angelleye_ppcp_add_css_js();
                 if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
