@@ -877,8 +877,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
                 $order->save();
-                angelleye_ppcp_update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
-                update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
             }
             $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
             if (!empty($angelleye_ppcp_used_payment_method)) {
@@ -1320,8 +1318,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
                 $order->save();
-                angelleye_ppcp_update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
-                update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
             }
             $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
             if (!empty($angelleye_ppcp_used_payment_method)) {
@@ -1534,8 +1530,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
                 $order->save();
-                angelleye_ppcp_update_post_meta($woo_order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
-                update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
             }
             $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
             if (!empty($angelleye_ppcp_used_payment_method)) {
@@ -1649,8 +1643,6 @@ class AngellEYE_PayPal_PPCP_Payment {
         if (!empty($angelleye_ppcp_payment_method_title)) {
             $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
             $order->save();
-            angelleye_ppcp_update_post_meta($order_id, 'payment_method_title', $angelleye_ppcp_payment_method_title);
-            update_post_meta($order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
         }
         if ($this->paymentaction === 'capture' && !empty($this->checkout_details->status) && $this->checkout_details->status == 'COMPLETED' && $order !== false) {
             $transaction_id = isset($this->checkout_details->purchase_units[0]->payments->captures[0]->id) ? $this->checkout_details->purchase_units['0']->payments->captures[0]->id : '';
