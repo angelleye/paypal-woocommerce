@@ -86,7 +86,11 @@
                         $('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
                         let formData;
                         if (is_from_checkout) {
-                            formData = $(angelleye_ppcp_button_selector).closest('form').serialize();
+                            if(angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
+                                formData = '';
+                            } else {
+                                formData = $(angelleye_ppcp_button_selector).closest('form').serialize();
+                            }
                         } else if (is_from_product) {
                             var add_to_cart = $("[name='add-to-cart']").val();
                             $('<input>', {
