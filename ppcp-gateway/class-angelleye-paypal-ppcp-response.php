@@ -47,7 +47,9 @@ class AngellEYE_PayPal_PPCP_Response {
                                     'REFUND',
                                     'ADVANCED_TRANSACTIONS_SEARCH',
                                     'ACCESS_MERCHANT_INFORMATION',
-                                    'PARTNER_FEE'
+                                    'PARTNER_FEE',
+                                    "VAULT",
+                                    "BILLING_AGREEMENT"
                                 ),
                             ),
                         ),
@@ -90,6 +92,12 @@ class AngellEYE_PayPal_PPCP_Response {
 
     public function angelleye_ppcp_write_log($url, $request, $response, $action_name = 'Exception') {
         global $wp_version;
+        if($action_name === 'list_all_payment_tokens') {
+           return false;
+        }
+        if($action_name === 'seller_onboarding_status' && !isset($_GET['merchantIdInPayPal'])) {
+            return false;
+        }
         $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
         $this->api_log->log('PayPal Environment: ' . $environment);
         $this->api_log->log('WordPress Version: ' . $wp_version);
@@ -226,6 +234,9 @@ class AngellEYE_PayPal_PPCP_Response {
             }
             if (isset($data['products'])) {
                 $this->generate_signup_link_default_request_param['products'] = $data['products'];
+            }
+            if (isset($data['capabilities'])) {
+                $this->generate_signup_link_default_request_param['capabilities'] = $data['capabilities'];
             }
             $this->api_log->log('Request Body: ' . wc_print_r($this->generate_signup_link_default_request_param, true));
         }
