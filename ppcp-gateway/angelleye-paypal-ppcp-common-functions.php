@@ -754,7 +754,7 @@ if (!function_exists('angelleye_ppcp_add_async_js')) {
         AngellEYE_PayPal_PPCP_Smart_Button::instance();
         $jsUrl = AngellEYE_PayPal_PPCP_Smart_Button::$jsUrl;
         if (!empty($jsUrl)) {
-            wp_register_script('angelleye-paypal-checkout-sdk-async', $jsUrl, [], '', true);
+            wp_register_script('angelleye-paypal-checkout-sdk-async', $jsUrl, [], null, true);
             wp_enqueue_script('angelleye-paypal-checkout-sdk-async');
         }
     }
