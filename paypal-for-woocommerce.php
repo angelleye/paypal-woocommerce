@@ -139,6 +139,19 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
            
             add_action('wp_enqueue_scripts', array($this, 'angelleye_cc_ui_style'), 100);
+            // To load the deferred PayPal JS SDK to cache the data in advance
+            add_action('wp_enqueue_scripts', function() {
+                $wp_scripts = wp_scripts();
+                if (!isset($wp_scripts->registered['angelleye-paypal-checkout-sdk'])) {
+                    angelleye_ppcp_add_async_js();
+                }
+            },  PHP_INT_MAX );
+            add_filter('script_loader_tag', function ( $tag, $handle ) {
+                if ('angelleye-paypal-checkout-sdk-async' !== $handle) {
+                    return $tag;
+                }
+                return str_replace( ' src', ' async src', $tag );
+            }, 10, 2 );
             
             add_action( 'parse_request', array($this, 'wc_gateway_payment_token_api_parser') , 99);
             add_action('wp_ajax_angelleye_dismiss_notice', array($this, 'angelleye_dismiss_notice'), 10);
