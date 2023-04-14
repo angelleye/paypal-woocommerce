@@ -34,7 +34,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                 $woocommerce_paypal_pro_settings['enabled'] = 'no';
                 $gateway_settings_key_array = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
                 foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
-                    if( !empty( $woocommerce_paypal_pro_settings[$gateway_settings_value]) ) {
+                    if (!empty($woocommerce_paypal_pro_settings[$gateway_settings_value])) {
                         $woocommerce_paypal_pro_settings[$gateway_settings_value] = AngellEYE_Utility::crypting($woocommerce_paypal_pro_settings[$gateway_settings_value], $action = 'd');
                     }
                 }
@@ -52,7 +52,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                 $woocommerce_paypal_pro_payflow_settings['enabled'] = 'no';
                 $gateway_settings_key_array = array('sandbox_paypal_vendor', 'sandbox_paypal_password', 'sandbox_paypal_user', 'sandbox_paypal_partner', 'paypal_vendor', 'paypal_password', 'paypal_user', 'paypal_partner');
                 foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
-                    if( !empty( $woocommerce_paypal_pro_payflow_settings[$gateway_settings_value]) ) {
+                    if (!empty($woocommerce_paypal_pro_payflow_settings[$gateway_settings_value])) {
                         $woocommerce_paypal_pro_payflow_settings[$gateway_settings_value] = AngellEYE_Utility::crypting($woocommerce_paypal_pro_payflow_settings[$gateway_settings_value], $action = 'd');
                     }
                 }
@@ -70,7 +70,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                 $woocommerce_paypal_advanced_settings['enabled'] = 'no';
                 $gateway_settings_key_array = array('loginid', 'resellerid', 'user', 'password');
                 foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
-                    if( !empty( $woocommerce_paypal_advanced_settings[$gateway_settings_value]) ) {
+                    if (!empty($woocommerce_paypal_advanced_settings[$gateway_settings_value])) {
                         $woocommerce_paypal_advanced_settings[$gateway_settings_value] = AngellEYE_Utility::crypting($woocommerce_paypal_advanced_settings[$gateway_settings_value], $action = 'd');
                     }
                 }
@@ -88,7 +88,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                 $woocommerce_paypal_credit_card_rest_settings['enabled'] = 'no';
                 $gateway_settings_key_array = array('rest_client_id_sandbox', 'rest_secret_id_sandbox', 'rest_client_id', 'rest_secret_id');
                 foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
-                    if( !empty( $woocommerce_paypal_credit_card_rest_settings[$gateway_settings_value]) ) {
+                    if (!empty($woocommerce_paypal_credit_card_rest_settings[$gateway_settings_value])) {
                         $woocommerce_paypal_credit_card_rest_settings[$gateway_settings_value] = AngellEYE_Utility::crypting($woocommerce_paypal_credit_card_rest_settings[$gateway_settings_value], $action = 'd');
                     }
                 }
@@ -217,6 +217,13 @@ class AngellEYE_PayPal_PPCP_Migration {
                         $woocommerce_angelleye_ppcp_settings[$key] = $woocommerce_paypal_express_settings[$value];
                     }
                 }
+                if ($woocommerce_angelleye_ppcp_settings['paymentaction'] === 'Sale') {
+                    $woocommerce_angelleye_ppcp_settings['paymentaction'] = 'capture';
+                } elseif ($woocommerce_angelleye_ppcp_settings['paymentaction'] === 'Authorization') {
+                    $woocommerce_angelleye_ppcp_settings['paymentaction'] = 'authorize';
+                } elseif ($woocommerce_angelleye_ppcp_settings['paymentaction'] === 'Order') {
+                    $woocommerce_angelleye_ppcp_settings['paymentaction'] = 'capture';
+                }
                 if (isset($woocommerce_paypal_express_settings['show_on_checkout']) && $woocommerce_paypal_express_settings['show_on_checkout'] !== 'no') {
                     $woocommerce_angelleye_ppcp_settings['enable_paypal_checkout_page'] = 'yes';
                 } else {
@@ -324,4 +331,5 @@ class AngellEYE_PayPal_PPCP_Migration {
             $subscription->add_order_note($message);
         }
     }
+
 }
