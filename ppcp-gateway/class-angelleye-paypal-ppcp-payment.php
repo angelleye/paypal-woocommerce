@@ -3724,7 +3724,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
-            
             if (!empty($all_payment_tokens)) {
                 foreach ($all_payment_tokens as $key => $paypal_payment_token) {
                     foreach ($paypal_payment_token['payment_source'] as $type_key => $payment_tokens_data) {
@@ -3744,15 +3743,38 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
-            if (empty($all_payment_tokens) && !empty($payment_tokens_id)) {
-                $payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
-                $body_request['payment_source'] = array($payment_method => array('vault_id' => $payment_tokens_id));
-                if ($payment_method === 'card') {
-                    $body_request['payment_source'][$payment_method]['stored_credential'] = array(
-                        'payment_initiator' => 'MERCHANT',
-                        'payment_type' => 'UNSCHEDULED',
-                        'usage' => 'SUBSEQUENT'
-                    );
+            $angelleye_ppcp_old_payment_method = get_post_meta($order_id, '_angelleye_ppcp_old_payment_method', true);
+            if (!empty($angelleye_ppcp_old_payment_method)) {
+                switch ($angelleye_ppcp_old_payment_method) {
+                    case 'paypal_express':
+                        $body_request['payment_source'] = array('token' => array('id' => $payment_tokens_id, 'type' => 'BILLING_AGREEMENT'));
+                        return $body_request;
+                    case 'paypal_advanced':
+                        $body_request['payment_source'] = array('token' => array('id' => $payment_tokens_id, 'type' => 'PNREF'));
+                        return $body_request;
+                    case 'paypal_credit_card_rest':
+                        // need to ask PayPal team https://developer.paypal.com/api/limited-release/orders/v2/#definition-token
+                        $body_request['payment_source'] = array('token' => array('id' => $payment_tokens_id, 'type' => 'BILLING_AGREEMENT'));
+                        return $body_request;
+                    case 'paypal_pro_payflow' :
+                        $body_request['payment_source'] = array('token' => array('id' => $payment_tokens_id, 'type' => 'PNREF'));
+                        return $body_request;
+                    case 'paypal_pro' :
+                        $body_request['payment_source'] = array('token' => array('id' => $payment_tokens_id, 'type' => 'PAYPAL_TRANSACTION_ID'));
+                        return $body_request;
+                }
+            }
+            $used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+            if (empty($all_payment_tokens) && !empty($payment_tokens_id) && !empty($used_payment_method)) {
+                if (!empty($used_payment_method)) {
+                    if ('PayPal Checkout' === $used_payment_method) {
+                        $payment_method = 'paypal';
+                    } elseif ('PayPal Credit' === $used_payment_method) {
+                        $payment_method = 'paypal';
+                    } elseif ('card' === $used_payment_method) {
+                        $payment_method = 'card';
+                    }
+                    $body_request['payment_source'] = array($payment_method => array('vault_id' => $payment_tokens_id));
                 }
             }
         } catch (Exception $ex) {
