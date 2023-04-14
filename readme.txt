@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.1.1
-Stable tag: 3.1.9
+Tested up to: 6.2
+Stable tag: 4.0.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -15,7 +15,7 @@ One plugin for all things PayPal!  Express Checkout with Smart Payment Buttons, 
 = Introduction =
 
 Easily add PayPal payment options to your WordPress / WooCommerce website.
- * Complete Payments - Powered by PayPal
+ * PayPal Commerce - Powered by PayPal
  * PayPal Express Checkout / PayPal Smart Payment Buttons
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayPal Manager / PayFlow Gateway)
@@ -126,6 +126,23 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.0.2 - 04.13.2023 =
+* Tweak - PPCP - Display the purple checkmark for Subscriptions. ([PFW-1413](https://github.com/angelleye/paypal-woocommerce/pull/1794))
+
+= 4.0.1 - 04.12.2023 =
+* Fix - Resolves PPCP - Checkout from top of Checkout page not working. ([PFW-1411](https://github.com/angelleye/paypal-woocommerce/pull/1793))
+
+= 4.0.0 - 04.11.2023 =
+* Feature - Adds PayPal Vault. ([PFW-779](https://github.com/angelleye/paypal-woocommerce/pull/1792))
+* Fix - PPCP - Advanced CC Only on Checkout Page. ([PFW-1379](https://github.com/angelleye/paypal-woocommerce/pull/1792))
+* Fix - PPCP - Advanced CC Only on Checkout Page. ([PFW-1379](https://github.com/angelleye/paypal-woocommerce/pull/1792))
+* Tweak - PPCP - Advanced CC Fields CSS Adjustment. ([PFW-1325](https://github.com/angelleye/paypal-woocommerce/pull/1792))
+
+= 3.1.10 - 04.07.2023 =
+* Fix - PPCP - CheckoutWC Compatibility. ([PFW-1253](https://github.com/angelleye/paypal-woocommerce/pull/1789))
+* Fix - Hiding individual CC icons - Missing Amex in CA. ([PFW-1393](https://github.com/angelleye/paypal-woocommerce/pull/1790))
+* Fix - Currency not processing correctly - customer pays wrong prices. ([PFW-1328](https://github.com/angelleye/paypal-woocommerce/pull/1791))
 
 = 3.1.9 - 03.06.2022 =
 * Fix - Fixes the automatic iDeal payment order complete issue. ([PFW-1066](https://github.com/angelleye/paypal-woocommerce/pull/1788))
@@ -394,7 +411,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves Gateway setting page issue. ([PFW-893](https://github.com/angelleye/paypal-woocommerce/pull/1604))
 
 = 3.0.0 - 11.02.2021 =
-* Feature - Adds PayPal Complete Payments. ([PFW-27](https://github.com/angelleye/paypal-woocommerce/pull/1603))
+* Feature - Adds PayPal PayPal Commerce. ([PFW-27](https://github.com/angelleye/paypal-woocommerce/pull/1603))
 
 = 2.5.19 - 18.10.2021 =
 * Feature - Re-Added required hooks for our PayPal for WooCommerce Multi-Account extension. ([PFW-813](https://github.com/angelleye/paypal-woocommerce/pull/1557))

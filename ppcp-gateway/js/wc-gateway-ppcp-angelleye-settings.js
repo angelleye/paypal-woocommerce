@@ -72,7 +72,7 @@ jQuery(function ($) {
             } else {
                 $('#woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').hide();
             }
-            $('#woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position, #woocommerce_angelleye_ppcp_disable_cards, #woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_disable_cards').closest('tr').hide();
+            $('#woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position, #woocommerce_angelleye_ppcp_disable_cards, #woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_disable_cards').closest('tr').show();
         } else {
             if ($("#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option[value='card']").length === 0) {
                 $('#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option:eq(0)').before(jQuery("<option></option>").attr("value", "card").text("Credit or Debit Card"));

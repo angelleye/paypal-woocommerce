@@ -27,7 +27,7 @@
             if (is_hosted_field_eligible() === false) {
                 $('.payment_method_angelleye_ppcp_cc').hide();
             }
-            if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
+             if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
                 $('#place_order').hide();
                 $('#angelleye_ppcp_checkout').show();
             } else {
@@ -86,7 +86,11 @@
                         $('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
                         let formData;
                         if (is_from_checkout) {
-                            formData = $(angelleye_ppcp_button_selector).closest('form').serialize();
+                            if(angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
+                                formData = '';
+                            } else {
+                                formData = $(angelleye_ppcp_button_selector).closest('form').serialize();
+                            }
                         } else if (is_from_product) {
                             var add_to_cart = $("[name='add-to-cart']").val();
                             $('<input>', {
@@ -169,7 +173,7 @@
                         showError('<div class="woocommerce-error">' + err + '</div>');
                         $.angelleye_ppcp_scroll_to_notices();
                         if (is_from_checkout === false) {
-                          //  window.location.href = window.location.href;
+                            //  window.location.href = window.location.href;
                         }
                     }
                 }).render(angelleye_ppcp_button_selector);

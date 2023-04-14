@@ -3,8 +3,8 @@
  * @wordpress-plugin
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
- * Description:       Easily enable Complete Payments - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           3.1.9
+ * Description:       Easily enable PayPal Commerce - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
+ * Version:           4.0.2
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,9 +13,9 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.8
- * Tested up to: 6.1.1
+ * Tested up to: 6.2
  * WC requires at least: 3.0.0
- * WC tested up to: 7.4.1
+ * WC tested up to: 7.5.1
  *
  *************
  * Attribution
@@ -40,7 +40,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '3.1.9');
+    define('VERSION_PFW', '4.0.2');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -642,7 +642,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         	$this->plugin_screen_hook_suffix = add_submenu_page(
 			'options-general.php', 
 			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),
-			__( 'Complete Payments', 'paypal-for-woocommerce' ),
+			__( 'PayPal Commerce', 'paypal-for-woocommerce' ),
 			'manage_options',
 			'paypal-for-woocommerce',
 			array( $this, 'display_plugin_admin_page'));	

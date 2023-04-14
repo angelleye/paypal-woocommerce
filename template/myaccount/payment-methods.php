@@ -18,7 +18,13 @@
  */
 defined('ABSPATH') || exit;
 
-$saved_methods = wc_get_customer_saved_methods_list(get_current_user_id());
+if (!class_exists('AngellEYE_PayPal_PPCP_Vault_Sync')) {
+    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-vault-sync.php');
+}
+
+$vault_sync = AngellEYE_PayPal_PPCP_Vault_Sync::instance();
+$saved_methods = $vault_sync->angelleye_ppcp_wc_get_customer_saved_methods_list();
+
 $has_methods = (bool) $saved_methods;
 $types = wc_get_account_payment_methods_types();
 
@@ -35,7 +41,7 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                 <?php endforeach; ?>
             </tr>
         </thead>
-        <?php foreach ($saved_methods as $type => $methods) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited ?>
+        <?php foreach ($saved_methods as $type => $methods) : // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited    ?>
             <?php foreach ($methods as $method) : ?>
                 <tr class="payment-method<?php echo!empty($method['is_default']) ? ' default-payment-method' : ''; ?>">
                     <?php foreach (wc_get_account_payment_methods_columns() as $column_id => $column_name) : ?>
@@ -46,12 +52,12 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                             } elseif ('method' === $column_id) {
                                 if (!empty($method['method']['last4'])) {
                                     if ($method['method']['gateway'] === 'angelleye_ppcp') {
-                                        if ($method['_angelleye_ppcp_used_payment_method'] === 'PayPal Checkout') {
+                                        if ($method['_angelleye_ppcp_used_payment_method'] === 'paypal') {
                                             $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png';
                                             ?>
                                             <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='PayPal'><?php
                                             echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
-                                        } elseif ($method['_angelleye_ppcp_used_payment_method'] === 'PayPal Venmo') {
+                                        } elseif ($method['_angelleye_ppcp_used_payment_method'] === 'venmo') {
                                             $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/venmo.png';
                                             ?>
                                             <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='Venmo'><?php
@@ -98,10 +104,10 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                             }
                             ?>
                         </td>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
                 </tr>
+            <?php endforeach; ?>
         <?php endforeach; ?>
-    <?php endforeach; ?>
     </table>
 
 <?php else : ?>
