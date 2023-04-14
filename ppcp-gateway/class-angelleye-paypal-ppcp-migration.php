@@ -214,7 +214,13 @@ class AngellEYE_PayPal_PPCP_Migration {
                 }
                 foreach ($map_fields_list as $key => $value) {
                     if (isset($woocommerce_paypal_express_settings[$value]) && !empty($woocommerce_paypal_express_settings[$value])) {
-                        $woocommerce_angelleye_ppcp_settings[$key] = $woocommerce_paypal_express_settings[$value];
+                        if (isset($woocommerce_paypal_express_settings[$value]) && 'false' === $woocommerce_paypal_express_settings[$value]) {
+                            $woocommerce_angelleye_ppcp_settings[$key] = 'no';
+                        } elseif (isset($woocommerce_paypal_express_settings[$value]) && 'true' === $woocommerce_paypal_express_settings[$value]) {
+                            $woocommerce_angelleye_ppcp_settings[$key] = 'yes';
+                        } else {
+                            $woocommerce_angelleye_ppcp_settings[$key] = $woocommerce_paypal_express_settings[$value];
+                        }
                     }
                 }
                 if ($woocommerce_angelleye_ppcp_settings['paymentaction'] === 'Sale') {
@@ -223,6 +229,11 @@ class AngellEYE_PayPal_PPCP_Migration {
                     $woocommerce_angelleye_ppcp_settings['paymentaction'] = 'authorize';
                 } elseif ($woocommerce_angelleye_ppcp_settings['paymentaction'] === 'Order') {
                     $woocommerce_angelleye_ppcp_settings['paymentaction'] = 'capture';
+                }
+                if ($woocommerce_angelleye_ppcp_settings['debug'] === 'no') {
+                    $woocommerce_angelleye_ppcp_settings['debug'] = 'disabled';
+                } elseif ($woocommerce_angelleye_ppcp_settings['debug'] === 'yes') {
+                    $woocommerce_angelleye_ppcp_settings['debug'] = 'everything';
                 }
                 if (isset($woocommerce_paypal_express_settings['show_on_checkout']) && $woocommerce_paypal_express_settings['show_on_checkout'] !== 'no') {
                     $woocommerce_angelleye_ppcp_settings['enable_paypal_checkout_page'] = 'yes';
@@ -296,7 +307,7 @@ class AngellEYE_PayPal_PPCP_Migration {
         if (isset($available_gateways[$new_payment_method])) {
             $new_payment_method_title = $available_gateways[$new_payment_method]->get_title();
         } else {
-            $new_payment_method_title = '';
+            $new_payment_method_title = 'PayPal';
         }
         if (empty($old_payment_method_title)) {
             $old_payment_method_title = $old_payment_method;
