@@ -132,6 +132,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     break;
                 case "cc_capture":
                     wc_clear_notices();
+                    // Required for order pay form, as there will be no data in session
+                    if (isset($_GET['orderId'])) {
+                        WC()->session->set('order_awaiting_payment', intval($_GET['orderId']));
+                    }
                     angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', wc_clean($_GET['paypal_order_id']));
                     $this->angelleye_ppcp_cc_capture();
                     break;
