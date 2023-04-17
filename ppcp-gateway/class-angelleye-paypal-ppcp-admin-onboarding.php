@@ -215,7 +215,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
                         <br><br>
                         <div class="paypal_woocommerce_product_onboard_content">
-                            <p><?php echo __('Welcome to the most PayPal Commerce solution available for WooCommerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('Welcome to the PayPal Commerce solution for WooCommerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                             <?php
                             if (isset($_GET['testmode'])) {
                                 $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
