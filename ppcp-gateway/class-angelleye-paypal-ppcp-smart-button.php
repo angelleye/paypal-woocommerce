@@ -20,6 +20,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $enable_tokenized_payments;
     public $vault_supported_payment_method = array('card', 'venmo');
     public $vault_not_supported_payment_method = array('credit', 'paylater', 'bancontact', 'blik', 'eps', 'giropay', 'ideal', 'mercadopago', 'mybank', 'p24', 'sepa', 'sofort');
+    public static $jsUrl = '';
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -225,6 +226,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         if ($this->checkout_disable_smart_button === false) {
+            add_action('woocommerce_pay_order_before_submit', array($this, 'display_paypal_button_checkout_page'));
             add_action('woocommerce_review_order_before_submit', array($this, 'display_paypal_button_checkout_page'));
         }
         add_action('init', array($this, 'init'));
@@ -271,6 +273,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('woocommerce_subscription_payment_method_to_display', array($this, 'angelleye_ppcp_woocommerce_subscription_payment_method_to_display'), 10, 2);
         add_action('wp', array($this, 'angelleye_ppcp_delete_payment_method_action'), 9);
         add_action('plugins_loaded', array($this, 'angelleye_ppcp_plugins_loaded'), 99);
+
+        $asyncJsParams = $this->getClientIdMerchantId();
+        self::$jsUrl = add_query_arg($asyncJsParams, 'https://www.paypal.com/sdk/js');
     }
 
     /*
@@ -284,6 +289,28 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->api_log->temp_log(wc_print_r($parsed_args, true), 'error');
         $this->api_log->temp_log(wc_print_r($response_text, true), 'error');
         $this->api_log->temp_log(wc_print_r($response, true), 'error');
+    }
+
+    private function getClientIdMerchantId()
+    {
+        $smart_js_arg = [];
+        if ($this->is_sandbox) {
+            if ($this->is_first_party_used === 'yes') {
+                $smart_js_arg['client-id'] = $this->client_id;
+            } else {
+                $smart_js_arg['client-id'] = PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID;
+                $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
+            }
+        } else {
+            if ($this->is_first_party_used === 'yes') {
+                $smart_js_arg['client-id'] = $this->client_id;
+            } else {
+                $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
+                $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
+            }
+        }
+
+        return $smart_js_arg;
     }
 
     public function enqueue_scripts() {
@@ -308,21 +335,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (isset($default_country['country']) && $default_country['country'] == 'NL') {
             array_push($enable_funding, 'ideal');
         }
-        if ($this->is_sandbox) {
-            if ($this->is_first_party_used === 'yes') {
-                $smart_js_arg['client-id'] = $this->client_id;
-            } else {
-                $smart_js_arg['client-id'] = PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID;
-                $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
-            }
-        } else {
-            if ($this->is_first_party_used === 'yes') {
-                $smart_js_arg['client-id'] = $this->client_id;
-            } else {
-                $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
-                $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
-            }
-        }
+
+        $smart_js_arg = array_merge($smart_js_arg, $this->getClientIdMerchantId());
+
         if ($this->is_sandbox) {
             if (is_user_logged_in() && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen(WC()->customer->get_billing_country())) {
                 $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
