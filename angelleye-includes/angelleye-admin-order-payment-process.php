@@ -10,6 +10,7 @@ class AngellEYE_Admin_Order_Payment_Process {
     public $gateway_calculation;
     public $gateway_settings;
     public $confirm_order_id;
+    public $payment_request;
 
     public function __construct() {
         if (is_admin() && !defined('DOING_AJAX')) {
@@ -192,8 +193,11 @@ class AngellEYE_Admin_Order_Payment_Process {
                 }
                 break;
             case ($this->payment_method == "angelleye_ppcp" || $this->payment_method == "angelleye_ppcp_cc"): {
-
-                    $this->angelleye_ppcp_capture_payment_using_vault($order);
+                    if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
+                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
+                    }
+                    $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
+                    $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
                 }
                 break;
         }
@@ -214,9 +218,9 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_ppcp_capture_payment_using_vault($order) {
         try {
-
+            
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -420,7 +424,14 @@ class AngellEYE_Admin_Order_Payment_Process {
             }
             return $this->angelleye_get_customer_or_order_tokens($user_id, $order);
         } elseif ($this->payment_method === 'angelleye_ppcp' || $this->payment_method === 'angelleye_ppcp_cc') {
-
+            if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
+            }
+            $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
+            $payment_token = $this->payment_request->angelleye_ppcp_get_all_payment_tokens();
+            if (!empty($payment_token)) {
+                return $payment_token;
+            }
         }
     }
 
