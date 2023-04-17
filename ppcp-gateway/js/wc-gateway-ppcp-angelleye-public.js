@@ -1,5 +1,14 @@
 (function ($) {
     'use strict';
+    // Get query string parameter
+    function getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
     $(function () {
         if (typeof angelleye_ppcp_manager === 'undefined') {
             return false;
@@ -130,7 +139,9 @@
                     onApprove: function (data, actions) {
                         $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                         if (is_from_checkout) {
-                            $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + data.orderID + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
+                            // Required for the Order Form Pay page
+                            let orderId = getParameterByName('order-pay');
+                            $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + data.orderID + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout+ (orderId!==null?'&orderId='+orderId:''), function (data) {
                                 window.location.href = data.data.redirect;
                             });
                         } else {
