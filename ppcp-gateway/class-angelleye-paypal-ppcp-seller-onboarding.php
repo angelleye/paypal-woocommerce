@@ -220,10 +220,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (isset($_GET['place']) && $_GET['place'] === 'gateway_settings') {
                 $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
             } else {
-                $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products');
+                $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce');
             }
             if (isset($_GET['is_migration']) && 'yes' === $_GET['is_migration'] && isset($_GET['products'])) {
-                parse_str($_GET['products'], $products);
+                $products = json_decode(stripslashes($_GET['products']), true);
                 if (!empty($products) && is_array($products)) {
                     if (!class_exists('AngellEYE_PayPal_PPCP_Migration')) {
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration.php');
@@ -254,8 +254,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     
                 }
             }
+            unset($_GET);
             wp_safe_redirect($redirect_url, 302);
-            exit;
+            exit();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
