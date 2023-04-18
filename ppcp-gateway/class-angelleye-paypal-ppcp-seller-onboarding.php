@@ -6,7 +6,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     public $dcc_applies;
     public $ppcp_host;
     public $testmode;
-    public $settings;
+    public $setting_obj;
     public $host;
     public $partner_merchant_id;
     public $sandbox_partner_merchant_id;
@@ -31,7 +31,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE;
             }
             $this->angelleye_ppcp_load_class();
-            $this->sandbox_partner_merchant_id = PAYPAL_PPCP_SNADBOX_PARTNER_MERCHANT_ID;
+            $this->sandbox_partner_merchant_id = PAYPAL_PPCP_SANDBOX_PARTNER_MERCHANT_ID;
             $this->partner_merchant_id = PAYPAL_PPCP_PARTNER_MERCHANT_ID;
             //add_action('wc_ajax_ppcp_login_seller', array($this, 'angelleye_ppcp_login_seller'));
             add_action('admin_init', array($this, 'angelleye_ppcp_listen_for_merchant_id'));
@@ -39,6 +39,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Seller_Onboarding'))) {
                 add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Seller_Onboarding'), array($this, 'angelleye_ppcp_listen_for_merchant_id_multi_account'));
             }
+            add_action('wp_ajax_angelleye_ppcp_onboard_email_sendy_subscription', array($this, 'angelleye_ppcp_onboard_email_sendy_subscription'));
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -60,7 +61,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
             }
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
         } catch (Exception $ex) {
@@ -78,9 +79,14 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return $data;
     }
 
-    public function angelleye_generate_signup_link($testmode) {
+    public function angelleye_generate_signup_link($testmode, $page) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
         $body = $this->data();
+        if ($page === 'gateway_settings') {
+            $body['return_url'] = add_query_arg(array('place' => 'gateway_settings', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
+        } else {
+            $body['return_url'] = add_query_arg(array('place' => 'admin_settings_onboarding', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
+        }
         if ($this->is_sandbox) {
             $tracking_id = angelleye_key_generator();
             $body['tracking_id'] = $tracking_id;
@@ -153,8 +159,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'return_url_description' => __(
                     'Return to your shop.', 'paypal-for-woocommerce'
             ),
+            'capabilities' => array('PAYPAL_WALLET_VAULTING_ADVANCED'),
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
+                'ADVANCED_VAULTING'
         ));
     }
 
@@ -178,14 +186,14 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         try {
             $this->is_sandbox = isset($data['env']) && 'sandbox' === $data['env'];
             $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
-            $this->settings->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
-            $this->settings->persist();
+            $this->setting_obj->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
+            $this->setting_obj->persist();
             if ($this->is_sandbox) {
-                $this->settings->set('enabled', 'yes');
+                $this->setting_obj->set('enabled', 'yes');
             } else {
-                $this->settings->set('enabled', 'yes');
+                $this->setting_obj->set('enabled', 'yes');
             }
-            $this->settings->persist();
+            $this->setting_obj->persist();
             if ($this->is_sandbox) {
                 set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
             } else {
@@ -215,8 +223,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (isset($_GET['testmode']) && 'yes' === $_GET['testmode']) {
                 $this->is_sandbox = true;
             }
-            $this->settings->set('enabled', 'yes');
-            $this->settings->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
+            $this->setting_obj->set('enabled', 'yes');
+            $this->setting_obj->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
             $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
             $merchant_id = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
             if (isset($_GET['merchantId'])) {
@@ -225,18 +233,22 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $merchant_email = '';
             }
             if ($this->is_sandbox) {
-                $this->settings->set('sandbox_merchant_id', $merchant_id);
+                $this->setting_obj->set('sandbox_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
                 $this->api_log->log("sandbox_merchant_id: " . $merchant_id, 'error');
-                $this->settings->set('enabled', 'yes');
+                $this->setting_obj->set('enabled', 'yes');
             } else {
-                $this->settings->set('live_merchant_id', $merchant_id);
+                $this->setting_obj->set('live_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
-                $this->settings->set('enabled', 'yes');
+                $this->setting_obj->set('enabled', 'yes');
             }
-            $this->settings->persist();
+            $this->setting_obj->persist();
             $this->angelleye_get_seller_onboarding_status();
-            $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
+            if (isset($_GET['place']) && $_GET['place'] === 'gateway_settings') {
+                $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
+            } else {
+                $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products');
+            }
             wp_safe_redirect($redirect_url, 302);
             exit;
         } catch (Exception $ex) {
@@ -312,22 +324,44 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             );
             $host_url = $this->ppcp_host . 'get-tracking-status';
             $seller_onboarding_status = $this->api_request->request($host_url, $args, 'get_tracking_status');
+            if(!isset($seller_onboarding_status['merchant_id'])) {
+                $seller_onboarding_status['merchant_id'] = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
+            }
             if (!empty($seller_onboarding_status['merchant_id'])) {
                 if ($this->is_sandbox) {
-                    $this->settings->set('sandbox_merchant_id', $seller_onboarding_status['merchant_id']);
-                    $this->settings->set('enabled', 'yes');
+                    $this->setting_obj->set('sandbox_client_id', '');
+                    $this->setting_obj->set('sandbox_api_secret', '');
+                    $this->setting_obj->set('sandbox_merchant_id', $seller_onboarding_status['merchant_id']);
+                    $this->setting_obj->set('enabled', 'yes');
                 } else {
-                    $this->settings->set('live_merchant_id', $seller_onboarding_status['merchant_id']);
-                    $this->settings->set('enabled', 'yes');
+                    $this->setting_obj->set('api_client_id', '');
+                    $this->setting_obj->set('api_secret', '');
+                    $this->setting_obj->set('live_merchant_id', $seller_onboarding_status['merchant_id']);
+                    $this->setting_obj->set('enabled', 'yes');
                 }
-                $this->settings->persist();
+                $this->setting_obj->persist();
                 $this->result = $this->angelleye_track_seller_onboarding_status($seller_onboarding_status['merchant_id']);
+                if (!empty($this->result['primary_email'])) {
+                    own_angelleye_sendy_list($this->result['primary_email']);
+                }
                 if ($this->angelleye_is_acdc_payments_enable($this->result)) {
-                    $this->settings->set('enable_advanced_card_payments', 'yes');
-                    $this->settings->persist();
+                    $this->setting_obj->set('enable_advanced_card_payments', 'yes');
+                    $this->setting_obj->persist();
                 } else {
-                    $this->settings->set('enable_advanced_card_payments', 'no');
-                    $this->settings->persist();
+                    $this->setting_obj->set('enable_advanced_card_payments', 'no');
+                    $this->setting_obj->persist();
+                }
+                if ($this->angelleye_is_vaulting_enable($this->result)) {
+                    $this->setting_obj->set('enable_tokenized_payments', 'yes');
+                    $this->setting_obj->persist();
+                } else {
+                    $this->setting_obj->set('enable_tokenized_payments', 'no');
+                    $this->setting_obj->persist();
+                }
+                if ($this->angelleye_ppcp_is_fee_enable($this->result)) {
+                    set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
+                } else {
+                    set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
                 }
             }
         } catch (Exception $ex) {
@@ -338,7 +372,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     }
 
     public function angelleye_track_seller_onboarding_status($merchant_id) {
-        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
+        $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
         if ($this->is_sandbox) {
             $partner_merchant_id = $this->sandbox_partner_merchant_id;
         } else {
@@ -388,6 +423,84 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
         }
         return false;
+    }
+    
+    public function angelleye_is_vaulting_enable($result) {
+    
+    if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $key => $capabilities) {
+                        if (isset($capabilities['name']) && 'PAYPAL_WALLET_VAULTING_ADVANCED' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public function angelleye_ppcp_is_fee_enable($response) {
+        try {
+            if (!empty($response)) {
+                if (isset($response['oauth_integrations']['0']['integration_type']) && 'OAUTH_THIRD_PARTY' === $response['oauth_integrations']['0']['integration_type']) {
+                    if (isset($response['oauth_integrations']['0']['oauth_third_party']['0']['scopes']) && is_array($response['oauth_integrations']['0']['oauth_third_party']['0']['scopes'])) {
+                        foreach ($response['oauth_integrations']['0']['oauth_third_party']['0']['scopes'] as $key => $scope) {
+                            if (strpos($scope, 'payments/partnerfee') !== false) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_onboard_email_sendy_subscription() {
+        global $wp;
+        if (!empty($_SERVER['HTTP_REFERER'])) {
+            $current_url = $_SERVER['HTTP_REFERER'];
+        } else {
+            $current_url = home_url(add_query_arg(array(), $wp->request));
+        }
+        $url = 'https://sendy.angelleye.com/subscribe';
+        $response = wp_remote_post($url, array(
+            'method' => 'POST',
+            'timeout' => 45,
+            'redirection' => 5,
+            'httpversion' => '1.0',
+            'blocking' => true,
+            'headers' => array(),
+            'body' => array('list' => 'oV0I12rDwJdMDL2jYzvwPQ',
+                'boolean' => 'true',
+                'email' => $_POST['email'],
+                'gdpr' => 'true',
+                'silent' => 'true',
+                'api_key' => 'qFcoVlU2uG3AMYabNTrC',
+                'referrer' => $current_url
+            ),
+            'cookies' => array()
+                )
+        );
+        if (is_wp_error($response)) {
+            wp_send_json(wp_remote_retrieve_body($response));
+        } else {
+            $body = wp_remote_retrieve_body($response);
+            $apiResponse = strval($body);
+            switch ($apiResponse) {
+                case 'true':
+                case '1':
+                    prepareResponse("true", 'Thank you for subscribing!');
+                case 'Already subscribed.':
+                    prepareResponse("true", 'Already subscribed!');
+                default:
+                    prepareResponse("false", $apiResponse);
+            }
+        }
     }
 
     public function angelleye_display_paypal_signup_button($url, $id, $label) {

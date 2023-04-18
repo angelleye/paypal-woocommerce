@@ -1,10 +1,11 @@
 .angelleye_ppcp-button-container {
     text-align: center;
+    min-width: 305px;
 }
 .angelleye_ppcp-proceed-to-checkout-button-separator {
     display:inline-block;
     opacity: .8;
-    margin: 0 0 1em;
+    margin: 10px 0px 12px;
     text-align: center;
 }
 .angelleye_ppcp-order-review .woocommerce-checkout #payment ul.payment_methods {
@@ -36,11 +37,7 @@
 }
 .angelleye_ppcp-order-review .woocommerce-billing-fields .angelleye_ppcp_billing_hide, .angelleye_ppcp-order-review .woocommerce-shipping-fields .angelleye_ppcp_shipping_hide {
     display: none !important;
-    }
-
-
-
-
+}
 .order_review_page_description {
     margin: 0 0 2em;
     position: relative;
@@ -51,7 +48,7 @@
     margin-bottom: 20px;
     text-align: center;
 }
-.woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree, .woocommerce #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree {
+.woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree, .woocommerce #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree, .wc-credit-card-form div.hosted-field-braintree {
     height:2em;padding:7px;border:1px solid #ccc;border-radius:3px;transition:border-color .16s;-webkit-transition:border-color .16s;background-color:#fff;
     border-color: #c7c1c6;
     border-top-color: rgb(199, 193, 198);
@@ -79,8 +76,18 @@
     box-sizing: content-box;
     border-radius: 5px;
 }
-.woocommerce-checkout #payment div.payment_box #wc-angelleye_ppcp-cc-form.wc-credit-card-form div.form-row,  .woocommerce #payment div.payment_box #wc-angelleye_ppcp-cc-form.wc-credit-card-form div.form-row{
+.woocommerce-checkout #payment div.payment_box #wc-angelleye_ppcp-cc-form.wc-credit-card-form div.form-row,  .woocommerce #payment div.payment_box #wc-angelleye_ppcp-cc-form.wc-credit-card-form div.form-row, #wc-angelleye_ppcp-cc-form.wc-credit-card-form div.form-row{
     padding: 3px;
+}
+#ppcp_payment_field_bottom fieldset#wc-angelleye_ppcp-cc-form.wc-credit-card-form div.form-row .wc-credit-card-form-card-expiry, #ppcp_payment_field_bottom fieldset#wc-angelleye_ppcp-cc-form.wc-credit-card-form div.form-row .wc-credit-card-form-card-cvc, #ppcp_payment_field_bottom fieldset#wc-angelleye_ppcp-cc-form.wc-credit-card-form div.form-row .wc-credit-card-form-card-number {
+    font-size: 1.5em;
+    padding: 8px;
+    background-repeat: no-repeat;
+    background-position: right 0.618em center;
+    background-size: 32px 20px;
+}
+#ppcp_payment_field_bottom {
+    margin-bottom: 20px;
 }
 .angelleye_ppcp-proceed-to-checkout-button-separator.checkout_cc_separator {
     margin: 20px 0px 0px 0px;
@@ -128,14 +135,12 @@
     line-height: 1.75;
     position: absolute;
 }
-
 .woocommerce div.product form.cart {
     margin-bottom: 2em;
 }
 .cfw-customer-info-address-container.cfw-parsley-shipping-details.woocommerce-shipping-fields.woocommerce-shipping-fields__field-wrapper {
     display: block;
 }
-
 .angelleye_ppcp_vertical_small {
     width: 150px;
 }
@@ -163,29 +168,92 @@
     font-size: 1.5em;
 }
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.ppcp-invalid-cart, .woocommerce #payment div.payment_box .wc-credit-card-form div.ppcp-invalid-cart {
-     border-color: red;
+    border-color: red;
 }
 #payment ul.payment_methods li img.ppcp-card-icon {
-  padding: 0 0 3px 3px;
-  max-height: 25px;
-  display: inline-block;
+    padding: 0 0 3px 3px;
+    max-height: 25px;
+    display: inline-block;
 }
 .angelleye_ppcp_checkout_message_guide {
-  max-width: 100%;
-  font-size: initial;
-  font-weight: normal;
-  display: block;
-  text-align: left;
-  width: auto;
-  margin-bottom: 20px;
+    max-width: 100%;
+    font-size: initial;
+    font-weight: normal;
+    display: block;
+    text-align: left;
+    width: auto;
+    margin-bottom: 20px;
 }
 .angelleye_ppcp-button-container #angelleye_ppcp_cart_top {
     text-align: left;
     margin-bottom: 20px;
 }
+.express_payment_method_ppcp .angelleye_ppcp-button-container {
+    display: inline-block;
+    text-align: center;
+}
+.angelleye_ppcp fieldset {
+    border: 1px solid #d1d1d1;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    padding: 15px 25px;
+    text-align: center;
+}
+.angelleye_ppcp fieldset legend {
+    font-weight: 500;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+.angelleye_ppcp #wc-ppcp-express-button {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.angelleye_ppcp .express-divider {
+    align-items: center;
+    background: transparent;
+    display: flex;
+    font-size: 16px;
+    left: 0;
+    right: 0;
+    top: -13px;
+    white-space: nowrap;
+    margin-bottom: 20px;
+}
+.angelleye_ppcp .express-divider::before {
+    background: #d1d1d1;
+    content: " ";
+    display: block;
+    height: 1px;
+    margin-right: 1rem;
+    width: 50%;
+}
+.angelleye_ppcp .express-divider::after {
+    background: #d1d1d1;
+    content: " ";
+    display: block;
+    height: 1px;
+    margin-left: 1rem;
+    width: 50%;
+}
+.angelleye_ppcp-button-container.angelleye_ppcp_vertical_responsive {
+    width: 100%;
+    margin: 0 auto;
+    min-width: auto;
+}
+#angelleye_ppcp_checkout {
+    margin-top: 25px;
+}
+.woocommerce-checkout #payment ul.payment_methods li img.ppcp_payment_method_icon {
+    height: auto;
+    vertical-align: middle;
+    margin: 0px 0px 0px 0px;
+    display: inline;
+}
 @media screen and (max-width: 400px) {
-    .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large{
+    .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_vertical_responsive, .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large, .angelleye_ppcp_horizontal_responsive {
         width: 100%;
         margin: 0 auto;
+        min-width: auto;
     }
 }

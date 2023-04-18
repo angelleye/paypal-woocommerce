@@ -7,6 +7,7 @@ class AngellEYE_PayPal_PPCP_Log {
     public $log_option;
     public $logger = false;
     protected static $_instance = null;
+    public $setting_obj;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -17,7 +18,7 @@ class AngellEYE_PayPal_PPCP_Log {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
-        $this->log_option = $this->settings->get('debug', 'everything');
+        $this->log_option = $this->setting_obj->get('debug', 'everything');
     }
 
     public function log($message, $level = 'info') {
@@ -41,7 +42,7 @@ class AngellEYE_PayPal_PPCP_Log {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
         } catch (Exception $ex) {
             $this->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->log($ex->getMessage(), 'error');

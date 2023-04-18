@@ -624,6 +624,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      * Payment form on checkout page
      */
     public function payment_fields() {
+        wp_enqueue_style('angelleye-cc-ui');
         do_action('before_angelleye_pc_payment_fields', $this);
         $description = $this->get_description();
         if ( $description ) {

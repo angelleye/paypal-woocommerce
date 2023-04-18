@@ -14,6 +14,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
     public $is_api_refund = true;
     public $is_sandbox;
     public $paymentaction;
+    public $setting_obj;
 
     public static function get_instance() {
         if (!isset(self::$instance)) {
@@ -24,15 +25,15 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
-        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
-        $this->paymentaction = $this->settings->get('paymentaction', 'capture');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
+        $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
         if ($this->is_sandbox) {
-            $this->merchant_id = $this->settings->get('sandbox_merchant_id', '');
+            $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
         } else {
-            $this->merchant_id = $this->settings->get('live_merchant_id', '');
+            $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
         }
-        $this->invoice_prefix = $this->settings->get('invoice_prefix', 'WC-PPCP');
-        $this->soft_descriptor = $this->settings->get('soft_descriptor', '');
+        $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
+        $this->soft_descriptor = $this->setting_obj->get('soft_descriptor', substr(get_bloginfo('name'), 0, 21));
         add_filter('cartflows_offer_supported_payment_gateway_slugs', array($this, 'angelleye_ppcp_cartflows_offer_supported_payment_gateway_slugs'));
         add_filter('cartflows_offer_js_localize', array($this, 'angelleye_ppcp_cartflows_offer_js_localize'));
         add_action('wp_enqueue_scripts', array($this, 'angelleye_ppcp_frontend_scripts'));
@@ -61,7 +62,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
             }
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -275,7 +276,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
             ),
             'custom_id' => apply_filters('angelleye_ppcp_custom_id', $invoice_id, $order),
             'invoice_id' => $invoice_id,
-            'soft_descriptor' => $this->soft_descriptor
+            'soft_descriptor' => angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor)
         );
         return array($purchase_unit);
     }

@@ -550,4 +550,22 @@ jQuery(document).ready(function ($) {
         }
     }).change();
 
+    jQuery("#angelleye_ppcp_email_confirm").click(function () {
+        var data = {
+            'action': 'angelleye_ppcp_onboard_email_sendy_subscription',
+            'email': jQuery('#angelleye_ppcp_sendy_email').val()
+        };
+        jQuery.post(ajaxurl, data, function () {
+        }).done(function (response) {
+            console.log(response);
+            if (response.result === "true") {
+                jQuery('#angelleye_ppcp_sendy_msg').html(response.message);
+                jQuery('#angelleye_ppcp_sendy_email').val("");
+            } else {
+                jQuery('#angelleye_ppcp_sendy_msg').html(response.message);
+            }
+        }).fail(function (response) {
+            alert(response);
+        });
+    });
 });

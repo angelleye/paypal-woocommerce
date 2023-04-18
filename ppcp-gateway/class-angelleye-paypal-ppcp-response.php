@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_Response {
 
     public $api_log;
-    public $settings;
+    public $setting_obj;
     public $generate_signup_link_default_request_param;
     protected static $_instance = null;
 
@@ -47,7 +47,9 @@ class AngellEYE_PayPal_PPCP_Response {
                                     'REFUND',
                                     'ADVANCED_TRANSACTIONS_SEARCH',
                                     'ACCESS_MERCHANT_INFORMATION',
-                                    'PARTNER_FEE'
+                                    'PARTNER_FEE',
+                                    "VAULT",
+                                    "BILLING_AGREEMENT"
                                 ),
                             ),
                         ),
@@ -55,7 +57,7 @@ class AngellEYE_PayPal_PPCP_Response {
                 ),
             ),
         );
-        $this->is_sandbox = 'yes' === $this->settings->get('testmode', 'no');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         add_action('angelleye_ppcp_request_respose_data', array($this, 'angelleye_ppcp_tpv_tracking'), 10, 3);
     }
 
@@ -71,7 +73,7 @@ class AngellEYE_PayPal_PPCP_Response {
             } else {
                 $body = wp_remote_retrieve_body($paypal_api_response);
                 $status_code = (int) wp_remote_retrieve_response_code($paypal_api_response);
-                if (201 < $status_code) {
+                if (201 < $status_code && $action_name !== 'update_order') {
                     delete_transient('is_angelleye_aws_down');
                 }
                 $response = !empty($body) ? json_decode($body, true) : '';
@@ -90,6 +92,12 @@ class AngellEYE_PayPal_PPCP_Response {
 
     public function angelleye_ppcp_write_log($url, $request, $response, $action_name = 'Exception') {
         global $wp_version;
+        if($action_name === 'list_all_payment_tokens') {
+           return false;
+        }
+        if($action_name === 'seller_onboarding_status' && !isset($_GET['merchantIdInPayPal'])) {
+            return false;
+        }
         $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
         $this->api_log->log('PayPal Environment: ' . $environment);
         $this->api_log->log('WordPress Version: ' . $wp_version);
@@ -99,7 +107,7 @@ class AngellEYE_PayPal_PPCP_Response {
         $this->api_log->log('Request URL: ' . $url);
         $response_body = isset($response['body']) ? json_decode($response['body'], true) : $response;
         if ($action_name === 'generate_signup_link') {
-            //$this->angelleye_ppcp_signup_link_write_log($request);
+            $this->angelleye_ppcp_signup_link_write_log($request);
         } elseif (!empty($request['body']) && is_array($request['body'])) {
             $this->api_log->log('Request Body: ' . wc_print_r($request['body'], true));
         } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
@@ -125,7 +133,7 @@ class AngellEYE_PayPal_PPCP_Response {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
-            $this->settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -226,6 +234,9 @@ class AngellEYE_PayPal_PPCP_Response {
             }
             if (isset($data['products'])) {
                 $this->generate_signup_link_default_request_param['products'] = $data['products'];
+            }
+            if (isset($data['capabilities'])) {
+                $this->generate_signup_link_default_request_param['capabilities'] = $data['capabilities'];
             }
             $this->api_log->log('Request Body: ' . wc_print_r($this->generate_signup_link_default_request_param, true));
         }

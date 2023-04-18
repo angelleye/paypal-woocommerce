@@ -205,9 +205,11 @@ class AngellEYE_PayPal_PPCP_DCC_Validate {
     /**
      * Returns whether DCC can be used in the current country and the current currency used.
      */
-    public function for_country_currency() {
+    public function for_country_currency($country = null) {
         try {
-            $country = $this->country();
+            if($country === null) {
+                $country = $this->country();
+            }
             $currency = get_woocommerce_currency();
             if (!in_array($country, array_keys($this->allowed_country_currency_matrix), true)) {
                 return false;

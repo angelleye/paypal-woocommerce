@@ -1952,6 +1952,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (!$this->is_available()) {
             return;
         }
+        wp_enqueue_style('angelleye-cc-ui');
         if ($this->enable_braintree_drop_in) {
             wp_enqueue_script('braintree-gateway-dropin', 'https://js.braintreegateway.com/web/dropin/1.31.2/js/dropin.min.js', array('jquery'), null, false);
             if($this->enable_braintree_ach) {
