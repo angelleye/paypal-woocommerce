@@ -274,8 +274,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (isset($_GET['testmode']) && 'yes' === $_GET['testmode']) {
                 $this->is_sandbox = true;
             }
-            $this->settings->set('enabled', 'yes');
-            $this->settings->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
+            $this->setting_obj->set('enabled', 'yes');
+            $this->setting_obj->set('testmode', ($this->is_sandbox) ? 'yes' : 'no');
             $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
             $merchant_id = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
             if (isset($_GET['merchantId'])) {
