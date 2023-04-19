@@ -49,10 +49,11 @@
     text-align: center;
 }
 .woocommerce-checkout #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree, .woocommerce #payment div.payment_box .wc-credit-card-form div.hosted-field-braintree, .wc-credit-card-form div.hosted-field-braintree {
-    height:2em;padding:7px;border:1px solid #ccc;border-radius:3px;transition:border-color .16s;-webkit-transition:border-color .16s;background-color:#fff;
+    height:3em;padding:7px;border:1px solid #ccc;border-radius:3px;transition:border-color .16s;-webkit-transition:border-color .16s;background-color:#fff;
     border-color: #c7c1c6;
     border-top-color: rgb(199, 193, 198);
     border-top-color: #bbb3b9;
+    font-size: 15px;
 }
 .payments-sdk-contingency-handler {
     position: fixed;
