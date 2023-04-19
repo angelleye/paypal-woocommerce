@@ -235,6 +235,13 @@ class AngellEYE_PayPal_PPCP_Migration {
                 } elseif ($woocommerce_angelleye_ppcp_settings['debug'] === 'yes') {
                     $woocommerce_angelleye_ppcp_settings['debug'] = 'everything';
                 }
+                if ($woocommerce_angelleye_ppcp_settings['landing_page'] === 'login') {
+                    $woocommerce_angelleye_ppcp_settings['landing_page'] = 'LOGIN';
+                } elseif ($woocommerce_angelleye_ppcp_settings['landing_page'] === 'billing') {
+                    $woocommerce_angelleye_ppcp_settings['landing_page'] = 'BILLING';
+                } else {
+                    $woocommerce_angelleye_ppcp_settings['landing_page'] = 'NO_PREFERENCE';
+                }
                 if (isset($woocommerce_paypal_express_settings['show_on_checkout']) && $woocommerce_paypal_express_settings['show_on_checkout'] !== 'no') {
                     $woocommerce_angelleye_ppcp_settings['enable_paypal_checkout_page'] = 'yes';
                 } else {
