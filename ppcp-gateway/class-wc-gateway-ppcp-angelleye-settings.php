@@ -1462,6 +1462,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce'),
                     'desc_tip' => true
                 ),
+                'auto_capture_auth' => array(
+                    'title' => __('Automatic Capture of Pending Authorizations', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('Automatic Capture of Pending Authorizations.', 'paypal-for-woocommerce'),
+                    'default' => 'yes',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'desc_tip' => true
+                ),
                 'debug' => array(
                     'title' => __('Debug log', 'paypal-for-woocommerce'),
                     'type' => 'select',
