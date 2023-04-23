@@ -11,6 +11,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $setting_obj = array();
         public $dcc_applies;
         protected static $_instance = null;
+        public $need_to_display_paypal_vault_onboard_button = false;
 
         public static function instance() {
             if (is_null(self::$_instance)) {
@@ -178,11 +179,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             } elseif (!isset($available_endpoints['advanced_cc'])) {
                 $advanced_cc_text = sprintf(__('The Advanced Credit Cards feature is not yet active on your PayPal account. Please <a href="%s">return to the PayPal Connect screen</a> to apply for this feature and get cheaper rates.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce'));
                 $advanced_cc_custom_attributes = array('disabled' => 'disabled');
+                
             }
             if ($available_endpoints === false) {
+                $this->need_to_display_paypal_vault_onboard_button = false;
             } elseif (!isset($available_endpoints['vaulting_advanced'])) {
-                $vaulting_advanced_text = sprintf(__('The Vault functionality required for this feature is not enabled on your PayPal account. Please <a href="%s">return to the PayPal Connect screen</a> to enable this functionality.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce'));
+                $vaulting_advanced_text = __('The Vault functionality required for this feature is not enabled on your PayPal account.', 'paypal-for-woocommerce');
                 $vaulting_custom_attributes = array('disabled' => 'disabled');
+                $this->need_to_display_paypal_vault_onboard_button = true;
             }
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
@@ -1299,10 +1303,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'enable_tokenized_payments' => array(
                     'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                     'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
+                    'type' => 'checkbox_enable_paypal_vault',
                     'description' => $enable_tokenized_payments_text . '<br><br>' . '<b>'. $vaulting_advanced_text . '</b>',
                     'default' => 'no',
                     'class' => 'enable_tokenized_payments',
+                    'need_to_display_paypal_vault_onboard_button' => $this->need_to_display_paypal_vault_onboard_button,
                     'custom_attributes' => $vaulting_custom_attributes
                 ),
                 'advanced_settings' => array(
