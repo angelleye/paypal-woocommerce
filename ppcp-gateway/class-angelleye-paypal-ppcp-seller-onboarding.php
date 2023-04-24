@@ -133,7 +133,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'return_url_description' => __(
                     'Return to your shop.', 'paypal-for-woocommerce'
             ),
-           
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT'
         ));
@@ -150,6 +149,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     'Return to your shop.', 'paypal-for-woocommerce'
             ),
             'capabilities' => array('PAYPAL_WALLET_VAULTING_ADVANCED'),
+            'third_party_features' => array('VAULT', 'BILLING_AGREEMENT'),
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
                 'ADVANCED_VAULTING'
