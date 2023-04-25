@@ -184,13 +184,13 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             if ($available_endpoints === false) {
                 $this->need_to_display_paypal_vault_onboard_button = false;
                 $this->is_paypal_vault_enable = false;
-            } elseif (!isset($available_endpoints['vaulting_advanced'])) {
+            } elseif (isset($available_endpoints['vaulting_advanced'])) {
                 $vaulting_advanced_text = __('The Vault functionality required for this feature is not enabled on your PayPal account.', 'paypal-for-woocommerce');
                 $vaulting_custom_attributes = array('disabled' => 'disabled');
                 $this->need_to_display_paypal_vault_onboard_button = true;
                 $this->is_paypal_vault_enable = false;
             }
-            if(isset($available_endpoints['vaulting_advanced'])) {
+            if(!isset($available_endpoints['vaulting_advanced'])) {
                 $this->is_paypal_vault_enable = true;
             }
             $this->angelleye_ppcp_gateway_setting = array(
