@@ -8,7 +8,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 
         public $angelleye_ppcp_gateway_setting;
         public $gateway_key;
-        public $setting_obj = array();
+        public $setting_obj;
         public $dcc_applies;
         protected static $_instance = null;
         public $need_to_display_paypal_vault_onboard_button = false;
@@ -24,6 +24,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public function __construct() {
             $this->gateway_key = 'woocommerce_angelleye_ppcp_settings';
             $this->angelleye_ppcp_load_class();
+            $this->setting_obj = array();
         }
 
         public function angelleye_ppcp_load_class() {
@@ -86,6 +87,8 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
         public function angelleye_ppcp_setting_fields() {
+            unset($this->setting_obj);
+            $this->load();
             $this->is_sandbox = 'yes' === $this->get('testmode', 'no');
             if ($this->is_sandbox) {
                 $this->merchant_id = $this->get('sandbox_merchant_id', '');
@@ -169,6 +172,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             $vaulting_advanced_text = '';
             $advanced_cc_custom_attributes = array();
             $vaulting_custom_attributes = array();
+            $this->is_paypal_vault_enable = false;
             if ($available_endpoints === false) {
             } elseif (!isset($available_endpoints['advanced_cc'])) {
                 $advanced_cc_text = sprintf(__('The Advanced Credit Cards feature is not yet active on your PayPal account. Please <a href="%s">return to the PayPal Connect screen</a> to apply for this feature and get cheaper rates.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce'));

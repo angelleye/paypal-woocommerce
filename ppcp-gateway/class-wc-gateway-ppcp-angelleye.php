@@ -737,8 +737,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function generate_checkbox_enable_paypal_vault_html($key, $data) {
         if (isset($data['type']) && $data['type'] === 'checkbox_enable_paypal_vault') {
             $testmode = $this->sandbox ? 'yes' : 'no';
-            ob_start();
-
             $field_key = $this->get_field_key($key);
             $defaults = array(
                 'title' => '',
