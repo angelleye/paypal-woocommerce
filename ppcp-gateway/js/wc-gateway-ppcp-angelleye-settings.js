@@ -236,6 +236,7 @@ jQuery(function ($) {
         }
 
     }).change();
+    
     $('#woocommerce_angelleye_ppcp_checkout_page_display_option').change(function () {
         if ($('#woocommerce_angelleye_ppcp_enable_paypal_checkout_page').is(':checked')) {
             if ($(this).val() === 'top') {
@@ -899,5 +900,13 @@ jQuery(function ($) {
     if (ppcp_angelleye_param.is_advanced_card_payments === 'no') {
         ppcp_available.hide();
     }
+    jQuery("#woocommerce_angelleye_ppcp_paymentaction").change(function () {
+        if ($('#woocommerce_angelleye_ppcp_paymentaction').val() === 'capture') {
+                jQuery('#woocommerce_angelleye_ppcp_auto_capture_auth').show();
+            } else {
+                jQuery('#woocommerce_angelleye_ppcp_auto_capture_auth').hide();
+            }
+        
+    }).change();
 });
    
