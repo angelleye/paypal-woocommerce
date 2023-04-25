@@ -735,9 +735,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function generate_checkbox_enable_paypal_vault_html($key, $data) {
-
-
-
         if (isset($data['type']) && $data['type'] === 'checkbox_enable_paypal_vault') {
             $testmode = $this->sandbox ? 'yes' : 'no';
             ob_start();
@@ -754,13 +751,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 'description' => '',
                 'custom_attributes' => array(),
             );
-
             $data = wp_parse_args($data, $defaults);
-
             if (!$data['label']) {
                 $data['label'] = $data['title'];
             }
-
             ob_start();
             ?>
             <tr valign="top">
@@ -781,7 +775,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                         </label>
                         <?php
                         echo $this->get_description_html($data);
-
                         if (isset($data['need_to_display_paypal_vault_onboard_button']) && true === $data['need_to_display_paypal_vault_onboard_button']) {
                             $signup_link = $this->angelleye_get_signup_link($testmode);
                             if ($signup_link) {
@@ -810,7 +803,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                             }
                         }
                         ?>
-
                     </fieldset>
                 </td>
             </tr>
