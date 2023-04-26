@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Commerce - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           4.0.6
+ * Version:           4.0.7
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '4.0.6');
+    define('VERSION_PFW', '4.0.7');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -70,7 +70,7 @@ if (!defined('PAYPAL_PPCP_PARTNER_CLIENT_ID')) {
     define('PAYPAL_PPCP_PARTNER_CLIENT_ID', 'ATgw55qRjaDSlPur2FAkdAiB-QQuG5jlLsees-8dcxLiLla_nwbBSvSnCbUaGlmzxq9t2b8R9JGGSz1e');
 }
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE')) {
-    define('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE', 'https://3yjtbtgz0m.execute-api.us-east-2.amazonaws.com/default/PayPalMerchantIntegrationTest/');
+    define('PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE', 'https://zpyql2kd39.execute-api.us-east-2.amazonaws.com/production/PayPalMerchantIntegration/');
 }
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE', 'https://ppcp.angelleye.com/production/PayPalMerchantIntegration/');
