@@ -67,7 +67,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
         public function load() {
-            if ($this->setting_obj) {
+            if (isset($this->setting_obj) && !empty($this->setting_obj)) {
                 return false;
             }
             $this->setting_obj = get_option($this->gateway_key, array());
@@ -199,7 +199,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'send_items' => 'yes',
                 'enable_advanced_card_payments' => 'no',
                 '3d_secure_contingency' => 'SCA_WHEN_REQUIRED',
-                'enable_separate_payment_method' => 'no',
                 'advanced_card_payments_title' => 'Credit Card',
                 'advanced_card_payments_display_position' => 'after',
                 'disable_cards' => '',
@@ -218,6 +217,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 
         public function angelleye_ppcp_setting_fields() {
             unset($this->setting_obj);
+            $this->setting_obj = array();
             $this->load();
             $this->is_sandbox = 'yes' === $this->get('testmode', 'no');
             if ($this->is_sandbox) {
