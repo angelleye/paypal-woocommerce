@@ -67,7 +67,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
         public function load() {
-            if ($this->setting_obj) {
+            if (!empty($this->setting_obj)) {
                 return false;
             }
             $this->setting_obj = get_option($this->gateway_key, array());
