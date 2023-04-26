@@ -126,7 +126,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_generate_signup_link_for_migration($testmode, $products) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
-        $body = $this->data();
+        if ( class_exists( 'WC_Subscriptions' ) && function_exists( 'wcs_create_renewal_order' ) ) {
+            $body = $this->ppcp_vault_data();
+        } else {
+            $body = $this->default_data();
+        }
         $body['return_url'] = add_query_arg(array('place' => 'admin_settings_onboarding', 'utm_nooverride' => '1', 'products' => $products, 'is_migration' => 'yes'), untrailingslashit($body['return_url']));
         if ($this->is_sandbox) {
             $tracking_id = angelleye_key_generator();
