@@ -71,14 +71,35 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return 'a1233wtergfsdt4365tzrshgfbaewa36AGa1233wtergfsdt4365tzrshgfbaewa36AG';
     }
 
-    public function data() {
-        $data = $this->default_data();
-        return $data;
-    }
-
     public function angelleye_generate_signup_link($testmode, $page) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
-        $body = $this->data();
+        $body = $this->default_data();
+        if ($page === 'gateway_settings') {
+            $body['return_url'] = add_query_arg(array('place' => 'gateway_settings', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
+        } else {
+            $body['return_url'] = add_query_arg(array('place' => 'admin_settings_onboarding', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
+        }
+        if ($this->is_sandbox) {
+            $tracking_id = angelleye_key_generator();
+            $body['tracking_id'] = $tracking_id;
+            update_option('angelleye_ppcp_sandbox_tracking_id', $tracking_id);
+        } else {
+            $tracking_id = angelleye_key_generator();
+            $body['tracking_id'] = $tracking_id;
+            update_option('angelleye_ppcp_live_tracking_id', $tracking_id);
+        }
+        $host_url = $this->ppcp_host . 'generate-signup-link';
+        $args = array(
+            'method' => 'POST',
+            'body' => wp_json_encode($body),
+            'headers' => array('Content-Type' => 'application/json'),
+        );
+        return $this->api_request->request($host_url, $args, 'generate_signup_link');
+    }
+    
+    public function angelleye_generate_signup_link_with_vault($testmode, $page) {
+        $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
+        $body = $this->ppcp_vault_data();
         if ($page === 'gateway_settings') {
             $body['return_url'] = add_query_arg(array('place' => 'gateway_settings', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
         } else {
@@ -112,7 +133,23 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'return_url_description' => __(
                     'Return to your shop.', 'paypal-for-woocommerce'
             ),
+            'products' => array(
+                $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT'
+        ));
+    }
+    
+    private function ppcp_vault_data() {
+        $testmode = ($this->is_sandbox) ? 'yes' : 'no';
+        return array(
+            'testmode' => $testmode,
+            'return_url' => admin_url(
+                    'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
+            ),
+            'return_url_description' => __(
+                    'Return to your shop.', 'paypal-for-woocommerce'
+            ),
             'capabilities' => array('PAYPAL_WALLET_VAULTING_ADVANCED'),
+            'third_party_features' => array('VAULT', 'BILLING_AGREEMENT'),
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
                 'ADVANCED_VAULTING'
@@ -195,7 +232,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->setting_obj->persist();
             $this->angelleye_get_seller_onboarding_status();
             if (isset($_GET['place']) && $_GET['place'] === 'gateway_settings') {
-                $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
+                $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=true');
             } else {
                 $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products');
             }

@@ -8,9 +8,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 
         public $angelleye_ppcp_gateway_setting;
         public $gateway_key;
-        public $setting_obj = array();
+        public $setting_obj;
         public $dcc_applies;
         protected static $_instance = null;
+        public $need_to_display_paypal_vault_onboard_button = false;
+        public $is_paypal_vault_enable = false;
 
         public static function instance() {
             if (is_null(self::$_instance)) {
@@ -22,6 +24,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public function __construct() {
             $this->gateway_key = 'woocommerce_angelleye_ppcp_settings';
             $this->angelleye_ppcp_load_class();
+            $this->setting_obj = array();
         }
 
         public function angelleye_ppcp_load_class() {
@@ -84,13 +87,15 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
         public function angelleye_ppcp_setting_fields() {
+            unset($this->setting_obj);
+            $this->load();
             $this->is_sandbox = 'yes' === $this->get('testmode', 'no');
             if ($this->is_sandbox) {
                 $this->merchant_id = $this->get('sandbox_merchant_id', '');
             } else {
                 $this->merchant_id = $this->get('live_merchant_id', '');
             }
-            $this->enable_tokenized_payments = $was_enable_tokenized_payments = $this->get('enable_tokenized_payments', 'no');
+            $this->enable_tokenized_payments = $this->get('enable_tokenized_payments', 'no');
             if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
                 $this->enable_tokenized_payments = 'no';
                 $this->is_multi_account_active = 'yes';
@@ -100,13 +105,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             $credit_messaging_text = '';
             if ($this->is_multi_account_active == 'yes') {
                 $credit_messaging_text = __('PayPal Pay Later Messaging - Buy Now Pay Later is not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
-            }
-            if ($was_enable_tokenized_payments == 'yes' && $this->is_multi_account_active == 'yes') {
-                $enable_tokenized_payments_text = __('', 'paypal-for-woocommerce');
-            } elseif ($was_enable_tokenized_payments == 'no' && $this->is_multi_account_active == 'yes') {
-                $enable_tokenized_payments_text = __('Token payments are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
-            } else {
-                $enable_tokenized_payments_text = __('Allow buyers to securely save payment details to their account. This enables features like Subscriptions, Auto-Ship, and token payments of any kind.', 'paypal-for-woocommerce');
             }
             $cards_list = array(
                 'visa' => _x('Visa', 'Name of credit card', 'paypal-for-woocommerce'),
@@ -174,15 +172,25 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             $vaulting_advanced_text = '';
             $advanced_cc_custom_attributes = array();
             $vaulting_custom_attributes = array();
+            $this->is_paypal_vault_enable = false;
             if ($available_endpoints === false) {
             } elseif (!isset($available_endpoints['advanced_cc'])) {
                 $advanced_cc_text = sprintf(__('The Advanced Credit Cards feature is not yet active on your PayPal account. Please <a href="%s">return to the PayPal Connect screen</a> to apply for this feature and get cheaper rates.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce'));
                 $advanced_cc_custom_attributes = array('disabled' => 'disabled');
             }
             if ($available_endpoints === false) {
+                $vaulting_advanced_text = __('Allow buyers to securely save payment details to their account. This enables features like Subscriptions, Auto-Ship, and token payments of any kind.', 'paypal-for-woocommerce');
+                $this->need_to_display_paypal_vault_onboard_button = false;
+                $this->is_paypal_vault_enable = false;
             } elseif (!isset($available_endpoints['vaulting_advanced'])) {
-                $vaulting_advanced_text = sprintf(__('The Vault functionality required for this feature is not enabled on your PayPal account. Please <a href="%s">return to the PayPal Connect screen</a> to enable this functionality.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce'));
+                $vaulting_advanced_text = __('The Vault functionality required for this feature is not enabled on your PayPal account.', 'paypal-for-woocommerce');
                 $vaulting_custom_attributes = array('disabled' => 'disabled');
+                $this->need_to_display_paypal_vault_onboard_button = true;
+                $this->is_paypal_vault_enable = false;
+            }
+            if(isset($available_endpoints['vaulting_advanced'])) {
+                $this->is_paypal_vault_enable = true;
+                $vaulting_advanced_text = __('The Vault / Subscriptions feature is enabled on your PayPal account.  You need to enable Tokenized Payments here in order this to be available on your site.', 'paypal-for-woocommerce');
             }
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
@@ -1299,10 +1307,13 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'enable_tokenized_payments' => array(
                     'title' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
                     'label' => __('Enable Tokenized Payments', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'description' => $enable_tokenized_payments_text . '<br><br>' . '<b>'. $vaulting_advanced_text . '</b>',
+                    'type' => 'checkbox_enable_paypal_vault',
+                    'description' => $vaulting_advanced_text,
                     'default' => 'no',
+                    'desc_tip' => true,
                     'class' => 'enable_tokenized_payments',
+                    'need_to_display_paypal_vault_onboard_button' => $this->need_to_display_paypal_vault_onboard_button,
+                    'is_paypal_vault_enable' => $this->is_paypal_vault_enable,
                     'custom_attributes' => $vaulting_custom_attributes
                 ),
                 'advanced_settings' => array(

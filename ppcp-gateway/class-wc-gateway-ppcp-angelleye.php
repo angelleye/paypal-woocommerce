@@ -199,6 +199,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if (apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
             add_action('woocommerce_review_order_before_submit', array($this, 'ppcp_payment_fields'));
         }
+        if($this->enable_tokenized_payments === false) {
+            add_filter('woocommerce_payment_gateways_renewal_support_status_html', array($this, 'payment_gateways_support_tooltip'), 10, 1);
+        }
     }
 
     public function process_admin_options() {
@@ -349,7 +352,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                           ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                                    ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <div class="ppcp_paypal_connection_image">
@@ -379,7 +382,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                           ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                                    ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
@@ -417,12 +420,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                 ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                          ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                 ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                          ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
                     <?php echo $this->get_description_html($data); // WPCS: XSS ok.         ?>
                 </fieldset>
@@ -496,7 +499,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -515,7 +518,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 return parent::get_title();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -631,7 +634,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -652,7 +655,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 return $this->payment_request->angelleye_ppcp_paypal_setup_tokens_sub_change_payment($order_id);
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -671,7 +674,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -679,7 +682,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         try {
             return $this->payment_request->angelleye_ppcp_paypal_setup_tokens();
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -687,7 +690,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         try {
             return $this->payment_request->angelleye_ppcp_paypal_setup_tokens_free_signup_with_free_trial($order_id);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -731,6 +734,109 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             }
         } catch (Exception $ex) {
             parent::get_saved_payment_method_option_html($token);
+        }
+    }
+
+    public function generate_checkbox_enable_paypal_vault_html($key, $data) {
+        if (isset($data['type']) && $data['type'] === 'checkbox_enable_paypal_vault') {
+            $testmode = $this->sandbox ? 'yes' : 'no';
+            $field_key = $this->get_field_key($key);
+            $defaults = array(
+                'title' => '',
+                'label' => '',
+                'disabled' => false,
+                'class' => '',
+                'css' => '',
+                'type' => 'text',
+                'desc_tip' => false,
+                'description' => '',
+                'custom_attributes' => array(),
+            );
+            $data = wp_parse_args($data, $defaults);
+            if (!$data['label']) {
+                $data['label'] = $data['title'];
+            }
+            ob_start();
+            ?>
+            <tr valign="top">
+                <th scope="row" class="titledesc">
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.        ?></label>
+                </th>
+                <td class="forminp">
+                    <fieldset>
+                        <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
+                        <label for="<?php echo esc_attr($field_key); ?>">
+                            <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.         ?> /> <?php echo wp_kses_post($data['label']); ?>
+                            <?php
+                            if (isset($data['is_paypal_vault_enable']) && true === $data['is_paypal_vault_enable']) {
+                                ?>
+                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
+                                <b><?php echo __('Vault is Connected!', 'paypal-for-woocommerce'); ?></b>
+                            <?php } ?>
+                        </label>
+                        <?php
+                        echo $this->get_description_html($data);
+                        if (isset($data['need_to_display_paypal_vault_onboard_button']) && true === $data['need_to_display_paypal_vault_onboard_button']) {
+                            $signup_link = $this->angelleye_get_signup_link($testmode);
+                            if ($signup_link) {
+                                $args = array(
+                                    'displayMode' => 'minibrowser',
+                                );
+                                $url = add_query_arg($args, $signup_link);
+                                ?>
+                                <br>
+                                <a target="_blank" class="wplk-button button-primary" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Activate PayPal Vault', 'paypal-for-woocommerce'); ?></a>
+                                <?php
+                                $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
+                                ?>
+                                <script type="text/javascript">
+                                    document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                        element.addEventListener('click', (e) => {
+                                            if ('undefined' === typeof PAYPAL) {
+                                                e.preventDefault();
+                                                alert('PayPal');
+                                            }
+                                        });
+                                    });</script>
+                                <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
+                            } else {
+                                echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                            }
+                        }
+                        ?>
+                    </fieldset>
+                </td>
+            </tr>
+            <?php
+            return ob_get_clean();
+        }
+    }
+
+    public function angelleye_get_signup_link($testmode) {
+        try {
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php');
+            $seller_onboarding = new AngellEYE_PayPal_PPCP_Seller_Onboarding();
+            $seller_onboarding_result = $seller_onboarding->angelleye_generate_signup_link_with_vault($testmode, 'gateway_settings');
+            if (isset($seller_onboarding_result['links'])) {
+                foreach ($seller_onboarding_result['links'] as $link) {
+                    if (isset($link['rel']) && 'action_url' === $link['rel']) {
+                        return isset($link['href']) ? $link['href'] : false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception $ex) {
+
+        }
+    }
+
+    public function payment_gateways_support_tooltip($status_html) {
+        try {
+            $status_html = '<span class="status-enabled tips" data-tip="' . esc_attr__('Note: You will need to activate Tokenization in settings to enable Subscription functionality.', 'woocommerce-subscriptions') . '">' . esc_html__('Yes', 'woocommerce-subscriptions') . '</span>';
+            return $status_html;
+        } catch (Exception $ex) {
+
         }
     }
 
