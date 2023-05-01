@@ -145,7 +145,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
                     }
                 }
-                $this->is_paypal_vault_approved = $this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result);
+                $this->is_paypal_vault_approved = angelleye_is_vaulting_enable($this->result);
             } elseif ($this->is_sandbox_first_party_used === 'yes') {
                 $this->on_board_status = 'USED_FIRST_PARTY';
             }
@@ -170,7 +170,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
                 } else {
-                    if ($this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result)) {
+                    if (angelleye_is_acdc_payments_enable($this->result)) {
                         $this->on_board_status = 'FULLY_CONNECTED';
                     } else {
                         $this->on_board_status = 'CONNECTED_BUT_NOT_ACC';
@@ -181,7 +181,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         set_transient(AE_FEE, 'no', 24 * DAY_IN_SECONDS);
                     }
                 }
-                $this->is_paypal_vault_approved = $this->seller_onboarding->angelleye_is_acdc_payments_enable($this->result);
+                $this->is_paypal_vault_approved = angelleye_is_vaulting_enable($this->result);
             } elseif ($this->is_live_first_party_used === 'yes' || $this->is_sandbox_third_party_used === 'yes') {
                 $this->on_board_status = 'USED_FIRST_PARTY';
             }
@@ -191,6 +191,23 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public function angelleye_get_signup_link($testmode, $page) {
         try {
             $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link($testmode, $page);
+            if (isset($seller_onboarding_result['links'])) {
+                foreach ($seller_onboarding_result['links'] as $link) {
+                    if (isset($link['rel']) && 'action_url' === $link['rel']) {
+                        return isset($link['href']) ? $link['href'] : false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+    
+    public function angelleye_get_signup_link_for_vault($testmode, $products) {
+        try {
+            $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link_with_vault($testmode, $products);
             if (isset($seller_onboarding_result['links'])) {
                 foreach ($seller_onboarding_result['links'] as $link) {
                     if (isset($link['rel']) && 'action_url' === $link['rel']) {
@@ -262,6 +279,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             }
             $products = urlencode(wp_json_encode(array_values($active_classic_gateway_list)));
             if (!empty($layout_type)) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_header.php');
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
         } catch (Exception $ex) {
@@ -355,7 +373,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                     } else {
                                         $testmode = $this->sandbox ? 'yes' : 'no';
                                     }
-                                    $signup_link = $this->angelleye_get_signup_link($testmode, 'admin_settings_onboarding');
+                                    $signup_link = $this->angelleye_get_signup_link_for_vault($testmode, 'admin_settings_onboarding');
                                     if ($signup_link) {
                                         $args = array(
                                             'displayMode' => 'minibrowser',
@@ -408,7 +426,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                                 } else {
                                                     $testmode = $this->sandbox ? 'yes' : 'no';
                                                 }
-                                                $signup_link = $this->angelleye_get_signup_link($testmode, 'admin_settings_onboarding');
+                                                $signup_link = $this->angelleye_get_signup_link_for_vault($testmode, 'admin_settings_onboarding');
                                                 if ($signup_link) {
                                                     $args = array(
                                                         'displayMode' => 'minibrowser',

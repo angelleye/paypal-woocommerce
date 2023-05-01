@@ -94,7 +94,7 @@ class AngellEYE_PayPal_PPCP_Response {
            return false;
         }
         if($action_name === 'seller_onboarding_status' && !isset($_GET['merchantIdInPayPal'])) {
-            return false;
+           // return false;
         }
         $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
         $this->api_log->log('PayPal Environment: ' . $environment);

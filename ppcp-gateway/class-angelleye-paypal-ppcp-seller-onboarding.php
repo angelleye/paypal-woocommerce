@@ -17,6 +17,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     public $api_log;
     public $is_sandbox;
     public $ppcp_migration;
+    public $angelleye_ppcp_migration_wizard_notice_key = 'angelleye_ppcp_migration_wizard_notice_key';
+    public $angelleye_ppcp_migration_wizard_notice_data = array();
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -97,7 +99,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         );
         return $this->api_request->request($host_url, $args, 'generate_signup_link');
     }
-    
+
     public function angelleye_generate_signup_link_with_vault($testmode, $page) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
         $body = $this->ppcp_vault_data();
@@ -126,7 +128,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_generate_signup_link_for_migration($testmode, $products) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
-        if ( class_exists( 'WC_Subscriptions' ) && function_exists( 'wcs_create_renewal_order' ) ) {
+        if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
             $body = $this->ppcp_vault_data();
         } else {
             $body = $this->default_data();
@@ -164,7 +166,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT'
         ));
     }
-    
+
     private function ppcp_vault_data() {
         $testmode = ($this->is_sandbox) ? 'yes' : 'no';
         return array(
@@ -264,38 +266,46 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce');
             }
             if (isset($_GET['is_migration']) && 'yes' === $_GET['is_migration'] && isset($_GET['products'])) {
-                $products = json_decode(stripslashes($_GET['products']), true);
-                if (!empty($products) && is_array($products)) {
-                    if (!class_exists('AngellEYE_PayPal_PPCP_Migration')) {
-                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration.php');
-                    }
-                    $this->ppcp_migration = AngellEYE_PayPal_PPCP_Migration::instance();
-                    foreach ($products as $key => $product) {
-                        switch ($product) {
-                            case 'paypal_express':
-                                $this->ppcp_migration->angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status);
-                                $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_express', 'angelleye_ppcp');
-                                break;
-                            case 'paypal_pro':
-                                $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
-                                $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp');
-                                break;
-                            case 'paypal_pro_payflow':
-                                $this->ppcp_migration->angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status);
-                                $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro_payflow', 'angelleye_ppcp');
-                                break;
-                            case 'paypal_advanced':
-                                $this->ppcp_migration->angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status);
-                                $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_advanced', 'angelleye_ppcp');
-                                break;
-                            case 'paypal_credit_card_rest':
-                                $this->ppcp_migration->angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status);
-                                break;
-                            default:
-                                break;
+                if (angelleye_is_vaulting_enable($seller_onboarding_status)) {
+                    $products = json_decode(stripslashes($_GET['products']), true);
+                    if (!empty($products) && is_array($products)) {
+                        if (!class_exists('AngellEYE_PayPal_PPCP_Migration')) {
+                            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration.php');
+                        }
+                        $this->ppcp_migration = AngellEYE_PayPal_PPCP_Migration::instance();
+                        foreach ($products as $key => $product) {
+                            switch ($product) {
+                                case 'paypal_express':
+                                    $this->ppcp_migration->angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status);
+                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_express', 'angelleye_ppcp');
+                                    break;
+                                case 'paypal_pro':
+                                    $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
+                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp');
+                                    break;
+                                case 'paypal_pro_payflow':
+                                    $this->ppcp_migration->angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status);
+                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro_payflow', 'angelleye_ppcp');
+                                    break;
+                                case 'paypal_advanced':
+                                    $this->ppcp_migration->angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status);
+                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_advanced', 'angelleye_ppcp');
+                                    break;
+                                case 'paypal_credit_card_rest':
+                                    $this->ppcp_migration->angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status);
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
-                    
+                } else {
+                    if (isset($seller_onboarding_status['country']) && 'US' === $seller_onboarding_status['country']) {
+                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('Your PayPal account is not approved for the Vault functionality which is required for Subscriptions (token payments).');
+                    } else {
+                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('The PayPal Vault is currently only available in the United States.  Unfortunately, you will not be able to migrate until the Vault functionality is available in your country. Please submit a ticket for other options to migrate.');
+                    }
+                    update_option($this->angelleye_ppcp_migration_wizard_notice_key, $this->angelleye_ppcp_migration_wizard_notice_data);
                 }
             }
             unset($_GET);
@@ -325,7 +335,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             );
             $host_url = $this->ppcp_host . 'get-tracking-status';
             $seller_onboarding_status = $this->api_request->request($host_url, $args, 'get_tracking_status');
-            if(!isset($seller_onboarding_status['merchant_id'])) {
+            if (!isset($seller_onboarding_status['merchant_id'])) {
                 $seller_onboarding_status['merchant_id'] = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
             }
             if (!empty($seller_onboarding_status['merchant_id'])) {
@@ -352,7 +362,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     $this->setting_obj->set('enable_advanced_card_payments', 'no');
                     $this->setting_obj->persist();
                 }
-                if ($this->angelleye_is_vaulting_enable($this->result)) {
+                if (angelleye_is_vaulting_enable($this->result)) {
                     $this->setting_obj->set('enable_tokenized_payments', 'yes');
                     $this->setting_obj->persist();
                 } else {
@@ -410,37 +420,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             return false;
         }
         return true;
-    }
-
-    public function angelleye_is_acdc_payments_enable($result) {
-        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
-            foreach ($result['products'] as $key => $product) {
-                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('CUSTOM_CARD_PROCESSING', $product['capabilities'])) {
-                    foreach ($result['capabilities'] as $key => $capabilities) {
-                        if (isset($capabilities['name']) && 'CUSTOM_CARD_PROCESSING' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    
-    public function angelleye_is_vaulting_enable($result) {
-    
-    if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
-            foreach ($result['products'] as $key => $product) {
-                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
-                    foreach ($result['capabilities'] as $key => $capabilities) {
-                        if (isset($capabilities['name']) && 'PAYPAL_WALLET_VAULTING_ADVANCED' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     public function angelleye_ppcp_is_fee_enable($response) {

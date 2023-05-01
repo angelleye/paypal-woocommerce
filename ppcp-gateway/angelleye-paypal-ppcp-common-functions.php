@@ -750,6 +750,7 @@ if (!function_exists('angelleye_ppcp_add_css_js')) {
 }
 
 if (!function_exists('angelleye_ppcp_add_async_js')) {
+
     function angelleye_ppcp_add_async_js() {
         AngellEYE_PayPal_PPCP_Smart_Button::instance();
         $jsUrl = AngellEYE_PayPal_PPCP_Smart_Button::$jsUrl;
@@ -944,6 +945,27 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
         } catch (Exception $ex) {
             
         }
+    }
+
+}
+
+if (!function_exists('angelleye_is_vaulting_enable')) {
+
+    function angelleye_is_vaulting_enable($result) {
+        return false;
+
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $key => $capabilities) {
+                        if (isset($capabilities['name']) && 'PAYPAL_WALLET_VAULTING_ADVANCED' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }
