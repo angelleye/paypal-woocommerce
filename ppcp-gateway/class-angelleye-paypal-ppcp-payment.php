@@ -1433,7 +1433,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                     $order->update_status('on-hold');
-                    if($this->is_auto_capture_auth) {
+                    if ($this->is_auto_capture_auth) {
                         $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                     }
                     return true;
@@ -2720,7 +2720,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                         $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                         $order->update_status('on-hold');
-                        if($this->is_auto_capture_auth) {
+                        if ($this->is_auto_capture_auth) {
                             $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                         }
                         return true;
@@ -3772,8 +3772,11 @@ class AngellEYE_PayPal_PPCP_Payment {
             $user_id = (int) $order->get_customer_id();
             $all_payment_tokens = $this->angelleye_ppcp_get_all_payment_tokens_for_renewal($user_id);
             $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
-            if (empty($all_payment_tokens) && empty($payment_tokens_id)) {
+            $paypal_subscription_id = get_post_meta($order_id, '_paypal_subscription_id', true);
+            if (empty($all_payment_tokens) && empty($payment_tokens_id) && empty($paypal_subscription_id)) {
                 return $body_request;
+            } elseif(!empty ($paypal_subscription_id)) {
+                $payment_tokens_id = $paypal_subscription_id;
             }
             if (!empty($all_payment_tokens) && !empty($payment_tokens_id)) {
                 foreach ($all_payment_tokens as $key => $paypal_payment_token) {
@@ -3814,6 +3817,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
+            
             $angelleye_ppcp_old_payment_method = get_post_meta($order_id, '_angelleye_ppcp_old_payment_method', true);
             if (!empty($angelleye_ppcp_old_payment_method)) {
                 switch ($angelleye_ppcp_old_payment_method) {
@@ -3832,6 +3836,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                         return $body_request;
                     case 'paypal_pro' :
                         $body_request['payment_source'] = array('token' => array('id' => $payment_tokens_id, 'type' => 'PAYPAL_TRANSACTION_ID'));
+                        return $body_request;
+                    case 'paypal':
+                        $body_request['payment_source'] = array('token' => array('id' => $payment_tokens_id, 'type' => 'BILLING_AGREEMENT'));
                         return $body_request;
                 }
             }

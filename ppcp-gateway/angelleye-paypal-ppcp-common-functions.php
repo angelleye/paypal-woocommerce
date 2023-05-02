@@ -100,7 +100,11 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
         if ($old_wc) {
             $order_meta_value = get_post_meta($order->id, $key, $bool);
         } else {
-            $order_meta_value = $order->get_meta($key, $bool);
+            if('_payment_method_title' === $key) {
+                $order_meta_value = $order->get_payment_method_title();
+            } else {
+                $order_meta_value = $order->get_meta($key, $bool);
+            }
         }
         if (empty($order_meta_value) && $key === '_paymentaction') {
             if ($old_wc) {
@@ -952,8 +956,6 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
 if (!function_exists('angelleye_is_vaulting_enable')) {
 
     function angelleye_is_vaulting_enable($result) {
-        return false;
-
         if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
             foreach ($result['products'] as $key => $product) {
                 if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {

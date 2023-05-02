@@ -242,7 +242,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public function display_view() {
         try {
             $this->angelleye_ppcp_load_variable();
-            $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+            $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest', 'paypal');
             $active_classic_gateway_list = array();
             foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
                 if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
@@ -275,6 +275,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             } elseif (isset($active_classic_gateway_list['paypal_advanced'])) {
                 $layout_type = 'paypal_advanced';
             } elseif (isset($active_classic_gateway_list['paypal_express'])) {
+                $layout_type = 'paypal_express';
+            } elseif (isset($active_classic_gateway_list['paypal'])) {
                 $layout_type = 'paypal_express';
             }
             $products = urlencode(wp_json_encode(array_values($active_classic_gateway_list)));
