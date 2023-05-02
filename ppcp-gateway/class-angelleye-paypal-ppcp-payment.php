@@ -3772,6 +3772,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             $user_id = (int) $order->get_customer_id();
             $all_payment_tokens = $this->angelleye_ppcp_get_all_payment_tokens_for_renewal($user_id);
             $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
+            if(empty($payment_tokens_id)) {
+                $payment_tokens_id = get_post_meta($order_id, 'payment_token_id', true);
+            }
             $paypal_subscription_id = get_post_meta($order_id, '_paypal_subscription_id', true);
             if (empty($all_payment_tokens) && empty($payment_tokens_id) && empty($paypal_subscription_id)) {
                 return $body_request;
@@ -3853,7 +3856,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $payment_method = 'card';
                     }
                     $body_request['payment_source'] = array($payment_method => array('vault_id' => $payment_tokens_id));
+                    return $body_request;
                 }
+            } else {
+                $body_request['payment_source'] = array('paypal' => array('vault_id' => $payment_tokens_id));
+                return $body_request;
             }
         } catch (Exception $ex) {
             return $body_request;
