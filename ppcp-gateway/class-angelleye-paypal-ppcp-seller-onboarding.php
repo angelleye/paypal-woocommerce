@@ -295,8 +295,12 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                     $this->ppcp_migration->angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status);
                                     break;
                                 case 'paypal':
-                                    $this->ppcp_migration->angelleye_ppcp_paypal_to_ppcp($seller_onboarding_status);
+                                    $this->ppcp_migration->angelleye_ppcp_paypal_to_ppcp();
                                     $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal', 'angelleye_ppcp');
+                                    break;
+                                case 'ppec_paypal':
+                                    $this->ppcp_migration->angelleye_ppcp_ppec_paypal_to_ppcp();
+                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('ppec_paypal', 'angelleye_ppcp');
                                     break;
                                 default:
                                     break;

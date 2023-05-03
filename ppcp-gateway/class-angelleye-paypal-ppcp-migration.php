@@ -98,14 +98,22 @@ class AngellEYE_PayPal_PPCP_Migration {
             
         }
     }
-    
-    public function angelleye_ppcp_paypal_to_ppcp($seller_onboarding_status) {
+
+    public function angelleye_ppcp_paypal_to_ppcp() {
         try {
-            if (angelleye_is_acdc_payments_enable($seller_onboarding_status)) {
-                $woocommerce_paypal_settings = get_option('woocommerce_paypal_settings');
-                $woocommerce_paypal_settings['enabled'] = 'no';
-                update_option('woocommerce_paypal_settings', $woocommerce_paypal_settings);
-            }
+            $woocommerce_paypal_settings = get_option('woocommerce_paypal_settings');
+            $woocommerce_paypal_settings['enabled'] = 'no';
+            update_option('woocommerce_paypal_settings', $woocommerce_paypal_settings);
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_ppec_paypal_to_ppcp() {
+        try {
+            $woocommerce_ppec_paypal_settings = get_option('woocommerce_ppec_paypal_settings');
+            $woocommerce_ppec_paypal_settings['enabled'] = 'no';
+            update_option('woocommerce_ppec_paypal_settings', $woocommerce_ppec_paypal_settings);
         } catch (Exception $ex) {
             
         }

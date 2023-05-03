@@ -3775,9 +3775,14 @@ class AngellEYE_PayPal_PPCP_Payment {
             if(empty($payment_tokens_id)) {
                 $payment_tokens_id = get_post_meta($order_id, 'payment_token_id', true);
             }
+            if(empty($payment_tokens_id)) {
+                $payment_tokens_id = get_post_meta($order_id, '_ppec_billing_agreement_id', true);
+            }
             $paypal_subscription_id = get_post_meta($order_id, '_paypal_subscription_id', true);
             if (empty($all_payment_tokens) && empty($payment_tokens_id) && empty($paypal_subscription_id)) {
                 return $body_request;
+            } elseif(!empty ($payment_tokens_id)) {
+                $payment_tokens_id = $payment_tokens_id;
             } elseif(!empty ($paypal_subscription_id)) {
                 $payment_tokens_id = $paypal_subscription_id;
             }
@@ -3841,6 +3846,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $body_request['payment_source'] = array('token' => array('id' => $payment_tokens_id, 'type' => 'PAYPAL_TRANSACTION_ID'));
                         return $body_request;
                     case 'paypal':
+                        $body_request['payment_source'] = array('token' => array('id' => $payment_tokens_id, 'type' => 'BILLING_AGREEMENT'));
+                        return $body_request;
+                    case 'ppec_paypal':
                         $body_request['payment_source'] = array('token' => array('id' => $payment_tokens_id, 'type' => 'BILLING_AGREEMENT'));
                         return $body_request;
                 }
