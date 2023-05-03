@@ -315,6 +315,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     }
                     update_option($this->angelleye_ppcp_migration_wizard_notice_key, $this->angelleye_ppcp_migration_wizard_notice_data);
                 }
+                unset($_GET);
+                wp_safe_redirect($redirect_url, 302);
+                exit();
             }
             unset($_GET);
             wp_safe_redirect($redirect_url, 302);
