@@ -973,7 +973,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_hide_show_gateway($methods) {
-        if ((isset($_GET['page']) && 'wc-settings' === $_GET['page'])) {
+        if ((isset($_GET['page']) && 'wc-settings' === $_GET['page'] && $_GET['tab'] == 'checkout')) {
             
         } else {
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
