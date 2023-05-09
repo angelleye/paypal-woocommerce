@@ -72,6 +72,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "create_order":
                     if (isset($_GET['from']) && 'pay_page' === $_GET['from']) {
                         $woo_order_id = $_POST['woo_order_id'];
+                        if (isset(WC()->session) && !WC()->session->has_session()) {
+                            WC()->session->set_customer_session_cookie(true);
+                        }
+                        WC()->session->set( 'order_awaiting_payment', $woo_order_id );
                         $order = wc_get_order($woo_order_id);
                         do_action('woocommerce_before_pay_action', $order);
                         $error_messages = wc_get_notices('error');
@@ -132,6 +136,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     break;
                 case "cc_capture":
                     wc_clear_notices();
+                    // Required for order pay form, as there will be no data in session
                     angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', wc_clean($_GET['paypal_order_id']));
                     $this->angelleye_ppcp_cc_capture();
                     break;
