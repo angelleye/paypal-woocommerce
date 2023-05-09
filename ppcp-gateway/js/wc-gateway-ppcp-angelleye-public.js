@@ -80,11 +80,14 @@ function initSmartButtons() {
             if (angelleye_ppcp_manager.style_layout !== 'vertical') {
                 angelleye_ppcp_style['tagline'] = (angelleye_ppcp_manager.style_tagline === 'yes') ? true : false;
             }
+
+            let isValidationErrorOccurred = false;
             angelleye_paypal_sdk.Buttons({
                 style: angelleye_ppcp_style,
                 createOrder: function (data, actions) {
                     $('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
                     let formData;
+                    isValidationErrorOccurred = false;
                     if (is_from_checkout) {
                         if(angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
                             formData = '';
@@ -112,6 +115,7 @@ function initSmartButtons() {
                         return res.json();
                     }).then(function (data) {
                         if (typeof data.success !== 'undefined') {
+                            isValidationErrorOccurred = true;
                             var messages = data.data.messages ? data.data.messages : data.data;
                             if ('string' === typeof messages) {
                                 showError('<div class="woocommerce-error">' + messages + '</div>');
@@ -170,7 +174,16 @@ function initSmartButtons() {
                     console.log(err);
                     $('.woocommerce').unblock();
                     $(document.body).trigger('angelleye_paypal_onerror');
-                    showError('<div class="woocommerce-error">' + err + '</div>');
+                    let errorMessage = err.message;
+                    if ((errorMessage.toLowerCase()).indexOf('expected an order id to be passed') > -1) {
+                        errorMessage = 'Unable to create the order, please contact the support.';
+                        if (isValidationErrorOccurred) {
+                            errorMessage = 'Please fill in all required fields to continue.';
+                        }
+                    }
+                    if (errorMessage !== '') {
+                        showError('<div class="woocommerce-error">' + errorMessage + '</div>');
+                    }
                     $.angelleye_ppcp_scroll_to_notices();
                     if (is_from_checkout === false) {
                         //  window.location.href = window.location.href;
