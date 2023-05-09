@@ -140,7 +140,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
            
             add_action('wp_enqueue_scripts', array($this, 'angelleye_cc_ui_style'), 100);
             // To load the deferred PayPal JS SDK to cache the data in advance
-            add_action('wp_enqueue_scripts', function() {
+            /* add_action('wp_enqueue_scripts', function() {
                 $wp_scripts = wp_scripts();
                 if (!isset($wp_scripts->registered['angelleye-paypal-checkout-sdk'])) {
                     angelleye_ppcp_add_async_js();
@@ -151,7 +151,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     return $tag;
                 }
                 return str_replace( ' src', ' async src', $tag );
-            }, 10, 2 );
+            }, 10, 2 ); */
             
             add_action( 'parse_request', array($this, 'wc_gateway_payment_token_api_parser') , 99);
             add_action('wp_ajax_angelleye_dismiss_notice', array($this, 'angelleye_dismiss_notice'), 10);
