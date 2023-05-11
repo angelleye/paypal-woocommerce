@@ -3,6 +3,7 @@ class ApplePayCheckoutButton {
     static applePayConfig;
     static isConfigLoading;
     static configPromise;
+    static applePayObject;
     constructor() {
 
     }
@@ -35,7 +36,10 @@ class ApplePayCheckoutButton {
     }
 
     static applePay() {
-        return angelleye_paypal_sdk.Applepay()
+        if (!ApplePayCheckoutButton.applePayObject) {
+            ApplePayCheckoutButton.applePayObject = angelleye_paypal_sdk.Applepay();
+        }
+        return ApplePayCheckoutButton.applePayObject;
     }
 
     render(containerSelector) {
@@ -60,22 +64,21 @@ class ApplePayCheckoutButton {
         let container = jQuery(containerSelector + '_apple_pay');
         console.log('rendering button', container);
         let applePayBtn = jQuery('<button type="button" id="apple-pay-btn" class="apple-pay-button apple-pay-button-black">Apple Pay</button>');
-        applePayBtn.on('click', this.handleClickEvent);
+        applePayBtn.on('click', {thisObject: this}, this.handleClickEvent);
         let seperatorApplePay = jQuery('<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; OR &mdash;</div><br>');
         container.html(seperatorApplePay);
         container.append(applePayBtn);
     }
 
-    async handleClickEvent(containerSelector) {
-
+    async handleClickEvent(event) {
+        let containerSelector = event.data.thisObject.containerSelector;
         angelleyeOrder.showProcessingSpinner();
-        console.log('button clicked');
         let paymentRequest = {
             countryCode: ApplePayCheckoutButton.applePayConfig.countryCode,
             currencyCode: window.angelleye_cart_totals.currencyCode,
             merchantCapabilities: ApplePayCheckoutButton.applePayConfig.merchantCapabilities,
             supportedNetworks: ApplePayCheckoutButton.applePayConfig.supportedNetworks,
-            requiredBillingContactFields: ["name", "phone", "email"],
+            requiredBillingContactFields: ["name", "phone", "email", "postalAddress"],
             requiredShippingContactFields: [],
             total: {
                 label: "Total Amount",
@@ -109,9 +112,8 @@ class ApplePayCheckoutButton {
 
         session.onpaymentauthorized = async (event) => {
             try {
-                console.log('payment event', event);
                 // create the order to send a payment request
-                let orderID = await angelleyeOrder.createOrder({angelleye_ppcp_button_selector: this.containerSelector}).then((orderData) => {
+                let orderID = await angelleyeOrder.createOrder({angelleye_ppcp_button_selector: containerSelector}).then((orderData) => {
                     console.log('orderCreated', orderData);
                     return orderData.orderID;
                 });
@@ -124,11 +126,10 @@ class ApplePayCheckoutButton {
                 await session.completePayment({
                     status: window.ApplePaySession.STATUS_SUCCESS,
                 });
-
-                angelleyeOrder.showProcessingSpinner();
                 angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
             } catch (error) {
-                console.error(error);
+                // TODO Handle PayPalApplePayError codes
+                console.log(error);
                 angelleyeOrder.hideProcessingSpinner();
                 angelleyeOrder.showError(error);
                 session.completePayment({
