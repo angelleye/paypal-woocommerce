@@ -85,10 +85,14 @@ function initSmartButtons() {
 		script_attributes: {
 			'data-namespace': 'angelleye_paypal_sdk'
 		}}, function() {
-		angelleyeLoadPayPalScript({
-			url: angelleye_ppcp_manager.apple_sdk_url
-		}, function () {
+		if (angelleyeOrder.isApplePayEnabled()) {
+			angelleyeLoadPayPalScript({
+				url: angelleye_ppcp_manager.apple_sdk_url
+			}, function () {
+				initSmartButtons();
+			});
+		} else {
 			initSmartButtons();
-		});
+		}
 	})
 })(jQuery);

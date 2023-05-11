@@ -89,6 +89,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->advanced_card_payments_title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
         $this->advanced_card_payments_display_position = $this->setting_obj->get('advanced_card_payments_display_position', 'after');
         $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');
+        $this->enable_apple_pay = 'yes' === $this->setting_obj->get('enable_apple_pay', 'yes');
         $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
         $this->advanced_card_payments_display_position = $this->setting_obj->get('advanced_card_payments_display_position', 'before');
         if (wc_ship_to_billing_address_only()) {
@@ -441,8 +442,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->enabled_pay_later_messaging) {
             array_push($components, 'messages');
         }
-        // TODO Make it dynamic based on user authorizations
-        $components[] = 'applepay';
+        if ($this->enable_apple_pay) {
+            $components[] = 'applepay';
+        }
         if (!empty($components)) {
             $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
         }
@@ -454,13 +456,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $js_url = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
 
         wp_register_script($this->angelleye_ppcp_plugin_name.'-common-functions', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-common-functions.js', array('jquery',), time(), false);
-        wp_register_script($this->angelleye_ppcp_plugin_name.'-apple-pay', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js', array('angelleye-paypal-checkout-sdk'), time(), false);
+        if ($this->enable_apple_pay) {
+            wp_register_script($this->angelleye_ppcp_plugin_name . '-apple-pay', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js', array('angelleye-paypal-checkout-sdk'), time(), false);
+        }
         // wp_register_script('angelleye-paypal-checkout-sdk', $js_url, array(), null, false);
         wp_register_script('angelleye-paypal-checkout-sdk', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-script-loader.js', array('jquery', 'angelleye_ppcp-common-functions'), time(), true);
         wp_register_script($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-public' . $this->minified_version . '.js', array('angelleye-paypal-checkout-sdk', 'angelleye_ppcp-common-functions'), VERSION_PFW, false);
         wp_localize_script($this->angelleye_ppcp_plugin_name, 'angelleye_ppcp_manager', array(
             'paypal_sdk_url' => $js_url,
-            'apple_sdk_url' => 'https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js',
+            'apple_sdk_url' => $this->enable_apple_pay ? 'https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js' : '',
             'style_color' => $this->style_color,
             'style_shape' => $this->style_shape,
             'style_height' => $this->style_height,

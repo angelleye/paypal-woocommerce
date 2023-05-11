@@ -21,6 +21,9 @@ const angelleyeOrder = {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
 		return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp';
 	},
+	isApplePayEnabled: () => {
+		return angelleye_ppcp_manager.apple_sdk_url !== "";
+	},
 	getCheckoutSelectorCss: () => {
 		let checkoutSelector = '.woocommerce';
 		if (angelleye_ppcp_manager.page === 'checkout') {
@@ -243,7 +246,9 @@ const angelleyeOrder = {
 					angelleyeOrder.handleCreateOrderError(err);
 				}
 			}).render(angelleye_ppcp_button_selector);
-			(new ApplePayCheckoutButton()).render(angelleye_ppcp_button_selector);
+			if (angelleyeOrder.isApplePayEnabled()) {
+				(new ApplePayCheckoutButton()).render(angelleye_ppcp_button_selector);
+			}
 		});
 	},
 	renderHostedButtons: () => {

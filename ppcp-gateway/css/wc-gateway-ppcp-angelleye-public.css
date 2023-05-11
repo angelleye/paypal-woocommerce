@@ -252,15 +252,15 @@
     display: inline;
 }
 .apple-pay-button {
-    padding: 2px 6px;
+    padding: 5px 6px;
     border-radius: 4px;
 }
 
 @supports (-webkit-appearance: -apple-pay-button) {
     .apple-pay-button {
-        display: inline-block;
         -webkit-appearance: -apple-pay-button;
         text-indent: -9999px;
+        width: 100%;
     }
     .apple-pay-button-black {
         -apple-pay-button-style: black;
