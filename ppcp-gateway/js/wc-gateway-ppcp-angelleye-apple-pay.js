@@ -87,7 +87,7 @@ class ApplePayCheckoutButton {
         let session = new ApplePaySession(4, paymentRequest);
 
         session.onvalidatemerchant = (event) => {
-            applepay.validateMerchant({
+            ApplePayCheckoutButton.applePay().validateMerchant({
                 validationUrl: event.validationURL,
             })
             .then((payload) => {
@@ -119,7 +119,7 @@ class ApplePayCheckoutButton {
                 /**
                  * Confirm Payment
                  */
-                await applepay.confirmOrder({ orderId: orderID, token: event.payment.token, billingContact: event.payment.billingContact , shippingContact: event.payment.shippingContact });
+                await ApplePayCheckoutButton.applePay().confirmOrder({ orderId: orderID, token: event.payment.token, billingContact: event.payment.billingContact , shippingContact: event.payment.shippingContact });
 
                 await session.completePayment({
                     status: window.ApplePaySession.STATUS_SUCCESS,
