@@ -436,7 +436,7 @@ const angelleyeOrder = {
 	},
 	hooks: {
 		onPaymentMethodChange: () => {
-			jQuery(document.body).on('updated_cart_totals payment_method_selected', function () {
+			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function () {
 				angelleyeOrder.hideShowPlaceOrderButton();
 				setTimeout(function () {
 					angelleyeOrder.renderSmartButton();

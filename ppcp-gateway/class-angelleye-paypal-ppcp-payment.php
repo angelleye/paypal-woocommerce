@@ -273,15 +273,20 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
-                    angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
-                    $body_request['purchase_units'][0]['shipping']['address'] = array(
-                        'address_line_1' => $shipping_address_1,
-                        'address_line_2' => $shipping_address_2,
-                        'admin_area_2' => $shipping_city,
-                        'admin_area_1' => $shipping_state,
-                        'postal_code' => $shipping_postcode,
-                        'country_code' => $shipping_country,
-                    );
+                    // TODO Confirm about this fix
+                    if(!empty($shipping_address_1) && !empty($shipping_country)) {
+                        angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                        $body_request['purchase_units'][0]['shipping']['address'] = array(
+                            'address_line_1' => $shipping_address_1,
+                            'address_line_2' => $shipping_address_2,
+                            'admin_area_2' => $shipping_city,
+                            'admin_area_1' => $shipping_state,
+                            'postal_code' => $shipping_postcode,
+                            'country_code' => $shipping_country,
+                        );
+                    } else {
+                        $body_request['application_context']['shipping_preference'] = 'GET_FROM_FILE';
+                    }
                 }
             } else {
                 if (true === WC()->cart->needs_shipping()) {
@@ -343,6 +348,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 ob_end_clean();
             }
             if (!empty($this->api_response['status'])) {
+                // Add currency code and total for the apple pay orders
+                $return_response['currencyCode'] = $this->api_response['purchase_units'][0]['amount']['currency_code'];
+                $return_response['totalAmount'] = $this->api_response['purchase_units'][0]['amount']['value'];
                 $return_response['orderID'] = $this->api_response['id'];
                 if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
                     angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);

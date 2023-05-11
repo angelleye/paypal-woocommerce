@@ -286,7 +286,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -343,7 +343,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -360,7 +360,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             return $url;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -372,7 +372,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             return $session_data;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -380,7 +380,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         try {
             return $this->function_helper->express_checkout_is_available();
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -423,7 +423,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             $this->chosen = true;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -442,7 +442,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             return $checkout_fields;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -505,7 +505,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
             <?php
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -526,7 +526,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             return $gateways;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -544,7 +544,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             return $classes;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -731,7 +731,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
                 // Removed direct JS SDK Load to speed up the initial page load performance
                 // wp_register_script('angelleye-paypal-checkout-sdk', add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'), array(), null, true);
-                wp_register_script('angelleye-paypal-checkout-sdk', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-script-loader.js', array('jquery'), VERSION_PFW, true);
+                // TODO remove the time() for the version parameter
+                wp_register_script('angelleye-paypal-checkout-sdk', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-script-loader.js', array('jquery'), time(), true);
                 wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout'.($this->minified_version ? 'min-v2.js' : '_v2.js'), array('angelleye-paypal-checkout-sdk'), VERSION_PFW, true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
                     'paypal_sdk_url' => add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'),
@@ -799,7 +800,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
             wp_enqueue_style('angelleye-express-checkout-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/angelleye-express-checkout.css', array(), $this->version, 'all');
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1013,7 +1014,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
             if ($this->enabled == 'yes' && $payment_gateway_count == 1) {
                 if ($this->paypal_pro_enabled == 'yes' || $this->paypal_flow_enabled == 'yes') {
-                    
+
                 } elseif ($this->show_on_cart == 'yes') {
                     echo '<style> input.checkout-button,
                                  a.checkout-button, .button.checkout.wc-forward, a.checkout-button.wc-forward {
