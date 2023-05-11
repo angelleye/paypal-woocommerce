@@ -215,7 +215,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -742,6 +742,8 @@ if (!function_exists('angelleye_ppcp_validate_checkout')) {
 if (!function_exists('angelleye_ppcp_add_css_js')) {
 
     function angelleye_ppcp_add_css_js() {
+        wp_enqueue_script('angelleye_ppcp-common-functions');
+        wp_enqueue_script('angelleye_ppcp-apple-pay');
         wp_enqueue_script('angelleye-paypal-checkout-sdk');
         wp_enqueue_script('angelleye_ppcp');
         wp_enqueue_style('angelleye_ppcp');
@@ -900,7 +902,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -923,7 +925,7 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -931,4 +933,3 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
 
 
 
-    

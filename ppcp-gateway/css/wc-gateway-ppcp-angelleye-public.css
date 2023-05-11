@@ -251,6 +251,59 @@
     margin: 0px 0px 0px 0px;
     display: inline;
 }
+.apple-pay-button {
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+@supports (-webkit-appearance: -apple-pay-button) {
+    .apple-pay-button {
+        display: inline-block;
+        -webkit-appearance: -apple-pay-button;
+        text-indent: -9999px;
+    }
+    .apple-pay-button-black {
+        -apple-pay-button-style: black;
+
+    }
+    .apple-pay-button-white {
+        -apple-pay-button-style: white;
+    }
+    .apple-pay-button-white-with-line {
+        -apple-pay-button-style: white-outline;
+    }
+}
+
+@supports not (-webkit-appearance: -apple-pay-button) {
+    .apple-pay-button {
+        display: inline-block;
+        background-size: 100% 60%;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        border-radius: 5px;
+        padding: 0px;
+        box-sizing: border-box;
+        min-width: 200px;
+        min-height: 32px;
+        max-height: 64px;
+        border: 0;
+
+    }
+    .apple-pay-button-black {
+        background-image: -webkit-named-image(apple-pay-logo-white);
+        background-color: black;
+        color: white;
+    }
+    .apple-pay-button-white {
+        background-image: -webkit-named-image(apple-pay-logo-black);
+        background-color: white;
+    }
+    .apple-pay-button-white-with-line {
+        background-image: -webkit-named-image(apple-pay-logo-black);
+        background-color: white;
+        border: .5px solid black;
+    }
+}
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_vertical_responsive, .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large, .angelleye_ppcp_horizontal_responsive {
         width: 100%;

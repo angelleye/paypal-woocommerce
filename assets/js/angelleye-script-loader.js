@@ -17,14 +17,15 @@ function angelleyeLoadPayPalScript(config, onLoaded) {
 }
 
 function canShowPlaceOrderBtn() {
-    let paymentMethod = jQuery('input[name="payment_method"]:checked').val();
-    if (paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp') {
+    let isOrderCompletePage = jQuery('#angelleye_order_review_payment_method').length;
+    if (!isOrderCompletePage && (angelleyeOrder.isAngelleyePaymentMethodSelected())) {
         return false;
     }
     return true;
 }
 
 function showHidePlaceOrderBtn() {
+    // console.log(canShowPlaceOrderBtn(), abc.sss);
     if (canShowPlaceOrderBtn()) {
         jQuery('#place_order').show();
     } else {

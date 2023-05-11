@@ -624,7 +624,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'amount' => angelleye_ppcp_round($amount, $decimals),
             );
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -823,7 +823,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
         }
         if (!empty($message)) {
-            
+
         } else if (!empty($error['message'])) {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
@@ -2096,7 +2096,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             endswitch;
             return;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2328,7 +2328,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
             if (isset($this->api_response['status'])) {
-                
+
             } else {
                 $error_email_notification_param = array(
                     'request' => 'refund_order',
@@ -2435,7 +2435,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $request;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2831,7 +2831,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2891,7 +2891,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2971,7 +2971,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3038,7 +3038,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3128,7 +3128,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3205,7 +3205,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3296,7 +3296,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3389,7 +3389,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3482,7 +3482,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3565,7 +3565,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3625,7 +3625,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3698,7 +3698,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3722,7 +3722,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response['payment_tokens'];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3743,7 +3743,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response['payment_tokens'];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3762,7 +3762,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3842,7 +3842,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_request->request($this->payment_tokens_url . '/' . $payment_token, $args, 'delete_payment_token');
         } catch (Exception $ex) {
-            
+
         }
     }
 
