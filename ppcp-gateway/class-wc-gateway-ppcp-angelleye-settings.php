@@ -13,6 +13,8 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         protected static $_instance = null;
         public $need_to_display_paypal_vault_onboard_button = false;
         public $is_paypal_vault_enable = false;
+        public $is_apple_pay_enable = false;
+        public $need_to_display_apple_pay_button = false;
 
         public static function instance() {
             if (is_null(self::$_instance)) {
@@ -37,7 +39,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 }
                 $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             } catch (Exception $ex) {
-                
+
             }
         }
 
@@ -170,9 +172,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             $advanced_cc_text = '';
             $vaulting_advanced_text = '';
+            $applePayText = '';
             $advanced_cc_custom_attributes = array();
             $vaulting_custom_attributes = array();
+            $apple_pay_custom_attributes = array();
             $this->is_paypal_vault_enable = false;
+            $this->is_apple_pay_enable = false;
             if ($available_endpoints === false) {
             } elseif (!isset($available_endpoints['advanced_cc'])) {
                 $advanced_cc_text = sprintf(__('The Advanced Credit Cards feature is not yet active on your PayPal account. Please <a href="%s">return to the PayPal Connect screen</a> to apply for this feature and get cheaper rates.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce'));
@@ -187,11 +192,26 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $vaulting_custom_attributes = array('disabled' => 'disabled');
                 $this->need_to_display_paypal_vault_onboard_button = true;
                 $this->is_paypal_vault_enable = false;
-            }
-            if(isset($available_endpoints['vaulting_advanced'])) {
+            } elseif (isset($available_endpoints['vaulting_advanced'])) {
                 $this->is_paypal_vault_enable = true;
                 $vaulting_advanced_text = __('The Vault / Subscriptions feature is enabled on your PayPal account.  You need to enable Tokenized Payments here in order this to be available on your site.', 'paypal-for-woocommerce');
             }
+
+            if ($available_endpoints === false) {
+                $applePayText = __('Allow buyers to pay using Apple Pay.', 'paypal-for-woocommerce');
+                $this->need_to_display_apple_pay_button = false;
+                $this->is_apple_pay_enable = false;
+            } elseif (!isset($available_endpoints['apple_pay'])) {
+                $applePayText = __('Apple Pay is not enabled on your PayPal account.', 'paypal-for-woocommerce');
+                $apple_pay_custom_attributes = array('disabled' => 'disabled');
+                $this->need_to_display_apple_pay_button = true;
+                $this->is_apple_pay_enable = false;
+            } elseif (isset($available_endpoints['apple_pay'])) {
+                $this->is_apple_pay_enable = true;
+                $applePayText = __('Apple Pay feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
+            }
+
+
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -1315,6 +1335,24 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'need_to_display_paypal_vault_onboard_button' => $this->need_to_display_paypal_vault_onboard_button,
                     'is_paypal_vault_enable' => $this->is_paypal_vault_enable,
                     'custom_attributes' => $vaulting_custom_attributes
+                ),
+                'additional_authorizations' => array(
+                    'title' => __('Additional Payment Methods', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'enable_apple_pay' => array(
+                    'title' => __('Enable Apple Pay', 'paypal-for-woocommerce'),
+                    'label' => __('Enable Apple Pay', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox_enable_paypal_apple_pay',
+                    'description' => $applePayText,
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'class' => 'enable_apple_pay',
+                    'need_to_display_apple_pay_button' => $this->need_to_display_apple_pay_button,
+                    'is_apple_pay_enable' => $this->is_apple_pay_enable,
+                    'custom_attributes' => $apple_pay_custom_attributes
                 ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),

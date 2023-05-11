@@ -96,10 +96,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         );
         return $this->api_request->request($host_url, $args, 'generate_signup_link');
     }
-    
-    public function angelleye_generate_signup_link_with_vault($testmode, $page) {
+
+    public function angelleye_generate_signup_link_with_feature($testmode, $page, $body) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
-        $body = $this->ppcp_vault_data();
+
         if ($page === 'gateway_settings') {
             $body['return_url'] = add_query_arg(array('place' => 'gateway_settings', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
         } else {
@@ -137,8 +137,29 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT'
         ));
     }
-    
-    private function ppcp_vault_data() {
+
+    public function ppcp_apple_pay_data()
+    {
+        $testmode = ($this->is_sandbox) ? 'yes' : 'no';
+        return array(
+            'testmode' => $testmode,
+            'return_url' => admin_url(
+                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
+            ),
+            'return_url_description' => __(
+                'Return to your shop.', 'paypal-for-woocommerce'
+            ),
+            'capabilities' => array(
+                'APPLE_PAY'
+            ),
+            'third_party_features' => array('VAULT', 'BILLING_AGREEMENT'),
+            'products' => array(
+                $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
+                'PAYMENT_METHODS'
+            ));
+    }
+
+    public function ppcp_vault_data() {
         $testmode = ($this->is_sandbox) ? 'yes' : 'no';
         return array(
             'testmode' => $testmode,
@@ -149,15 +170,12 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     'Return to your shop.', 'paypal-for-woocommerce'
             ),
             'capabilities' => array(
-                'PAYPAL_WALLET_VAULTING_ADVANCED',
-                'APPLE_PAY',
-                //'PAY_UPON_INVOICE'
+                'PAYPAL_WALLET_VAULTING_ADVANCED'
             ),
             'third_party_features' => array('VAULT', 'BILLING_AGREEMENT'),
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
-                'ADVANCED_VAULTING',
-                'PAYMENT_METHODS'
+                'ADVANCED_VAULTING'
         ));
     }
 
@@ -367,10 +385,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         }
         return false;
     }
-    
+
     public function angelleye_is_vaulting_enable($result) {
-    
-    if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
             foreach ($result['products'] as $key => $product) {
                 if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
                     foreach ($result['capabilities'] as $key => $capabilities) {
@@ -399,7 +416,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
             return false;
         } catch (Exception $ex) {
-            
+
         }
     }
 
