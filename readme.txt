@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.2
-Stable tag: 4.0.10
+Stable tag: 4.0.11
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.0.11 - 05.12.2023 =
+* Fix - JS conflict with hide toggle button in gateway list. ([PFW-1438](https://github.com/angelleye/paypal-woocommerce/pull/1811))
 
 = 4.0.10 - 05.08.2023 =
 * Fix - Enable/disable Enable Tokenized Payments not working. ([PFW-1436](https://github.com/angelleye/paypal-woocommerce/pull/1809))
