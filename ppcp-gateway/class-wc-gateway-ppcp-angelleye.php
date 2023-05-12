@@ -342,7 +342,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     )
             );
         }
-        wp_enqueue_script('wc-gateway-ppcp-angelleye-settings-list', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings-list' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
+        if (isset($_GET['page']) && 'wc-settings' === $_GET['page'] && isset($_GET['tab']) && 'checkout' === $_GET['tab']) {
+            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings-list', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings-list' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
+        }
     }
 
     public function generate_angelleye_ppcp_text_html($field_key, $data) {
