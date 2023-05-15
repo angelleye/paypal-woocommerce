@@ -28,11 +28,13 @@
                 $('.payment_method_angelleye_ppcp_cc').hide();
             }
              if (is_angelleye_ppcp_selected() === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
-                $('#place_order').hide();
+                $('#place_order').removeClass('angelleye_ppcp_show');
+                $('#place_order').addClass('angelleye_ppcp_hide');
                 $('#angelleye_ppcp_checkout').show();
             } else {
                 $('#angelleye_ppcp_checkout').hide();
-                $('#place_order').show();
+                $('#place_order').removeClass('angelleye_ppcp_hide');
+                $('#place_order').addClass('angelleye_ppcp_show');
             }
 
         };
