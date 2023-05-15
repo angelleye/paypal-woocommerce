@@ -27,17 +27,19 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
     public function angelleye_ppcp_wc_get_customer_saved_methods_list() {
         $saved_methods = wc_get_customer_saved_methods_list(get_current_user_id());
         $paypal_payment_list = $this->payment_request->angelleye_ppcp_get_all_payment_tokens();
-        foreach ($paypal_payment_list as $paypal_payment_list_key => $paypal_payment_list_data) {
-            if (isset($paypal_payment_list_data['id'])) {
-                if (empty($saved_methods) || $this->angelleye_ppcp_is_paypal_vault_id_exist_in_woo_payment_list($saved_methods, $paypal_payment_list_data['id']) === false) {
-                    $this->angelleye_ppcp_wc_add_payment_token($paypal_payment_list_data);
-                } else {
-                    $this->angelleye_ppcp_wc_update_payment_token($paypal_payment_list_data);
+        if (is_iterable($paypal_payment_list)) {
+            foreach ($paypal_payment_list as $paypal_payment_list_key => $paypal_payment_list_data) {
+                if (isset($paypal_payment_list_data['id'])) {
+                    if (empty($saved_methods) || $this->angelleye_ppcp_is_paypal_vault_id_exist_in_woo_payment_list($saved_methods, $paypal_payment_list_data['id']) === false) {
+                        $this->angelleye_ppcp_wc_add_payment_token($paypal_payment_list_data);
+                    } else {
+                        $this->angelleye_ppcp_wc_update_payment_token($paypal_payment_list_data);
+                    }
                 }
             }
         }
         $saved_methods = wc_get_customer_saved_methods_list(get_current_user_id());
-        if (!empty($saved_methods['cc'])) {
+        if (!empty($saved_methods['cc']) && is_iterable($saved_methods['cc'])) {
             foreach ($saved_methods['cc'] as $woo_save_method_key => $woo_saved_methods_list) {
                 if (isset($woo_saved_methods_list['_angelleye_ppcp_used_payment_method'])) {
                     if ($this->angelleye_ppcp_is_woo_vault_id_exist_in_paypal_method_list($paypal_payment_list, $woo_saved_methods_list['vault_id']) === false) {
@@ -58,14 +60,16 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
 
     public function angelleye_ppcp_is_woo_vault_id_exist_in_paypal_method_list($paypal_payment_list, $vault_id) {
         try {
-            foreach ($paypal_payment_list as $paypal_key => $paypal_saved_methods_list) {
-                if ($paypal_saved_methods_list['id'] === $vault_id) {
-                    return true;
+            if (is_iterable($paypal_payment_list)) {
+                foreach ($paypal_payment_list as $paypal_key => $paypal_saved_methods_list) {
+                    if ($paypal_saved_methods_list['id'] === $vault_id) {
+                        return true;
+                    }
                 }
             }
             return false;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -128,10 +132,10 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
-    
+
     public function angelleye_ppcp_wc_update_payment_token($api_response) {
         try {
             $payment_token = '';
@@ -192,7 +196,7 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -209,7 +213,7 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
