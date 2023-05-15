@@ -273,6 +273,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('woocommerce_subscription_payment_method_to_display', array($this, 'angelleye_ppcp_woocommerce_subscription_payment_method_to_display'), 10, 2);
         add_action('wp', array($this, 'angelleye_ppcp_delete_payment_method_action'), 9);
         add_action('plugins_loaded', array($this, 'angelleye_ppcp_plugins_loaded'), 99);
+        add_action('woocommerce_valid_order_statuses_for_payment_complete', array($this, 'angelleye_ppcp_woocommerce_valid_order_statuses_for_payment_complete'), 10, 2);
 
         $asyncJsParams = $this->getClientIdMerchantId();
         self::$jsUrl = add_query_arg($asyncJsParams, 'https://www.paypal.com/sdk/js');
@@ -1484,6 +1485,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } catch (Exception $ex) {
             
         }
+    }
+    
+    public function angelleye_ppcp_woocommerce_valid_order_statuses_for_payment_complete($order_status_list, $order) {
+        if(!empty($order_status_list)) {
+            array_push($order_status_list, 'partial-payment');
+            return $order_status_list;
+        }
+        return $order_status_list;
     }
 
 }
