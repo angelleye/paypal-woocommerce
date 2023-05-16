@@ -128,6 +128,12 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
         try {
+            if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
+                $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
+                wc_add_notice($wc_notice);
+                wp_send_json_error($wc_notice);
+                exit();
+            }
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             if ($woo_order_id == null) {
@@ -1433,7 +1439,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                     $order->update_status('on-hold');
-                    if($this->is_auto_capture_auth) {
+                    if ($this->is_auto_capture_auth) {
                         $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                     }
                     return true;
@@ -1795,6 +1801,12 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_regular_create_order_request($woo_order_id = null) {
         try {
+            if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
+                $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
+                wc_add_notice($wc_notice);
+                wp_send_json_error($wc_notice);
+                exit();
+            }
             if ($woo_order_id == null) {
                 $cart = $this->angelleye_ppcp_get_details_from_cart();
             } else {
@@ -2720,7 +2732,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                         $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                         $order->update_status('on-hold');
-                        if($this->is_auto_capture_auth) {
+                        if ($this->is_auto_capture_auth) {
                             $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                         }
                         return true;

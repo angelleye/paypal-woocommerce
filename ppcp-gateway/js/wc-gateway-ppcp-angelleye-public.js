@@ -173,7 +173,9 @@
                         showError('<div class="woocommerce-error">' + err + '</div>');
                         $.angelleye_ppcp_scroll_to_notices();
                         if (is_from_checkout === false) {
-                            //  window.location.href = window.location.href;
+                              window.location.href = window.location.href;
+                        } else {
+                            setTimeout(function() { window.location.href = window.location.href; }, 5000);
                         }
                     }
                 }).render(angelleye_ppcp_button_selector);
