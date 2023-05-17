@@ -98,17 +98,10 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
     }
 
     public function angelleye_ppcp_create_paypal_order() {
-        
         $data = array();
         $step_id = isset($_POST['step_id']) ? intval($_POST['step_id']) : 0;
         $flow_id = isset($_POST['flow_id']) ? intval($_POST['flow_id']) : 0;
         $order_id = isset($_POST['order_id']) ? sanitize_text_field(wp_unslash($_POST['order_id'])) : 0;
-        if (angelleye_ppcp_get_order_total($order_id) === 0) {
-            $wc_notice = __( 'Sorry, your session has expired.', 'woocommerce' );
-            wc_add_notice($wc_notice);
-            wp_send_json_error($wc_notice);
-            exit();
-        }
         $order_key = isset($_POST['order_key']) ? sanitize_text_field(wp_unslash($_POST['order_key'])) : '';
         $session_key = isset($_COOKIE[CARTFLOWS_SESSION_COOKIE . $flow_id]) ? sanitize_text_field(wp_unslash($_COOKIE[CARTFLOWS_SESSION_COOKIE . $flow_id])) : '';
         $order = wc_get_order($order_id);
