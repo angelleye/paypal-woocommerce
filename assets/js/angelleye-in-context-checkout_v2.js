@@ -1,9 +1,11 @@
-jQuery(function ($) {
+function initExpressCheckout() {
+    console.log('initExpressCheckout');
+    let $ = jQuery;
     if (typeof angelleye_in_content_param === 'undefined') {
         return false;
     }
     var angelleye_hide_button = function () {
-        $('#place_order').show();
+        showHidePlaceOrderBtn();
         $('.angelleye_pp_message_payment:eq(1)').hide();
         $('.angelleye_smart_button_checkout_bottom').hide();
     };
@@ -16,7 +18,7 @@ jQuery(function ($) {
     };
 
     var angelleye_show_button = function () {
-        $('#place_order').hide();
+        showHidePlaceOrderBtn();
         $('.angelleye_pp_message_payment:eq(1)').show();
         $('.angelleye_smart_button_checkout_bottom').show();
     };
@@ -516,4 +518,11 @@ jQuery(function ($) {
             }
         });
     }
-});
+}
+
+(function () {
+    angelleyeLoadPayPalScript({url: angelleye_in_content_param.paypal_sdk_url,
+        script_attributes: {
+            'data-namespace': 'angelleye_paypal_sdk'
+        }}, initExpressCheckout)
+})(jQuery);
