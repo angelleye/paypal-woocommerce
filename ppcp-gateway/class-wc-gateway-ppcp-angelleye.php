@@ -354,7 +354,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                                     ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                                         ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <div class="ppcp_paypal_connection_image">
@@ -384,7 +384,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                                     ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                                                                                                                         ?></label>
                 </th>
                 <td class="forminp" id="<?php echo esc_attr($field_key); ?>">
                     <?php
@@ -422,12 +422,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                           ?></label>
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.                                                               ?></label>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                           ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                               ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
                     <?php echo $this->get_description_html($data); // WPCS: XSS ok.         ?>
                 </fieldset>
@@ -461,6 +461,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 if ($is_success) {
                     WC()->cart->empty_cart();
                     unset(WC()->session->angelleye_ppcp_session);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return array(
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order),
@@ -484,12 +487,18 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     if ($is_success) {
                         WC()->cart->empty_cart();
                         unset(WC()->session->angelleye_ppcp_session);
+                        if (ob_get_length()) {
+                            ob_end_clean();
+                        }
                         return array(
                             'result' => 'success',
                             'redirect' => $this->get_return_url($order),
                         );
                     } else {
                         unset(WC()->session->angelleye_ppcp_session);
+                        if (ob_get_length()) {
+                            ob_end_clean();
+                        }
                         return array(
                             'result' => 'failure',
                             'redirect' => wc_get_cart_url()
@@ -497,6 +506,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     }
                 } elseif ($this->checkout_disable_smart_button === true) {
                     $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return $result;
                 }
             }
@@ -762,13 +774,13 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.         ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.             ?></label>
                 </th>
                 <td class="forminp">
                     <fieldset>
                         <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
                         <label for="<?php echo esc_attr($field_key); ?>">
-                            <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
+                            <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.              ?> /> <?php echo wp_kses_post($data['label']); ?>
                             <?php
                             if (isset($data['is_paypal_vault_enable']) && true === $data['is_paypal_vault_enable']) {
                                 ?>
@@ -843,9 +855,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             
         }
     }
-    
+
     public function validate_checkbox_enable_paypal_vault_field($key, $value) {
-        return ! is_null( $value ) ? 'yes' : 'no';
+        return !is_null($value) ? 'yes' : 'no';
     }
 
 }
