@@ -34,7 +34,6 @@ function initSmartButtons() {
             $('#angelleye_ppcp_checkout').hide();
             showHidePlaceOrderBtn();
         }
-
     };
     $.angelleye_ppcp_scroll_to_notices = function () {
         var scrollElement = $('.woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout');
@@ -49,7 +48,6 @@ function initSmartButtons() {
                 scrollTop: (scrollElement.offset().top - 100)
             }, 1000);
         }
-
     };
     var showError = function (error_message) {
         $(checkout_selector).prepend('<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' + error_message + '</div>');

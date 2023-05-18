@@ -251,6 +251,12 @@
     margin: 0px 0px 0px 0px;
     display: inline;
 }
+.angelleye_ppcp_hide {
+    display: none !important;
+}
+.angelleye_ppcp_show {
+    display: block;
+}
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_vertical_responsive, .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large, .angelleye_ppcp_horizontal_responsive {
         width: 100%;
