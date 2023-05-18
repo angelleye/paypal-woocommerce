@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.2
-Stable tag: 4.0.11
+Tested up to: 6.2.1
+Stable tag: 4.0.12
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.0.12 - 05.18.2023 =
+* Fix - PFW-1291 - Load PayPal SDK dynamically. ([PFW-1438](https://github.com/angelleye/paypal-woocommerce/pull/1808))
+* Fix - PHP notice. ([PFW-1441](https://github.com/angelleye/paypal-woocommerce/pull/1812))
+* Fix - Auth and Capture - Partial Capture Fail. ([PFW-1440](https://github.com/angelleye/paypal-woocommerce/pull/1813))
+* Fix - Hide place order button when smart button selected. ([PFW-1422](https://github.com/angelleye/paypal-woocommerce/pull/1814))
+* Fix - Resolves PayPal API "Can not be zero or negative" Error. ([PFW-1442](https://github.com/angelleye/paypal-woocommerce/pull/1815))
 
 = 4.0.11 - 05.12.2023 =
 * Fix - JS conflict with hide toggle button in gateway list. ([PFW-1438](https://github.com/angelleye/paypal-woocommerce/pull/1811))
