@@ -750,6 +750,7 @@ if (!function_exists('angelleye_ppcp_add_css_js')) {
 }
 
 if (!function_exists('angelleye_ppcp_add_async_js')) {
+
     function angelleye_ppcp_add_async_js() {
         AngellEYE_PayPal_PPCP_Smart_Button::instance();
         $jsUrl = AngellEYE_PayPal_PPCP_Smart_Button::$jsUrl;
@@ -800,17 +801,23 @@ if (!function_exists('angelleye_ppcp_is_subs_change_payment')) {
 
 if (!function_exists('angelleye_ppcp_get_order_total')) {
 
-    function angelleye_ppcp_get_order_total() {
+    function angelleye_ppcp_get_order_total($order_id = null) {
         try {
             global $product;
             $total = 0;
-            $order_id = absint(get_query_var('order-pay'));
+            if (is_null($order_id)) {
+                $order_id = absint(get_query_var('order-pay'));
+            }
             if (is_product()) {
                 $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 1;
             } elseif (0 < $order_id) {
                 $order = wc_get_order($order_id);
                 if ($order === false) {
-                    return 0;
+                    if (isset(WC()->cart) && 0 < WC()->cart->total) {
+                        $total = (float) WC()->cart->total;
+                    } else {
+                        return 0;
+                    }
                 }
                 $total = (float) $order->get_total();
             } elseif (isset(WC()->cart) && 0 < WC()->cart->total) {

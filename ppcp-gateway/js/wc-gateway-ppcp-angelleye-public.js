@@ -84,7 +84,7 @@ function initSmartButtons() {
                     $('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
                     let formData;
                     if (is_from_checkout) {
-                        if(angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
+                        if (angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
                             formData = '';
                         } else {
                             formData = $(angelleye_ppcp_button_selector).closest('form').serialize();
@@ -93,90 +93,49 @@ function initSmartButtons() {
                         var add_to_cart = $("[name='add-to-cart']").val();
                         $('<input>', {
                             type: 'hidden',
-                            name: 'angelleye_ppcp-add-to-cart',
-                            value: add_to_cart
-                        }).appendTo('form.cart');
-                        formData = $('form.cart').serialize();
-                    } else {
-                        formData = $('form.woocommerce-cart-form').serialize();
+                            id: 'angelleye_ppcp_payment_method_title',
+                            name: 'angelleye_ppcp_payment_method_title',
+                            value: data.fundingSource
+                        }).appendTo(payment_method_element_selector);
                     }
-                    return fetch(angelleye_ppcp_manager.create_order_url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: formData
-                    }).then(function (res) {
-                        return res.json();
-                    }).then(function (data) {
-                        if (typeof data.success !== 'undefined') {
-                            var messages = data.data.messages ? data.data.messages : data.data;
-                            if ('string' === typeof messages) {
-                                showError('<div class="woocommerce-error">' + messages + '</div>');
-                            } else {
-                                var messageItems = messages.map(function (message) {
-                                    return '<li>' + message + '</li>';
-                                }).join('');
-                                showError('<ul class="woocommerce-error" role="alert">' + messageItems + '</ul>');
-                            }
-                            return null;
-                        } else {
-                            return data.orderID;
-                        }
-                    });
-                },
-                onApprove: function (data, actions) {
-                    $('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
-                    if (is_from_checkout) {
-                        $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + data.orderID + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
-                            window.location.href = data.data.redirect;
-                        });
-                    } else {
-                        if (angelleye_ppcp_manager.is_skip_final_review === 'yes') {
-                            actions.redirect(angelleye_ppcp_manager.direct_capture + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&from=' + angelleye_ppcp_manager.page);
-                        } else {
-                            actions.redirect(angelleye_ppcp_manager.checkout_url + '&paypal_order_id=' + data.orderID + '&paypal_payer_id=' + data.payerID + '&from=' + angelleye_ppcp_manager.page);
-                        }
-                    }
-                },
-                onCancel: function (data, actions) {
-                    $('.woocommerce').unblock();
-                    $(document.body).trigger('angelleye_paypal_oncancel');
-                    if (is_from_checkout === false) {
-                        window.location.href = window.location.href;
-                    }
-                }, onClick: function (data, actions) {
-                    var payment_method_element_selector;
-                    if (angelleye_ppcp_manager.page === 'product') {
-                        payment_method_element_selector = 'form.cart';
-                    } else if (angelleye_ppcp_manager.page === 'cart') {
-                        payment_method_element_selector = 'form.woocommerce-cart-form';
-                    } else if (angelleye_ppcp_manager.page === 'checkout') {
-                        payment_method_element_selector = checkout_selector;
-                    }
-                    if ($('#angelleye_ppcp_payment_method_title').length > 0) {
-                        $('#angelleye_ppcp_payment_method_title').empty();
-                    }
-                    $('<input>', {
-                        type: 'hidden',
-                        id: 'angelleye_ppcp_payment_method_title',
-                        name: 'angelleye_ppcp_payment_method_title',
-                        value: data.fundingSource
-                    }).appendTo(payment_method_element_selector);
                 },
                 onError: function (err) {
                     console.log(err);
                     $('.woocommerce').unblock();
                     $(document.body).trigger('angelleye_paypal_onerror');
-                    showError('<div class="woocommerce-error">' + err + '</div>');
                     $.angelleye_ppcp_scroll_to_notices();
                     if (is_from_checkout === false) {
-                        //  window.location.href = window.location.href;
+                        window.location.href = window.location.href;
+                    } else {
+                        setTimeout(function () {
+                            window.location.href = window.location.href;
+                        }, 8000);
                     }
                 }
             }).render(angelleye_ppcp_button_selector);
         });
     };
+
+    if ($(document.body).hasClass('woocommerce-order-pay')) {
+        $('#order_review').on('submit', function (event) {
+            if (is_hosted_field_eligible() === true) {
+                event.preventDefault();
+                if ($('input[name="wc-angelleye_ppcp_cc-payment-token"]').length) {
+                    if ('new' !== $('input[name="wc-angelleye_ppcp_cc-payment-token"]:checked').val()) {
+                        return true;
+                    }
+                }
+                if ($(checkout_selector).is('.paypal_cc_submiting')) {
+                    return false;
+                } else {
+                    $(checkout_selector).addClass('paypal_cc_submiting');
+                    $(document.body).trigger('submit_paypal_cc_form');
+                }
+                return false;
+            }
+            return true;
+        });
+    }
 
     if ($(document.body).hasClass('woocommerce-order-pay')) {
         $('#order_review').on('submit', function (event) {
@@ -375,28 +334,28 @@ function initSmartButtons() {
                     contingencies: contingencies,
                     cardholderName: firstName + ' ' + lastName
                 }).then(
-                    function (payload) {
-                        if (payload.orderId) {
-                            $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page, function (data) {
-                                window.location.href = data.data.redirect;
-                            });
-                        }
-                    }, function (error) {
-                        $(checkout_selector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
-                        var error_message = '';
-                        if (Array.isArray(error.details) && error.details[0]['description']) {
-                            error_message = error.details[0]['description'];
-                        } else if (error.message) {
-                            error_message = error.message;
-                        }
-                        if (Array.isArray(error.details) && error.details[0]['issue'] === 'INVALID_RESOURCE_ID') {
-                            error_message = '';
-                        }
-
-                        if (error_message !== '') {
-                            showError('<div class="woocommerce-error">' + error_message + '</div>');
-                        }
+                        function (payload) {
+                            if (payload.orderId) {
+                                $.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page, function (data) {
+                                    window.location.href = data.data.redirect;
+                                });
+                            }
+                        }, function (error) {
+                    $(checkout_selector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
+                    var error_message = '';
+                    if (Array.isArray(error.details) && error.details[0]['description']) {
+                        error_message = error.details[0]['description'];
+                    } else if (error.message) {
+                        error_message = error.message;
                     }
+                    if (Array.isArray(error.details) && error.details[0]['issue'] === 'INVALID_RESOURCE_ID') {
+                        error_message = '';
+                    }
+
+                    if (error_message !== '') {
+                        showError('<div class="woocommerce-error">' + error_message + '</div>');
+                    }
+                }
                 );
             });
         }).catch(function (err) {

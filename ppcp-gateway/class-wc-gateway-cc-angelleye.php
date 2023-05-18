@@ -160,12 +160,18 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 if ($is_success) {
                     WC()->cart->empty_cart();
                     unset(WC()->session->angelleye_ppcp_session);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return array(
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order),
                     );
                 } else {
                     unset(WC()->session->angelleye_ppcp_session);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return array(
                         'result' => 'failure',
                         'redirect' => wc_get_cart_url()
@@ -191,12 +197,18 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 if ($is_success) {
                     WC()->cart->empty_cart();
                     unset(WC()->session->angelleye_ppcp_session);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return array(
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order),
                     );
                 } else {
                     unset(WC()->session->angelleye_ppcp_session);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return array(
                         'result' => 'failure',
                         'redirect' => wc_get_cart_url()
@@ -242,12 +254,12 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->tokenization_script();
             }
             if (angelleye_ppcp_is_subs_change_payment() === true) {
-                if( count( $this->get_tokens() ) > 0 ) {
+                if (count($this->get_tokens()) > 0) {
                     $this->saved_payment_methods();
                 }
                 $this->angelleye_ppcp_cc_form();
             } elseif ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_get_order_total() > 0) {
-                if( count( $this->get_tokens() ) > 0 ) {
+                if (count($this->get_tokens()) > 0) {
                     $this->saved_payment_methods();
                 }
                 $this->form();
@@ -552,4 +564,5 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
         return apply_filters('woocommerce_payment_gateway_get_saved_payment_method_option_html', $html, $token, $this);
     }
+
 }
