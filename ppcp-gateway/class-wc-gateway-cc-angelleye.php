@@ -14,7 +14,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->method_description = __('Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce');
             $this->has_fields = true;
             $this->angelleye_ppcp_load_class();
-            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit Card'));
+            $this->method_title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
             $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
             if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
                 $this->supports = array(
@@ -58,8 +58,6 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     'pay_button'
                 );
             }
-            $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
-            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit Card'));
             $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
             $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
             $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');
@@ -365,25 +363,6 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $transaction_id = $order->get_transaction_id();
             $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
             return $bool;
-        } catch (Exception $ex) {
-            
-        }
-    }
-
-    public function get_title() {
-        try {
-            $payment_method_title = '';
-            if (isset($_GET['post'])) {
-                $theorder = wc_get_order($_GET['post']);
-                if ($theorder) {
-                    $payment_method_title = angelleye_ppcp_get_post_meta($theorder, '_payment_method_title', true);
-                }
-            }
-            if (!empty($payment_method_title)) {
-                return $payment_method_title;
-            } else {
-                return parent::get_title();
-            }
         } catch (Exception $ex) {
             
         }
