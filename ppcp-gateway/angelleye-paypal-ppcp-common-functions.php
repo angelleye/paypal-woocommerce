@@ -355,6 +355,9 @@ if (!function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
             if (!empty($billing_details['country'])) {
                 $customer->set_billing_country($billing_details['country']);
             }
+            if (!empty($billing_details['phone'])) {
+                $customer->set_billing_phone($billing_details['phone']);
+            }
             if (!empty($shipping_details['address_1'])) {
                 $customer->set_shipping_address($shipping_details['address_1']);
             }
