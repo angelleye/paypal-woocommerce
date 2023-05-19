@@ -1364,7 +1364,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_gateway_method_title($method_title) {
-        if (is_admin() && isset($_GET['post'])) {
+        if (is_admin() && isset($_GET['post']) && !empty($_GET['post'])) {
             $payment_method_title = get_post_meta(wc_clean($_GET['post']), '_angelleye_ppcp_used_payment_method', true);
             if (!empty($payment_method_title)) {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method_title);
