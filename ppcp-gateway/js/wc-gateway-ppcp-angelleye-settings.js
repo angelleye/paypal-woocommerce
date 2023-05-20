@@ -903,9 +903,9 @@ jQuery(function ($) {
     }
     jQuery("#woocommerce_angelleye_ppcp_paymentaction").change(function () {
         if ($('#woocommerce_angelleye_ppcp_paymentaction').val() === 'capture') {
-            jQuery('#woocommerce_angelleye_ppcp_auto_capture_auth').show();
+            jQuery('#woocommerce_angelleye_ppcp_auto_capture_auth').closest('tr').hide();
         } else {
-            jQuery('#woocommerce_angelleye_ppcp_auto_capture_auth').hide();
+            jQuery('#woocommerce_angelleye_ppcp_auto_capture_auth').closest('tr').show();
         }
 
     }).change();
