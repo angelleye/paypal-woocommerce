@@ -122,17 +122,38 @@ class ApplePayCheckoutButton {
 
         session.onshippingcontactselected = async (event) => {
             console.log('on shipping contact selected', event);
-            const newTotal = {
+            let newTotal = {
                 label: "Total Amount",
                 amount: `${window.angelleye_cart_totals.totalAmount}`,
                 type: "final",
             };
 
-            let shippingContactUpdate = {
-                newTotal,
-                errors: [],
-            };
-            session.completeShippingContactSelection(shippingContactUpdate);
+            try {
+                let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: event.shippingContact});
+                console.log('shipping update response', response);
+                if (typeof response.totalAmount !== 'undefined') {
+                    newTotal.amount = response.totalAmount;
+                    let shippingContactUpdate = {
+                        newTotal,
+                        errors: [],
+                    };
+                    console.log('updating total amount', shippingContactUpdate);
+                    Object.assign(paymentRequest, {
+                        total: newTotal,
+                    });
+                    session.completeShippingContactSelection(shippingContactUpdate);
+                } else {
+                    throw new Error("Unable to update the shipping amount.");
+                }
+            } catch (error) {
+                // TODO Handle PayPalApplePayError codes
+                console.log(error);
+                angelleyeOrder.hideProcessingSpinner();
+                angelleyeOrder.showError(error);
+                session.completePayment({
+                    status: ApplePaySession.STATUS_FAILURE,
+                });
+            }
         };
 
         session.onshippingmethodselected = async (event) => {
@@ -159,7 +180,7 @@ class ApplePayCheckoutButton {
                 await ApplePayCheckoutButton.applePay().confirmOrder({ orderId: orderID, token: event.payment.token, billingContact: event.payment.billingContact, shippingContact: event.payment.shippingContact });
 
                 await session.completePayment({
-                    status: window.ApplePaySession.STATUS_SUCCESS,
+                    status: ApplePaySession.STATUS_SUCCESS,
                 });
                 angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
             } catch (error) {
@@ -168,7 +189,7 @@ class ApplePayCheckoutButton {
                 angelleyeOrder.hideProcessingSpinner();
                 angelleyeOrder.showError(error);
                 session.completePayment({
-                    status: window.ApplePaySession.STATUS_FAILURE,
+                    status: ApplePaySession.STATUS_FAILURE,
                 });
             }
         };

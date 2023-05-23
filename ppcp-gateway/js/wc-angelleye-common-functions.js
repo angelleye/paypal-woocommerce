@@ -57,7 +57,10 @@ const angelleyeOrder = {
 			return data.orderID;
 		})
 	},
-	createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails}) => {
+	createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl}) => {
+		if (typeof apiUrl == 'undefined') {
+			apiUrl = angelleye_ppcp_manager.create_order_url;
+		}
 		jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 		let formData;
 		let is_from_checkout = angelleyeOrder.isCheckoutPage();
@@ -113,7 +116,7 @@ const angelleyeOrder = {
 			}
 			formData = jQuery('form.woocommerce-cart-form').serialize();
 		}
-		return fetch(angelleye_ppcp_manager.create_order_url, {
+		return fetch(apiUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
@@ -149,6 +152,9 @@ const angelleyeOrder = {
 				window.location.href = angelleye_ppcp_manager.checkout_url + '&paypal_order_id=' + orderID + (payerID ? '&paypal_payer_id=' + payerID : '') + '&from=' + angelleye_ppcp_manager.page;
 			}
 		}
+	},
+	shippingAddressUpdate: (shippingDetails) => {
+		return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails});
 	},
 	onCancel: () => {
 		jQuery(document.body).trigger('angelleye_paypal_oncancel');

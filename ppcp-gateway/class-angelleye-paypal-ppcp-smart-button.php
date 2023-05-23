@@ -348,7 +348,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         $product_cart_amounts = ['currencyCode' => get_woocommerce_currency(), 'totalAmount' => WC()->cart->get_total(''),
-            'shippingRequired' => WC()->cart->needs_shipping_address()];
+            'shippingRequired' => WC()->cart->needs_shipping()];
         $page = '';
         $is_pay_page = 'no';
         $first_name = '';
@@ -481,6 +481,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'display_order_page' => add_query_arg(array('angelleye_ppcp_action' => 'display_order_page', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'cc_capture' => add_query_arg(array('angelleye_ppcp_action' => 'cc_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'create_order_url' => add_query_arg(array('angelleye_ppcp_action' => 'create_order', 'utm_nooverride' => '1', 'from' => is_checkout_pay_page() ? 'pay_page' : $page), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
+            'shipping_update_url' => add_query_arg(array('angelleye_ppcp_action' => 'shipping_address_update', 'utm_nooverride' => '1', 'from' => is_checkout_pay_page() ? 'pay_page' : $page), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'cart_total' => WC()->cart->total,
             'paymentaction' => $this->paymentaction,
             'advanced_card_payments' => ($this->advanced_card_payments === true) ? 'yes' : 'no',
@@ -1507,7 +1508,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $paymentData = [
             'currencyCode' => get_woocommerce_currency(),
             'totalAmount' => WC()->cart->get_total(''),
-            'shippingRequired' => WC()->cart->needs_shipping_address()
+            'shippingRequired' => WC()->cart->needs_shipping()
         ];
         $fragments['angelleye_payments_data'] = json_encode($paymentData);
         return $fragments;
