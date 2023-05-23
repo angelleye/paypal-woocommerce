@@ -99,7 +99,20 @@ class ApplePayCheckoutButton {
         };
 
         let session = new ApplePaySession(4, paymentRequest);
-
+        let parseErrorMessage = (errorObject) => {
+            console.error(errorObject)
+            console.log(JSON.stringify(errorObject));
+            if (errorObject.name === 'PayPalApplePayError') {
+                let debugID = errorObject.paypalDebugId;
+                switch (errorObject.errorName) {
+                    case 'ERROR_VALIDATING_MERCHANT':
+                        return 'This merchant is not enabled to process apple pay. please contact website owner. [DebugId: ' + debugID + ']';
+                    default:
+                        return 'We are unable to process your request at the moment, please contact website owner. [DebugId: ' + debugID + ']'
+                }
+            }
+            return errorObject;
+        };
         session.onvalidatemerchant = (event) => {
             ApplePayCheckoutButton.applePay().validateMerchant({
                 validationUrl: event.validationURL,
@@ -109,8 +122,8 @@ class ApplePayCheckoutButton {
             })
             .catch((error) => {
                 angelleyeOrder.hideProcessingSpinner();
-                angelleyeOrder.showError(error);
-                console.log(error);
+                let errorMessage = parseErrorMessage(error);
+                angelleyeOrder.showError(errorMessage);
                 session.abort();
             });
         };
@@ -149,10 +162,9 @@ class ApplePayCheckoutButton {
                     throw new Error("Unable to update the shipping amount.");
                 }
             } catch (error) {
-                // TODO Handle PayPalApplePayError codes
-                console.log(error);
+                let errorMessage = parseErrorMessage(error);
                 angelleyeOrder.hideProcessingSpinner();
-                angelleyeOrder.showError(error);
+                angelleyeOrder.showError(errorMessage);
                 session.completePayment({
                     status: ApplePaySession.STATUS_FAILURE,
                 });
@@ -187,10 +199,9 @@ class ApplePayCheckoutButton {
                 });
                 angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
             } catch (error) {
-                // TODO Handle PayPalApplePayError codes
-                console.log(error);
+                let errorMessage = parseErrorMessage(error);
                 angelleyeOrder.hideProcessingSpinner();
-                angelleyeOrder.showError(error);
+                angelleyeOrder.showError(errorMessage);
                 session.completePayment({
                     status: ApplePaySession.STATUS_FAILURE,
                 });

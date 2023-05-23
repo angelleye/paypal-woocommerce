@@ -405,7 +405,6 @@ class AngellEYE_PayPal_PPCP_Payment {
         foreach($cart as $cart_item) {
             $lineItems[] = [
                 'label' => $cart_item['data']->get_title(),
-                'quantity' => $cart_item['quantity'],
                 'amount' => angelleye_ppcp_round($cart_item['data']->get_price(), $decimals)
             ];
         }

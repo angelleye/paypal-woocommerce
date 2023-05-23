@@ -215,7 +215,7 @@ class AngellEYE_PayPal_PPCP_Request {
                     if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array($capabilityName, $product['capabilities'])) {
                         foreach ($result['capabilities'] as $key => $capabilities) {
                             if (isset($capabilities['name']) && $capabilityName === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
-                                $availableEndpoints[$capabilityKey] = $capabilityKey;
+                                $availableEndpoints[$capabilityKey] = $product['vetting_status'];
                             }
                         }
                     }

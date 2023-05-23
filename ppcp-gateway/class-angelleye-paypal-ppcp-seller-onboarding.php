@@ -247,10 +247,13 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $merchant_email = '';
             }
 
+            $move_to_location = 'tokenization_subscriptions';
             if (isset($_GET['feature_activated'])) {
                 switch ($_GET['feature_activated']) {
                     case 'applepay':
                         set_transient('angelleye_ppcp_applepay_onboarding_done', 'yes', 29000);
+                        $move_to_location = 'additional_authorizations';
+                        break;
                 }
             }
 
@@ -267,7 +270,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->setting_obj->persist();
             $this->angelleye_get_seller_onboarding_status();
             if (isset($_GET['place']) && $_GET['place'] === 'gateway_settings') {
-                $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=true');
+                $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move='.$move_to_location);
             } else {
                 $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products');
             }
@@ -319,18 +322,20 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 }
                 if ($this->angelleye_is_acdc_payments_enable($this->result)) {
                     $this->setting_obj->set('enable_advanced_card_payments', 'yes');
-                    $this->setting_obj->persist();
                 } else {
                     $this->setting_obj->set('enable_advanced_card_payments', 'no');
-                    $this->setting_obj->persist();
                 }
                 if ($this->angelleye_is_vaulting_enable($this->result)) {
                     $this->setting_obj->set('enable_tokenized_payments', 'yes');
-                    $this->setting_obj->persist();
                 } else {
                     $this->setting_obj->set('enable_tokenized_payments', 'no');
-                    $this->setting_obj->persist();
                 }
+                if ($this->angelleye_is_apple_pay_approved($this->result)) {
+                    $this->setting_obj->set('enable_apple_pay', 'yes');
+                } else {
+                    $this->setting_obj->set('enable_apple_pay', 'no');
+                }
+                $this->setting_obj->persist();
                 if ($this->angelleye_ppcp_is_fee_enable($this->result)) {
                     set_transient(AE_FEE, 'yes', 24 * DAY_IN_SECONDS);
                 } else {
@@ -404,6 +409,21 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
                     foreach ($result['capabilities'] as $key => $capabilities) {
                         if (isset($capabilities['name']) && 'PAYPAL_WALLET_VAULTING_ADVANCED' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public function angelleye_is_apple_pay_approved($result) {
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status']) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('APPLE_PAY', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $key => $capabilities) {
+                        if (isset($capabilities['name']) && 'APPLE_PAY' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
                             return true;
                         }
                     }

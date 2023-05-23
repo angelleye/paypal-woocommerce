@@ -14,6 +14,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $need_to_display_paypal_vault_onboard_button = false;
         public $is_paypal_vault_enable = false;
         public $is_apple_pay_enable = false;
+        public $is_apple_pay_approved = false;
         public $need_to_display_apple_pay_button = false;
 
         public static function instance() {
@@ -209,6 +210,8 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $this->is_apple_pay_enable = false;
             } elseif (isset($available_endpoints['apple_pay'])) {
                 $this->is_apple_pay_enable = true;
+                $this->is_apple_pay_approved = true; //$available_endpoints['apple_pay'] == 'APPROVED';
+                $apple_pay_custom_attributes = $this->is_apple_pay_approved ? [] : array('disabled' => 'disabled');
                 $applePayText = __('Apple Pay feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
             }
 
@@ -1353,6 +1356,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'class' => 'enable_apple_pay',
                     'need_to_display_apple_pay_button' => $this->need_to_display_apple_pay_button,
                     'is_apple_pay_enable' => $this->is_apple_pay_enable,
+                    'is_apple_pay_approved' => $this->is_apple_pay_approved,
                     'custom_attributes' => $apple_pay_custom_attributes
                 ),
                 'advanced_settings' => array(

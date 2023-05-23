@@ -910,11 +910,15 @@ jQuery(function ($) {
         }
 
     }).change();
-    url = new URL(window.location.href);
+    let url = new URL(window.location.href);
     if (url.searchParams.has('move')) {
-        if ($('#woocommerce_angelleye_ppcp_pay_later_messaging_settings').length) {
+        let move_to_location = url.searchParams.get('move');
+        if (move_to_location == 'true') {
+            move_to_location = 'pay_later_messaging_settings';
+        }
+        if ($('#woocommerce_angelleye_ppcp_' + move_to_location).length){
             $('html, body').animate({
-                scrollTop: $('#woocommerce_angelleye_ppcp_pay_later_messaging_settings').offset().top
+                scrollTop: $('#woocommerce_angelleye_ppcp_'+move_to_location).offset().top - 150
             }, 'slow');
         }
     }

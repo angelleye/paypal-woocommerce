@@ -839,6 +839,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (!$data['label']) {
                 $data['label'] = $data['title'];
             }
+            $is_apple_pay_approved = $data['is_apple_pay_approved'] ?? false;
+            $is_apple_pay_enabled = $data['is_apple_pay_enable'] ?? false;
             ob_start();
             ?>
             <tr valign="top">
@@ -851,11 +853,15 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                         <label for="<?php echo esc_attr($field_key); ?>">
                             <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
                             <?php
-                            if (isset($data['is_apple_pay_enable']) && true === $data['is_apple_pay_enable']) {
+                            if ($is_apple_pay_enabled && $is_apple_pay_approved) {
                                 ?>
                                 <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
                                 <b><?php echo __('Apple Pay is active in your account!', 'paypal-for-woocommerce'); ?></b>
-                            <?php } ?>
+                            <?php } else if (!$is_apple_pay_approved) {
+                                ?>
+                                <br><br><b style="color:red"><?php echo __('Apple Pay is not approved in your account! Please contact PayPal.', 'paypal-for-woocommerce'); ?></b>
+                                <?php
+                            }?>
                         </label>
                         <?php
                         echo $this->get_description_html($data); ?>
