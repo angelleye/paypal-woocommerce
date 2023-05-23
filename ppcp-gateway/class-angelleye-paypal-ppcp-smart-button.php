@@ -323,9 +323,25 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
             return false;
         }
+
+        /***Compatibility with Multicurrency start***/
         $smart_js_arg = array();
         $enable_funding = array();
-        $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
+        $active_currency = get_woocommerce_currency();
+        
+        if(function_exists("scd_get_bool_option")) {
+            $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
+        } else {
+            $scd_option = get_option('scd_general_options');
+            $multicurrency_payment = ( isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true ) ? true : false;
+        }
+        if(function_exists("scd_get_target_currency") && $multicurrency_payment) {
+            $active_currency = scd_get_target_currency();
+        }
+        
+        $smart_js_arg['currency'] = in_array($active_currency, $this->angelleye_ppcp_currency_list) ? $active_currency : 'USD';
+        /***Compatibility with Multicurrency end***/
+        
         if (!isset($this->disable_funding['venmo'])) {
             array_push($enable_funding, 'venmo');
         }
