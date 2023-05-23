@@ -43,9 +43,6 @@ class ApplePayCheckoutButton {
     }
 
     render(containerSelector) {
-        if (!angelleyeOrder.isCheckoutPage()) {
-            return;
-        }
         if (typeof ApplePaySession !== 'undefined' && ApplePaySession?.supportsVersion(4) && ApplePaySession?.canMakePayments()) {
             this.initApplePayConfig().then(() => {
                 if (!ApplePayCheckoutButton.applePayConfig.isEligible) {
@@ -61,6 +58,7 @@ class ApplePayCheckoutButton {
 
     renderButton(containerSelector) {
         this.containerSelector = containerSelector;
+        this.initProductCartPage();
         let container = jQuery(containerSelector + '_apple_pay');
         console.log('rendering button', container);
         let applePayBtn = jQuery('<button type="button" id="apple-pay-btn" class="apple-pay-button apple-pay-button-black">Apple Pay</button>');
@@ -68,6 +66,12 @@ class ApplePayCheckoutButton {
         let seperatorApplePay = jQuery('<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; OR &mdash;</div><br>');
         container.html(seperatorApplePay);
         container.append(applePayBtn);
+    }
+
+    initProductCartPage() {
+        if (angelleyeOrder.isProductPage() || angelleyeOrder.isCartPage()) {
+            window.angelleye_cart_totals = angelleye_ppcp_manager.product_cart_details;
+        }
     }
 
     async handleClickEvent(event) {
@@ -79,13 +83,13 @@ class ApplePayCheckoutButton {
             merchantCapabilities: ApplePayCheckoutButton.applePayConfig.merchantCapabilities,
             supportedNetworks: ApplePayCheckoutButton.applePayConfig.supportedNetworks,
             requiredBillingContactFields: ["name", "phone", "email", "postalAddress"],
-            requiredShippingContactFields: [],
+            requiredShippingContactFields: ["postalAddress", "name", "email"],
             total: {
                 label: "Total Amount",
                 amount: `${window.angelleye_cart_totals.totalAmount}`,
                 type: "final",
             },
-        }
+        };
 
         let session = new ApplePaySession(4, paymentRequest);
 
@@ -99,7 +103,7 @@ class ApplePayCheckoutButton {
             .catch((error) => {
                 angelleyeOrder.hideProcessingSpinner();
                 angelleyeOrder.showError(error);
-                console.error(error);
+                console.log(error);
                 session.abort();
             });
         };
@@ -110,10 +114,35 @@ class ApplePayCheckoutButton {
             });
         };
 
+        session.onshippingcontactselected = async (event) => {
+            console.log('on shipping contact selected', event);
+            const newTotal = {
+                label: "Total Amount",
+                amount: `${window.angelleye_cart_totals.totalAmount}`,
+                type: "final",
+            };
+
+            let shippingContactUpdate = {
+                newTotal,
+                errors: [],
+            };
+            session.completeShippingContactSelection(shippingContactUpdate);
+        };
+
+        session.onshippingmethodselected = async (event) => {
+            console.log('on shipping method selected', event);
+            let shippingMethodUpdate = {}
+            session.completeShippingMethodSelection(shippingMethodUpdate);
+        }
+
         session.onpaymentauthorized = async (event) => {
             try {
                 // create the order to send a payment request
-                let orderID = await angelleyeOrder.createOrder({angelleye_ppcp_button_selector: containerSelector}).then((orderData) => {
+                let orderID = await angelleyeOrder.createOrder({
+                    angelleye_ppcp_button_selector: containerSelector,
+                    billingDetails: event.payment.billingContact,
+                    shippingDetails: event.payment.shippingContact,
+                }).then((orderData) => {
                     console.log('orderCreated', orderData);
                     return orderData.orderID;
                 });
@@ -121,7 +150,7 @@ class ApplePayCheckoutButton {
                 /**
                  * Confirm Payment
                  */
-                await ApplePayCheckoutButton.applePay().confirmOrder({ orderId: orderID, token: event.payment.token, billingContact: event.payment.billingContact , shippingContact: event.payment.shippingContact });
+                await ApplePayCheckoutButton.applePay().confirmOrder({ orderId: orderID, token: event.payment.token, billingContact: event.payment.billingContact, shippingContact: event.payment.shippingContact });
 
                 await session.completePayment({
                     status: window.ApplePaySession.STATUS_SUCCESS,

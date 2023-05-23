@@ -5,6 +5,9 @@ const angelleyeOrder = {
 	isProductPage: () => {
 		return 'product' === angelleye_ppcp_manager.page;
 	},
+	isCartPage: () => {
+		return 'cart' === angelleye_ppcp_manager.page;
+	},
 	isSale: () => {
 		return 'capture' === angelleye_ppcp_manager.paymentaction;
 	},
@@ -54,12 +57,28 @@ const angelleyeOrder = {
 			return data.orderID;
 		})
 	},
-	createOrder: ({angelleye_ppcp_button_selector}) => {
+	createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails}) => {
 		jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 		let formData;
 		let is_from_checkout = angelleyeOrder.isCheckoutPage();
 		let is_from_product = angelleyeOrder.isProductPage();
 		let is_sale = angelleyeOrder.isSale();
+		let billingField = null;
+		let shippingField = null;
+		if (billingDetails) {
+			billingField = jQuery('<input>', {
+				type: 'hidden',
+				name: 'billing_address_source',
+				value: JSON.stringify(billingDetails)
+			});
+		}
+		if (shippingDetails) {
+			shippingField = jQuery('<input>', {
+				type: 'hidden',
+				name: 'shipping_address_source',
+				value: JSON.stringify(shippingDetails)
+			});
+		}
 		if (is_from_checkout) {
 			if (angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
 				formData = '';
@@ -73,8 +92,25 @@ const angelleyeOrder = {
 				name: 'angelleye_ppcp-add-to-cart',
 				value: add_to_cart
 			}).appendTo('form.cart');
+
+			if (billingField) {
+				jQuery('form.cart').find('input[name=billing_address_source]').remove();
+				billingField.appendTo('form.cart');
+			}
+			if (shippingField) {
+				jQuery('form.cart').find('input[name=shipping_address_source]').remove();
+				shippingField.appendTo('form.cart');
+			}
 			formData = jQuery('form.cart').serialize();
 		} else {
+			if (billingField) {
+				jQuery('form.cart').find('input[name=billing_address_source]').remove();
+				billingField.appendTo('form.woocommerce-cart-form');
+			}
+			if (shippingField) {
+				jQuery('form.cart').find('input[name=shipping_address_source]').remove();
+				shippingField.appendTo('form.woocommerce-cart-form');
+			}
 			formData = jQuery('form.woocommerce-cart-form').serialize();
 		}
 		return fetch(angelleye_ppcp_manager.create_order_url, {
