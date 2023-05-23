@@ -77,13 +77,19 @@ class ApplePayCheckoutButton {
     async handleClickEvent(event) {
         let containerSelector = event.data.thisObject.containerSelector;
         angelleyeOrder.showProcessingSpinner();
+
+        let shippingAddressRequired = [];
+        if (window.angelleye_cart_totals.shippingRequired) {
+            shippingAddressRequired = ["postalAddress", "name", "email"];
+        }
+
         let paymentRequest = {
             countryCode: ApplePayCheckoutButton.applePayConfig.countryCode,
             currencyCode: window.angelleye_cart_totals.currencyCode,
             merchantCapabilities: ApplePayCheckoutButton.applePayConfig.merchantCapabilities,
             supportedNetworks: ApplePayCheckoutButton.applePayConfig.supportedNetworks,
             requiredBillingContactFields: ["name", "phone", "email", "postalAddress"],
-            requiredShippingContactFields: ["postalAddress", "name", "email"],
+            requiredShippingContactFields: shippingAddressRequired,
             total: {
                 label: "Total Amount",
                 amount: `${window.angelleye_cart_totals.totalAmount}`,
