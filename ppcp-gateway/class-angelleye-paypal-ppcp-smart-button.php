@@ -10,7 +10,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $setting_obj;
     public $api_log;
     public $dcc_applies;
-    public $payment_request;
+    public AngellEYE_PayPal_PPCP_Payment $payment_request;
     public $client_token;
     protected static $_instance = null;
     public $advanced_card_payments_display_position;
@@ -347,8 +347,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
             }
         }
-        $product_cart_amounts = ['currencyCode' => get_woocommerce_currency(), 'totalAmount' => WC()->cart->get_total(''),
-            'shippingRequired' => WC()->cart->needs_shipping()];
+        $product_cart_amounts = [
+            'currencyCode' => get_woocommerce_currency(),
+            'totalAmount' => WC()->cart->get_total(''),
+            'shippingRequired' => WC()->cart->needs_shipping(),
+            'lineItems' => []
+        ];
         $page = '';
         $is_pay_page = 'no';
         $first_name = '';
@@ -361,8 +365,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $product_id = $post->ID;
             $product = wc_get_product($product_id);
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction_product_page', $this->paymentaction, $product_id);
-            $product_cart_amounts['totalAmount'] = $product->get_price('');
+            $decimals = $this->payment_request->angelleye_ppcp_get_number_of_decimal_digits();
+            $product_cart_amounts['totalAmount'] = angelleye_ppcp_round($product->get_price(''), $decimals);
             $product_cart_amounts['shippingRequired'] = !$product->is_virtual();
+
+            $product_cart_amounts['lineItems'] = [[
+                'label' => $product->get_name(),
+                'amount' => angelleye_ppcp_round($product->get_price(''), $decimals)
+            ]];
             $button_selector['angelleye_ppcp_product_shortcode'] = '#angelleye_ppcp_product_shortcode';
         } elseif (is_cart() && !WC()->cart->is_empty()) {
             $page = 'cart';
@@ -374,6 +384,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             } else {
                 $button_selector['angelleye_ppcp_cart'] = '#angelleye_ppcp_cart';
             }
+            $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();;
             $button_selector['angelleye_ppcp_cart_shortcode'] = '#angelleye_ppcp_cart_shortcode';
         } elseif (is_checkout_pay_page()) {
             $page = 'checkout';
@@ -398,6 +409,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $button_selector['angelleye_ppcp_checkout'] = '#angelleye_ppcp_checkout';
             }
             $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
+            $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();;
         }
         $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
         $smart_js_arg['intent'] = ( $this->paymentaction === 'capture' ) ? 'capture' : 'authorize';
@@ -1508,7 +1520,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $paymentData = [
             'currencyCode' => get_woocommerce_currency(),
             'totalAmount' => WC()->cart->get_total(''),
-            'shippingRequired' => WC()->cart->needs_shipping()
+            'shippingRequired' => WC()->cart->needs_shipping(),
+            'lineItems' => $this->payment_request->getCartLineItems()
         ];
         $fragments['angelleye_payments_data'] = json_encode($paymentData);
         return $fragments;

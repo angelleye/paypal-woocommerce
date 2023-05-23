@@ -396,6 +396,36 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
+    public function getCartLineItems(): array
+    {
+        $lineItems = [];
+        $details = $this->angelleye_ppcp_get_details_from_cart();
+        $cart = WC()->cart->get_cart();
+        $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
+        foreach($cart as $cart_item) {
+            $lineItems[] = [
+                'label' => $cart_item['data']->get_title(),
+                'quantity' => $cart_item['quantity'],
+                'amount' => angelleye_ppcp_round($cart_item['data']->get_price(), $decimals)
+            ];
+        }
+
+        if (WC()->cart->needs_shipping()) {
+            $lineItems[] = [
+                'label' => 'Shipping',
+                'amount' => $details['shipping']
+            ];
+        }
+        $tax = WC()->cart->get_total_tax();
+        if ($tax > 0) {
+            $lineItems[] = [
+                'label' => 'Tax',
+                'amount' => $details['order_tax']
+            ];
+        }
+        return $lineItems;
+    }
+
     public function angelleye_ppcp_get_number_of_decimal_digits() {
         try {
             return $this->angelleye_ppcp_is_currency_supports_zero_decimal() ? 0 : 2;

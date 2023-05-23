@@ -95,6 +95,7 @@ class ApplePayCheckoutButton {
                 amount: `${window.angelleye_cart_totals.totalAmount}`,
                 type: "final",
             },
+            lineItems: window.angelleye_cart_totals.lineItems
         };
 
         let session = new ApplePaySession(4, paymentRequest);
@@ -135,11 +136,13 @@ class ApplePayCheckoutButton {
                     newTotal.amount = response.totalAmount;
                     let shippingContactUpdate = {
                         newTotal,
+                        newLineItems: response.lineItems,
                         errors: [],
                     };
                     console.log('updating total amount', shippingContactUpdate);
                     Object.assign(paymentRequest, {
                         total: newTotal,
+                        lineItems: response.lineItems
                     });
                     session.completeShippingContactSelection(shippingContactUpdate);
                 } else {

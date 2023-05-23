@@ -187,17 +187,16 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             }
                             $this->product = AngellEYE_PayPal_PPCP_Product::instance();
                             $this->product::angelleye_ppcp_add_to_cart_action();
-                            $details = $this->payment_request->angelleye_ppcp_get_details_from_cart();
-                            $orderTotal = $details['order_total'];
                         } catch (Exception $ex) {
                             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
                             $this->api_log->log($ex->getMessage(), 'error');
                         }
                     }
+                    $details = $this->payment_request->getCartLineItems();
                     wp_send_json([
                         'currencyCode' => get_woocommerce_currency(),
                         'totalAmount' => WC()->cart->get_total(''),
-                        'orderTotal' => $orderTotal,
+                        'lineItems' => $details,
                         'shippingRequired' => WC()->cart->needs_shipping()
                     ]);
                     break;
