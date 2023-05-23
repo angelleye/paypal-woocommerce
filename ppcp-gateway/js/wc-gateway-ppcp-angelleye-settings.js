@@ -195,6 +195,7 @@ jQuery(function ($) {
         }
         $('#woocommerce_angelleye_ppcp_enabled').val(0);
         $('#woocommerce_angelleye_ppcp_enabled').prop('checked', false);
+        $('#woocommerce_angelleye_ppcp_enable_apple_pay').prop('checked', false);
         $('.woocommerce-save-button').click();
     });
     $('#woocommerce_angelleye_ppcp_enable_product_button').change(function () {
@@ -917,4 +918,4 @@ jQuery(function ($) {
             }, 'slow');
         }
     }
-}); 
+});

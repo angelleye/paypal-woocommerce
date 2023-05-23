@@ -200,6 +200,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             if ($available_endpoints === false) {
                 $applePayText = __('Allow buyers to pay using Apple Pay.', 'paypal-for-woocommerce');
                 $this->need_to_display_apple_pay_button = false;
+                $apple_pay_custom_attributes = array('disabled' => 'disabled');
                 $this->is_apple_pay_enable = false;
             } elseif (!isset($available_endpoints['apple_pay'])) {
                 $applePayText = __('Apple Pay is not enabled on your PayPal account.', 'paypal-for-woocommerce');

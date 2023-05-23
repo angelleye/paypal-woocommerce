@@ -583,6 +583,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function angelleye_ppcp_admin_notices() {
         $is_saller_onboarding_done = false;
         $is_saller_onboarding_failed = false;
+        $onboarding_success_message = 'PayPal onboarding process successfully completed.';
         if (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done')) {
             $is_saller_onboarding_done = true;
             delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done');
@@ -590,13 +591,20 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $is_saller_onboarding_done = true;
             delete_transient('angelleye_ppcp_live_seller_onboarding_process_done');
         }
+
+        if (false !== get_transient('angelleye_ppcp_applepay_onboarding_done')) {
+            $is_saller_onboarding_done = true;
+            $onboarding_success_message = "Apple Pay feature has been enabled successfully.";
+            delete_transient('angelleye_ppcp_applepay_onboarding_done');
+        }
+
         if ($is_saller_onboarding_done) {
             echo '<div class="notice notice-success angelleye-notice is-dismissible" id="ppcp_success_notice_onboarding" style="display:none;">'
             . '<div class="angelleye-notice-logo-original">'
             . '<div class="ppcp_success_logo"><img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark.png" width="65" height="65"></div>'
             . '</div>'
             . '<div class="angelleye-notice-message">'
-            . '<h3>PayPal onboarding process successfully completed.</h3>'
+            . '<h3>' . $onboarding_success_message . '</h3>'
             . '</div>'
             . '</div>';
         } else {
@@ -850,7 +858,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                             <?php } ?>
                         </label>
                         <?php
-                        echo $this->get_description_html($data);
+                        echo $this->get_description_html($data); ?>
+                        <div><strong>Note: </strong>You need to make sure you've added and verified the domain name in your PayPal Account to enable the Apple Pay Button. Apple Pay button only works on Safari browser or Apple devices. Click here to know more. </div>
+                        <?php
                         if (isset($data['need_to_display_apple_pay_button']) && true === $data['need_to_display_apple_pay_button']) {
                             $signup_link = $this->angelleye_get_signup_link($testmode, 'apple_pay');
                             if ($signup_link) {
@@ -893,16 +903,16 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php';
             }
             $seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
+            $seller_onboarding->setTestMode($testmode);
             switch ($featureName) {
                 case 'apple_pay':
                     $body = $seller_onboarding->ppcp_apple_pay_data();
-                    $seller_onboarding_result = $seller_onboarding->angelleye_generate_signup_link_with_feature($testmode, 'gateway_settings', $body);
                     break;
                 default:
                     $body = $seller_onboarding->ppcp_vault_data();
-                    $seller_onboarding_result = $seller_onboarding->angelleye_generate_signup_link_with_feature($testmode, 'gateway_settings', $body);
                     break;
             }
+            $seller_onboarding_result = $seller_onboarding->angelleye_generate_signup_link_with_feature($testmode, 'gateway_settings', $body);
             if (isset($seller_onboarding_result['links'])) {
                 foreach ($seller_onboarding_result['links'] as $link) {
                     if (isset($link['rel']) && 'action_url' === $link['rel']) {

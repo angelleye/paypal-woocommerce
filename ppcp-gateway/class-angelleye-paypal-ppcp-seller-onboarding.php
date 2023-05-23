@@ -43,6 +43,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         }
     }
 
+    public function setTestMode($testMode = 'no') {
+        $this->is_sandbox = $testMode === 'yes';
+    }
+
     public function angelleye_ppcp_load_class() {
         try {
             if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
@@ -144,7 +148,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return array(
             'testmode' => $testmode,
             'return_url' => admin_url(
-                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
+                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=applepay&testmode=' . $testmode
             ),
             'return_url_description' => __(
                 'Return to your shop.', 'paypal-for-woocommerce'
@@ -242,6 +246,14 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             } else {
                 $merchant_email = '';
             }
+
+            if (isset($_GET['feature_activated'])) {
+                switch ($_GET['feature_activated']) {
+                    case 'applepay':
+                        set_transient('angelleye_ppcp_applepay_onboarding_done', 'yes', 29000);
+                }
+            }
+
             if ($this->is_sandbox) {
                 $this->setting_obj->set('sandbox_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
