@@ -8,7 +8,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public $dcc_applies;
     public $api_request;
     public $seller_onboarding;
-    public $payment_request;
+    public AngellEYE_PayPal_PPCP_Payment $payment_request;
     public $advanced_card_payments;
     public $checkout_disable_smart_button;
     public $minified_version;

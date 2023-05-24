@@ -1,6 +1,6 @@
-
+let loadedScripts = []
 function angelleyeLoadPayPalScript(config, onLoaded) {
-    if (typeof angelleye_paypal_sdk !== 'undefined') {
+    if (loadedScripts.indexOf(config.url) > -1) {
         onLoaded();
         return;
     }
@@ -9,15 +9,21 @@ function angelleyeLoadPayPalScript(config, onLoaded) {
     // delay the onload event to let the PayPal lib initialized in the env
     script.addEventListener('load', onLoaded);
     script.setAttribute('src', config.url);
-    Object.entries(config.script_attributes).forEach((keyValue) => {
-        script.setAttribute(keyValue[0], keyValue[1]);
-    });
+    if (config.script_attributes) {
+        Object.entries(config.script_attributes).forEach((keyValue) => {
+            script.setAttribute(keyValue[0], keyValue[1]);
+        });
+    }
 
     document.body.appendChild(script);
 }
 
 function canShowPlaceOrderBtn() {
-    let isOrderCompletePage = jQuery('#angelleye_order_review_payment_method').length;
+    // This is to check if the user is on review order page then there we need to show the place order button.
+    // For logged in user we see the payment method that's why on checkout page we keep seeing the place order button
+    // that we need to fix by using a way to identify if its checkout or order review page
+    let isOrderCompletePage = angelleyeOrder.isOrderCompletePage();
+    // console.log('canShowPlaceOrderBtn', isOrderCompletePage, angelleyeOrder.isAngelleyePaymentMethodSelected());
     if (!isOrderCompletePage && (angelleyeOrder.isAngelleyePaymentMethodSelected())) {
         return false;
     }

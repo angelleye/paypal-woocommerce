@@ -479,6 +479,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         wp_register_script($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-public' . $this->minified_version . '.js', array('angelleye-paypal-checkout-sdk', 'angelleye_ppcp-common-functions'), VERSION_PFW, false);
         wp_localize_script($this->angelleye_ppcp_plugin_name, 'angelleye_ppcp_manager', array(
             'paypal_sdk_url' => $js_url,
+            'paypal_sdk_attributes' => $this->get_paypal_sdk_attributes(),
             'apple_sdk_url' => $this->enable_apple_pay ? 'https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js' : '',
             'style_color' => $this->style_color,
             'style_shape' => $this->style_shape,
@@ -890,21 +891,32 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
     }
 
+    public function get_paypal_sdk_attributes(): array
+    {
+        $attributes = ['data-namespace' => 'angelleye_paypal_sdk'];
+        if (!isset($_GET['paypal_order_id'])) {
+            if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
+                $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
+                $attributes['data-client-token'] = $this->client_token;
+            }
+            if ($this->enable_tokenized_payments && is_user_logged_in()) {
+                $attributes['data-user-id-token'] = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+            }
+        }
+        return $attributes;
+    }
+
     public function angelleye_ppcp_clean_url($tag, $handle) {
         if ('angelleye-paypal-checkout-sdk' === $handle) {
             $client_token = '';
             $user_id_token = '';
             if (!isset($_GET['paypal_order_id'])) {
-                if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
-                    $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
-                    $client_token = "data-client-token='{$this->client_token}'";
-                }
-                if ($this->enable_tokenized_payments && is_user_logged_in()) {
-                    $id_token = $this->payment_request->angelleye_ppcp_get_generate_id_token();
-                    $user_id_token = " data-user-id-token='{$id_token}'";
-                }
+                $attributes = $this->get_paypal_sdk_attributes();
+                $client_token = isset($attributes['data-client-token']) ? "data-client-token='{$attributes['data-client-token']}'" : '';
+                $user_id_token = isset($attributes['data-user-id-token']) ? "data-user-id-token='{$attributes['data-user-id-token']}'" : '';
+
             }
-            $tag = str_replace(' src=', ' ' . $client_token . $user_id_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
+            $tag = str_replace(' src=', ' ' . $client_token . ' ' . $user_id_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
         }
         return $tag;
     }

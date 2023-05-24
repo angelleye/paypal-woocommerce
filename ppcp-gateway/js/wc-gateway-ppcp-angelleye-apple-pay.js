@@ -77,6 +77,7 @@ class ApplePayCheckoutButton {
     async handleClickEvent(event) {
         let containerSelector = event.data.thisObject.containerSelector;
         angelleyeOrder.showProcessingSpinner();
+        angelleyeOrder.setPaymentMethodSelector('apple_pay');
 
         let shippingAddressRequired = [];
         if (window.angelleye_cart_totals.shippingRequired) {
@@ -95,8 +96,22 @@ class ApplePayCheckoutButton {
                 amount: `${window.angelleye_cart_totals.totalAmount}`,
                 type: "final",
             },
-            lineItems: window.angelleye_cart_totals.lineItems
+            lineItems: window.angelleye_cart_totals.lineItems,
+            // TODO Adjust this section to work based on Subscription product
+            recurringPaymentRequest: {
+                paymentDescription: "A description of the recurring payment to display to the user in the payment sheet.",
+                regularBilling: {
+                    label: "Recurring",
+                    amount: `${window.angelleye_cart_totals.totalAmount}`,
+                    paymentTiming: "recurring",
+                    recurringPaymentStartDate: new Date()
+                },
+                billingAgreement: "A localized billing agreement displayed to the user in the payment sheet prior to the payment authorization.",
+                managementURL: "https://merchant.com/billingagreement1234",
+                tokenNotificationURL: ApplePayCheckoutButton.applePayConfig.tokenNotificationURL
+            },
         };
+        console.log('paymentRequest', paymentRequest);
 
         let session = new ApplePaySession(4, paymentRequest);
         let parseErrorMessage = (errorObject) => {
@@ -179,6 +194,7 @@ class ApplePayCheckoutButton {
 
         session.onpaymentauthorized = async (event) => {
             try {
+                console.log('paymentAuthorized', event);
                 // create the order to send a payment request
                 let orderID = await angelleyeOrder.createOrder({
                     angelleye_ppcp_button_selector: containerSelector,
@@ -209,7 +225,7 @@ class ApplePayCheckoutButton {
         };
 
         session.oncancel  = (event) => {
-            console.log("Apple Pay Cancelled !!")
+            console.log("Apple Pay Cancelled !!", event)
             angelleyeOrder.hideProcessingSpinner();
         }
 

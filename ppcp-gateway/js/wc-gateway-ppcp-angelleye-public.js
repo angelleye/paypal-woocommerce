@@ -1,3 +1,4 @@
+let queuedEvents = {};
 function initSmartButtons() {
 	console.log('initSmartButtons');
 	let $ = jQuery;
@@ -75,16 +76,21 @@ function initSmartButtons() {
 	angelleyeOrder.hooks.onPaymentMethodChange();
 	angelleyeOrder.hooks.onCartValueUpdate();
 
+	// handle the scenario where the cart updated or checkout_updated hook is already triggered before above hooks are bound
+	angelleyeOrder.triggerPendingEvents();
+
 	$(document.body).on('removed_coupon_in_checkout', function () {
 		window.location.href = window.location.href;
 	});
 }
 (function () {
 	'use strict';
-	angelleyeLoadPayPalScript({url: angelleye_ppcp_manager.paypal_sdk_url,
-		script_attributes: {
-			'data-namespace': 'angelleye_paypal_sdk'
-		}}, function() {
+	// queue the woocommerce hook events immediately to trigger those later in case sdk load takes time
+	angelleyeOrder.hooks.handleRaceConditionOnWooHooks();
+	angelleyeLoadPayPalScript({
+		url: angelleye_ppcp_manager.paypal_sdk_url,
+		script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
+	}, function() {
 		if (angelleyeOrder.isApplePayEnabled()) {
 			angelleyeLoadPayPalScript({
 				url: angelleye_ppcp_manager.apple_sdk_url
