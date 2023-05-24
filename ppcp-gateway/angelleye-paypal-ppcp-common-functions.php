@@ -644,6 +644,7 @@ if (!function_exists('angelleye_ppcp_get_payment_method_title')) {
             'venmo' => __('Venmo', 'paypal-for-woocommerce'),
             'paylater' => __('PayPal Pay Later', 'paypal-for-woocommerce'),
             'paypal' => __('PayPal Checkout', 'paypal-for-woocommerce'),
+            'apple_pay' => __('Apple Pay', 'paypal-for-woocommerce'),
         );
         if (!empty($payment_name)) {
             if (isset($list_payment_method[$payment_name])) {
