@@ -922,13 +922,15 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
     function angelleye_ppcp_add_used_payment_method_name_to_subscription($order_id) {
         $wc_pre_30 = version_compare(WC_VERSION, '3.0.0', '<');
         try {
-            $subscriptions = wcs_get_subscriptions_for_order($order_id);
-            if (!empty($subscriptions)) {
-                foreach ($subscriptions as $subscription) {
-                    $subscription_id = $wc_pre_30 ? $subscription->id : $subscription->get_id();
-                    $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
-                    if (!empty($angelleye_ppcp_used_payment_method)) {
-                        update_post_meta($subscription_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+            if (function_exists('wcs_get_subscriptions_for_order')) {
+                $subscriptions = wcs_get_subscriptions_for_order($order_id);
+                if (!empty($subscriptions)) {
+                    foreach ($subscriptions as $subscription) {
+                        $subscription_id = $wc_pre_30 ? $subscription->id : $subscription->get_id();
+                        $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+                        if (!empty($angelleye_ppcp_used_payment_method)) {
+                            update_post_meta($subscription_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                        }
                     }
                 }
             }
@@ -941,4 +943,3 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
 
 
 
-    
