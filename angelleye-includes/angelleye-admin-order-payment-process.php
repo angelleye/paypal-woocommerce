@@ -10,6 +10,7 @@ class AngellEYE_Admin_Order_Payment_Process {
     public $gateway_calculation;
     public $gateway_settings;
     public $confirm_order_id;
+    public $payment_request;
 
     public function __construct() {
         if (is_admin() && !defined('DOING_AJAX')) {
@@ -34,9 +35,10 @@ class AngellEYE_Admin_Order_Payment_Process {
             }
             label[for="angelleye_admin_order_reference_order-hide"] {
                 display: none;
-             }
+            }
         </style>
         <?php
+
     }
 
     public function angelleye_show_reference_order_metabox() {
@@ -47,9 +49,10 @@ class AngellEYE_Admin_Order_Payment_Process {
             }
             label[for="angelleye_admin_order_reference_order-hide"] {
                 display: inline;
-             }
+            }
         </style>
         <?php
+
     }
 
     public function angelleye_hide_order_payment_metabox() {
@@ -60,9 +63,10 @@ class AngellEYE_Admin_Order_Payment_Process {
             }
             label[for="angelleye_admin_order_payment_process-hide"] {
                 display: none;
-             }
+            }
         </style>
         <?php
+
     }
 
     public function angelleye_show_order_payment_metabox() {
@@ -73,9 +77,10 @@ class AngellEYE_Admin_Order_Payment_Process {
             }
             label[for="angelleye_admin_order_payment_process-hide"] {
                 display: inline;
-             }
+            }
         </style>
         <?php
+
     }
 
     public function admin_order_reference_order($post) {
@@ -164,8 +169,8 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function angelleye_admin_create_reference_order_action($order) {
-        $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
-        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow'))) {
+        $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
+        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc'))) {
             $this->angelleye_admin_create_new_order($order);
         }
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
@@ -173,7 +178,7 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_admin_order_process_payment_action($order) {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         switch ($this->payment_method) {
             case 'paypal_express': {
                     $this->angelleye_ec_pp_pf_reference_transaction($order);
@@ -185,6 +190,14 @@ class AngellEYE_Admin_Order_Payment_Process {
                 break;
             case 'paypal_pro_payflow': {
                     $this->angelleye_paypal_pro_payflow_reference_transaction($order);
+                }
+                break;
+            case ($this->payment_method == "angelleye_ppcp" || $this->payment_method == "angelleye_ppcp_cc"): {
+                    if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
+                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
+                    }
+                    $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
+                    $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
                 }
                 break;
         }
@@ -200,6 +213,14 @@ class AngellEYE_Admin_Order_Payment_Process {
                 $paypal_pro_payflow = new WC_Gateway_PayPal_Pro_PayFlow_AngellEYE();
                 $paypal_pro_payflow->process_subscription_payment($order, $amount = '', $token_id);
             }
+        }
+    }
+
+    public function angelleye_ppcp_capture_payment_using_vault($order) {
+        try {
+            
+        } catch (Exception $ex) {
+            
         }
     }
 
@@ -266,13 +287,13 @@ class AngellEYE_Admin_Order_Payment_Process {
         $new_order_id = version_compare(WC_VERSION, '3.0', '<') ? $new_order->id : $new_order->get_id();
         AngellEYE_Utility::angelleye_set_address($new_order_id, $shipping_details, 'shipping');
         AngellEYE_Utility::angelleye_set_address($new_order_id, $billing_details, 'billing');
-        $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         if ($old_wc) {
             update_post_meta($new_order_id, '_payment_method', $this->payment_method);
         } else {
             $new_order->set_payment_method($this->payment_method);
         }
-        $payment_method_title = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method_title : $order->get_payment_method_title();
+        $payment_method_title = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method_title : $order->get_payment_method_title();
         update_post_meta($new_order_id, '_payment_method_title', $payment_method_title);
         update_post_meta($new_order_id, '_created_via', 'create_new_reference_order');
         $token_id = $this->get_usable_reference_transaction($order);
@@ -313,13 +334,13 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function angelleye_is_order_payment_method_selected($order) {
-        $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         return ($this->payment_method != '') ? true : false;
     }
 
     public function angelleye_is_admin_order_payment_method_available($order) {
-        $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
-        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow'))) {
+        $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
+        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc'))) {
             return true;
         } else {
             return false;
@@ -380,15 +401,15 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function get_usable_reference_transaction($order) {
-        $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         $user_id = $order->get_user_id();
-        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow'))) {
+        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc'))) {
             return $this->angelleye_get_payment_token($user_id, $order);
         }
     }
 
     public function angelleye_get_payment_token($user_id, $order) {
-        $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         if (in_array($this->payment_method, array('paypal_pro', 'paypal_pro_payflow'))) {
             $order_transaction_ids = $this->angelleye_get_transaction_id_by_order_id($order);
             if (!empty($order_transaction_ids)) {
@@ -396,18 +417,27 @@ class AngellEYE_Admin_Order_Payment_Process {
             }
             return $this->angelleye_get_customer_or_order_tokens($user_id, $order);
         } elseif ($this->payment_method == 'paypal_express') {
-            $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+            $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
             $customer_billing_agreement_id = get_user_meta($user_id, 'baid', true);
             if (!empty($customer_billing_agreement_id)) {
                 return $customer_billing_agreement_id;
             }
             return $this->angelleye_get_customer_or_order_tokens($user_id, $order);
-        } 
+        } elseif ($this->payment_method === 'angelleye_ppcp' || $this->payment_method === 'angelleye_ppcp_cc') {
+            if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
+            }
+            $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
+            $payment_token = $this->payment_request->angelleye_ppcp_get_all_payment_tokens();
+            if (!empty($payment_token)) {
+                return $payment_token;
+            }
+        }
     }
 
     public function angelleye_get_customer_or_order_tokens($user_id, $order) {
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         $order_tokens = WC_Payment_Tokens::get_order_tokens($order_id);
         if (!empty($order_tokens)) {
             return $this->angelleye_get_payment_token_list($order_tokens);
@@ -424,10 +454,9 @@ class AngellEYE_Admin_Order_Payment_Process {
             return $token->get_token();
         }
     }
-    
+
     public function angelleye_get_created_via($order) {
         return version_compare(WC_VERSION, '3.0', '<') ? $order->created_via : $order->get_created_via();
-        
     }
 
     public function angelleye_is_order_created_by_admin($order) {
@@ -443,7 +472,7 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function is_display_admin_order_payment_process_box($order) {
-        $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         if ($order->get_status() == 'pending' && $this->angelleye_get_created_via($order) == '' && $order->get_total() > 0 && $this->payment_method != '' && $order->get_user_id() != '0') {
             return true;
         } else {
@@ -495,7 +524,7 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function angelleye_load_payment_method_setting($order) {
-        $this->payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         if (WC()->payment_gateways()) {
             $payment_gateways = WC()->payment_gateways->payment_gateways();
             if (isset($payment_gateways[$this->payment_method])) {
@@ -604,17 +633,17 @@ class AngellEYE_Admin_Order_Payment_Process {
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
         $this->send_items = 'yes' === $this->gateway->get_option('send_items', 'yes');
-        if( $this->send_items ) {
+        if ($this->send_items) {
             $this->order_param = $this->gateway_calculation->order_calculation($this->confirm_order_id);
         } else {
             $this->order_param = array('is_calculation_mismatch' => true);
         }
-        if( $this->order_param['is_calculation_mismatch'] == false ) {
+        if ($this->order_param['is_calculation_mismatch'] == false) {
             $Payment['order_items'] = $this->order_param['order_items'];
             $PaymentDetails['taxamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['taxamt'], $order);
             $PaymentDetails['shippingamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['shippingamt'], $order);
             $PaymentDetails['itemamt'] = AngellEYE_Gateway_Paypal::number_format($this->order_param['itemamt'], $order);
-            if( $order->get_total() != $PaymentDetails['shippingamt'] ) {
+            if ($order->get_total() != $PaymentDetails['shippingamt']) {
                 $PaymentDetails['shippingamt'] = $PaymentDetails['shippingamt'];
             } else {
                 $PaymentDetails['shippingamt'] = 0.00;
@@ -630,7 +659,8 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-calculations-angelleye.php' );
         }
-        $subtotal_mismatch_behavior =  ( isset($this->gateway_settings['subtotal_mismatch_behavior']) && ( $this->gateway_settings['subtotal_mismatch_behavior'] == 'drop') ) ? 'drop' : 'add';
+        $subtotal_mismatch_behavior = ( isset($this->gateway_settings['subtotal_mismatch_behavior']) && ( $this->gateway_settings['subtotal_mismatch_behavior'] == 'drop') ) ? 'drop' : 'add';
         $this->gateway_calculation = new WC_Gateway_Calculation_AngellEYE(null, $subtotal_mismatch_behavior);
     }
+
 }

@@ -3748,9 +3748,11 @@ class AngellEYE_PayPal_PPCP_Payment {
             $api_response = $this->api_request->request($payment_tokens_url, $args, 'list_all_payment_tokens');
             if (!empty($api_response['customer']['id']) && isset($api_response['payment_tokens'])) {
                 return $api_response['payment_tokens'];
+            } else {
+                return array();
             }
         } catch (Exception $ex) {
-            
+            return array();
         }
     }
 
