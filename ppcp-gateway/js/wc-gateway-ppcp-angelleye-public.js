@@ -419,7 +419,8 @@ function initSmartButtons() {
             }
         }, 300);
     }
-    $(document.body).on('updated_cart_totals updated_checkout payment_method_selected', function () {
+    $(document.body).on('updated_cart_totals updated_checkout payment_method_selected', function (event) {
+        eventQueue.dequeueEvent(event.type);
         hide_show_place_order_button();
         setTimeout(function () {
             smart_button_render();
@@ -447,11 +448,45 @@ function initSmartButtons() {
     function is_angelleye_ppcp_selected() {
         return $('#payment_method_angelleye_ppcp').is(':checked');
     }
+    // handle the scenario where the cart updated or checkout_updated hook is already triggered before above hooks are bound
+    eventQueue.triggerPendingEvents();
 }
+let queuedEvents = {};
+const eventQueue = {
+    dequeueEvent: (eventType) => {
+        if (eventType in queuedEvents) {
+            delete queuedEvents[eventType];
+        }
+    },
+    isPendingEventTriggering: false,
+    triggerPendingEvents: () => {
+        eventQueue.isPendingEventTriggering = true;
+        console.log('triggering pending events', queuedEvents);
+        for (let event in queuedEvents) {
+            if (queuedEvents[event].data) {
+                jQuery(document.body).trigger(event, [queuedEvents[event].data]);
+            } else {
+                jQuery(document.body).trigger(event);
+            }
+        }
+    },
+    addEventsForCallback: (eventType, event, data) => {
+        queuedEvents[eventType] = {event, data};
+    },
+    handleRaceConditionOnWooHooks: () => {
+        jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function (event, data) {
+            if (!eventQueue.isPendingEventTriggering) {
+                eventQueue.addEventsForCallback(event.type, event, data);
+            }
+        });
+    }
+};
+
 (function () {
     'use strict';
-    angelleyeLoadPayPalScript({url: angelleye_ppcp_manager.paypal_sdk_url,
-        script_attributes: {
-            'data-namespace': 'angelleye_paypal_sdk'
-        }}, initSmartButtons)
+    eventQueue.handleRaceConditionOnWooHooks();
+    angelleyeLoadPayPalScript({
+        url: angelleye_ppcp_manager.paypal_sdk_url,
+        script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
+    }, initSmartButtons);
 })(jQuery);
