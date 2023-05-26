@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.2.1
-Stable tag: 4.0.14
+Tested up to: 6.2.2
+Stable tag: 4.0.15
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.0.15 - 05.26.2023 =
+* Feature - Adds PPCP - Reference Transaction Orders. ([PFW-1415](https://github.com/angelleye/paypal-woocommerce/pull/1799))
+* Feature - Adds PPCP - Add transaction url. ([PFW-1431](https://github.com/angelleye/paypal-woocommerce/pull/1818))
+* Tweak - Improvement with paypal js sdk loading time. ([PFW-1291](https://github.com/angelleye/paypal-woocommerce/pull/1821))
+* Fix - PHP notice. ([PFW-1453](https://github.com/angelleye/paypal-woocommerce/pull/1824))
 
 = 4.0.14 - 05.23.2023 =
 * Fix - Resolves PPCP Advanced CC Hidden in checkout page. ([PFW-1447](https://github.com/angelleye/paypal-woocommerce/pull/1819))
