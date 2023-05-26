@@ -732,7 +732,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 // Removed direct JS SDK Load to speed up the initial page load performance
                 // wp_register_script('angelleye-paypal-checkout-sdk', add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'), array(), null, true);
                 wp_register_script('angelleye-paypal-checkout-sdk', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-script-loader.js', array('jquery'), VERSION_PFW, true);
-                wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout'.($this->minified_version ? 'min-v2.js' : '_v2.js'), array('angelleye-paypal-checkout-sdk'), VERSION_PFW, true);
+                wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout'.($this->minified_version ? '.min-v2.js' : '_v2.js'), array('angelleye-paypal-checkout-sdk'), VERSION_PFW, true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
                     'paypal_sdk_url' => add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'),
                     'environment' => ( $this->testmode == true) ? 'sandbox' : 'production',
