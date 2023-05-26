@@ -81,7 +81,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->secret_id = $this->live_secret_id;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -208,7 +208,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 exit();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -232,7 +232,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -262,7 +262,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->angelleye_ppcp_cc_form();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -304,7 +304,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 echo '<fieldset>' . $cvc_field . '</fieldset>';
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -340,7 +340,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         try {
             return $order && $order->get_transaction_id();
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -354,7 +354,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
             return $bool;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -373,7 +373,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 return parent::get_title();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -382,7 +382,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $posted_card = $this->get_posted_card();
             return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens_free_signup_with_free_trial($posted_card, $order_id);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -391,7 +391,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -412,7 +412,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens_sub_change_payment($posted_card, $order_id);
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -431,7 +431,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -452,7 +452,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                         'exp_year' => $card_exp_year,
             );
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -461,7 +461,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $posted_card = $this->get_posted_card();
             return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens($posted_card);
         } catch (Exception $ex) {
-            
+
         }
     }
 

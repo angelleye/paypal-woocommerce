@@ -28,6 +28,9 @@ $saved_methods = $vault_sync->angelleye_ppcp_wc_get_customer_saved_methods_list(
 $has_methods = (bool) $saved_methods;
 $types = wc_get_account_payment_methods_types();
 
+$ccEndingText = function ($method) {
+    return sprintf(esc_html__('%1$s ending in %2$s', 'woocommerce'), esc_html(wc_get_credit_card_type_label($method['method']['brand'])), esc_html($method['method']['last4']));
+};
 do_action('woocommerce_before_account_payment_methods', $has_methods);
 ?>
 
@@ -52,21 +55,17 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                             } elseif ('method' === $column_id) {
                                 if (!empty($method['method']['last4'])) {
                                     if ($method['method']['gateway'] === 'angelleye_ppcp') {
-                                        if ($method['_angelleye_ppcp_used_payment_method'] === 'paypal') {
-                                            $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/paypal.png';
+                                        $paymentMethod = $method['_angelleye_ppcp_used_payment_method'];
+                                        // FIXME Check if there are any other payment methods in PPCP which will fall to this as we don't have fallback logic here
+                                        if (in_array($paymentMethod, ['apple_pay', 'paypal', 'venmo'])) {
+                                            $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/' . $paymentMethod . '.png';
                                             ?>
-                                            <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='PayPal'><?php
-                                            echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
-                                        } elseif ($method['_angelleye_ppcp_used_payment_method'] === 'venmo') {
-                                            $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/venmo.png';
-                                            ?>
-                                            <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='Venmo'><?php
-                                            echo '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
+                                            <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='<?php echo ucwords(str_replace('_', '', $paymentMethod)) ?>'><?php
+                                            echo $paymentMethod == 'apple_pay' ? $ccEndingText($method) : '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
                                         }
                                     } elseif ($method['method']['gateway'] === 'angelleye_ppcp_cc') {
                                         $brand = strtolower($method['method']['brand']);
-                                        $brand = str_replace('-', '', $brand);
-                                        $brand = str_replace('_', '', $brand);
+                                        $brand = str_replace(['-', '_'], '', $brand);
 
                                         $icon_url = array(
                                             'visa' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/visa.png',
@@ -79,27 +78,20 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                                             'mastercard' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/mastercard.png'
                                         );
                                         if (isset($icon_url[$brand])) {
-                                            ?>
-                                            <img class='ppcp_payment_method_icon' src='<?php echo $icon_url[$brand]; ?>' alt='Credit card'><?php
-                                            echo sprintf(esc_html__('%1$s ending in %2$s', 'woocommerce'), esc_html(wc_get_credit_card_type_label($method['method']['brand'])), esc_html($method['method']['last4']));
-                                        } else {
-                                            echo sprintf(esc_html__('%1$s ending in %2$s', 'woocommerce'), esc_html(wc_get_credit_card_type_label($method['method']['brand'])), esc_html($method['method']['last4']));
+                                            echo sprintf('<img class="ppcp_payment_method_icon" src="%s" alt="Credit Card" />', $icon_url[$brand]);
                                         }
+                                        echo $ccEndingText($method);
                                     } else {
-                                        echo sprintf(esc_html__('%1$s ending in %2$s', 'woocommerce'), esc_html(wc_get_credit_card_type_label($method['method']['brand'])), esc_html($method['method']['last4']));
+                                        echo $ccEndingText($method);
                                     }
                                 } else {
                                     echo esc_html(wc_get_credit_card_type_label($method['method']['brand']));
                                 }
                             } elseif ('expires' === $column_id) {
-                                if ($method['method']['gateway'] !== 'angelleye_ppcp') {
-                                    echo esc_html($method['expires']);
-                                } else {
-                                    echo 'N/A';
-                                }
+                                echo $method['method']['gateway'] !== 'angelleye_ppcp' ? esc_html($method['expires']) : 'N/A';
                             } elseif ('actions' === $column_id) {
                                 foreach ($method['actions'] as $key => $action) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-                                    echo '<a href="' . esc_url($action['url']) . '" class="button ' . sanitize_html_class($key) . '">' . esc_html($action['name']) . '</a>&nbsp;';
+                                    echo sprintf('<a href="%s" class="button %s">%s</a>', esc_url($action['url']), sanitize_html_class($key), esc_html($action['name']));
                                 }
                             }
                             ?>
