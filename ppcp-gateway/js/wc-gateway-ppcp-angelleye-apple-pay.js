@@ -47,12 +47,20 @@ class ApplePayCheckoutButton {
             this.initApplePayConfig().then(() => {
                 if (!ApplePayCheckoutButton.applePayConfig.isEligible) {
                     // throw new Error('Apple Pay is not eligible.');
+                    this.removeApplePayPaymentMethod();
                     return;
                 }
                 this.renderButton(containerSelector);
             });
         } else {
             console.log('apple pay not supported');
+            this.removeApplePayPaymentMethod();
+        }
+    }
+
+    removeApplePayPaymentMethod() {
+        if (angelleyeOrder.isCheckoutPage()) {
+            jQuery('.payment_method_angelleye_ppcp_apple_pay').hide();
         }
     }
 
@@ -60,18 +68,46 @@ class ApplePayCheckoutButton {
         this.containerSelector = containerSelector;
         this.initProductCartPage();
         let container = jQuery(containerSelector + '_apple_pay');
-        console.log('rendering button', container);
-        let applePayBtn = jQuery('<button type="button" id="apple-pay-btn" class="apple-pay-button apple-pay-button-black">Apple Pay</button>');
+        container.html('');
+        console.log('rendering apple_pay button', container);
+        // let applePayBtn = jQuery('<button type="button" id="apple-pay-btn" class="apple-pay-button apple-pay-button-black">Apple Pay</button>');
+        let applePayContainer = jQuery('<div class="apple-pay-container"></div>');
+        let applePayBtn = jQuery('<apple-pay-button id="btn-appl" buttonstyle="black" type="buy" locale="en">');
         applePayBtn.on('click', {thisObject: this}, this.handleClickEvent);
-        let seperatorApplePay = jQuery('<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; OR &mdash;</div><br>');
-        container.html(seperatorApplePay);
-        container.append(applePayBtn);
+        applePayContainer.append(applePayBtn);
+
+        if (!angelleyeOrder.isCheckoutPage()) {
+            let separatorApplePay = jQuery('<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; OR &mdash;</div><br>');
+            container.html(separatorApplePay);
+        }
+        container.append(applePayContainer);
     }
 
     initProductCartPage() {
         if (angelleyeOrder.isProductPage() || angelleyeOrder.isCartPage()) {
             window.angelleye_cart_totals = angelleye_ppcp_manager.product_cart_details;
         }
+    }
+
+    addPaymentMethodSaveParams () {
+        let isNewPaymentMethodSelected = jQuery('input#wc-angelleye_ppcp_apple_pay-new-payment-method:checked').val();
+        if (isNewPaymentMethodSelected === 'true' || window.angelleye_cart_totals.isSubscriptionRequired) {
+            return {
+                recurringPaymentRequest: {
+                    paymentDescription: angelleye_ppcp_manager.paymentDescription,
+                    regularBilling: {
+                        label: "Recurring",
+                        amount: `${window.angelleye_cart_totals.totalAmount}`,
+                        paymentTiming: "recurring",
+                        recurringPaymentStartDate: new Date()
+                    },
+                    billingAgreement: angelleye_ppcp_manager.billingAgreement,
+                    managementURL: angelleye_ppcp_manager.managementURL,
+                    tokenNotificationURL: ApplePayCheckoutButton.applePayConfig.tokenNotificationURL
+                },
+            }
+        }
+        return {};
     }
 
     async handleClickEvent(event) {
@@ -84,6 +120,7 @@ class ApplePayCheckoutButton {
             shippingAddressRequired = ["postalAddress", "name", "email"];
         }
 
+        let subscriptionParams = this.addPaymentMethodSaveParams();
         let paymentRequest = {
             countryCode: ApplePayCheckoutButton.applePayConfig.countryCode,
             currencyCode: window.angelleye_cart_totals.currencyCode,
@@ -97,19 +134,7 @@ class ApplePayCheckoutButton {
                 type: "final",
             },
             lineItems: window.angelleye_cart_totals.lineItems,
-            // TODO Adjust this section to work based on Subscription product
-            recurringPaymentRequest: {
-                paymentDescription: "A description of the recurring payment to display to the user in the payment sheet.",
-                regularBilling: {
-                    label: "Recurring",
-                    amount: `${window.angelleye_cart_totals.totalAmount}`,
-                    paymentTiming: "recurring",
-                    recurringPaymentStartDate: new Date()
-                },
-                billingAgreement: "A localized billing agreement displayed to the user in the payment sheet prior to the payment authorization.",
-                managementURL: "https://merchant.com/billingagreement1234",
-                tokenNotificationURL: ApplePayCheckoutButton.applePayConfig.tokenNotificationURL
-            },
+            ...subscriptionParams
         };
         console.log('paymentRequest', paymentRequest);
 

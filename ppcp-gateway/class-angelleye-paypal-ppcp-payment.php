@@ -6,7 +6,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public $is_sandbox;
     protected static $_instance = null;
-    public $api_request;
+    public AngellEYE_PayPal_PPCP_Request $api_request;
     public $api_response;
     public $api_log;
     public $checkout_details;
@@ -2460,7 +2460,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         unset($request['application_context']);
                         break;
                     case 'apple_pay':
-                        $payment_method_name = 'venmo';
+                        $payment_method_name = 'apple_pay';
                         $attributes = array('vault' => array('store_in_vault' => 'ON_SUCCESS', 'usage_type' => 'MERCHANT', 'permit_multiple_payment_tokens' => true));
                         $request['payment_source'][$payment_method_name]['attributes'] = $attributes;
                         $request['payment_source'][$payment_method_name]['stored_credential'] = [
@@ -3818,13 +3818,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if ($paypal_payment_token['id'] === $payment_tokens_id) {
                         foreach ($paypal_payment_token['payment_source'] as $type_key => $payment_tokens_data) {
                             $body_request['payment_source'] = array($type_key => array('vault_id' => $payment_tokens_id));
-                            if ($type_key === 'card') {
-                                $body_request['payment_source'][$type_key]['stored_credential'] = array(
-                                    'payment_initiator' => 'MERCHANT',
-                                    'payment_type' => 'UNSCHEDULED',
-                                    'usage' => 'SUBSEQUENT'
-                                );
-                            }
+                            $this->applyStoredCredentialParameter($type_key, $body_request);
                             $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_payment_method_title($type_key);
                             update_post_meta($order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
                             update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', $type_key);
@@ -3838,13 +3832,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     foreach ($paypal_payment_token['payment_source'] as $type_key => $payment_tokens_data) {
                         update_post_meta($order_id, '_payment_tokens_id', $paypal_payment_token['id']);
                         $body_request['payment_source'] = array($type_key => array('vault_id' => $paypal_payment_token['id']));
-                        if ($type_key === 'card') {
-                            $body_request['payment_source'][$type_key]['stored_credential'] = array(
-                                'payment_initiator' => 'MERCHANT',
-                                'payment_type' => 'UNSCHEDULED',
-                                'usage' => 'SUBSEQUENT'
-                            );
-                        }
+                        $this->applyStoredCredentialParameter($type_key, $body_request);
                         $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_payment_method_title($type_key);
                         update_post_meta($order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
                         update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', $type_key);
@@ -3855,13 +3843,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (empty($all_payment_tokens) && !empty($payment_tokens_id)) {
                 $payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
                 $body_request['payment_source'] = array($payment_method => array('vault_id' => $payment_tokens_id));
-                if ($payment_method === 'card') {
-                    $body_request['payment_source'][$payment_method]['stored_credential'] = array(
-                        'payment_initiator' => 'MERCHANT',
-                        'payment_type' => 'UNSCHEDULED',
-                        'usage' => 'SUBSEQUENT'
-                    );
-                }
+                $this->applyStoredCredentialParameter($payment_method, $body_request);
             }
         } catch (Exception $ex) {
             return $body_request;
@@ -3869,6 +3851,30 @@ class AngellEYE_PayPal_PPCP_Payment {
         $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method);
         update_post_meta($order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
         return $body_request;
+    }
+
+    private function applyStoredCredentialParameter($paymentMethod, &$bodyRequest)
+    {
+        $storedCredentials = [];
+        switch ($paymentMethod) {
+            case 'card':
+                $storedCredentials = array(
+                    'payment_initiator' => 'MERCHANT',
+                    'payment_type' => 'UNSCHEDULED',
+                    'usage' => 'SUBSEQUENT'
+                );
+                break;
+            case 'apple_pay':
+                $storedCredentials = array(
+                    'payment_initiator' => 'MERCHANT',
+                    'payment_type' => 'RECURRING',
+                    'usage' => 'SUBSEQUENT'
+                );
+                break;
+        }
+        if (!empty($storedCredentials)) {
+            $bodyRequest['payment_source'][$paymentMethod]['stored_credential'] = $storedCredentials;
+        }
     }
 
     public function angelleye_ppcp_delete_payment_token($payment_token) {

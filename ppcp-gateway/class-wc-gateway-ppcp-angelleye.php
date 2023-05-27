@@ -1,23 +1,18 @@
 <?php
 
 class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
-
-    public $setting_obj;
+    use WC_Gateway_Base_AngellEYE;
     public $settings_fields;
-    public $api_log;
-    public $dcc_applies;
-    public $api_request;
-    public $seller_onboarding;
-    public AngellEYE_PayPal_PPCP_Payment $payment_request;
     public $advanced_card_payments;
     public $checkout_disable_smart_button;
     public $minified_version;
+    public bool $enable_tokenized_payments;
 
     public function __construct() {
         try {
             $this->id = 'angelleye_ppcp';
             $this->setup_properties();
-            $this->angelleye_ppcp_load_class();
+            $this->angelleye_ppcp_load_class(true);
             $this->init_form_fields();
             $this->init_settings();
             $this->angelleye_get_settings();
@@ -25,96 +20,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (angelleye_ppcp_has_active_session()) {
                 $this->order_button_text = apply_filters('angelleye_ppcp_order_review_page_place_order_button_text', __('Complete Order Payment', 'paypal-for-woocommerce'));
             }
-            $this->enable_tokenized_payments = 'yes' === $this->get_option('enable_tokenized_payments', 'no');
-            if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
-                $this->supports = array(
-                    'products',
-                    'refunds',
-                    'pay_button',
-                    'subscriptions',
-                    'subscription_cancellation',
-                    'subscription_reactivation',
-                    'subscription_suspension',
-                    'subscription_amount_changes',
-                    'subscription_payment_method_change', // Subs 1.n compatibility.
-                    'subscription_payment_method_change_customer',
-                    'subscription_payment_method_change_admin',
-                    'subscription_date_changes',
-                    'multiple_subscriptions',
-                    'add_payment_method'
-                );
-            } elseif ($this->enable_tokenized_payments) {
-                $this->supports = array(
-                    'products',
-                    'refunds',
-                    'pay_button',
-                    'subscriptions',
-                    'subscription_cancellation',
-                    'subscription_reactivation',
-                    'subscription_suspension',
-                    'subscription_amount_changes',
-                    'subscription_payment_method_change', // Subs 1.n compatibility.
-                    'subscription_payment_method_change_customer',
-                    'subscription_payment_method_change_admin',
-                    'subscription_date_changes',
-                    'multiple_subscriptions',
-                    'add_payment_method',
-                    'tokenization'
-                );
-            } elseif (isset($_GET['page']) && isset($_GET['tab']) && 'wc-settings' === $_GET['page'] && 'checkout' === $_GET['tab']) {
-                $this->supports = array(
-                    'products',
-                    'refunds',
-                    'pay_button',
-                    'subscriptions',
-                    'subscription_cancellation',
-                    'subscription_reactivation',
-                    'subscription_suspension',
-                    'subscription_amount_changes',
-                    'subscription_payment_method_change', // Subs 1.n compatibility.
-                    'subscription_payment_method_change_customer',
-                    'subscription_payment_method_change_admin',
-                    'subscription_date_changes',
-                    'multiple_subscriptions',
-                    'add_payment_method',
-                    'tokenization'
-                );
-            } else {
-                $this->supports = array(
-                    'products',
-                    'refunds',
-                    'pay_button'
-                );
-            }
-        } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
-        }
-    }
 
-    public function angelleye_ppcp_load_class() {
-        try {
-            if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
-                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
-            }
-            if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
-                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
-            }
-            if (!class_exists('AngellEYE_PayPal_PPCP_Request')) {
-                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
-            }
-            if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
-                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
-            }
-            if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
-                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
-            }
-            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
-            $this->setting_obj_fields = $this->setting_obj->angelleye_ppcp_setting_fields();
-            $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
-            $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
-            $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
-            $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
+            $this->setGatewaySupports();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -182,14 +89,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function is_available() {
-        if ($this->is_enabled == true) {
-            if ($this->is_credentials_set()) {
-                return true;
-            }
-            return false;
-        } else {
-            return false;
-        }
+        return $this->is_enabled == true && $this->is_credentials_set();
     }
 
     public function angelleye_defind_hooks() {
@@ -313,15 +213,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                         'woocommerce_paypal_supported_currencies', array('AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'TRY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP', 'RMB', 'RUB', 'INR')
                 ), true
         );
-    }
-
-    public function is_credentials_set() {
-
-        if (!empty($this->merchant_id) || (!empty($this->client_id) && !empty($this->secret_id))) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public function enqueue_scripts() {

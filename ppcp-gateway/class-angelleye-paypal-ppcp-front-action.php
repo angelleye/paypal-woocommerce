@@ -136,14 +136,12 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 wc_clear_notices();
                                 ob_start();
                                 wp_send_json_error(array('messages' => $error_messages));
-                                exit;
                             }
-                            exit();
                         } else {
                             $_GET['from'] = 'cart';
                             $this->payment_request->angelleye_ppcp_create_order_request();
-                            exit();
                         }
+                        exit();
                     } elseif (isset($_GET['from']) && 'product' === $_GET['from']) {
                         try {
                             if (!class_exists('AngellEYE_PayPal_PPCP_Product')) {

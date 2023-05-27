@@ -18,12 +18,19 @@ const angelleyeOrder = {
 	getSelectedPaymentMethod: () => {
 		return jQuery('input[name="payment_method"]:checked').val();
 	},
+	isApplePayPaymentMethodSelected: () => {
+		return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp_apple_pay';
+	},
 	isPpcpPaymentMethodSelected: () => {
 		return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp';
 	},
+	isAngelleyePpcpPaymentMethodSelected: () => {
+		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
+		return paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay';
+	},
 	isAngelleyePaymentMethodSelected: () => {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
-		return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp';
+		return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay';
 	},
 	isApplePayEnabled: () => {
 		return angelleye_ppcp_manager.apple_sdk_url !== "";
@@ -126,8 +133,8 @@ const angelleyeOrder = {
 		}).then(function (res) {
 			return res.json();
 		}).then(function (data) {
+			console.log('createOrderApiResponse', data);
 			if (typeof data.success !== 'undefined') {
-				isValidationErrorOccurred = true;
 				let messages = data.data.messages ? data.data.messages : data.data;
 				if ('string' !== typeof messages) {
 					messages = messages.map(function (message) {
@@ -209,20 +216,28 @@ const angelleyeOrder = {
 		return false;
 	},
 	showPpcpPaymentMethods: () => {
-		jQuery('#angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay').show();
+		if (angelleyeOrder.isApplePayPaymentMethodSelected()) {
+			jQuery('#angelleye_ppcp_checkout').hide();
+			jQuery('#angelleye_ppcp_checkout_apple_pay').show();
+		} else {
+			jQuery('#angelleye_ppcp_checkout_apple_pay').hide();
+			jQuery('#angelleye_ppcp_checkout').show();
+		}
 	},
 	hidePpcpPaymentMethods: () => {
 		jQuery('#angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay').hide();
 	},
 	hideShowPlaceOrderButton: () => {
-		let isPpcpSelected = angelleyeOrder.isPpcpPaymentMethodSelected();
-		if (isPpcpSelected === true) {
+		let selectedPaymentMethod = angelleyeOrder.getSelectedPaymentMethod();
+		console.log('hideShowPlaceOrderButton', selectedPaymentMethod)
+		let isAePpcpMethodSelected = angelleyeOrder.isAngelleyePpcpPaymentMethodSelected();
+		if (isAePpcpMethodSelected === true) {
 			jQuery('.wcf-pre-checkout-offer-action').val('');
 		}
 		if (angelleyeOrder.isHostedFieldEligible() === false) {
 			jQuery('.payment_method_angelleye_ppcp_cc').hide();
 		}
-		if (isPpcpSelected === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
+		if (isAePpcpMethodSelected === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
 			showHidePlaceOrderBtn();
 			angelleyeOrder.showPpcpPaymentMethods();
 		} else {
@@ -230,7 +245,18 @@ const angelleyeOrder = {
 			showHidePlaceOrderBtn();
 		}
 	},
-	setPaymentMethodSelector: (paymentMethod) => {
+	createHiddenInputField: ({fieldId, fieldName, fieldValue, fieldType, appendToSelector}) => {
+		if (jQuery('#' + fieldId).length > 0) {
+			jQuery('#' + fieldId).remove();
+		}
+		jQuery('<input>', {
+			type: typeof fieldType == 'undefined' ? 'hidden' : fieldType,
+			id: fieldId,
+			name: fieldName,
+			value: fieldValue
+		}).appendTo(appendToSelector)
+	},
+	getWooFormSelector: () => {
 		let payment_method_element_selector = '';
 		if (angelleyeOrder.isProductPage()) {
 			payment_method_element_selector = 'form.cart';
@@ -239,17 +265,20 @@ const angelleyeOrder = {
 		} else if (angelleyeOrder.isCheckoutPage()) {
 			payment_method_element_selector = angelleyeOrder.getCheckoutSelectorCss();
 		}
-		if (jQuery('#angelleye_ppcp_payment_method_title').length > 0) {
-			jQuery('#angelleye_ppcp_payment_method_title').remove();
-		}
-		jQuery('<input>', {
-			type: 'hidden',
-			id: 'angelleye_ppcp_payment_method_title',
-			name: 'angelleye_ppcp_payment_method_title',
-			value: paymentMethod
-		}).appendTo(payment_method_element_selector);
+		return payment_method_element_selector;
+	},
+	setPaymentMethodSelector: (paymentMethod) => {
+		let payment_method_element_selector = angelleyeOrder.getWooFormSelector();
+
+		angelleyeOrder.createHiddenInputField({
+			fieldId: 'angelleye_ppcp_payment_method_title',
+			fieldName: 'angelleye_ppcp_payment_method_title',
+			fieldValue: paymentMethod,
+			appendToSelector: payment_method_element_selector
+		});
 	},
 	renderSmartButton: () => {
+		console.log('render smart buttons');
 		jQuery.each(angelleye_ppcp_manager.button_selector, function (key, angelleye_ppcp_button_selector) {
 			if (!jQuery(angelleye_ppcp_button_selector).length || jQuery(angelleye_ppcp_button_selector).children().length) {
 				return;
@@ -484,20 +513,21 @@ const angelleyeOrder = {
 			console.log('error: ', JSON.stringify(err));
 		});
 	},
+	queuedEvents: {},
 	addEventsForCallback: (eventType, event, data) => {
-		queuedEvents[eventType] = {event, data};
+		angelleyeOrder.queuedEvents[eventType] = {event, data};
 	},
 	dequeueEvent: (eventType) => {
-		if (eventType in queuedEvents) {
-			delete queuedEvents[event.type];
+		if (eventType in angelleyeOrder.queuedEvents) {
+			delete angelleyeOrder.queuedEvents[eventType];
 		}
 	},
 	isPendingEventTriggering: false,
 	triggerPendingEvents: () => {
 		angelleyeOrder.isPendingEventTriggering = true;
-		for (let event in queuedEvents) {
-			if (queuedEvents[event].data) {
-				jQuery(document.body).trigger(event, [queuedEvents[event].data]);
+		for (let event in angelleyeOrder.queuedEvents) {
+			if (angelleyeOrder.queuedEvents[event].data) {
+				jQuery(document.body).trigger(event, [angelleyeOrder.queuedEvents[event].data]);
 			} else {
 				jQuery(document.body).trigger(event);
 			}

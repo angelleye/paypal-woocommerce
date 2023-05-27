@@ -1,4 +1,3 @@
-let queuedEvents = {};
 function initSmartButtons() {
 	console.log('initSmartButtons');
 	let $ = jQuery;

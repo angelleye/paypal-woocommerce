@@ -1359,6 +1359,27 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'is_apple_pay_approved' => $this->is_apple_pay_approved,
                     'custom_attributes' => $apple_pay_custom_attributes
                 ),
+                'apple_pay_payments_title' => array(
+                    'title' => __('Apple Pay Title', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
+                    'default' => __('Apple Pay', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'apple_pay_rec_payment_desc' => array(
+                    'title' => __('Apple Pay Billing Agreement Title', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('A description of the recurring payment that Apple Pay displays to the user in the payment sheet.', 'paypal-for-woocommerce'),
+                    'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'apple_pay_rec_billing_agreement_desc' => array(
+                    'title' => __('Apple Pay Billing Agreement Description', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('A localized billing agreement that the payment sheet displays to the user before the user authorizes the payment.', 'paypal-for-woocommerce'),
+                    'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
                     'type' => 'title',

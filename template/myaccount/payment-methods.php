@@ -60,7 +60,7 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                                         if (in_array($paymentMethod, ['apple_pay', 'paypal', 'venmo'])) {
                                             $image_path = PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/' . $paymentMethod . '.png';
                                             ?>
-                                            <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='<?php echo ucwords(str_replace('_', '', $paymentMethod)) ?>'><?php
+                                            <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='<?php echo ucwords(str_replace('_', ' ', $paymentMethod)) ?>'><?php
                                             echo $paymentMethod == 'apple_pay' ? $ccEndingText($method) : '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
                                         }
                                     } elseif ($method['method']['gateway'] === 'angelleye_ppcp_cc') {
