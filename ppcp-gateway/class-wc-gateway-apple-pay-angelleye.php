@@ -5,6 +5,10 @@ if (!defined('ABSPATH')) {
 
 class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     protected bool $enable_apple_pay;
+    /**
+     * @var false|mixed
+     */
+    private mixed $apple_pay_payments_description;
 
     public function __construct() {
         parent::__construct();
@@ -19,6 +23,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay'));
             $this->title = $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay');
             $this->enable_apple_pay = 'yes' === $this->setting_obj->get('enable_apple_pay', 'yes');
+            $this->apple_pay_payments_description = $this->setting_obj->get('apple_pay_payments_description', 'Complete your purchase by selecting your saved payment methods or using Apple Pay.');
         } catch (Exception $ex) {
 
         }
@@ -34,19 +39,19 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
                 $this->tokenization_script();
             }
             if (angelleye_ppcp_is_subs_change_payment() === true) {
+                $this->form();
                 if( count( $this->get_tokens() ) > 0 ) {
                     $this->saved_payment_methods();
                 }
-                $this->form();
             } elseif (is_checkout() || is_checkout_pay_page()) {
                 $orderTotal = angelleye_ppcp_get_order_total();
                 if ($orderTotal > 0) {
-                    if (count($this->get_tokens()) > 0) {
+                    $this->form();
+                    if (!isset($_GET['paypal_order_id']) && count($this->get_tokens()) > 0) {
                         $this->saved_payment_methods();
                     }
-                    $this->form();
                     angelleye_ppcp_add_css_js();
-                    if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments && $this->supports('tokenization')) {
+                    if (!isset($_GET['paypal_order_id']) && angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments && $this->supports('tokenization')) {
                         $this->save_payment_method_checkbox();
                     }
                     echo '<div id="payments-sdk__contingency-lightbox"></div>';
@@ -64,6 +69,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             ?>
             <fieldset id="wc-<?php echo esc_attr($this->id); ?>-form" class='wc-apple-pay-form wc-payment-form'>
                 <?php do_action('woocommerce_apple_pay_form_start', $this->id); ?>
+                <p><?php echo __($this->apple_pay_payments_description, 'paypal-for-woocommerce'); ?></p>
                 <?php do_action('woocommerce_apple_pay_form_start', $this->id); ?>
                 <div class="clear"></div>
             </fieldset>

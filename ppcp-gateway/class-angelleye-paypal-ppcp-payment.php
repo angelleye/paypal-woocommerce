@@ -133,7 +133,7 @@ class AngellEYE_PayPal_PPCP_Payment {
      */
     public function generate_order_prefix(): string
     {
-        return substr(sanitize_title(get_bloginfo('name')), 0, 3).'_';
+        return substr(str_replace('-', '', sanitize_title(get_bloginfo('name'))), 0, 3).'_';
     }
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {

@@ -352,8 +352,13 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
                 update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);
                 update_post_meta($woo_order_id, '_payment_tokens_id', $token->get_token());
+                // CHECKME Here the environment key spelling is wrong, check if we can fix this, though it will break previous shop orders or we run migration
+                angelleye_ppcp_update_post_meta($woo_order_id, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+
+                angelleye_ppcp_update_post_meta($woo_order_id, '_paymentaction', $this->paymentaction);
                 angelleye_ppcp_add_used_payment_method_name_to_subscription($woo_order_id);
                 $this->payment_request->save_payment_token($order, $token->get_token());
+                // TODO Check if we need to add support for authorize action or we can directly capture the payment done through saved payment methods
                 $is_success = $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($woo_order_id);
                 if ($is_success) {
                     WC()->cart->empty_cart();

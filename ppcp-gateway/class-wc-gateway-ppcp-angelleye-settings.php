@@ -1366,6 +1366,13 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => __('Apple Pay', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
+                'apple_pay_payments_description' => array(
+                    'title' => __('Apple Pay Payment Description', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This controls the description which the user sees when they select Apple Pay payment method during checkout.', 'paypal-for-woocommerce'),
+                    'default' => __('Accept payments using Apple Pay.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
                 'apple_pay_rec_payment_desc' => array(
                     'title' => __('Apple Pay Billing Agreement Title', 'paypal-for-woocommerce'),
                     'type' => 'text',
