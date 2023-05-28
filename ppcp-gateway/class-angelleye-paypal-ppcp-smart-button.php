@@ -1011,6 +1011,18 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_short_gateway($methods) {
         if (angelleye_ppcp_has_active_session() === true || isset($_GET['paypal_order_id'])) {
+            //If the user pays using apple_pay then only show that payment method on review page.
+            // when use pays using paypal then show paypal payment method
+            // TODO These gateway methods Should be refactored to make it work in a way
+            // so that we can add more gateways in future
+            $payment_method_used = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+            foreach ($methods as $key => $method) {
+                if ($payment_method_used == 'apple_pay' && $key !== 'angelleye_ppcp_apple_pay') {
+                    unset($methods[$key]);
+                } else if ($payment_method_used != 'apple_pay' && $key == 'angelleye_ppcp_apple_pay') {
+                    unset($methods[$key]);
+                }
+            }
             return $methods;
         }
         $new_method = array();

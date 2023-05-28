@@ -13,7 +13,8 @@ const angelleyeOrder = {
 	},
 	isOrderCompletePage: () => {
 		const url = new URL(window.location.href);
-		return url.searchParams.has('paypal_order_id') && url.searchParams.has('paypal_payer_id');
+		//  && url.searchParams.has('paypal_payer_id')
+		return url.searchParams.has('paypal_order_id');
 	},
 	getSelectedPaymentMethod: () => {
 		return jQuery('input[name="payment_method"]:checked').val();

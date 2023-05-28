@@ -126,6 +126,16 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
+    /**
+     * Sometimes we receive DUPLICATE_INVOICE_ID error from PayPal,
+     * so this function adds prefix based on site title
+     * @return string
+     */
+    public function generate_order_prefix(): string
+    {
+        return substr(sanitize_title(get_bloginfo('name')), 0, 3).'_';
+    }
+
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
         try {
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
@@ -136,7 +146,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $cart = $this->angelleye_ppcp_get_details_from_order($woo_order_id);
             }
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
-            $reference_id = wc_generate_order_key();
+            $reference_id = $this->generate_order_prefix() . wc_generate_order_key();
             angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $reference_id);
             $payment_method = wc_clean(!empty($_POST['angelleye_ppcp_payment_method_title']) ? $_POST['angelleye_ppcp_payment_method_title'] : '');
             if (!empty($payment_method)) {
