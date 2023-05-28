@@ -67,9 +67,9 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     public function form() {
         try {
             ?>
+            <p><?php echo __($this->apple_pay_payments_description, 'paypal-for-woocommerce'); ?></p>
             <fieldset id="wc-<?php echo esc_attr($this->id); ?>-form" class='wc-apple-pay-form wc-payment-form'>
                 <?php do_action('woocommerce_apple_pay_form_start', $this->id); ?>
-                <p><?php echo __($this->apple_pay_payments_description, 'paypal-for-woocommerce'); ?></p>
                 <?php do_action('woocommerce_apple_pay_form_start', $this->id); ?>
                 <div class="clear"></div>
             </fieldset>
