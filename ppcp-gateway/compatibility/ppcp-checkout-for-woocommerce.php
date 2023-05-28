@@ -195,10 +195,6 @@ class AngellEYE_PayPal_PPCP_Checkout_WooCommerce extends CompatibilityAbstract {
                                     display: none !important;
                                 }
 
-                                #place_order {
-                                    display: block !important;
-                                }
-
                                 #cfw-shipping-same-billing {
                                     display: none !important;
                                 }

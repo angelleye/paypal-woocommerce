@@ -233,7 +233,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     )
             );
         }
-        wp_enqueue_script('wc-gateway-ppcp-angelleye-settings-list', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings-list' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
+        if (isset($_GET['page']) && 'wc-settings' === $_GET['page'] && isset($_GET['tab']) && 'checkout' === $_GET['tab']) {
+            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings-list', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings-list' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
+        }
     }
 
     public function generate_angelleye_ppcp_text_html($field_key, $data) {
@@ -316,7 +318,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.                                                           ?> />
+                    <input class="input-text regular-input <?php echo esc_attr($data['class']); ?>" type="text" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>" placeholder="<?php echo esc_attr($data['placeholder']); ?>" <?php disabled($data['disabled'], true); ?> <?php echo $this->get_custom_attribute_html($data); ?> />
                     <button type="button" class="button-secondary <?php echo esc_attr($data['button_class']); ?>" data-tip="Copied!">Copy</button>
                     <?php echo $this->get_description_html($data); // WPCS: XSS ok.         ?>
                 </fieldset>
@@ -363,6 +365,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 if ($is_success) {
                     WC()->cart->empty_cart();
                     unset(WC()->session->angelleye_ppcp_session);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return array(
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order),
@@ -386,19 +391,29 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     if ($is_success) {
                         WC()->cart->empty_cart();
                         unset(WC()->session->angelleye_ppcp_session);
+                        if (ob_get_length()) {
+                            ob_end_clean();
+                        }
                         return array(
                             'result' => 'success',
                             'redirect' => $this->get_return_url($order),
                         );
                     } else {
                         unset(WC()->session->angelleye_ppcp_session);
+                        if (ob_get_length()) {
+                            ob_end_clean();
+                        }
                         return array(
                             'result' => 'failure',
                             'redirect' => wc_get_cart_url()
                         );
                     }
                 } elseif ($this->checkout_disable_smart_button === true) {
-                    return $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
+                    $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
+                    return $result;
                 }
             }
         } catch (Exception $ex) {
@@ -486,7 +501,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function angelleye_ppcp_admin_notices() {
         $is_saller_onboarding_done = false;
         $is_saller_onboarding_failed = false;
-        $onboarding_success_message = 'PayPal onboarding process successfully completed.';
+        $onboarding_success_message = __('PayPal onboarding process successfully completed.', 'paypal-for-woocommerce');
         if (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done')) {
             $is_saller_onboarding_done = true;
             delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done');
@@ -671,13 +686,13 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.         ?></label>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
                 </th>
                 <td class="forminp">
                     <fieldset>
                         <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
                         <label for="<?php echo esc_attr($field_key); ?>">
-                            <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
+                            <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); ?> /> <?php echo wp_kses_post($data['label']); ?>
                             <?php
                             if (isset($data['is_paypal_vault_enable']) && true === $data['is_paypal_vault_enable']) {
                                 ?>
@@ -846,7 +861,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function validate_checkbox_enable_paypal_vault_field($key, $value) {
-        return ! is_null( $value ) ? 'yes' : 'no';
+        return !is_null($value) ? 'yes' : 'no';
     }
 
     public function validate_checkbox_enable_paypal_apple_pay_field($key, $value) {

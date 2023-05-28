@@ -75,6 +75,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         try {
             remove_action('woocommerce_order_action_angelleye_ppcp_void', array($this, 'angelleye_ppcp_admin_void_action_handler'));
             remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
+            remove_action('woocommerce_order_status_cancelled', array($this, 'angelleye_ppcp_cancel_authorization'));
+            remove_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
             $this->payment_request->angelleye_ppcp_void_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
 
@@ -85,6 +87,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         try {
             remove_action('woocommerce_order_action_angelleye_ppcp_capture', array($this, 'angelleye_ppcp_admin_capture_action_handler'));
             remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
+            remove_action('woocommerce_order_status_processing', array($this, 'angelleye_ppcp_capture_payment'));
+            remove_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
             $this->payment_request->angelleye_ppcp_capture_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
 
@@ -94,6 +98,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public function angelleye_ppcp_admin_refund_action_handler($order, $order_data) {
         try {
             remove_action('woocommerce_order_action_angelleye_ppcp_refund', array($this, 'angelleye_ppcp_admin_refund_action_handler'));
+            remove_action('woocommerce_order_status_processing', array($this, 'angelleye_ppcp_capture_payment'));
+            remove_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
             remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
             $this->payment_request->angelleye_ppcp_refund_order_admin($order, $order_data);
         } catch (Exception $ex) {

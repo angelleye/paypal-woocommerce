@@ -138,6 +138,12 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
         try {
+            if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
+                $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
+                wc_add_notice($wc_notice);
+                wp_send_json_error($wc_notice);
+                exit();
+            }
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             if ($woo_order_id == null) {
@@ -1484,7 +1490,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                     $order->update_status('on-hold');
-                    if($this->is_auto_capture_auth) {
+                    if ($this->is_auto_capture_auth) {
                         $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                     }
                     return true;
@@ -1846,6 +1852,12 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_regular_create_order_request($woo_order_id = null) {
         try {
+            if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
+                $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
+                wc_add_notice($wc_notice);
+                wp_send_json_error($wc_notice);
+                exit();
+            }
             if ($woo_order_id == null) {
                 $cart = $this->angelleye_ppcp_get_details_from_cart();
             } else {
@@ -2306,20 +2318,18 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                     $order->add_order_note($response_code);
                 }
-                $currency_code = isset($this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
-                $value = isset($this->api_response['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['seller_receivable_breakdown']['paypal_fee']['value'] : '';
-                angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
-                angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
-                angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
                 $transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
                 $seller_protection = isset($this->api_response['seller_protection']['status']) ? $this->api_response['seller_protection']['status'] : '';
+                $this->api_response = $this->angelleye_ppcp_get_authorized_payment($authorization_id);
                 $payment_status = isset($this->api_response['status']) ? $this->api_response['status'] : '';
                 angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
                 $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $transaction_id));
                 $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-                if ($payment_status === 'COMPLETED') {
+                if ($payment_status === 'COMPLETED' || 'CAPTURED' === $payment_status) {
                     $order->payment_complete($transaction_id);
                     $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $this->title, ucfirst(strtolower($payment_status))));
+                } elseif ('PARTIALLY_CAPTURED' === $payment_status) {
+                    $order->update_status('wc-partial-payment');
                 } elseif ($payment_status === 'DECLINED') {
                     $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $this->title));
                     if (function_exists('wc_add_notice')) {
@@ -2330,8 +2340,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $payment_status_reason = isset($this->api_response['status_details']['reason']) ? $this->api_response['status_details']['reason'] : '';
                     $this->angelleye_ppcp_update_woo_order_status($order_id, $payment_status, $payment_status_reason);
                 }
-                update_post_meta($woo_order_id, '_transaction_id', $transaction_id);
-                angelleye_ppcp_update_post_meta($order, '_transaction_id', $transaction_id);
             } else {
                 $error_email_notification_param = array(
                     'request' => 'capture_authorized',
@@ -2773,7 +2781,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                         $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                         $order->update_status('on-hold');
-                        if($this->is_auto_capture_auth) {
+                        if ($this->is_auto_capture_auth) {
                             $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                         }
                         return true;
@@ -3794,9 +3802,11 @@ class AngellEYE_PayPal_PPCP_Payment {
             $api_response = $this->api_request->request($payment_tokens_url, $args, 'list_all_payment_tokens');
             if (!empty($api_response['customer']['id']) && isset($api_response['payment_tokens'])) {
                 return $api_response['payment_tokens'];
+            } else {
+                return array();
             }
         } catch (Exception $ex) {
-
+            return array();
         }
     }
 
