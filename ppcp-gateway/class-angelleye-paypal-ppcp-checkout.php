@@ -43,7 +43,7 @@ if (class_exists('WC_Checkout')) {
                     }
                     do_action('woocommerce_checkout_order_processed', $order_id, $posted_data, $order);
                     if (apply_filters('woocommerce_cart_needs_payment', $order->needs_payment(), WC()->cart)) {
-                        $this->process_order_payment($order_id, 'angelleye_ppcp');
+                        $this->process_order_payment($order_id, ($posted_data['payment_method'] ?? 'angelleye_ppcp'));
                     } else {
                         $this->process_order_without_payment($order_id);
                     }
@@ -105,7 +105,7 @@ if (class_exists('WC_Checkout')) {
             } catch (Exception $ex) {
                 return false;
             }
-            
+
         }
 
     }

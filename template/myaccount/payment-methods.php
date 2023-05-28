@@ -54,7 +54,7 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                                 do_action('woocommerce_account_payment_methods_column_' . $column_id, $method);
                             } elseif ('method' === $column_id) {
                                 if (!empty($method['method']['last4'])) {
-                                    if ($method['method']['gateway'] === 'angelleye_ppcp') {
+                                    if (in_array($method['method']['gateway'], ['angelleye_ppcp', 'angelleye_ppcp_apple_pay'])) {
                                         $paymentMethod = $method['_angelleye_ppcp_used_payment_method'];
                                         // FIXME Check if there are any other payment methods in PPCP which will fall to this as we don't have fallback logic here
                                         if (in_array($paymentMethod, ['apple_pay', 'paypal', 'venmo'])) {

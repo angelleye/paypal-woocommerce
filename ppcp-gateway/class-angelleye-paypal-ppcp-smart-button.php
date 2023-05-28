@@ -675,18 +675,27 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
     }
 
+    /**
+     * CHECKOUT_HOOK: When user initiates the checkout from product or cart page then on review page, we need to allow them to use
+     * only ppcp gateways
+     *
+     * @param $gateways
+     * @return mixed
+     */
     public function maybe_disable_other_gateways($gateways) {
         if (angelleye_ppcp_has_active_session() === false || (isset($_GET['from']) && 'checkout' === $_GET['from'])) {
             return $gateways;
         }
         foreach ($gateways as $id => $gateway) {
-            if ('angelleye_ppcp' !== $id) {
+            if ('angelleye_ppcp' !== $id && 'angelleye_ppcp_apple_pay' !== $id) {
                 unset($gateways[$id]);
             }
         }
         if (is_cart() || ( is_checkout() && !is_checkout_pay_page() )) {
-            if (isset($gateways['angelleye_ppcp']) && ( 0 >= WC()->cart->total )) {
+            // if cart total is less than zero remove both gateways as we don't support paying zero amount
+            if (WC()->cart->total <= 0 ) {
                 unset($gateways['angelleye_ppcp']);
+                unset($gateways['angelleye_ppcp_apple_pay']);
             }
         }
         return $gateways;
@@ -1102,7 +1111,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
         $order_data['terms'] = 1;
         $order_data['createaccount'] = 0;
-        $order_data['payment_method'] = 'angelleye_ppcp';
+
+        // Set the checkout order payment method based on the create order used payment method
+        $payment_method_used = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+        switch ($payment_method_used) {
+            case 'apple_pay':
+                $order_data['payment_method'] = 'angelleye_ppcp_apple_pay';
+                break;
+            default:
+                $order_data['payment_method'] = 'angelleye_ppcp';
+        }
         $order_data['ship_to_different_address'] = false;
         $order_data['order_comments'] = '';
         $order_data['shipping_method'] = '';

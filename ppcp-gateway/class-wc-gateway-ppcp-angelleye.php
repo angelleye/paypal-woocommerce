@@ -336,10 +336,18 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
             }
-            $is_success = false;
-            if (!empty($_POST['wc-angelleye_ppcp-payment-token']) && $_POST['wc-angelleye_ppcp-payment-token'] != 'new') {
+
+            // When a user chooses existing saved card then detect it and process the order payment using that.
+            $saved_tokens = ['wc-angelleye_ppcp_apple_pay-payment-token', 'wc-angelleye_ppcp-payment-token'];
+            $token_id = null;
+            foreach ($saved_tokens as $saved_token) {
+                if (!empty($_POST[$saved_token]) && $_POST[$saved_token] !== 'new') {
+                    $token_id = wc_clean($_POST[$saved_token]);
+                }
+            }
+
+            if (!empty($token_id)) {
                 $order = wc_get_order($woo_order_id);
-                $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
                 $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
                 update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);
@@ -385,8 +393,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                         );
                     }
                 } elseif ($this->checkout_disable_smart_button === true) {
-                    $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
-                    return $result;
+                    return $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
                 }
             }
         } catch (Exception $ex) {

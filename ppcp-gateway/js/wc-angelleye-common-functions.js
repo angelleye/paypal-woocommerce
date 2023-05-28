@@ -65,7 +65,7 @@ const angelleyeOrder = {
 			return data.orderID;
 		})
 	},
-	createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl}) => {
+	createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, callback}) => {
 		if (typeof apiUrl == 'undefined') {
 			apiUrl = angelleye_ppcp_manager.create_order_url;
 		}
@@ -131,9 +131,17 @@ const angelleyeOrder = {
 			},
 			body: formData
 		}).then(function (res) {
-			return res.json();
+			console.log('createOrder response', {res, apiUrl, redirected:res.redirected, url: res.url, status: res.status});
+			if (res.redirected) {
+				window.location.href = res.url;
+			} else {
+				return res.json();
+			}
 		}).then(function (data) {
-			console.log('createOrderApiResponse', data);
+			if (typeof callback === 'function') {
+				callback(data);
+				return;
+			}
 			if (typeof data.success !== 'undefined') {
 				let messages = data.data.messages ? data.data.messages : data.data;
 				if ('string' !== typeof messages) {

@@ -89,20 +89,20 @@ class ApplePayCheckoutButton {
         }
     }
 
-    addPaymentMethodSaveParams () {
+    static addPaymentMethodSaveParams () {
         let isNewPaymentMethodSelected = jQuery('input#wc-angelleye_ppcp_apple_pay-new-payment-method:checked').val();
         if (isNewPaymentMethodSelected === 'true' || window.angelleye_cart_totals.isSubscriptionRequired) {
             return {
                 recurringPaymentRequest: {
-                    paymentDescription: angelleye_ppcp_manager.paymentDescription,
+                    paymentDescription: angelleye_ppcp_manager.apple_pay_recurring_params.paymentDescription,
                     regularBilling: {
                         label: "Recurring",
                         amount: `${window.angelleye_cart_totals.totalAmount}`,
                         paymentTiming: "recurring",
                         recurringPaymentStartDate: new Date()
                     },
-                    billingAgreement: angelleye_ppcp_manager.billingAgreement,
-                    managementURL: angelleye_ppcp_manager.managementURL,
+                    billingAgreement: angelleye_ppcp_manager.apple_pay_recurring_params.billingAgreement,
+                    managementURL: angelleye_ppcp_manager.apple_pay_recurring_params.managementURL,
                     tokenNotificationURL: ApplePayCheckoutButton.applePayConfig.tokenNotificationURL
                 },
             }
@@ -115,12 +115,20 @@ class ApplePayCheckoutButton {
         angelleyeOrder.showProcessingSpinner();
         angelleyeOrder.setPaymentMethodSelector('apple_pay');
 
+        // check if the saved payment method selected
+        let isSavedPaymentMethodSelected = jQuery('input[name=wc-angelleye_ppcp_apple_pay-payment-token]:checked').val();
+        console.log('isSavedPaymentMethodSelected', isSavedPaymentMethodSelected)
+        if (isSavedPaymentMethodSelected !== 'new' && typeof isSavedPaymentMethodSelected !== 'undefined') {
+            await ApplePayCheckoutButton.handleTokenPayment(event);
+            return;
+        }
+
         let shippingAddressRequired = [];
         if (window.angelleye_cart_totals.shippingRequired) {
             shippingAddressRequired = ["postalAddress", "name", "email"];
         }
 
-        let subscriptionParams = this.addPaymentMethodSaveParams();
+        let subscriptionParams = ApplePayCheckoutButton.addPaymentMethodSaveParams();
         let paymentRequest = {
             countryCode: ApplePayCheckoutButton.applePayConfig.countryCode,
             currencyCode: window.angelleye_cart_totals.currencyCode,
@@ -255,5 +263,17 @@ class ApplePayCheckoutButton {
         }
 
         session.begin();
+    }
+
+    static async handleTokenPayment(event) {
+        let containerSelector = event.data.thisObject.containerSelector;
+        // create the order to send a payment request
+        angelleyeOrder.createOrder({
+            angelleye_ppcp_button_selector: containerSelector,
+            callback: () => {}
+        }).catch((error) => {
+            angelleyeOrder.hideProcessingSpinner();
+            angelleyeOrder.showError(error);
+        });
     }
 }

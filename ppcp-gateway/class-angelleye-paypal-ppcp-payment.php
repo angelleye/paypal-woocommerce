@@ -2462,6 +2462,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                     case 'apple_pay':
                         $payment_method_name = 'apple_pay';
                         $attributes = array('vault' => array('store_in_vault' => 'ON_SUCCESS', 'usage_type' => 'MERCHANT', 'permit_multiple_payment_tokens' => true));
+                        // If existing PayPal Customer ID is available then add it so that PayPal can add new payment method to same user account.
+                        $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
+                        if (!empty($paypal_generated_customer_id)) {
+                            $attributes['customer'] = ['id' => $paypal_generated_customer_id];
+                        }
                         $request['payment_source'][$payment_method_name]['attributes'] = $attributes;
                         $request['payment_source'][$payment_method_name]['stored_credential'] = [
                             "payment_initiator" => "CUSTOMER", "payment_type" => "RECURRING"

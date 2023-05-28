@@ -875,13 +875,21 @@ if (!function_exists('angelleye_ppcp_is_save_payment_method')) {
 
     function angelleye_ppcp_is_save_payment_method($enable_tokenized_payments) {
         $is_enable = false;
+        $new_payment_methods_to_check = [
+            'wc-angelleye_ppcp-new-payment-method',
+            'wc-angelleye_ppcp_cc-new-payment-method',
+            'wc-angelleye_ppcp_apple_pay-new-payment-method'
+        ];
         if (angelleye_ppcp_is_cart_subscription() && $enable_tokenized_payments === true) {
             $is_enable = true;
-        } elseif (isset($_POST['wc-angelleye_ppcp-new-payment-method']) && 'true' === $_POST['wc-angelleye_ppcp-new-payment-method']) {
-            $is_enable = true;
-        } elseif (isset($_POST['wc-angelleye_ppcp_cc-new-payment-method']) && 'true' === $_POST['wc-angelleye_ppcp_cc-new-payment-method']) {
-            $is_enable = true;
         }
+        foreach ($new_payment_methods_to_check as $item) {
+            if (isset($_POST[$item]) && 'true' === $_POST[$item]) {
+                $is_enable = true;
+                break;
+            }
+        }
+
         return apply_filters('angelleye_ppcp_is_save_payment_method', $is_enable);
     }
 
