@@ -126,17 +126,22 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    /**
-     * Sometimes we receive DUPLICATE_INVOICE_ID error from PayPal,
-     * so this function adds prefix based on site title
-     * @return string
-     */
-    public function generate_order_prefix(): string
-    {
-        return substr(str_replace('-', '', sanitize_title(get_bloginfo('name'))), 0, 3).'_';
-    }
-
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
+        // Handles the Duplicate_invoice_id error, usually this comes up when we already triggered order create
+        // api call for an order and initiate the order create again on button click
+        if (!empty($woo_order_id)) {
+            $order = wc_get_order($woo_order_id);
+            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id', null);
+
+            if (!empty($existing_paypal_order_id)) {
+                $this->angelleye_ppcp_update_order($order);
+                $return_response['currencyCode'] = $order->get_currency('');
+                $return_response['totalAmount'] = $order->get_total('');
+                $return_response['orderID'] = $existing_paypal_order_id;
+                wp_send_json($return_response, 200);
+                die;
+            }
+        }
         try {
             if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
                 $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
@@ -152,7 +157,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $cart = $this->angelleye_ppcp_get_details_from_order($woo_order_id);
             }
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
-            $reference_id = $this->generate_order_prefix() . wc_generate_order_key();
+            $reference_id = wc_generate_order_key();
             angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $reference_id);
             $payment_method = wc_clean(!empty($_POST['angelleye_ppcp_payment_method_title']) ? $_POST['angelleye_ppcp_payment_method_title'] : '');
             if (!empty($payment_method)) {
@@ -2502,11 +2507,16 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_capture_order_using_payment_method_token($order_id) {
         try {
+            $order = wc_get_order($order_id);
+            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id', null);
+            $duplicate_order_prefix = '';
+            if ($order->needs_payment() && !empty($existing_paypal_order_id)) {
+                $duplicate_order_prefix = '-'.date('ms').' -';
+            }
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
-            $order = wc_get_order($order_id);
             $reference_id = $order->get_order_key();
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $body_request = array(
@@ -2526,7 +2536,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     ),
                 ),
             );
-            $body_request['purchase_units'][0]['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
+            $body_request['purchase_units'][0]['invoice_id'] =  $this->invoice_prefix . $duplicate_order_prefix . str_replace("#", "", $order->get_order_number());
             $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
             $body_request['purchase_units'][0]['soft_descriptor'] = angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor);
             $body_request['purchase_units'][0]['payee']['merchant_id'] = $this->merchant_id;
