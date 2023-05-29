@@ -26,6 +26,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public $email_confirm_text_2;
     public $paypal_fee_structure;
     public $is_paypal_vault_approved = false;
+    public $subscription_support_enabled;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -48,6 +49,11 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 'ES' => array('paypal' => '3,00% + 05¢', 'acc' => '1,30% + 35¢'),
                 'default' => array('paypal' => '3.59% + 49¢', 'acc' => '2.69% + 49¢'),
             );
+            if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
+                $this->subscription_support_enabled = true;
+            } else {
+                $this->subscription_support_enabled = false;
+            }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -111,8 +117,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             $this->is_live_third_party_used = 'no';
             $this->is_live_first_party_used = 'no';
         }
-        $region = wc_get_base_location();
-        $this->ppcp_paypal_country = $region['country'];
+
+        $this->ppcp_paypal_country = $this->dcc_applies->country();
         if ($this->sandbox) {
             if ($this->is_sandbox_third_party_used === 'no' && $this->is_sandbox_first_party_used === 'no') {
                 $this->on_board_status = 'NOT_CONNECTED';
@@ -201,7 +207,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -218,7 +224,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -235,7 +241,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -257,13 +263,30 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     }
                 }
             }
-            if (count($active_classic_gateway_list) > 0) {
-                $this->migration_view($active_classic_gateway_list);
+            if(count($active_classic_gateway_list) > 0) {
+                if('US' === $this->ppcp_paypal_country) {
+                    $this->migration_view($active_classic_gateway_list);
+                } elseif('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled) {
+                    $this->view();
+                } elseif('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled === false) {
+                    $this->migration_view($active_classic_gateway_list);
+                } else {
+                    
+                }
             } else {
                 $this->view();
             }
+            if('US' === $this->ppcp_paypal_country && $this->subscription_support_enabled && count($active_classic_gateway_list) > 0) {
+                $this->migration_view($active_classic_gateway_list);
+            } elseif('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled) {
+                $this->view();
+            } elseif('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled === false && count($active_classic_gateway_list) > 0) {
+                $this->migration_view($active_classic_gateway_list);
+            } else {
+                
+            }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -279,13 +302,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             ");
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
     public function migration_view($active_classic_gateway_list) {
         try {
-
             wp_enqueue_style('ppcp_account_request_form_css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-admin-migration.css', null, time());
             $layout_type = '';
             if (isset($active_classic_gateway_list['paypal_express']) && (isset($active_classic_gateway_list['paypal_pro']) || isset($active_classic_gateway_list['paypal_pro_payflow']))) {
@@ -305,7 +327,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             } elseif (isset($active_classic_gateway_list['ppec_paypal'])) {
                 $layout_type = 'paypal_express';
             }
-            $footer_note = ' All of PayPal’s new features and functionality will be released on the PayPal Commerce Platform.  The Classic Gateways are no longer officially supported.  We have an agreement with PayPal to stop supporting the Classic gateways, and we need to get you updated by <strong>July 31, 2023 </strong>in order to avoid potential interruptions.  
+            $footer_note = ' All of PayPal’s new features and functionality will be released on the PayPal Commerce Platform.  The Classic Gateways are no longer officially supported.  We have an agreement with PayPal to stop supporting the Classic gateways, and we need to get you updated by <strong>July 31, 2023 </strong>in order to avoid potential interruptions.
             <br><br>If you would like help with this process you can <a target="_blank" href="https://calendar.app.google/kFcrJSmV8fW8iWny8">schedule a meeting with Drew Angell </a>where he will guide you and answer any questions or concerns you may have.';
             $products = urlencode(wp_json_encode(array_values($active_classic_gateway_list)));
             if (!empty($layout_type)) {
@@ -313,7 +335,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -518,7 +540,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -530,7 +552,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -566,7 +588,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 

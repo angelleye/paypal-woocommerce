@@ -270,7 +270,7 @@ class AngellEYE_PayPal_PPCP_DCC_Validate {
         }
     }
 
-    private function country() {
+    public function country() {
         try {
             $region = wc_get_base_location();
             $country = $region['country'];

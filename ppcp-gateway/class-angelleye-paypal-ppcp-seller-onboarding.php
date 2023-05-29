@@ -19,6 +19,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     public $ppcp_migration;
     public $angelleye_ppcp_migration_wizard_notice_key = 'angelleye_ppcp_migration_wizard_notice_key';
     public $angelleye_ppcp_migration_wizard_notice_data = array();
+    public $ppcp_paypal_country;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -40,6 +41,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             //add_action('wc_ajax_ppcp_login_seller', array($this, 'angelleye_ppcp_login_seller'));
             add_action('admin_init', array($this, 'angelleye_ppcp_listen_for_merchant_id'));
             add_action('wp_ajax_angelleye_ppcp_onboard_email_sendy_subscription', array($this, 'angelleye_ppcp_onboard_email_sendy_subscription'));
+            $this->ppcp_paypal_country = $this->dcc_applies->country();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -128,7 +130,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_generate_signup_link_for_migration($testmode, $products) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
-        if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
+        if ($this->ppcp_paypal_country === 'US') {
             $body = $this->ppcp_vault_data();
         } else {
             $body = $this->default_data();
