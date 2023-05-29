@@ -191,11 +191,21 @@ const angelleyeOrder = {
 		jQuery(checkoutSelector).find('.input-text, select, input:checkbox').trigger('validate').trigger('blur');
 		angelleyeOrder.scrollToWooCommerceNoticesSection();
 	},
-	showProcessingSpinner: () => {
-		jQuery('.woocommerce').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
+	showProcessingSpinner: (containerSelector) => {
+		if (typeof containerSelector === 'undefined') {
+			containerSelector = '.woocommerce';
+		}
+		if (jQuery(containerSelector).length) {
+			jQuery(containerSelector).block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
+		}
 	},
-	hideProcessingSpinner: () => {
-		jQuery('.woocommerce').unblock();
+	hideProcessingSpinner: (containerSelector) => {
+		if (typeof containerSelector === 'undefined') {
+			containerSelector = '.woocommerce';
+		}
+		if (jQuery(containerSelector).length) {
+			jQuery(containerSelector).unblock();
+		}
 	},
 	handleCreateOrderError: (error) => {
 		console.log(error);
@@ -557,6 +567,25 @@ const angelleyeOrder = {
 					}
 				}, 300);
 			});
+			if (angelleyeOrder.isCartPage()) {
+				jQuery(document.body).on('updated_cart_totals', async function (event) {
+					angelleyeOrder.dequeueEvent(event.type);
+					if (angelleyeOrder.isApplePayEnabled()) {
+						// block the apple pay button UI to make sure nobody can click it while its updating.
+						angelleyeOrder.showProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
+						// trigger an ajax call to update the total amount, in case there is no shipping required object
+						let response = await angelleyeOrder.shippingAddressUpdate({});
+						angelleyeOrder.hideProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
+						if (typeof response.totalAmount !== 'undefined') {
+							// successful response
+							window.angelleye_cart_totals = response;
+						} else {
+							// in case of unsuccessful response, refresh the page.
+							window.location.reload();
+						}
+					}
+				});
+			}
 		},
 		onCartValueUpdate: () => {
 			jQuery(document.body).on('updated_checkout', function (event, data) {
