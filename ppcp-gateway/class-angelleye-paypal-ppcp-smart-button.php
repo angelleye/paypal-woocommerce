@@ -1047,6 +1047,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $new_method [$key] = $method;
                 }
             }
+
+            if (!isset($new_method['angelleye_ppcp_cc']) && isset($angelleye_ppcp_cc) && !empty($angelleye_ppcp_cc)) {
+                $new_method['angelleye_ppcp_cc'] = $angelleye_ppcp_cc;
+            }
         }
         if (is_add_payment_method_page()) {
             unset($new_method['angelleye_ppcp_cc']);
