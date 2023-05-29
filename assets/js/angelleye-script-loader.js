@@ -1,6 +1,6 @@
-
+let loadedScripts = []
 function angelleyeLoadPayPalScript(config, onLoaded) {
-    if (typeof angelleye_paypal_sdk !== 'undefined') {
+    if (loadedScripts.indexOf(config.url) > -1) {
         onLoaded();
         return;
     }
@@ -9,9 +9,11 @@ function angelleyeLoadPayPalScript(config, onLoaded) {
     // delay the onload event to let the PayPal lib initialized in the env
     script.addEventListener('load', onLoaded);
     script.setAttribute('src', config.url);
-    Object.entries(config.script_attributes).forEach((keyValue) => {
-        script.setAttribute(keyValue[0], keyValue[1]);
-    });
+    if (config.script_attributes) {
+        Object.entries(config.script_attributes).forEach((keyValue) => {
+            script.setAttribute(keyValue[0], keyValue[1]);
+        });
+    }
 
     document.body.appendChild(script);
 }
