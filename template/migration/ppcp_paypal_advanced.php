@@ -55,14 +55,7 @@
                 </div>
             </div>
             <div class="pt-30">
-                <p><?php echo __('<strong>NOTE:</strong> All of
-                    PayPal’s new features and functionality will be released on the Complete
-                    Payments platform.&nbsp; The Classic Gateways are no longer officially
-                    supported.&nbsp; We have an agreement with PayPal to stop supporting the
-                    Classic gateways, and we need to get you updated by <strong>March 31,
-                        2023</strong>
-                    in order to avoid potential interruptions.', 'paypal-for-woocommerce'); ?>
-
+                <p><?php echo __('<strong>NOTE:</strong>' . $footer_note, 'paypal-for-woocommerce'); ?>
                 </p>
             </div>
         </div>
