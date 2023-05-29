@@ -59,7 +59,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
         $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->setting_obj->get('payee_preferred', 'no');
-        $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
+        $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP').'-'.strtoupper($this->generate_order_prefix());
         $this->soft_descriptor = $this->setting_obj->get('soft_descriptor', substr(get_bloginfo('name'), 0, 21));
         $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
         $this->checkout_disable_smart_button = 'yes' === $this->setting_obj->get('checkout_disable_smart_button', 'no');
@@ -124,6 +124,16 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
+    }
+
+    /**
+     * Sometimes we receive DUPLICATE_INVOICE_ID error from PayPal,
+     * so this function adds prefix based on site title
+     * @return string
+     */
+    public function generate_order_prefix(): string
+    {
+        return substr(str_replace('-', '', sanitize_title(get_bloginfo('name'))), 0, 3);
     }
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
@@ -2509,10 +2519,6 @@ class AngellEYE_PayPal_PPCP_Payment {
         try {
             $order = wc_get_order($order_id);
             $existing_paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id', null);
-            $duplicate_order_prefix = '';
-            if ($order->needs_payment() && !empty($existing_paypal_order_id)) {
-                $duplicate_order_prefix = '-'.date('ms').' -';
-            }
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
@@ -2536,7 +2542,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     ),
                 ),
             );
-            $body_request['purchase_units'][0]['invoice_id'] =  $this->invoice_prefix . $duplicate_order_prefix . str_replace("#", "", $order->get_order_number());
+            $body_request['purchase_units'][0]['invoice_id'] =  $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
             $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
             $body_request['purchase_units'][0]['soft_descriptor'] = angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor);
             $body_request['purchase_units'][0]['payee']['merchant_id'] = $this->merchant_id;
