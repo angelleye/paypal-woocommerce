@@ -307,10 +307,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $this->sdk_merchant_id = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
         if (!empty($this->sdk_merchant_id)) {
-            if (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) > 1) {
-                $smart_js_arg['merchant-id'] = '*';
+            if(is_string($smart_js_arg)) {
+                $smart_js_arg['merchant-id'] = implode(',', $this->sdk_merchant_id);
+            } elseif (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) === 1) {
+                $smart_js_arg['merchant-id'] = implode(',', $this->sdk_merchant_id);
             } else {
-                $smart_js_arg['merchant-id'] = $this->sdk_merchant_id;
+                $smart_js_arg['merchant-id'] = '*';
             }
         }
 
