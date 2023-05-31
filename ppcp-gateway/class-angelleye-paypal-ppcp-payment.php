@@ -177,13 +177,15 @@ class AngellEYE_PayPal_PPCP_Payment {
                     ),
                 ),
             );
+            $country_code = '';
+            $full_name = '';
             if ($woo_order_id != null) {
                 $order = wc_get_order($woo_order_id);
                 $country_code = $old_wc ? $order->billing_country : $order->get_billing_country('edit');
                 $full_name = $old_wc ? $order->billing_first_name . ' ' . $order->billing_last_name : $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
                 $body_request['purchase_units'][0]['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
-            } else {
+            } elseif (isset($cart['billing_address'])) {
                 $country_code = $cart['billing_address']['country'];
                 $full_name = $cart['billing_address']['first_name'] . ' ' . $cart['billing_address']['last_name'];
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
@@ -1005,7 +1007,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $payment_status_reason = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['status_details']['reason']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['status_details']['reason'] : '';
                             $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
                         }
-                        $order->add_order_note($response_code);
                     }
                     $currency_code = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
                     $value = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value'] : '';
@@ -1090,7 +1091,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'value' => $cart['order_tax'],
                 );
             }
-   
+
             $purchase_units = array(
                 'reference_id' => $reference_id,
                 'soft_descriptor' => angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor),
@@ -2309,7 +2310,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             return new WP_Error('error', $ex->getMessage());
         }
     }
-    
+
     public function angelleye_ppcp_get_paypal_order_details($paypal_order_id) {
         try {
             $args = array(
@@ -2455,7 +2456,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             return new WP_Error('error', $ex->getMessage());
         }
     }
-
 
     public function angelleye_ppcp_capture_authorized_payment_admin($order, $order_data) {
         try {
@@ -2616,7 +2616,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->add_order_note('Error Message : ' . $error_message);
                 }
             }
-        } 
+        }
     }
 
     public function angelleye_ppcp_refund_order_admin($order, $order_data) {
@@ -2654,7 +2654,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($response['payer_id'])) {
                 return $response['payer_id'];
             }
-               
+
             $this->api_response = $this->api_request->request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
             if (isset($this->api_response['status'])) {
                 
