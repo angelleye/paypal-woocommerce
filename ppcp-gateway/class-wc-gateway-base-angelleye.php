@@ -42,7 +42,7 @@ trait WC_Gateway_Base_AngellEYE
 
     protected function setGatewaySupports($additionalSupports = [])
     {
-        $this->enable_tokenized_payments = 'yes' === $this->get_option('enable_tokenized_payments', 'no');
+        $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
 
         $baseSupports = array_merge([
             'products',
