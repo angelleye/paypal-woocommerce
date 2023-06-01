@@ -21,6 +21,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $enable_tokenized_payments;
     public $vault_supported_payment_method = array('card', 'venmo');
     public $vault_not_supported_payment_method = array('credit', 'paylater', 'bancontact', 'blik', 'eps', 'giropay', 'ideal', 'mercadopago', 'mybank', 'p24', 'sepa', 'sofort');
+    public $is_multi_account_active;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -68,6 +69,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
+            if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+                $this->is_multi_account_active = true;
+            } else {
+                $this->is_multi_account_active = false;
+            }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -1212,6 +1218,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_paymentaction_filter($paymentaction, $order_id) {
         try {
+            if($this->is_multi_account_active) {
+                $paymentaction = 'capture';
+                return $paymentaction;
+            }
             if ($order_id !== null) {
                 $order = wc_get_order($order_id);
                 if ($order) {
@@ -1255,6 +1265,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_paymentaction_product_page_filter($paymentaction, $product_id) {
         try {
+            if($this->is_multi_account_active) {
+                $paymentaction = 'capture';
+                return $paymentaction;
+            }
             $is_enable_payment_action = get_post_meta($product_id, 'enable_payment_action', true);
             if ($is_enable_payment_action === 'yes') {
                 $woo_product_payment_action = get_post_meta($product_id, 'woo_product_payment_action', true);

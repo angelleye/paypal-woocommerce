@@ -96,15 +96,16 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $this->merchant_id = $this->get('live_merchant_id', '');
             }
             $this->enable_tokenized_payments = $this->get('enable_tokenized_payments', 'no');
+            $paymentaction_options = array();
             if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
-                $this->enable_tokenized_payments = 'no';
-                $this->is_multi_account_active = 'yes';
+                $paymentaction_options = array(
+                    'capture' => __('Capture', 'paypal-for-woocommerce')
+                );
             } else {
-                $this->is_multi_account_active = 'no';
-            }
-            $credit_messaging_text = '';
-            if ($this->is_multi_account_active == 'yes') {
-                $credit_messaging_text = __('PayPal Pay Later Messaging - Buy Now Pay Later is not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+                $paymentaction_options = array(
+                    'capture' => __('Capture', 'paypal-for-woocommerce'),
+                    'authorize' => __('Authorize', 'paypal-for-woocommerce'),
+                );
             }
             $cards_list = array(
                 'visa' => _x('Visa', 'Name of credit card', 'paypal-for-woocommerce'),
@@ -174,6 +175,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             $vaulting_custom_attributes = array();
             $this->is_paypal_vault_enable = false;
             if ($available_endpoints === false) {
+                
             } elseif (!isset($available_endpoints['advanced_cc'])) {
                 $advanced_cc_text = sprintf(__('The Advanced Credit Cards feature is not yet active on your PayPal account. Please <a href="%s">return to the PayPal Connect screen</a> to apply for this feature and get cheaper rates.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce'));
                 $advanced_cc_custom_attributes = array('disabled' => 'disabled');
@@ -188,7 +190,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $this->need_to_display_paypal_vault_onboard_button = true;
                 $this->is_paypal_vault_enable = false;
             }
-            if(isset($available_endpoints['vaulting_advanced'])) {
+            if (isset($available_endpoints['vaulting_advanced'])) {
                 $this->is_paypal_vault_enable = true;
                 $vaulting_advanced_text = __('The Vault / Subscriptions feature is enabled on your PayPal account.  You need to enable Tokenized Payments here in order this to be available on your site.', 'paypal-for-woocommerce');
             }
@@ -1329,10 +1331,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('Choose whether you wish to capture funds immediately or authorize payment only.', 'paypal-for-woocommerce'),
                     'default' => 'capture',
                     'desc_tip' => true,
-                    'options' => array(
-                        'capture' => __('Capture', 'paypal-for-woocommerce'),
-                        'authorize' => __('Authorize', 'paypal-for-woocommerce'),
-                    ),
+                    'options' => $paymentaction_options,
                 ),
                 'invoice_prefix' => array(
                     'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
