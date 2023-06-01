@@ -152,17 +152,19 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             if (!class_exists('AngellEYE_PayPal_PPCP_Product')) {
                                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-product.php');
                             }
-                            $this->product = AngellEYE_PayPal_PPCP_Product::instance();
-                            $this->product::angelleye_ppcp_add_to_cart_action();
+                            $paymentMethod = $_REQUEST['angelleye_ppcp_payment_method_title'] ?? null;
+                            if ($paymentMethod !== WC_Gateway_Apple_Pay_AngellEYE::PAYMENT_METHOD) {
+                                $this->product = AngellEYE_PayPal_PPCP_Product::instance();
+                                $this->product::angelleye_ppcp_add_to_cart_action();
+                            }
                              if (angelleye_ppcp_get_order_total() === 0) {
                                 $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
                                 wc_add_notice($wc_notice);
                                 wp_send_json_error($wc_notice);
-                                exit();
-                            } else {
+                             } else {
                                 $this->payment_request->angelleye_ppcp_create_order_request();
-                                exit();
-                            }
+                             }
+                            exit();
                         } catch (Exception $ex) {
                             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
                             $this->api_log->log($ex->getMessage(), 'error');

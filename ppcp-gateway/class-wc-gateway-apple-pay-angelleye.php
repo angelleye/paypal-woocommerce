@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 
 class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     protected bool $enable_apple_pay;
+    const PAYMENT_METHOD = 'apple_pay';
     /**
      * @var false|mixed
      */

@@ -313,9 +313,16 @@ if (!function_exists('angelleye_ppcp_get_mapped_shipping_address')) {
             $first_name = '';
             $last_name = '';
         }
+
+        // Apple Pay payment sends the email address as part of shipping_address info
+        $email_address = null;
+        if (!empty($checkout_details->purchase_units[0]->shipping->email_address)) {
+            $email_address = $checkout_details->purchase_units[0]->shipping->email_address;
+        }
         $result = array(
             'first_name' => $first_name,
             'last_name' => $last_name,
+            'email_address' => $email_address,
             'address_1' => !empty($checkout_details->purchase_units[0]->shipping->address->address_line_1) ? $checkout_details->purchase_units[0]->shipping->address->address_line_1 : '',
             'address_2' => !empty($checkout_details->purchase_units[0]->shipping->address->address_line_2) ? $checkout_details->purchase_units[0]->shipping->address->address_line_2 : '',
             'city' => !empty($checkout_details->purchase_units[0]->shipping->address->admin_area_2) ? $checkout_details->purchase_units[0]->shipping->address->admin_area_2 : '',
