@@ -313,7 +313,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $this->sdk_merchant_id = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
         if (!empty($this->sdk_merchant_id)) {
-            if(is_string($smart_js_arg)) {
+            if(is_string($this->sdk_merchant_id)) {
                 $smart_js_arg['merchant-id'] = implode(',', $this->sdk_merchant_id);
             } elseif (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) === 1) {
                 $smart_js_arg['merchant-id'] = implode(',', $this->sdk_merchant_id);
