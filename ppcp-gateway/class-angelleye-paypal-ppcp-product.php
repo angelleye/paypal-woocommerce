@@ -32,7 +32,7 @@ class AngellEYE_PayPal_PPCP_Product extends WC_Form_Handler {
                 return;
             }
             // Empty the cart before purchasing the product through Smart button
-            WC()->cart->empty_cart();
+            // WC()->cart->empty_cart();
             $add_to_cart_handler = apply_filters('woocommerce_add_to_cart_handler', $adding_to_cart->get_type(), $adding_to_cart);
             if ('variable' === $add_to_cart_handler || 'variation' === $add_to_cart_handler) {
                 $was_added_to_cart = self::angelleye_ppcp_add_to_cart_handler_variable($product_id);
