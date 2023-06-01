@@ -188,9 +188,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             } elseif (isset($cart['billing_address'])) {
                 $country_code = $cart['billing_address']['country'];
                 $full_name = $cart['billing_address']['first_name'] . ' ' . $cart['billing_address']['last_name'];
-                $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
-                $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
             }
+
+            $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
+            $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
 
             if (strtolower($payment_method) == 'ideal') {
                 $body_request['payment_source'] = [
