@@ -516,10 +516,21 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->angelleye_ppcp_smart_button_style_properties();
         if (WC()->cart->needs_payment()) {
             angelleye_ppcp_add_css_js();
+            $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+            if (!empty($available_gateways)) {
+                $separator_html = '<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</div>';
+            } else {
+                $separator_html = '';
+                $custom_css = "
+                .woocommerce-cart .wc-proceed-to-checkout a.checkout-button{
+                        display: none !important;
+                }";
+                wp_add_inline_style('angelleye_ppcp', $custom_css);
+            }
             if ($is_shortcode === 'yes') {
                 echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_cart_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart_shortcode"></div></div></div>';
             } else {
-                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart"></div><div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; ' . __('OR', 'paypal-for-woocommerce') . ' &mdash;</div></div>';
+                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart"></div>' . $separator_html . '</div>';
             }
         }
     }
@@ -872,8 +883,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
     }
 
-    public function get_paypal_sdk_attributes(): array
-    {
+    public function get_paypal_sdk_attributes(): array {
         $attributes = ['data-namespace' => 'angelleye_paypal_sdk'];
         if (!isset($_GET['paypal_order_id'])) {
             if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
@@ -1515,7 +1525,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_woocommerce_valid_order_statuses_for_payment_complete($order_status_list, $order) {
-        if(!empty($order_status_list)) {
+        if (!empty($order_status_list)) {
             array_push($order_status_list, 'partial-payment');
             return $order_status_list;
         }
