@@ -475,10 +475,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (strlen($product_name) > 127) {
                     $product_name = substr($product_name, 0, 124) . '...';
                 }
-                if (empty($desc)) {
-                    $desc = $product_name;
-                }
-
                 $desc = !empty($desc) ? $desc : '';
                 if (strlen($desc) > 127) {
                     $desc = substr($desc, 0, 124) . '...';
@@ -1219,9 +1215,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $product_name = wp_strip_all_tags($product_name);
                 if (strlen($product_name) > 127) {
                     $product_name = substr($product_name, 0, 124) . '...';
-                }
-                if (empty($desc)) {
-                    $desc = $product_name;
                 }
                 if (strlen($desc) > 127) {
                     $desc = substr($desc, 0, 124) . '...';
