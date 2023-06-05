@@ -128,7 +128,6 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
 			$get_order = WFOCU_Core()->data->get_parent_order();
 
 			$offer_package = WFOCU_Core()->data->get( '_upsell_package' );
-			// print("<pre>");print_r($offer_package);print("</pre>");die();
 			WFOCU_Core()->data->set( 'upsell_package', $offer_package, 'paypal' );
 			WFOCU_Core()->data->save( 'paypal' );
 			WFOCU_Core()->data->save();
@@ -348,7 +347,6 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
 			);
 
 		};
-		// print("<prE>");print_r($order_items);print("</pre>");
         return $order_items;
     }
 
