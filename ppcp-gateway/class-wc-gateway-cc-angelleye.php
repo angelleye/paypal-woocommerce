@@ -264,6 +264,9 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 angelleye_ppcp_add_css_js();
                 if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
                     if ($this->supports('tokenization')) {
+                        $html = '<ul class="woocommerce-SavedPaymentMethods wc-saved-payment-methods" data-count="">';
+                        $html .= '</ul>';
+                        echo $html;
                         $this->save_payment_method_checkbox();
                     }
                 }
@@ -543,7 +546,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
         return apply_filters('woocommerce_payment_gateway_get_saved_payment_method_option_html', $html, $token, $this);
     }
-    
+
     public function get_transaction_url($order) {
         $enviorment = angelleye_ppcp_get_post_meta($order, '_enviorment', true);
         if ($enviorment === 'sandbox') {
