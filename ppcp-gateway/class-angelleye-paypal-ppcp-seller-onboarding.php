@@ -142,25 +142,58 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         ));
     }
 
-    public function ppcp_apple_pay_data()
+    public function ppcp_payment_methods_activation_params($methodToActivate)
     {
         $testmode = ($this->is_sandbox) ? 'yes' : 'no';
-        return array(
+
+        $third_party_features = [];
+        $capabilities = [];
+        $products = ['PAYMENT_METHODS'];
+        $business_entity = [];
+
+        switch ($methodToActivate) {
+            case WC_Gateway_Apple_Pay_AngellEYE::PAYMENT_METHOD:
+                $capabilities = ['APPLE_PAY'];
+                $third_party_features = ['VAULT', 'BILLING_AGREEMENT'];
+                //$ppcp_product = $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT';
+                $ppcp_product = 'PPCP';
+                $products = [$ppcp_product, 'PAYMENT_METHODS'];
+                break;
+            case 'pay_upon_invoice':
+                $capabilities = ['PAY_UPON_INVOICE'];
+                $third_party_features = ['VAULT', 'BILLING_AGREEMENT'];
+                $products = ['PPCP', 'PAYMENT_METHODS'];
+                $business_entity = [
+                    'business_type' => ['type' => 'PRIVATE_CORPORATION',],
+                    'addresses' => [
+                        [
+                            'address_line_1' => WC()->countries->get_base_address(),
+                            'admin_area_1' => WC()->countries->get_base_city(),
+                            'postal_code' => WC()->countries->get_base_postcode(),
+                            'country_code' => WC()->countries->get_base_country(),
+                            'type' => 'WORK',
+                        ]
+                    ],
+                ];
+                break;
+        }
+
+        $params = [
             'testmode' => $testmode,
             'return_url' => admin_url(
-                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=applepay&testmode=' . $testmode
+                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated='.$methodToActivate.'&testmode=' . $testmode
             ),
             'return_url_description' => __(
                 'Return to your shop.', 'paypal-for-woocommerce'
             ),
-            'capabilities' => array(
-                'APPLE_PAY'
-            ),
-            'third_party_features' => array('VAULT', 'BILLING_AGREEMENT'),
-            'products' => array(
-                $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
-                'PAYMENT_METHODS'
-            ));
+            'capabilities' => $capabilities,
+            'third_party_features' => $third_party_features,
+            'products' => $products
+        ];
+        if (!empty($business_entity)) {
+            $params['business_entity'] = $business_entity;
+        }
+        return $params;
     }
 
     public function ppcp_vault_data() {
@@ -250,8 +283,12 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $move_to_location = 'tokenization_subscriptions';
             if (isset($_GET['feature_activated'])) {
                 switch ($_GET['feature_activated']) {
-                    case 'applepay':
+                    case 'apple_pay':
                         set_transient('angelleye_ppcp_applepay_onboarding_done', 'yes', 29000);
+                        $move_to_location = 'additional_authorizations';
+                        break;
+                    case 'pay_upon_invoice':
+                        set_transient('angelleye_ppcp_pay_upon_invoice_onboarding_done', 'yes', 29000);
                         $move_to_location = 'additional_authorizations';
                         break;
                 }

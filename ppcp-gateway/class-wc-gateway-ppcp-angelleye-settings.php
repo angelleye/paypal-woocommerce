@@ -16,6 +16,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $is_apple_pay_enable = false;
         public $is_apple_pay_approved = false;
         public $need_to_display_apple_pay_button = false;
+        public $is_pay_upon_invoice_enable = false;
+        public $is_pay_upon_invoice_approved = false;
+        public $need_to_display_pay_upon_invoice = false;
 
         public static function instance() {
             if (is_null(self::$_instance)) {
@@ -174,11 +177,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             $advanced_cc_text = '';
             $vaulting_advanced_text = '';
             $applePayText = '';
+            $payUponInvoiceText = '';
             $advanced_cc_custom_attributes = array();
             $vaulting_custom_attributes = array();
             $apple_pay_custom_attributes = array();
+            $pay_upon_invoice_custom_attributes = [];
             $this->is_paypal_vault_enable = false;
             $this->is_apple_pay_enable = false;
+            $this->is_pay_upon_invoice_enable = false;
             if ($available_endpoints === false) {
             } elseif (!isset($available_endpoints['advanced_cc'])) {
                 $advanced_cc_text = sprintf(__('The Advanced Credit Cards feature is not yet active on your PayPal account. Please <a href="%s">return to the PayPal Connect screen</a> to apply for this feature and get cheaper rates.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce'));
@@ -213,6 +219,23 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $this->is_apple_pay_approved = true; //$available_endpoints['apple_pay'] == 'APPROVED';
                 $apple_pay_custom_attributes = $this->is_apple_pay_approved ? [] : array('disabled' => 'disabled');
                 $applePayText = __('Apple Pay feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
+            }
+
+            if ($available_endpoints === false) {
+                $payUponInvoiceText = __('Allow buyers to pay upon invoice.', 'paypal-for-woocommerce');
+                $this->need_to_display_pay_upon_invoice = false;
+                $pay_upon_invoice_custom_attributes = array('disabled' => 'disabled');
+                $this->is_pay_upon_invoice_enable = false;
+            } elseif (!isset($available_endpoints['pay_upon_invoice'])) {
+                $payUponInvoiceText = __('Pay upon invoice is not enabled on your PayPal account.', 'paypal-for-woocommerce');
+                $pay_upon_invoice_custom_attributes = array('disabled' => 'disabled');
+                $this->need_to_display_pay_upon_invoice = true;
+                $this->is_pay_upon_invoice_enable = false;
+            } elseif (isset($available_endpoints['pay_upon_invoice'])) {
+                $this->is_pay_upon_invoice_enable = true;
+                $this->is_pay_upon_invoice_approved = true; //$available_endpoints['apple_pay'] == 'APPROVED';
+                $pay_upon_invoice_custom_attributes = $this->is_pay_upon_invoice_approved ? [] : array('disabled' => 'disabled');
+                $payUponInvoiceText = __('Pay upon invoice feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
             }
 
 
@@ -327,7 +350,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'product_button_settings' => array(
                     'title' => __('Product Page Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Enable the Product specific button settings, and the options set will be applied to the PayPal Smart buttons on your Product pages.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -454,7 +476,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'cart_button_settings' => array(
                     'title' => __('Cart Page Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your Cart page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -595,7 +616,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'checkout_button_settings' => array(
                     'title' => __('Checkout Page Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Enable the checkout specific button settings, and the options set will be applied to the PayPal buttons on your checkout page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -744,7 +764,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'mini_cart_button_settings' => array(
                     'title' => __('Mini Cart Page Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Enable the Mini Cart specific button settings, and the options set will be applied to the PayPal buttons on your Mini Cart page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -871,7 +890,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_settings' => array(
                     'title' => __('Pay Later Messaging Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => '',
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -1387,6 +1405,19 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
+                'enable_pay_upon_invoice' => [
+                    'title' => __('Enable Pay Upon Invoice', 'paypal-for-woocommerce'),
+                    'label' => __('Enable Pay Upon Invoice', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox_enable_pay_upon_invoice',
+                    'description' => $payUponInvoiceText,
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'class' => 'enable_pay_upon_invoice',
+                    'need_to_display_pay_upon_invoice' => $this->need_to_display_pay_upon_invoice,
+                    'is_pay_upon_invoice_enable' => $this->is_pay_upon_invoice_enable,
+                    'is_pay_upon_invoice_approved' => $this->is_pay_upon_invoice_approved,
+                    'custom_attributes' => $pay_upon_invoice_custom_attributes
+                ],
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
                     'type' => 'title',

@@ -498,24 +498,30 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function angelleye_ppcp_admin_notices() {
-        $is_saller_onboarding_done = false;
-        $is_saller_onboarding_failed = false;
+        $is_seller_onboarding_done = false;
+        $is_seller_onboarding_failed = false;
         $onboarding_success_message = __('PayPal onboarding process successfully completed.', 'paypal-for-woocommerce');
         if (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done')) {
-            $is_saller_onboarding_done = true;
+            $is_seller_onboarding_done = true;
             delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done');
         } elseif (false !== get_transient('angelleye_ppcp_live_seller_onboarding_process_done')) {
-            $is_saller_onboarding_done = true;
+            $is_seller_onboarding_done = true;
             delete_transient('angelleye_ppcp_live_seller_onboarding_process_done');
         }
 
         if (false !== get_transient('angelleye_ppcp_applepay_onboarding_done')) {
-            $is_saller_onboarding_done = true;
-            $onboarding_success_message = "Apple Pay feature has been enabled successfully.";
+            $is_seller_onboarding_done = true;
+            $onboarding_success_message = __("Apple Pay feature has been enabled successfully.", 'paypal-for-woocommerce');
             delete_transient('angelleye_ppcp_applepay_onboarding_done');
         }
 
-        if ($is_saller_onboarding_done) {
+        if (false !== get_transient('angelleye_ppcp_pay_upon_invoice_onboarding_done')) {
+            $is_seller_onboarding_done = true;
+            $onboarding_success_message = __("Pay upon invoice feature has been enabled successfully.", 'paypal-for-woocommerce');
+            delete_transient('angelleye_ppcp_pay_upon_invoice_onboarding_done');
+        }
+
+        if ($is_seller_onboarding_done) {
             echo '<div class="notice notice-success angelleye-notice is-dismissible" id="ppcp_success_notice_onboarding" style="display:none;">'
             . '<div class="angelleye-notice-logo-original">'
             . '<div class="ppcp_success_logo"><img src="' . PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark.png" width="65" height="65"></div>'
@@ -526,13 +532,13 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             . '</div>';
         } else {
             if (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_failed')) {
-                $is_saller_onboarding_failed = true;
+                $is_seller_onboarding_failed = true;
                 delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_failed');
             } elseif (false !== get_transient('angelleye_ppcp_live_seller_onboarding_process_failed')) {
-                $is_saller_onboarding_failed = true;
+                $is_seller_onboarding_failed = true;
                 delete_transient('angelleye_ppcp_live_seller_onboarding_process_failed');
             }
-            if ($is_saller_onboarding_failed) {
+            if ($is_seller_onboarding_failed) {
                 echo '<div class="notice notice-error is-dismissible">'
                 . '<p>We could not properly connect to PayPal. Please reload the page to continue.</p>'
                 . '</div>';
@@ -820,6 +826,100 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
+    public function generate_checkbox_enable_pay_upon_invoice_html($key, $data) {
+        if (isset($data['type']) && $data['type'] === 'checkbox_enable_pay_upon_invoice') {
+            $shop_country = WC()->countries->get_base_country();
+            $testmode = $this->sandbox ? 'yes' : 'no';
+            $field_key = $this->get_field_key($key);
+            $defaults = array(
+                'title' => '',
+                'label' => '',
+                'disabled' => false,
+                'class' => '',
+                'css' => '',
+                'type' => 'text',
+                'desc_tip' => false,
+                'description' => '',
+                'custom_attributes' => array(),
+            );
+            $data = wp_parse_args($data, $defaults);
+            if (!$data['label']) {
+                $data['label'] = $data['title'];
+            }
+            $is_apple_pay_approved = $data['is_pay_upon_invoice_approved'] ?? false;
+            $is_apple_pay_enabled = $data['is_pay_upon_invoice_enable'] ?? false;
+            ob_start();
+            echo $this->generate_horizontal_separator_html();
+            ?>
+            <tr valign="top">
+                <th scope="row" class="titledesc">
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.         ?></label>
+                </th>
+                <td class="forminp">
+                    <?php if ($shop_country !== 'DE') {
+                        echo sprintf('<div style="color:red">%s</div>', __('Pay upon invoice is supported only in Netherlands. Change your shop location to Netherlands to enable this.', 'paypal-for-woocommerce'));
+                    } else {
+                    ?>
+                    <fieldset>
+                        <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
+                        <label for="<?php echo esc_attr($field_key); ?>">
+                            <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
+                            <?php
+                            if ($is_apple_pay_enabled && $is_apple_pay_approved) {
+                                ?>
+                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
+                                <b><?php echo __('Pay Upon Invoice is active in your account!', 'paypal-for-woocommerce'); ?></b>
+                            <?php } else if (!$is_apple_pay_approved) {
+                                ?>
+                                <br><br><b style="color:red"><?php echo __('Pay Upon Invoice is not approved in your account! Please contact PayPal.', 'paypal-for-woocommerce'); ?></b>
+                                <?php
+                            }?>
+                        </label>
+                        <?php
+                        echo $this->get_description_html($data); ?>
+                        <br>
+                        <?php
+                        if (isset($data['need_to_display_pay_upon_invoice']) && true === $data['need_to_display_pay_upon_invoice']) {
+                            $signup_link = $this->angelleye_get_signup_link($testmode, 'pay_upon_invoice');
+                            if ($signup_link) {
+                                $args = array(
+                                    'displayMode' => 'minibrowser',
+                                );
+                                $url = add_query_arg($args, $signup_link);
+                                ?>
+                                <a class="wplk-button button-primary" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Activate Pay Upon Invoice', 'paypal-for-woocommerce'); ?></a>
+                            <?php
+                            $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
+                            ?>
+                                <script type="text/javascript">
+									document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+										element.addEventListener('click', (e) => {
+											if ('undefined' === typeof PAYPAL) {
+												e.preventDefault();
+												alert('PayPal');
+											}
+										});
+									});</script>
+                                <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
+                            } else {
+                                echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                            }
+                        }
+                        ?>
+                    </fieldset>
+                    <?php } ?>
+                </td>
+            </tr>
+            <?php
+            return ob_get_clean();
+        }
+    }
+
+    public function generate_horizontal_separator_html()
+    {
+        return '<tr><td colspan="2" class="no-padding"><div class="ppcp_separator"></div></td></tr>';
+    }
+
     public function angelleye_get_signup_link($testmode, $featureName = 'tokenized_payments') {
         try {
             if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
@@ -829,7 +929,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $seller_onboarding->setTestMode($testmode);
             switch ($featureName) {
                 case 'apple_pay':
-                    $body = $seller_onboarding->ppcp_apple_pay_data();
+                    $body = $seller_onboarding->ppcp_payment_methods_activation_params('apple_pay');
+                    break;
+                case 'pay_upon_invoice':
+                    $body = $seller_onboarding->ppcp_payment_methods_activation_params('pay_upon_invoice');
                     break;
                 default:
                     $body = $seller_onboarding->ppcp_vault_data();

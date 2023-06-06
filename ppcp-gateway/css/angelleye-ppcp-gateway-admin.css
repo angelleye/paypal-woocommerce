@@ -27,3 +27,11 @@ div.ppcp_success_logo {
     list-style-type: circle;
     margin-left: 42px;
 }
+
+.no-padding {
+    padding: 0 !important;
+}
+
+.ppcp_separator {
+    border: 1px solid #000;
+}
