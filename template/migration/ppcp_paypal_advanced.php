@@ -22,17 +22,12 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <img src="https://www.angelleye.com/wp-content/uploads/2022/12/woocommerce-payments-paypal-advanced-credit-card-checkout.png" width="450" height="457" />
+                    <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/woocommerce-payments-paypal-advanced-credit-card-checkout.png'; ?>" width="450" height="457" />
                 </div>
             </div>
-            <div class="pt-30 pb-50 text-center">
-                <div class="angella_button_bg text-center">
-                    <?php echo $this->angelleye_ppcp_generate_onboard_button($products); ?>
-                </div>
-            </div>
-            <div class="d-flex d-md-flex">
+            <div class="pt-20 pb-20 d-flex d-md-flex">
                 <div class="mr-auto">
-                    <h3 class="pb-30"><?php echo __('Current PayPal Integration', 'paypal-for-woocommerce'); ?></h3>
+                    <h3 class="pb-20"><?php echo __('Current PayPal Integration', 'paypal-for-woocommerce'); ?></h3>
                     <ul>
                         <li><?php echo __('PayPal Payments Advanced', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('PayPal Checkout', 'paypal-for-woocommerce'); ?></li>
@@ -43,7 +38,7 @@
                     </ul>
                 </div>
                 <div class="ml-auto">
-                    <h3 class="pb-30"><?php echo __('Updated PayPal Integration', 'paypal-for-woocommerce'); ?></h3>
+                    <h3 class="pb-20"><?php echo __('Updated PayPal Integration', 'paypal-for-woocommerce'); ?></h3>
                     <ul>
                         <li><?php echo __('PayPal Complete Payments', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('PayPal Checkout | Venmo | Pay Later', 'paypal-for-woocommerce'); ?></li>
@@ -54,7 +49,12 @@
                     </ul>
                 </div>
             </div>
-            <div class="pt-30">
+            <div class="pt-20 pb-20 text-center">
+                <div class="angella_button_bg text-center paypal_woocommerce_product_onboard">
+                    <?php echo $this->angelleye_ppcp_generate_onboard_button($products); ?>
+                </div>
+            </div>
+            <div class="pt-20">
                 <p><?php echo __('<strong>NOTE:</strong>' . $footer_note, 'paypal-for-woocommerce'); ?>
                 </p>
             </div>
@@ -62,6 +62,11 @@
     </div>
 </div>
 <ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard ppcp_email_confirm">
+    <li>
+        <p><?php echo __('Schedule a live meeting with Drew Angell?', 'paypal-for-woocommerce'); ?></p>
+        <img class="pb-30" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/guru-drew.png'; ?>" width="130" height="350" />
+        <a class="wplk-button" target="_blank" href="https://calendar.app.google/kFcrJSmV8fW8iWny8"><?php echo __('Schedule Meeting', 'paypal-for-woocommerce'); ?></a>
+    </li> 
     <li>
         <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
         <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>

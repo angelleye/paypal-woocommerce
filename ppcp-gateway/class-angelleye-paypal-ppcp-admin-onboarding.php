@@ -327,9 +327,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             } elseif (isset($active_classic_gateway_list['ppec_paypal'])) {
                 $layout_type = 'paypal_express';
             }
-            $footer_note = ' All of PayPal’s new features and functionality will be released on the PayPal Commerce Platform.  The Classic Gateways are no longer officially supported.  Please update by <strong>September 30, 2023</strong> in order to avoid potential interruptions.
-            <br><br>If you would like help with this process you can <a target="_blank" href="https://calendar.app.google/kFcrJSmV8fW8iWny8">schedule a meeting with Drew Angell </a>where he will guide you and answer any questions or concerns you may have.';
-            $footer_note .= '<br /><br />¹ The rate displayed is the default rate.  You will pay your PayPal account rate + 0.1%.  This is typically cheaper than you paid overall with PayPal Classic gateways!';
+            $footer_note = ' All of PayPal’s new features and functionality will be released on the PayPal Commerce Platform.  The Classic Gateways are no longer officially supported.  Please update by <strong>September 30, 2023</strong> in order to avoid potential interruptions.';
+            $footer_note .= '<br /><br /> For more details about the new fee structure please review our <a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/">pricing page</a>.';
             $products = urlencode(wp_json_encode(array_values($active_classic_gateway_list)));
             if (!empty($layout_type)) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_header.php');
@@ -529,6 +528,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <div id="angelleye_ppcp_sendy_msg"></div>
                         </li>
                     <?php } ?>
+                    
                     <li>
                         <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
                         <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
@@ -571,7 +571,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 );
                 $url = add_query_arg($args, $signup_link);
                 ?>
-                <h3 class="pb-30"><a class="angella_button" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Update to PayPal Commerce Platform', 'paypal-for-woocommerce'); ?></a></h3>
+                <h3 class="pb-30"><a class="wplk-button" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Update to PayPal Commerce Platform', 'paypal-for-woocommerce'); ?></a></h3>
                 <?php
                 $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
                 ?>
