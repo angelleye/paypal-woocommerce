@@ -52,7 +52,7 @@
                         <li><?php echo __('PayPal Complete Payments', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('PayPal Checkout | Venmo | Pay Later', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('Direct Credit Card Processing – No Branding', 'paypal-for-woocommerce'); ?></li>
-                        <li><strong><?php echo __('Reduced Fee of 2.69% for Credit Cards!', 'paypal-for-woocommerce'); ?></strong></li>
+                        <li><strong><?php echo __('Total Fee of 2.69%*', 'paypal-for-woocommerce'); ?></strong></li>
                         <li><strong><?php echo __('No Monthly Fee!', 'paypal-for-woocommerce'); ?></strong></li>
                         <li><?php echo __('Fully Supported Now and with Future Improvements', 'paypal-for-woocommerce'); ?></li>
                     </ul>
