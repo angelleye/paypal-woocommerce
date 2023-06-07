@@ -327,7 +327,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             } elseif (isset($active_classic_gateway_list['ppec_paypal'])) {
                 $layout_type = 'paypal_express';
             }
-            $footer_note = ' All of PayPal’s new features and functionality will be released on the PayPal Commerce Platform.  The Classic Gateways are no longer officially supported.  We have an agreement with PayPal to stop supporting the Classic gateways, and we need to get you updated by <strong>September 30, 2023</strong> in order to avoid potential interruptions.
+            $footer_note = ' All of PayPal’s new features and functionality will be released on the PayPal Commerce Platform.  The Classic Gateways are no longer officially supported.  Please update by <strong>September 30, 2023</strong> in order to avoid potential interruptions.
             <br><br>If you would like help with this process you can <a target="_blank" href="https://calendar.app.google/kFcrJSmV8fW8iWny8">schedule a meeting with Drew Angell </a>where he will guide you and answer any questions or concerns you may have.';
             $products = urlencode(wp_json_encode(array_values($active_classic_gateway_list)));
             if (!empty($layout_type)) {
