@@ -3774,18 +3774,18 @@ class AngellEYE_PayPal_PPCP_Payment {
             $user_id = (int) $order->get_customer_id();
             $all_payment_tokens = $this->angelleye_ppcp_get_all_payment_tokens_for_renewal($user_id);
             $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
-            if(empty($payment_tokens_id)) {
+            if (empty($payment_tokens_id)) {
                 $payment_tokens_id = get_post_meta($order_id, 'payment_token_id', true);
             }
-            if(empty($payment_tokens_id)) {
+            if (empty($payment_tokens_id)) {
                 $payment_tokens_id = get_post_meta($order_id, '_ppec_billing_agreement_id', true);
             }
             $paypal_subscription_id = get_post_meta($order_id, '_paypal_subscription_id', true);
             if (empty($all_payment_tokens) && empty($payment_tokens_id) && empty($paypal_subscription_id)) {
                 return $body_request;
-            } elseif(!empty ($payment_tokens_id)) {
+            } elseif (!empty($payment_tokens_id)) {
                 $payment_tokens_id = $payment_tokens_id;
-            } elseif(!empty ($paypal_subscription_id)) {
+            } elseif (!empty($paypal_subscription_id)) {
                 $payment_tokens_id = $paypal_subscription_id;
             }
             if (!empty($all_payment_tokens) && !empty($payment_tokens_id)) {
@@ -3827,7 +3827,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
-            
             $angelleye_ppcp_old_payment_method = get_post_meta($order_id, '_angelleye_ppcp_old_payment_method', true);
             if (!empty($angelleye_ppcp_old_payment_method)) {
                 switch ($angelleye_ppcp_old_payment_method) {
