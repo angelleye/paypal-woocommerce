@@ -329,6 +329,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             }
             $footer_note = ' All of PayPal’s new features and functionality will be released on the PayPal Commerce Platform.  The Classic Gateways are no longer officially supported.  Please update by <strong>September 30, 2023</strong> in order to avoid potential interruptions.
             <br><br>If you would like help with this process you can <a target="_blank" href="https://calendar.app.google/kFcrJSmV8fW8iWny8">schedule a meeting with Drew Angell </a>where he will guide you and answer any questions or concerns you may have.';
+            $footer_note .= '<br /><br />¹ The rate displayed is the default rate.  You will pay your PayPal account rate + 0.1%.  This is typically cheaper than you paid overall with PayPal Classic gateways!';
             $products = urlencode(wp_json_encode(array_values($active_classic_gateway_list)));
             if (!empty($layout_type)) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_header.php');
