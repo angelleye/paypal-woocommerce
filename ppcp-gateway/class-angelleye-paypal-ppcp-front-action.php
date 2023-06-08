@@ -35,6 +35,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
+        add_action('wp_head', [$this, 'add_fraudnet_detection_script_in_head'], 100);
     }
 
     public function angelleye_ppcp_load_class() {
@@ -62,6 +63,31 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
+        }
+    }
+
+    public function add_fraudnet_detection_script_in_head()
+    {
+        global $post;
+        $post_slug = $post->post_name;
+        $isPayUponInvoiceEnabled = 'yes' === $this->setting_obj->get('enable_pay_upon_invoice', 'no');
+        if ($isPayUponInvoiceEnabled) {
+            $sessionIdentifier = WC_Gateway_Pay_Upon_Invoice_AngellEYE::getUniqueSessionIdentifier();
+
+            if ($this->is_sandbox) {
+                $merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
+            } else {
+                $merchant_id = $this->setting_obj->get('live_merchant_id', '');
+            }
+            ?>
+            <script type="application/json" fncls="fnparams-dede7cc5-15fd-4c75-a9f4-36c430ee3a99">
+                {
+                    "f":"<?php echo $sessionIdentifier ?>",
+                    "s":"<?php echo $merchant_id.'_'.$post_slug ?>",
+                    "sandbox": true
+                }
+            </script>
+            <?php
         }
     }
 
@@ -130,6 +156,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     } elseif (isset($_GET['from']) && 'checkout' === $_GET['from']) {
                         if (isset($_POST) && !empty($_POST)) {
                             add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), 10, 2);
+                            $this->payment_request->setCheckoutPaymentGateway($_POST['payment_method']);
                             WC()->checkout->process_checkout();
                             if (wc_notice_count('error') > 0) {
                                 WC()->session->set('reload_checkout', true);

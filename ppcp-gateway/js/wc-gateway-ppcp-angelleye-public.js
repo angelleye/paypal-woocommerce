@@ -71,6 +71,11 @@ function initSmartButtons() {
 		}, 300);
 	}
 
+	// load fraudnet js
+	if (angelleyeOrder.isPayUponInvoiceEnabled()) {
+		angelleyeOrder.loadFraudnetConfig({ fnUrl: "https://c.paypal.com/da/r/fb.js" });
+	}
+
 	// Hook the function to run on totals, cart or checkout updates
 	angelleyeOrder.hooks.onPaymentMethodChange();
 	angelleyeOrder.hooks.onCartValueUpdate();

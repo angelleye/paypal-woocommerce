@@ -34,16 +34,20 @@ trait WC_Gateway_Base_AngellEYE
             if ($loadSettingsFields) {
                 $this->setting_obj_fields = $this->setting_obj->angelleye_ppcp_setting_fields();
             }
+            $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
 
+    protected function isSubscriptionSupported(): bool
+    {
+        return true;
+    }
+
     protected function setGatewaySupports($additionalSupports = [])
     {
-        $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
-
         $baseSupports = array_merge([
             'products',
             'refunds',
@@ -66,9 +70,9 @@ trait WC_Gateway_Base_AngellEYE
 
         if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
             $this->supports = array_merge($baseSupports, $subscriptionSupports);
-        } elseif ($this->enable_tokenized_payments ||
-            (isset($_GET['page']) && isset($_GET['tab']) && 'wc-settings' === $_GET['page'] && 'checkout' === $_GET['tab'])) {
-            $this->supports = array_merge($baseSupports, $subscriptionSupports, array('tokenization'));
+        } elseif ($this->isSubscriptionSupported() && ($this->enable_tokenized_payments ||
+            (isset($_GET['page']) && isset($_GET['tab']) && 'wc-settings' === $_GET['page'] && 'checkout' === $_GET['tab']))) {
+            $this->supports = array_merge($baseSupports, $subscriptionSupports, ['tokenization']);
         } else {
             $this->supports = $baseSupports;
         }

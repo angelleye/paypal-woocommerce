@@ -1418,6 +1418,27 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'is_pay_upon_invoice_approved' => $this->is_pay_upon_invoice_approved,
                     'custom_attributes' => $pay_upon_invoice_custom_attributes
                 ],
+                'pay_upon_invoice_payments_title' => array(
+                    'title' => __('Pay Upon Invoice Title', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
+                    'default' => __('Pay Upon Invoice', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'pay_upon_invoice_payments_description' => array(
+                    'title' => __('Pay Upon Invoice Payment Description', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This controls the description which the user sees when they select Pay upon invoice payment method during checkout.', 'paypal-for-woocommerce'),
+                    'default' => __('Accept payments using Pay Upon Invoice.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'pay_upon_invoice_customer_service_instructions' => array(
+                    'title' => __('Pay Upon Invoice Customer Service Instruction', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This controls the description which the user sees on Payment Gateway during checkout.', 'paypal-for-woocommerce'),
+                    'default' => __('Contact customer care phone number for any issue with your order.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
                     'type' => 'title',

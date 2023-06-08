@@ -111,6 +111,9 @@ class AngellEYE_PayPal_PPCP_Response {
         } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
             $this->api_log->log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
         }
+
+        $this->api_log->log('Request Headers: ' . wc_print_r($request['headers'], true));
+
         if (!empty($response_body['requestId'])) {
             $this->api_log->log('Request ID: ' . wc_print_r($response_body['requestId'], true));
         }

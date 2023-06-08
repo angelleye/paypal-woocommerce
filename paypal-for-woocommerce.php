@@ -199,7 +199,6 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action( 'wcv_save_product', array($this,'angelleye_wcv_save_product'));
             add_filter( 'admin_body_class', array( $this, 'angelleye_include_admin_body_class' ), 9999 );
             add_action( 'current_screen', array( $this, 'angelleye_redirect_to_onboard' ), 9 );
-            $this->customer_id;
         }
 
 	    /**
@@ -593,6 +592,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/wc-gateway-ppcp-angelleye-subscriptions-base.php');
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-subscriptions.php');
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-apple-pay-subscriptions.php');
+                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-pay-upon-invoice-angelleye.php');
                         $methods[] = 'WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE';
@@ -601,6 +601,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE';
                         if (!isset($_GET['tab']) || $_GET['tab'] !== 'checkout') {
                             $methods[] = 'WC_Gateway_PPCP_AngellEYE_Apple_Pay_Subscriptions';
+                            $methods[] = 'WC_Gateway_Pay_Upon_Invoice_AngellEYE';
                         }
                         $methods[] = 'WC_Gateway_PPCP_AngellEYE_Subscriptions';
                     }
@@ -619,6 +620,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     } else {
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-apple-pay-angelleye.php');
+                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-pay-upon-invoice-angelleye.php');
                         $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Pro_AngellEYE';
@@ -627,6 +629,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE';
                         if (!isset($_GET['tab']) || $_GET['tab'] !== 'checkout') {
                             $methods[] = 'WC_Gateway_Apple_Pay_AngellEYE';
+                            $methods[] = 'WC_Gateway_Pay_Upon_Invoice_AngellEYE';
                         }
                         $methods[] = 'WC_Gateway_PPCP_AngellEYE';
                     }
@@ -642,6 +645,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/wc-gateway-ppcp-angelleye-subscriptions-base.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-subscriptions.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-apple-pay-subscriptions.php');
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-pay-upon-invoice-angelleye.php');
                     $methods[] = 'WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE';
@@ -649,10 +653,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $methods[] = 'WC_Gateway_Braintree_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE';
                     $methods[] = 'WC_Gateway_PPCP_AngellEYE_Apple_Pay_Subscriptions';
+                    $methods[] = 'WC_Gateway_Pay_Upon_Invoice_AngellEYE';
                     $methods[] = 'WC_Gateway_PPCP_AngellEYE_Subscriptions';
                 } else {
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-apple-pay-angelleye.php');
+                    include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-pay-upon-invoice-angelleye.php');
                     $methods[] = 'WC_Gateway_PayPal_Pro_Payflow_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Advanced_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Pro_AngellEYE';
@@ -660,6 +666,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     $methods[] = 'WC_Gateway_Braintree_AngellEYE';
                     $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE';
                     $methods[] = 'WC_Gateway_Apple_Pay_AngellEYE';
+                    $methods[] = 'WC_Gateway_Pay_Upon_Invoice_AngellEYE';
                     $methods[] = 'WC_Gateway_PPCP_AngellEYE';
                 }
             }

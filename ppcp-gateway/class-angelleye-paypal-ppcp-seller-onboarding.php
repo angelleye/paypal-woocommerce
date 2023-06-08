@@ -159,7 +159,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $ppcp_product = 'PPCP';
                 $products = [$ppcp_product, 'PAYMENT_METHODS'];
                 break;
-            case 'pay_upon_invoice':
+            case WC_Gateway_Pay_Upon_Invoice_AngellEYE::PAYMENT_METHOD:
                 $capabilities = ['PAY_UPON_INVOICE'];
                 $third_party_features = ['VAULT', 'BILLING_AGREEMENT'];
                 $products = ['PPCP', 'PAYMENT_METHODS'];

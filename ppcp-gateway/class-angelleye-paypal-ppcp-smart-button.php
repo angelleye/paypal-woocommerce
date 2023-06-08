@@ -53,6 +53,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->advanced_card_payments_display_position = $this->setting_obj->get('advanced_card_payments_display_position', 'after');
         $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');
         $this->enable_apple_pay = 'yes' === $this->setting_obj->get('enable_apple_pay', 'no');
+        $this->enable_pay_upon_invoice = 'yes' === $this->setting_obj->get('enable_pay_upon_invoice', 'no');
         $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
         $this->advanced_card_payments_display_position = $this->setting_obj->get('advanced_card_payments_display_position', 'before');
         if (wc_ship_to_billing_address_only()) {
@@ -428,6 +429,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->enable_apple_pay) {
             $components[] = 'applepay';
         }
+
+        if ($this->enable_pay_upon_invoice) {
+            $components[] = 'legal';
+        }
+
         if (!empty($components)) {
             $smart_js_arg['components'] = apply_filters('angelleye_paypal_checkout_sdk_components', implode(',', $components));
         }
@@ -451,6 +457,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'paypal_sdk_attributes' => $this->get_paypal_sdk_attributes(),
             'apple_sdk_url' => $this->enable_apple_pay ? 'https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js' : '',
             'apple_pay_recurring_params' => $this->getApplePayRecurringParams(),
+            'is_pay_upon_invoice_enabled' => $this->enable_pay_upon_invoice,
             'style_color' => $this->style_color,
             'style_shape' => $this->style_shape,
             'style_height' => $this->style_height,
@@ -598,7 +605,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if ($is_shortcode === 'yes') {
                 echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_checkout_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout"></div><div id="angelleye_ppcp_checkout_apple_pay"></div></div></div>';
             } else {
-                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout" ></div><div id="angelleye_ppcp_checkout_apple_pay"></div></div>';
+                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout" ></div><div id="angelleye_ppcp_checkout_apple_pay"></div><div id="paypal-legal-container"></div></div>';
             }
         }
     }

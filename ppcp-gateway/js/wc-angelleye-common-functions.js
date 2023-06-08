@@ -22,19 +22,27 @@ const angelleyeOrder = {
 	isApplePayPaymentMethodSelected: () => {
 		return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp_apple_pay';
 	},
+	isPayUponInvoicePaymentMethodSelected: () => {
+		return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp_pay_upon_invoice';
+	},
 	isPpcpPaymentMethodSelected: () => {
 		return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp';
 	},
 	isAngelleyePpcpPaymentMethodSelected: () => {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
-		return paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay';
+		return paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay'
+			|| paymentMethod === 'angelleye_ppcp_pay_upon_invoice';
 	},
 	isAngelleyePaymentMethodSelected: () => {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
-		return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay';
+		return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp'
+			|| paymentMethod === 'angelleye_ppcp_apple_pay' || paymentMethod === 'angelleye_ppcp_pay_upon_invoice';
 	},
 	isApplePayEnabled: () => {
 		return angelleye_ppcp_manager.apple_sdk_url !== "";
+	},
+	isPayUponInvoiceEnabled: () => {
+		return angelleye_ppcp_manager.is_pay_upon_invoice_enabled;
 	},
 	getCheckoutSelectorCss: () => {
 		let checkoutSelector = '.woocommerce';
@@ -235,12 +243,16 @@ const angelleyeOrder = {
 		return false;
 	},
 	showPpcpPaymentMethods: () => {
+		jQuery('#paypal-legal-container').hide();
 		if (angelleyeOrder.isApplePayPaymentMethodSelected()) {
-			jQuery('#angelleye_ppcp_checkout').hide();
+			jQuery('#angelleye_ppcp_checkout, #paypal-legal-container').hide();
 			jQuery('#angelleye_ppcp_checkout_apple_pay').show();
 		} else {
 			jQuery('#angelleye_ppcp_checkout_apple_pay').hide();
 			jQuery('#angelleye_ppcp_checkout').show();
+			if (angelleyeOrder.isPayUponInvoicePaymentMethodSelected()) {
+				jQuery('#paypal-legal-container').show();
+			}
 		}
 	},
 	hidePpcpPaymentMethods: () => {
@@ -256,6 +268,14 @@ const angelleyeOrder = {
 		if (angelleyeOrder.isHostedFieldEligible() === false) {
 			jQuery('.payment_method_angelleye_ppcp_cc').hide();
 		}
+
+		// Show birth date field when pay upon invoice payment method is selected
+		if (!angelleyeOrder.isPayUponInvoicePaymentMethodSelected()) {
+			jQuery('.pay-upon-invoice-birth-date').hide();
+		} else {
+			jQuery('.pay-upon-invoice-birth-date').show();
+		}
+
 		if (isAePpcpMethodSelected === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
 			showHidePlaceOrderBtn();
 			angelleyeOrder.showPpcpPaymentMethods();
@@ -320,6 +340,9 @@ const angelleyeOrder = {
 
 			angelleye_paypal_sdk.Buttons({
 				style: angelleye_ppcp_style,
+				onClick: function (data, actions) {
+					angelleyeOrder.setPaymentMethodSelector(data.fundingSource);
+				},
 				createOrder: function (data, actions) {
 					return angelleyeOrder.createSmartButtonOrder({
 						angelleye_ppcp_button_selector
@@ -332,8 +355,6 @@ const angelleyeOrder = {
 				onCancel: function (data, actions) {
 					angelleyeOrder.hideProcessingSpinner();
 					angelleyeOrder.onCancel();
-				}, onClick: function (data, actions) {
-					angelleyeOrder.setPaymentMethodSelector(data.fundingSource);
 				},
 				onError: function (err) {
 					angelleyeOrder.handleCreateOrderError(err);
@@ -342,6 +363,7 @@ const angelleyeOrder = {
 			if (angelleyeOrder.isApplePayEnabled()) {
 				(new ApplePayCheckoutButton()).render(angelleye_ppcp_button_selector);
 			}
+			angelleyeOrder.addPayUponInvoiceLegalText();
 		});
 	},
 	renderHostedButtons: () => {
@@ -531,6 +553,19 @@ const angelleyeOrder = {
 		}).catch(function (err) {
 			console.log('error: ', JSON.stringify(err));
 		});
+	},
+	loadFraudnetConfig: (options) => {
+		let script = document.createElement('script');
+		script.src = options.fnUrl;
+		document.body.appendChild(script);
+	},
+	addPayUponInvoiceLegalText: () => {
+		if (angelleyeOrder.isPayUponInvoiceEnabled()) {
+			console.log('adding legal text');
+			angelleye_paypal_sdk.Legal({
+				fundingSource: angelleye_paypal_sdk.Legal.FUNDING.PAY_UPON_INVOICE,
+			}).render("#paypal-legal-container");
+		}
 	},
 	queuedEvents: {},
 	addEventsForCallback: (eventType, event, data) => {

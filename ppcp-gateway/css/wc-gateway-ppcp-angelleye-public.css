@@ -255,7 +255,9 @@
     padding: 5px 6px;
     border-radius: 4px;
 }
-
+#paypal-legal-container {
+    display: none;
+}
 @supports (-webkit-appearance: -apple-pay-button) {
     .apple-pay-button {
         -webkit-appearance: -apple-pay-button;

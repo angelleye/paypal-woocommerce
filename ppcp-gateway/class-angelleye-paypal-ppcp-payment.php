@@ -18,12 +18,18 @@ class AngellEYE_PayPal_PPCP_Payment {
     public $payment_tokens_url;
     public $angelleye_ppcp_used_payment_method;
     public $is_auto_capture_auth;
+    public $checkout_payment_gateway;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
         }
         return self::$_instance;
+    }
+
+    public function setCheckoutPaymentGateway($paymentGateway)
+    {
+        $this->checkout_payment_gateway = $paymentGateway;
     }
 
     public function __construct() {
@@ -137,11 +143,12 @@ class AngellEYE_PayPal_PPCP_Payment {
     }
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
+        $payment_gateway = $_REQUEST['payment_method'] ?? 'angelleye_ppcp';
         // Handles the Duplicate_invoice_id error, usually this comes up when we already triggered order create
         // api call for an order and initiate the order create again on button click
         if (!empty($woo_order_id)) {
             $order = wc_get_order($woo_order_id);
-            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id', null);
+            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id', true);
 
             if (!empty($existing_paypal_order_id)) {
                 $this->angelleye_ppcp_update_order($order);
@@ -203,22 +210,25 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($woo_order_id != null) {
                 $order = wc_get_order($woo_order_id);
                 $country_code = $old_wc ? $order->billing_country : $order->get_billing_country('edit');
-                $full_name = $old_wc ? $order->billing_first_name . ' ' . $order->billing_last_name : $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+                $first_name = $old_wc ? $order->billing_first_name : $order->get_billing_first_name();
+                $last_name = $old_wc ? $order->billing_last_name : $order->get_billing_last_name();
+                $user_email = $old_wc ? $order->billing_email : $order->get_billing_email();
+                $user_phone = $old_wc ? $order->billing_phone : $order->get_billing_phone();
+                $birth_date = get_post_meta($woo_order_id, 'billing_birth_date', true);
+
                 $body_request['purchase_units'][0]['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
             } else {
                 $country_code = $cart['billing_address']['country'];
-                $full_name = $cart['billing_address']['first_name'] . ' ' . $cart['billing_address']['last_name'];
+                $first_name = $cart['billing_address']['first_name'];
+                $last_name = $cart['billing_address']['last_name'];
+                $user_email = $cart['billing_address']['email'];
+                $user_phone = $cart['billing_address']['phone'];
+                $birth_date = $_POST['billing_birth_date'] ?? '';
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
             }
 
-            if (strtolower($payment_method) == 'ideal') {
-                $body_request['payment_source'] = [
-                    'ideal' => ["country_code" => $country_code, 'name' => trim($full_name)]
-                ];
-                $body_request['processing_instruction'] = 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL';
-            }
             $body_request['purchase_units'][0]['soft_descriptor'] = angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor);
             $body_request['purchase_units'][0]['payee']['merchant_id'] = $this->merchant_id;
             if ($this->send_items === true) {
@@ -267,6 +277,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                                 'currency_code' => angelleye_ppcp_get_currency($woo_order_id),
                                 'value' => $order_items['amount'],
                             ),
+                            'tax' => [
+                                "currency_code" => angelleye_ppcp_get_currency($woo_order_id),
+                                "value" => $order_items['tax']
+                            ],
+                            'tax_rate' => $order_items['tax_rate']
                         );
                     }
                 }
@@ -357,6 +372,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
+
+            $headers = [];
             $body_request = $this->angelleye_ppcp_set_payer_details($woo_order_id, $body_request);
             if (angelleye_ppcp_is_save_payment_method($this->enable_tokenized_payments)) {
                 $body_request = $this->angelleye_ppcp_add_payment_source_parameter($body_request);
@@ -367,11 +384,49 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $body_request['payment_source']['venmo']['experience_context']['shipping_preference'] = $this->angelleye_ppcp_shipping_preference();
                 }
                 unset($body_request['application_context']);
+            } elseif ($payment_gateway === 'angelleye_ppcp_pay_upon_invoice') {
+                $extractPhoneNumber = explode('-', $user_phone);
+                $callingCode = str_replace('+', '', $extractPhoneNumber[0]);
+                unset($extractPhoneNumber[0]);
+                $body_request['payment_source'] = [
+                    'pay_upon_invoice' => [
+                        'name' => ['given_name' => $first_name, 'surname' => $last_name],
+                        'email' => $user_email,
+                        'birth_date' => $birth_date,
+                        'phone' => ['national_number' => implode('', $extractPhoneNumber), 'country_code' => "$callingCode"],
+                        'billing_address' => [
+                            'address_line_1' => $body_request['purchase_units'][0]['shipping']['address']['address_line_1'] ?? '',
+                            'admin_area_2' => $body_request['purchase_units'][0]['shipping']['address']['admin_area_2'] ?? '',
+                            'postal_code' => $body_request['purchase_units'][0]['shipping']['address']['postal_code'] ?? '',
+                            'country_code' => $body_request['purchase_units'][0]['shipping']['address']['country_code'] ?? '',
+                        ],
+                        'experience_context' => [
+                            "locale" => "en-DE",
+                            "brand_name" => $this->brand_name,
+                            "customer_service_instructions" => [
+                                $this->setting_obj->get('pay_upon_invoice_customer_service_instructions', 'Default instruction to be placed for Pay Upon Invoice.')
+                            ]
+                        ]
+                    ]
+                ];
+                $headers = ['PayPal-Client-Metadata-Id' => WC_Gateway_Pay_Upon_Invoice_AngellEYE::getUniqueSessionIdentifier()];
+                $body_request['processing_instruction'] = 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL';
+            } elseif (strtolower($this->angelleye_ppcp_used_payment_method) == 'ideal') {
+                $body_request['payment_source'] = [
+                    'ideal' => ['country_code' => $country_code, 'name' => trim($first_name . ' ' . $last_name)]
+                ];
+                $body_request['processing_instruction'] = 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL';
             }
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $args = array(
                 'method' => 'POST',
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                'headers' => array_merge([
+                    'Content-Type' => 'application/json',
+                    'Authorization' => '',
+                    "prefer" => "return=representation",
+                    'PayPal-Request-Id' => $this->generate_request_id(),
+                    'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()
+                ], $headers),
                 'body' => $body_request
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api, $args, 'create_order');
@@ -419,6 +474,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'items' => $this->angelleye_ppcp_get_paypal_line_items_from_cart(),
                 'shipping_address' => $this->angelleye_ppcp_get_address_from_customer(),
                 'email' => $old_wc ? WC()->customer->billing_email : WC()->customer->get_billing_email(),
+                'phone' => $old_wc ? WC()->customer->billing_phone : WC()->customer->get_billing_phone()
             );
             return $this->angelleye_ppcp_get_details($details, $discounts, $rounded_total, WC()->cart->total);
         } catch (Exception $ex) {
@@ -496,6 +552,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             foreach (WC()->cart->cart_contents as $cart_item_key => $values) {
                 $desc = '';
                 $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['quantity'], $decimals);
+                $tax_amount = angelleye_ppcp_round($values['line_subtotal_tax'] / $values['quantity'], $decimals);
+                $tax_rate = angelleye_ppcp_round($values['line_subtotal_tax'] / $values['quantity'], $decimals);
                 if (version_compare(WC_VERSION, '3.0', '<')) {
                     $product = $values['data'];
                     $name = $values['data']->post->post_title;
@@ -555,6 +613,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'category' => $category,
                     'quantity' => $values['quantity'],
                     'amount' => $amount,
+                    'tax' => $tax_amount,
+                    'tax_rate' => $tax_rate
                 );
                 $items[] = $item;
             }
@@ -1235,8 +1295,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'shipping' => angelleye_ppcp_round(( version_compare(WC_VERSION, '3.0', '<') ? $order->get_total_shipping() : $order->get_shipping_total()), $decimals),
                 'items' => $this->angelleye_ppcp_get_paypal_line_items_from_order($order),
             );
-            $details = $this->angelleye_ppcp_get_details($details, $order->get_total_discount(), $rounded_total, $order->get_total());
-            return $details;
+            return $this->angelleye_ppcp_get_details($details, $order->get_total_discount(), $rounded_total, $order->get_total());
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -1266,6 +1325,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             foreach ($order->get_items() as $cart_item_key => $values) {
                 $desc = '';
                 $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['qty'], $decimals);
+                $tax_amount = angelleye_ppcp_round($values['line_subtotal_tax'] / $values['qty'], $decimals);
+                $tax_rate = $tax_amount;
                 $product = version_compare(WC_VERSION, '3.0', '<') ? $order->get_product_from_item($values) : $values->get_product();
                 $name = $product->get_name();
                 $sku = $product->get_sku();
@@ -1313,6 +1374,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'category' => $category,
                     'quantity' => $values['quantity'],
                     'amount' => $amount,
+                    'tax' => $tax_amount,
+                    'tax_rate' => $tax_rate
                 );
                 $items[] = $item;
             }
