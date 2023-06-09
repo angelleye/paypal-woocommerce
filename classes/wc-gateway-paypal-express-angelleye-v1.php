@@ -213,6 +213,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function admin_options() {
         do_action('angelleye_classic_gateway_sub_menu');
+        do_action('angelleye_ppcp_upgrade_notice', 'paypal_express');
         global $current_user;
         $user_id = $current_user->ID;
         $GLOBALS['hide_save_button'] = true;

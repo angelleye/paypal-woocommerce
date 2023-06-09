@@ -100,7 +100,7 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
         if ($old_wc) {
             $order_meta_value = get_post_meta($order->id, $key, $bool);
         } else {
-            if('_payment_method_title' === $key) {
+            if ('_payment_method_title' === $key) {
                 $order_meta_value = $order->get_payment_method_title();
             } else {
                 $order_meta_value = $order->get_meta($key, $bool);
@@ -979,6 +979,58 @@ if (!function_exists('angelleye_is_vaulting_enable')) {
             }
         }
         return false;
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
+
+    function angelleye_ppcp_display_upgrade_notice_type() {
+        try {
+            $notice_type = array();
+            $notice_type['vault_upgrade'] = false;
+            $notice_type['classic_upgrade'] = false;
+            $is_subscriptions = false;
+            $is_us = false;
+            $is_classic = false;
+            if (function_exists('wc_get_base_location')) {
+                $default = wc_get_base_location();
+                $country = apply_filters('woocommerce_countries_base_country', $default['country']);
+                if ($country === 'US') {
+                    $is_us = true;
+                }
+            }
+            if (class_exists('WC_Subscriptions_Order')) {
+                $is_subscriptions = true;
+            }
+            $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+            $active_classic_gateway_list = array();
+            foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+                if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
+                    $active_classic_gateway_list[$gateway->id] = $gateway->id;
+                }
+            }
+            if (count($active_classic_gateway_list) > 0) {
+                $is_classic = true;
+            }
+            if ($is_classic === true && $is_subscriptions === true && $is_us === true) {
+                $notice_type['classic_upgrade'] = true;
+            } elseif ($is_classic === true && $is_subscriptions === false) {
+                $notice_type['classic_upgrade'] = true;
+            }
+            foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+                if (in_array($gateway->id, array('angelleye_ppcp')) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
+                    if ($gateway->enable_tokenized_payments) {
+                        $notice_type['vault_upgrade'] = false;
+                    } else {
+                        $notice_type['vault_upgrade'] = true;
+                    }
+                }
+            }
+            return $notice_type;
+        } catch (Exception $ex) {
+            return $notice_type;
+        }
     }
 
 }

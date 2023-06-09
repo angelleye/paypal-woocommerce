@@ -193,6 +193,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function admin_options() {
         do_action('angelleye_classic_gateway_sub_menu');
+        do_action('angelleye_ppcp_upgrade_notice', 'paypal_express');
         wp_enqueue_script('woocommerce_admin');
         wp_enqueue_script('wc-clipboard');
         global $current_user;

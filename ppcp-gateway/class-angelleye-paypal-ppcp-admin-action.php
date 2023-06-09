@@ -54,6 +54,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
 
     public function angelleye_ppcp_add_hooks() {
         $this->is_auto_capture_auth = 'yes' === $this->setting_obj->get('auto_capture_auth', 'yes');
+        add_action( 'admin_notices', array($this, 'admin_notices') );
         if ($this->is_auto_capture_auth) {
             add_action('woocommerce_order_status_processing', array($this, 'angelleye_ppcp_capture_payment'));
             add_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
@@ -505,6 +506,24 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     do_action('woocommerce_order_action_' . sanitize_title($hook_name), $order, $order_data);
                 }
             }
+        }
+    }
+    
+    public function admin_notices() {
+        try {
+            $notice_type = angelleye_ppcp_display_upgrade_notice_type();
+            if(!empty($notice_type)) {
+                foreach ($notice_type as $key => $type) {
+                    if('classic_upgrade' === $type) {
+                        
+                    }
+                    if('vault_upgrade' === $type) {
+                        
+                    }
+                }
+            } 
+        } catch (Exception $ex) {
+
         }
     }
 

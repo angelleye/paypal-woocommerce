@@ -100,6 +100,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
      * Admin Panel Options
      */
     public function admin_options() {
+        do_action('angelleye_ppcp_upgrade_notice', 'braintree');
         $GLOBALS['hide_save_button'] = true;
         ?>
         <h3><?php _e('Braintree', 'paypal-for-woocommerce'); ?></h3>
