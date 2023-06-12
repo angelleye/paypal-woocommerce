@@ -537,10 +537,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (strlen($product_name) > 127) {
                     $product_name = substr($product_name, 0, 124) . '...';
                 }
-                if (empty($desc)) {
-                    $desc = $product_name;
-                }
-
                 $desc = !empty($desc) ? $desc : '';
                 if (strlen($desc) > 127) {
                     $desc = substr($desc, 0, 124) . '...';
@@ -1298,9 +1294,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $product_name = wp_strip_all_tags($product_name);
                 if (strlen($product_name) > 127) {
                     $product_name = substr($product_name, 0, 124) . '...';
-                }
-                if (empty($desc)) {
-                    $desc = $product_name;
                 }
                 if (strlen($desc) > 127) {
                     $desc = substr($desc, 0, 124) . '...';
@@ -3858,8 +3851,17 @@ class AngellEYE_PayPal_PPCP_Payment {
             $user_id = (int) $order->get_customer_id();
             $all_payment_tokens = $this->angelleye_ppcp_get_all_payment_tokens_for_renewal($user_id);
             $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
-            if (empty($all_payment_tokens) && empty($payment_tokens_id)) {
+            if (empty($payment_tokens_id)) {
+                $payment_tokens_id = get_post_meta($order_id, 'payment_token_id', true);
+            }
+            if (empty($payment_tokens_id)) {
+                $payment_tokens_id = get_post_meta($order_id, '_ppec_billing_agreement_id', true);
+            }
+            $paypal_subscription_id = get_post_meta($order_id, '_paypal_subscription_id', true);
+            if (empty($all_payment_tokens) && empty($payment_tokens_id) && empty($paypal_subscription_id)) {
                 return $body_request;
+            } elseif (!empty($paypal_subscription_id)) {
+                $payment_tokens_id = $paypal_subscription_id;
             }
             if (!empty($all_payment_tokens) && !empty($payment_tokens_id)) {
                 foreach ($all_payment_tokens as $key => $paypal_payment_token) {
@@ -3888,10 +3890,42 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
-            if (empty($all_payment_tokens) && !empty($payment_tokens_id)) {
+
+            $angelleye_ppcp_old_payment_method = get_post_meta($order_id, '_angelleye_ppcp_old_payment_method', true);
+            if (!empty($angelleye_ppcp_old_payment_method)) {
+                $tokenType = '';
+                switch ($angelleye_ppcp_old_payment_method) {
+                    case 'paypal_express':
+                    case 'paypal':
+                    case 'ppec_paypal':
+                    case 'paypal_credit_card_rest':
+                        $tokenType = 'BILLING_AGREEMENT';
+                        break;
+                    case 'paypal_advanced':
+                    case 'paypal_pro_payflow':
+                        $tokenType = 'PNREF';
+                        break;
+                    case 'paypal_pro':
+                        $tokenType = 'PAYPAL_TRANSACTION_ID';
+                        break;
+                }
+
+                if (!empty($tokenType)) {
+                    $body_request['payment_source'] = [
+                        'token' => ['id' => $payment_tokens_id, 'type' => $tokenType]
+                    ];
+                }
+            }
+
+            if (empty($all_payment_tokens) && !empty($payment_tokens_id) && !isset($body_request['payment_source'])) {
                 $payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+                if (in_array($payment_method, ['PayPal Checkout', 'PayPal Credit'])) {
+                    $payment_method = 'paypal';
+                }
                 $body_request['payment_source'] = array($payment_method => array('vault_id' => $payment_tokens_id));
                 $this->applyStoredCredentialParameter($payment_method, $body_request);
+            } elseif (!empty($payment_tokens_id) && !isset($body_request['payment_source'])) {
+                $body_request['payment_source'] = array('paypal' => array('vault_id' => $payment_tokens_id));
             }
         } catch (Exception $ex) {
             return $body_request;
