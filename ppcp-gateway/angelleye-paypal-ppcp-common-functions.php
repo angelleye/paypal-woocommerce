@@ -1020,11 +1020,11 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
             }
             foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
                 if (in_array($gateway->id, array('angelleye_ppcp')) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
-                    if(empty($result)) {
+                    if (empty($result)) {
                         $notice_type['vault_upgrade'] = false;
                     } elseif (angelleye_is_vaulting_enable($result)) {
                         $notice_type['vault_upgrade'] = false;
-                    } elseif($is_us === true && angelleye_is_vaulting_enable($result) === false) {
+                    } elseif ($is_us === true && angelleye_is_vaulting_enable($result) === false) {
                         $notice_type['vault_upgrade'] = true;
                     }
                 }
@@ -1038,6 +1038,11 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
     if (!function_exists('angelleye_ppcp_display_notice')) {
 
         function angelleye_ppcp_display_notice($response_data) {
+            global $current_user;
+            $user_id = $current_user->ID;
+            if (get_user_meta($user_id, $response_data->id)) {
+                return;
+            }
             $message = '<div class="notice notice-success angelleye-notice" style="display:none;" id="' . $response_data->id . '">'
                     . '<div class="angelleye-notice-logo-push"><span> <img src="' . $response_data->ans_company_logo . '"> </span></div>'
                     . '<div class="angelleye-notice-message">'

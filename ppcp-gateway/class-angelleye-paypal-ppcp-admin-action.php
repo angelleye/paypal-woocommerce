@@ -526,7 +526,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 return;
             }
             $notice_data['classic_upgrade'] = array(
-                'id' => '0001',
+                'id' => 'ppcp_notice_classic_upgrade',
                 'ans_company_logo' => 'https://www.angelleye.com/wp-content/uploads/2019/12/angelleye-icon-25x25.png',
                 'ans_message_title' => 'Important PayPal Update Required',
                 'ans_message_description' => sprintf('Upgrade now to PayPal Commerce for better features, enhanced security, reduced fees, and future-proof integration. <a target="_blank" href="%s">Click here</a> to learn more and start the upgrade process. Don\'t miss out on the advantages of PayPal Commerce! <br><br>Please upgrade by September 30, 2023 to avoid potential interruptions.<br>', admin_url('options-general.php?page=paypal-for-woocommerce')),
@@ -535,7 +535,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'is_dismiss' => false
             );
             $notice_data['vault_upgrade'] = array(
-                'id' => '0002',
+                'id' => 'ppcp_notice_vault_upgrade',
                 'ans_company_logo' => 'https://www.angelleye.com/wp-content/uploads/2019/12/angelleye-icon-25x25.png',
                 'ans_message_title' => 'PayPal Commerce Now Supports Token Payments / Subscriptions',
                 'ans_message_description' => 'Maximize the power of PayPal Commerce in your WordPress store by enabling the Vault functionality. Unlock advanced features such as Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
