@@ -18,6 +18,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     protected static $_instance = null;
     public $setting_obj;
     public $is_auto_capture_auth;
+    public $seller_onboarding;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -43,6 +44,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php';
+            }
+            $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
@@ -54,7 +59,13 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
 
     public function angelleye_ppcp_add_hooks() {
         $this->is_auto_capture_auth = 'yes' === $this->setting_obj->get('auto_capture_auth', 'yes');
-        add_action( 'admin_notices', array($this, 'admin_notices') );
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
+        if ($this->is_sandbox) {
+            $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
+        } else {
+            $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
+        }
+        add_action('admin_notices', array($this, 'admin_notices'));
         if ($this->is_auto_capture_auth) {
             add_action('woocommerce_order_status_processing', array($this, 'angelleye_ppcp_capture_payment'));
             add_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
@@ -80,7 +91,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
             $this->payment_request->angelleye_ppcp_void_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -92,7 +103,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
             $this->payment_request->angelleye_ppcp_capture_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -104,7 +115,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
             $this->payment_request->angelleye_ppcp_refund_order_admin($order, $order_data);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -163,7 +174,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -187,7 +198,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -284,14 +295,14 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 $this->angelleye_ppcp_display_paypal_activity_table($html_table_row);
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
     public function angelleye_ppcp_display_payment_action() {
         ?>
         <div class='wrap'>
-            <?php if (isset($this->angelleye_ppcp_order_actions) && !empty($this->angelleye_ppcp_order_actions)) { ?>
+        <?php if (isset($this->angelleye_ppcp_order_actions) && !empty($this->angelleye_ppcp_order_actions)) { ?>
                 <table class="form-table">
                     <tbody>
                         <tr>
@@ -299,27 +310,27 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                                 <label for="angelleye_ppcp_payment_action"><?php echo __('Select PayPal Action', 'paypal-for-woocommerce'); ?></label>
                             </th>
                             <td class="forminp forminp-text">
-                                <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
+            <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
                                     <select name="angelleye_ppcp_payment_action" id="angelleye_ppcp_payment_action">
-                                        <?php
-                                        $i = 0;
-                                        foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
-                                            if ($i == 0) {
-                                                echo "<option value=''>" . __('Select Action', 'paypal-for-woocommerce') . "</option>";
-                                            }
-                                            ?>
+                                    <?php
+                                    $i = 0;
+                                    foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
+                                        if ($i == 0) {
+                                            echo "<option value=''>" . __('Select Action', 'paypal-for-woocommerce') . "</option>";
+                                        }
+                                        ?>
                                             <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($v); ?></option>
                                             <?php
                                             $i = $i + 1;
                                         endforeach;
                                         ?>
                                     </select>
-                                <?php } ?>
+                                    <?php } ?>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            <?php } ?>
+        <?php } ?>
             <?php if (isset($this->angelleye_ppcp_order_status_data['capture']) && isset($this->angelleye_ppcp_order_actions['capture'])) { ?>
                 <p class="angelleye_ppcp_capture_box" style="display: none;"><b style="font-size: 14px;"><?php echo __('Enter the capture details below to move funds from your buyer\'s account to your account.', 'paypal-for-woocommerce'); ?></b></p>
                 <table class="form-table angelleye_ppcp_capture_box" style="display: none;">
@@ -349,7 +360,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         </tr>
                     </tbody>
                 </table>
-            <?php } ?>
+        <?php } ?>
             <?php if (isset($this->angelleye_ppcp_order_status_data['refund']) && isset($this->angelleye_ppcp_order_actions['refund'])) { ?>
                 <p class="angelleye_ppcp_refund_box" style="display: none;"><b style="font-size: 14px;"><?php echo __('You can issue a full or partial refund for 180 days after the original payment was sent.', 'paypal-for-woocommerce'); ?></b></p>
                 <table class="form-table angelleye_ppcp_refund_box" style="display: none;">
@@ -358,13 +369,13 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             <th scope="row"><?php echo __('Transaction Id', ''); ?></th>
                             <td>
                                 <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data">
-                                    <?php
-                                    $i = 0;
-                                    foreach ($this->angelleye_ppcp_order_status_data['refund'] as $k => $v) :
-                                        if ($i == 0) {
-                                            echo "<option value=''>" . __('Select Transaction Id', '') . "</option>";
-                                        }
-                                        ?>
+            <?php
+            $i = 0;
+            foreach ($this->angelleye_ppcp_order_status_data['refund'] as $k => $v) :
+                if ($i == 0) {
+                    echo "<option value=''>" . __('Select Transaction Id', '') . "</option>";
+                }
+                ?>
                                         <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
                                         <?php
                                         $i = $i + 1;
@@ -423,24 +434,24 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     <td><?php echo __('Order Total:', 'paypal-for-woocommerce'); ?></td>
                     <td><?php echo $this->order->get_formatted_order_total(); ?></td>
                 </tr>
-                <?php if (isset($this->ae_capture_amount) && $this->ae_capture_amount > 0) { ?>
+        <?php if (isset($this->ae_capture_amount) && $this->ae_capture_amount > 0) { ?>
                     <tr>
                         <td><?php echo __('Capture: ', 'paypal-for-woocommerce'); ?></td>
                         <td><?php echo wc_price($this->ae_capture_amount, array('currency' => $this->currency_code)); ?></td>
                     </tr>
-                <?php } ?>
+        <?php } ?>
                 <?php if (isset($this->ae_refund_amount) && $this->ae_refund_amount > 0) { ?>
                     <tr>
                         <td><?php echo __('Refund:', 'paypal-for-woocommerce'); ?></td>
                         <td><?php echo wc_price($this->ae_refund_amount, array('currency' => $this->currency_code)); ?></td>
                     </tr>
-                <?php } ?>
+        <?php } ?>
                 <?php if (isset($this->ae_void_amount) && $this->ae_void_amount > 0) { ?>
                     <tr>
                         <td><?php echo __('Void:', 'paypal-for-woocommerce'); ?></td>
                         <td><?php echo wc_price($this->ae_void_amount, array('currency' => $this->currency_code)); ?></td>
                     </tr>
-                <?php } ?>
+        <?php } ?>
             </tbody>
         </table>
         <?php
@@ -469,22 +480,22 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     </tr>
                 </tfoot>
                 <tbody>
-                    <?php
-                    foreach ($table_rows as $key => $table_field) {
-                        echo '<tr>';
-                        echo '<td>' . $table_field['transaction_id'] . '</td>';
-                        echo '<td>' . $table_field['amount'] . '</td>';
-                        echo '<td>' . $table_field['payment_status'] . '</td>';
-                        echo '<td>' . $table_field['expired_date'] . '</td>';
-                        echo '<td>' . $table_field['payment_action'] . '</td>';
-                        echo '</tr>';
-                    }
-                    ?>
+            <?php
+            foreach ($table_rows as $key => $table_field) {
+                echo '<tr>';
+                echo '<td>' . $table_field['transaction_id'] . '</td>';
+                echo '<td>' . $table_field['amount'] . '</td>';
+                echo '<td>' . $table_field['payment_status'] . '</td>';
+                echo '<td>' . $table_field['expired_date'] . '</td>';
+                echo '<td>' . $table_field['payment_action'] . '</td>';
+                echo '</tr>';
+            }
+            ?>
                 </tbody>
             </table>
             <?php
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -508,22 +519,45 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             }
         }
     }
-    
+
     public function admin_notices() {
         try {
-            $notice_type = angelleye_ppcp_display_upgrade_notice_type();
-            if(!empty($notice_type)) {
+            if (isset($_GET['page']) && 'paypal-for-woocommerce' === $_GET['page']) {
+                return;
+            }
+            $notice_data['classic_upgrade'] = array(
+                'id' => '0001',
+                'ans_company_logo' => 'https://www.angelleye.com/wp-content/uploads/2019/12/angelleye-icon-25x25.png',
+                'ans_message_title' => 'Important PayPal Update Required',
+                'ans_message_description' => sprintf('Upgrade now to PayPal Commerce for better features, enhanced security, reduced fees, and future-proof integration. <a target="_blank" href="%s">Click here</a> to learn more and start the upgrade process. Don\'t miss out on the advantages of PayPal Commerce! <br><br>Please upgrade by September 30, 2023 to avoid potential interruptions.<br>', admin_url('options-general.php?page=paypal-for-woocommerce')),
+                'ans_button_url' => admin_url('options-general.php?page=paypal-for-woocommerce'),
+                'ans_button_label' => 'Upgrade Now',
+                'is_dismiss' => false
+            );
+            $notice_data['vault_upgrade'] = array(
+                'id' => '0002',
+                'ans_company_logo' => 'https://www.angelleye.com/wp-content/uploads/2019/12/angelleye-icon-25x25.png',
+                'ans_message_title' => 'PayPal Commerce Now Supports Token Payments / Subscriptions',
+                'ans_message_description' => 'Maximize the power of PayPal Commerce in your WordPress store by enabling the Vault functionality. Unlock advanced features such as Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
+                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=woocommerce_angelleye_ppcp_tokenization_subscriptions'),
+                'ans_button_label' => 'Enable the PayPal Vault',
+                'is_dismiss' => true
+            );
+            $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->merchant_id);
+            $notice_data = json_decode(json_encode($notice_data));
+            $notice_type = angelleye_ppcp_display_upgrade_notice_type($result);
+            if (!empty($notice_type)) {
                 foreach ($notice_type as $key => $type) {
-                    if('classic_upgrade' === $type) {
-                        
+                    if ('classic_upgrade' === $key && $type === true && isset($notice_data->$key)) {
+                        angelleye_ppcp_display_notice($notice_data->$key);
                     }
-                    if('vault_upgrade' === $type) {
-                        
+                    if ('vault_upgrade' === $key && $type === true && isset($notice_data->$key)) {
+                        angelleye_ppcp_display_notice($notice_data->$key);
                     }
                 }
-            } 
+            }
         } catch (Exception $ex) {
-
+            
         }
     }
 

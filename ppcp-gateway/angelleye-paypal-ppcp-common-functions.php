@@ -985,7 +985,7 @@ if (!function_exists('angelleye_is_vaulting_enable')) {
 
 if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
 
-    function angelleye_ppcp_display_upgrade_notice_type() {
+    function angelleye_ppcp_display_upgrade_notice_type($result = '') {
         try {
             $notice_type = array();
             $notice_type['vault_upgrade'] = false;
@@ -1020,9 +1020,11 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
             }
             foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
                 if (in_array($gateway->id, array('angelleye_ppcp')) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
-                    if ($gateway->enable_tokenized_payments) {
+                    if(empty($result)) {
                         $notice_type['vault_upgrade'] = false;
-                    } else {
+                    } elseif (angelleye_is_vaulting_enable($result)) {
+                        $notice_type['vault_upgrade'] = false;
+                    } elseif($is_us === true && angelleye_is_vaulting_enable($result) === false) {
                         $notice_type['vault_upgrade'] = true;
                     }
                 }
@@ -1033,4 +1035,28 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
         }
     }
 
+    if (!function_exists('angelleye_ppcp_display_notice')) {
+
+        function angelleye_ppcp_display_notice($response_data) {
+            $message = '<div class="notice notice-success angelleye-notice" style="display:none;" id="' . $response_data->id . '">'
+                    . '<div class="angelleye-notice-logo-push"><span> <img src="' . $response_data->ans_company_logo . '"> </span></div>'
+                    . '<div class="angelleye-notice-message">'
+                    . '<h2>' . $response_data->ans_message_title . '</h2>'
+                    . '<div class="angelleye-notice-message-inner">'
+                    . '<p>' . $response_data->ans_message_description . '</p>'
+                    . '<div class="angelleye-notice-action"><a target="_blank" href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a></div>'
+                    . '</div>'
+                    . '</div>';
+            if ($response_data->is_dismiss) {
+                $message .= '<div class="angelleye-notice-cta">'
+                        . '<button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="' . $response_data->id . '">Dismiss</button>'
+                        . '</div>'
+                        . '</div>';
+            } else {
+                $message .= '</div>';
+            }
+            echo $message;
+        }
+
+    }
 }

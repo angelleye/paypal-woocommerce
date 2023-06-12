@@ -911,9 +911,9 @@ jQuery(function ($) {
     }).change();
     url = new URL(window.location.href);
     if (url.searchParams.has('move')) {
-        if ($('#woocommerce_angelleye_ppcp_pay_later_messaging_settings').length) {
+        if ($('#woocommerce_angelleye_ppcp_pay_later_messaging_payment_shortcode').length) {
             $('html, body').animate({
-                scrollTop: $('#woocommerce_angelleye_ppcp_pay_later_messaging_settings').offset().top
+                scrollTop: $('#woocommerce_angelleye_ppcp_pay_later_messaging_payment_shortcode').offset().top
             }, 'slow');
         }
     }
