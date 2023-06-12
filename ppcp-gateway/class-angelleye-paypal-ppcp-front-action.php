@@ -84,7 +84,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 {
                     "f":"<?php echo $sessionIdentifier ?>",
                     "s":"<?php echo $merchant_id.'_'.$post_slug ?>",
-                    "sandbox": true
+                    "sandbox": <?php echo $this->is_sandbox ? 'true' : 'false' ?>
                 }
             </script>
             <?php
