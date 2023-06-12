@@ -61,10 +61,14 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Apple_Pay_Configurations')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/admin/class-angelleye-paypal-ppcp-apple-pay-configurations.php';
+            }
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
+            AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');

@@ -10,7 +10,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public $generate_token_url;
     public $basicAuth;
     public $client_token;
-    public $api_response;
+    public ?AngellEYE_PayPal_PPCP_Response $api_response;
     public $result;
     public $setting_obj;
     public $api_request;
@@ -97,7 +97,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public function angelleye_ppcp_remote_get($paypal_url, $args, $action_name) {
         $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
         $body['paypal_url'] = $paypal_url;
-        $body['paypal_header'] = $args['headers'];
+        $body['paypal_header'] = $args['headers'] ?? [];
         $body['paypal_method'] = isset($args['method']) ? $args['method'] : 'GET';
         if (isset($args['body']) && is_array($args['body'])) {
             $body['paypal_body'] = $args['body'];
