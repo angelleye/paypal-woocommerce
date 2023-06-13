@@ -929,6 +929,8 @@ jQuery(function ($) {
         let form = jQuery(this);
         let actionUrl = form.attr('action');
         let method = form.attr('method');
+        let button = form.find('.submit_btn')
+        button.addClass('submit_btn_processing')
 
         jQuery.ajax({
             type: method,
@@ -937,16 +939,18 @@ jQuery(function ($) {
         }).then((response) => {
             if (response.status) {
                 jQuery('input[name="apple_pay_domain"]').val('');
-                jQuery('.apple-pay-domain-listing-table').append('<tr><td>' + response.domain + '</td><td><a class="angelleye_apple_pay_remove_api_call" href="'+response.remove_url+'">Remove</a></td>');
+                jQuery('.apple-pay-domain-listing-table').append('<tr><td>' + response.domain + '</td><td><a class="angelleye_apple_pay_remove_api_call" href="'+response.remove_url+'">Delete</a></td>');
             }
             alert(response.message);
+        }).then(() => {
+            button.removeClass('submit_btn_processing')
         });
-        console.log('ajax form submit');
     });
     jQuery(document.body).on('click', '.angelleye_apple_pay_remove_api_call', function (e) {
         e.preventDefault()
         let link = jQuery(this);
         let actionUrl = link.attr('href');
+        link.addClass('processing')
         jQuery.ajax({
             type: 'GET',
             url: actionUrl
@@ -956,7 +960,8 @@ jQuery(function ($) {
                 link.closest('tr').remove();
             }
             alert(response.message)
+        }).then(() => {
+            link.removeClass('processing')
         });
-        console.log('ajax link click');
     })
 });

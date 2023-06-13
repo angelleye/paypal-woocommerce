@@ -7,6 +7,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
     public static $_instance;
     private ?AngellEYE_PayPal_PPCP_Request $api_request;
     private ?AngellEYE_PayPal_PPCP_Payment $payment_request;
+    private string $host;
 
     public static function instance()
     {
@@ -27,6 +28,12 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
         $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
 
+        if ($this->payment_request->is_sandbox) {
+            $this->host = 'api.sandbox.paypal.com';
+        } else {
+            $this->host = 'api.paypal.com';
+        }
+
         add_action('wp_ajax_angelleye_list_apple_pay_domain', [$this, 'listApplePayDomain']);
         add_action('wp_ajax_angelleye_register_apple_pay_domain', [$this, 'registerApplePayDomain']);
         add_action('wp_ajax_angelleye_remove_apple_pay_domain', [$this, 'removeApplePayDomain']);
@@ -37,8 +44,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         return [
             'Content-Type' => 'application/json',
             'Authorization' => '',
-            "prefer" => "return=representation",
-            'PayPal-Request-Id' => $this->payment_request->generate_request_id(),
+            'prefer' => 'return=representation',
             'Paypal-Auth-Assertion' => $this->payment_request->angelleye_ppcp_paypalauthassertion(),
             'X-PAYPAL-SECURITY-CONTEXT' => ''
         ];
@@ -60,7 +66,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $domainQueryParams = [
             'provider_type' => 'APPLE_PAY', 'page_size' => 10, 'page' => 1
         ];
-        $domainGetUrl = add_query_arg($domainQueryParams, 'https://api.sandbox.paypal.com/v1/customer/wallet-domains');
+        $domainGetUrl = add_query_arg($domainQueryParams, 'https://' . $this->host . '/v1/customer/wallet-domains');
         $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_list');
         $jsonResponse = ['status' => false];
         if (isset($response['total_items'])) {
@@ -106,7 +112,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
             'headers' => $this->getApiCallHeaders(),
             'cookies' => array()
         ];
-        $domainGetUrl = 'https://api.sandbox.paypal.com/v1/customer/wallet-domains';
+        $domainGetUrl = 'https://' . $this->host . '/v1/customer/wallet-domains';
         $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_add');
         if (isset($response['domain'])) {
             wp_send_json([
@@ -118,7 +124,12 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         } else {
             $this->payment_request->error_email_notification = false;
             $message = $this->payment_request->angelleye_ppcp_get_readable_message($response);
-            wp_send_json(['status' => false, 'message' => 'An error occurred.' . "\n\n" . $message]);
+            if (str_contains($message, 'DOMAIN_ALREADY_REGISTERED')) {
+                $message = __('Domain is already registered.', 'paypal-for-woocommerce');
+            } elseif (str_contains($message, 'DOMAIN_REGISTERED_WITH_ANOTHER_MERCHANT')) {
+                $message = __('Domain is registered with another merchant.', 'paypal-for-woocommerce');
+            }
+            wp_send_json(['status' => false, 'message' => __('An error occurred.', 'paypal-for-woocommerce') . "\n\n" . $message]);
         }
         die;
     }
@@ -143,7 +154,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
             'headers' => $this->getApiCallHeaders(),
             'cookies' => array()
         ];
-        $domainGetUrl = 'https://api.sandbox.paypal.com/v1/customer/unregister-wallet-domain';
+        $domainGetUrl = 'https://' . $this->host . '/v1/customer/unregister-wallet-domain';
         $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_remove');
         if (isset($response['domain'])) {
             wp_send_json([
