@@ -3828,6 +3828,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             $angelleye_ppcp_old_payment_method = get_post_meta($order_id, '_angelleye_ppcp_old_payment_method', true);
+            if(empty($angelleye_ppcp_old_payment_method)) {
+                $angelleye_ppcp_old_payment_method = get_post_meta($order_id, '_old_payment_method', true);
+            }
             if (!empty($angelleye_ppcp_old_payment_method)) {
                 switch ($angelleye_ppcp_old_payment_method) {
                     case 'paypal_express':
