@@ -3917,15 +3917,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
 
-            if (empty($all_payment_tokens) && !empty($payment_tokens_id) && !isset($body_request['payment_source'])) {
-                $payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
-                if (in_array($payment_method, ['PayPal Checkout', 'PayPal Credit'])) {
-                    $payment_method = 'paypal';
+            if (!isset($body_request['payment_source'])) {
+                if (empty($all_payment_tokens) && !empty($payment_tokens_id)) {
+                    $payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+                    if (in_array($payment_method, ['PayPal Checkout', 'PayPal Credit'])) {
+                        $payment_method = 'paypal';
+                    }
+                    $body_request['payment_source'] = array($payment_method => array('vault_id' => $payment_tokens_id));
+                    $this->applyStoredCredentialParameter($payment_method, $body_request);
+                } elseif (!empty($payment_tokens_id)) {
+                    $body_request['payment_source'] = array('paypal' => array('vault_id' => $payment_tokens_id));
                 }
-                $body_request['payment_source'] = array($payment_method => array('vault_id' => $payment_tokens_id));
-                $this->applyStoredCredentialParameter($payment_method, $body_request);
-            } elseif (!empty($payment_tokens_id) && !isset($body_request['payment_source'])) {
-                $body_request['payment_source'] = array('paypal' => array('vault_id' => $payment_tokens_id));
             }
         } catch (Exception $ex) {
             return $body_request;
