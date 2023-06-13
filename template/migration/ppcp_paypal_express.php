@@ -59,18 +59,4 @@
         </div>
     </div>
 </div>
-<ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard ppcp_email_confirm">
-    <li>
-        <p><?php echo __('Schedule a live meeting with Drew Angell?', 'paypal-for-woocommerce'); ?></p>
-        <img class="pb-30" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/guru-drew.png'; ?>" width="130" height="350" />
-        <a class="wplk-button" href="https://calendar.app.google/kFcrJSmV8fW8iWny8" target="_blank"><?php echo __('Schedule Meeting', 'paypal-for-woocommerce'); ?></a>
-    </li>                 
-    <li>
-        <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
-        <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
-    </li>
-    <li>
-        <p><?php echo __('Plugin Documentation', 'paypal-for-woocommerce'); ?></p>
-        <a class="wplk-button" href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" target="_blank"><?php echo __('Plugin Documentation', 'paypal-for-woocommerce'); ?></a>
-    </li>
-</ul>
+<?php include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_sidebar.php');

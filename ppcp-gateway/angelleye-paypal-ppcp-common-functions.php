@@ -1044,13 +1044,18 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
                 return;
             }
             $message = '<div class="notice notice-success angelleye-notice" style="display:none;" id="' . $response_data->id . '">'
-                    . '<div class="angelleye-notice-logo-push"><span> <img src="' . $response_data->ans_company_logo . '"> </span></div>'
+                    . '<div class="angelleye-notice-logo-push"><span> <img width="60px"src="' . $response_data->ans_company_logo . '"> </span></div>'
                     . '<div class="angelleye-notice-message">'
                     . '<h2>' . $response_data->ans_message_title . '</h2>'
                     . '<div class="angelleye-notice-message-inner">'
                     . '<p>' . $response_data->ans_message_description . '</p>'
-                    . '<div class="angelleye-notice-action"><a target="_blank" href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a></div>'
-                    . '</div>'
+                    . '<div class="angelleye-notice-action">'
+                    . '<a target="_blank" href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a>';
+
+            if (isset($response_data->is_button_secondary) && $response_data->is_button_secondary === true) {
+                $message .= '&nbsp&nbsp&nbsp<a target="_blank" href="' . $response_data->ans_secondary_button_url . '" class="button button-secondary">' . $response_data->ans_secondary_button_label . '</a>';
+            }
+            $message .= '</div></div>'
                     . '</div>';
             if ($response_data->is_dismiss) {
                 $message .= '<div class="angelleye-notice-cta">'

@@ -527,16 +527,19 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             }
             $notice_data['classic_upgrade'] = array(
                 'id' => 'ppcp_notice_classic_upgrade',
-                'ans_company_logo' => 'https://www.angelleye.com/wp-content/uploads/2019/12/angelleye-icon-25x25.png',
+                'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'Important PayPal Update Required',
                 'ans_message_description' => sprintf('Upgrade now to PayPal Commerce for better features, enhanced security, reduced fees, and future-proof integration. <a target="_blank" href="%s">Click here</a> to learn more and start the upgrade process. Don\'t miss out on the advantages of PayPal Commerce! <br><br>Please upgrade by September 30, 2023 to avoid potential interruptions.<br>', admin_url('options-general.php?page=paypal-for-woocommerce')),
                 'ans_button_url' => admin_url('options-general.php?page=paypal-for-woocommerce'),
                 'ans_button_label' => 'Upgrade Now',
-                'is_dismiss' => false
+                'is_dismiss' => false,
+                'is_button_secondary' => true,
+                'ans_secondary_button_label' => "Learn More",
+                'ans_secondary_button_url' => 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/'
             );
             $notice_data['vault_upgrade'] = array(
                 'id' => 'ppcp_notice_vault_upgrade',
-                'ans_company_logo' => 'https://www.angelleye.com/wp-content/uploads/2019/12/angelleye-icon-25x25.png',
+                'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'PayPal Commerce Now Supports Token Payments / Subscriptions',
                 'ans_message_description' => 'Maximize the power of PayPal Commerce in your WordPress store by enabling the Vault functionality. Unlock advanced features such as Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
                 'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=woocommerce_angelleye_ppcp_tokenization_subscriptions'),
