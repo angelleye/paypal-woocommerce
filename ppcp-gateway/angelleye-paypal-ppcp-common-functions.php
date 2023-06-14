@@ -100,7 +100,7 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
         if ($old_wc) {
             $order_meta_value = get_post_meta($order->id, $key, $bool);
         } else {
-            if ('_payment_method_title' === $key) {
+            if('_payment_method_title' === $key) {
                 $order_meta_value = $order->get_payment_method_title();
             } else {
                 $order_meta_value = $order->get_meta($key, $bool);

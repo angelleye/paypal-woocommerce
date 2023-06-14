@@ -182,12 +182,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $body_request['purchase_units'][0]['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
             } else {
-                $country_code = $cart['billing_address']['country'];
-                $full_name = $cart['billing_address']['first_name'] . ' ' . $cart['billing_address']['last_name'];
+
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
             }
-
+            if (isset($cart['billing_address'])) {
+                $country_code = $cart['billing_address']['country'];
+                $full_name = $cart['billing_address']['first_name'] . ' ' . $cart['billing_address']['last_name'];
+            } else {
+                $country_code = '';
+                $full_name = '';
+            }
             if (strtolower($payment_method) == 'ideal') {
                 $body_request['payment_source'] = [
                     'ideal' => ["country_code" => $country_code, 'name' => trim($full_name)]
