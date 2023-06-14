@@ -826,7 +826,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         }
         $skip_final_review_option_not_allowed_guest_checkout = '';
         $skip_final_review_option_not_allowed_terms = '';
-        $skip_final_review_option_not_allowed_tokenized_payments = '';
         $woocommerce_enable_guest_checkout = get_option('woocommerce_enable_guest_checkout');
         if ('yes' === get_option('woocommerce_registration_generate_username') && 'yes' === get_option('woocommerce_registration_generate_password')) {
             $woocommerce_enable_guest_checkout = 'yes';
@@ -854,9 +853,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $enable_tokenized_payments_text = __('Token payments are not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
         } else {
             $enable_tokenized_payments_text = __('Allow buyers to securely save payment details to their account for quick checkout / auto-ship orders in the future. (Currently considered BETA for Express Checkout.)', 'paypal-for-woocommerce');
-        }
-        if ($this->enable_tokenized_payments == 'yes') {
-            $skip_final_review_option_not_allowed_tokenized_payments = ' (Payments tokens are enabled, which require the review page, and that will override this option.)';
         }
         $button_height = array(
             '' => __('Default Height', 'paypal-for-woocommerce'),
@@ -1299,7 +1295,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'skip_final_review' => array(
                 'title' => __('Skip Final Review', 'paypal-for-woocommerce'),
                 'label' => __('Enables the option to skip the final review page.', 'paypal-for-woocommerce'),
-                'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.') . '<br /><b class="final_review_notice"><span class="guest_checkout_notice">' . $skip_final_review_option_not_allowed_guest_checkout . '</span></b>' . '<b class="final_review_notice"><span class="terms_notice">' . $skip_final_review_option_not_allowed_terms . '</span></b>' . '<b class="final_review_notice"><span class="tokenized_payments_notice">' . $skip_final_review_option_not_allowed_tokenized_payments . '</span></b>',
+                'description' => __('By default, users will be returned from PayPal and presented with a final review page which includes shipping and tax in the order details.  Enable this option to eliminate this page in the checkout process.') . '<br /><b class="final_review_notice"><span class="guest_checkout_notice">' . $skip_final_review_option_not_allowed_guest_checkout . '</span></b>' . '<b class="final_review_notice"><span class="terms_notice">' . $skip_final_review_option_not_allowed_terms . '</span></b>',
                 'type' => 'checkbox',
                 'default' => 'no'
             ),
