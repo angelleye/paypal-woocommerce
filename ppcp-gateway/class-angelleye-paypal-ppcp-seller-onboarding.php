@@ -20,6 +20,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     public $angelleye_ppcp_migration_wizard_notice_key = 'angelleye_ppcp_migration_wizard_notice_key';
     public $angelleye_ppcp_migration_wizard_notice_data = array();
     public $ppcp_paypal_country;
+    public $subscription_support_enabled;
+    public $is_vaulting_enable;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -268,7 +270,13 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce');
             }
             if (isset($_GET['is_migration']) && 'yes' === $_GET['is_migration'] && isset($_GET['products'])) {
-                if (angelleye_is_vaulting_enable($seller_onboarding_status)) {
+                if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
+                    $this->subscription_support_enabled = true;
+                } else {
+                    $this->subscription_support_enabled = false;
+                }
+                $this->is_vaulting_enable = angelleye_is_vaulting_enable($seller_onboarding_status);
+                if ($this->subscription_support_enabled === false || ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true )) {
                     $products = json_decode(stripslashes($_GET['products']), true);
                     if (!empty($products) && is_array($products)) {
                         if (!class_exists('AngellEYE_PayPal_PPCP_Migration')) {
@@ -279,30 +287,42 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                             switch ($product) {
                                 case 'paypal_express':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status);
-                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_express', 'angelleye_ppcp');
+                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_express', 'angelleye_ppcp');
+                                    }
                                     break;
                                 case 'paypal_pro':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
-                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp');
+                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp');
+                                    }
                                     break;
                                 case 'paypal_pro_payflow':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status);
-                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro_payflow', 'angelleye_ppcp');
+                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro_payflow', 'angelleye_ppcp');
+                                    }
                                     break;
                                 case 'paypal_advanced':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status);
-                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_advanced', 'angelleye_ppcp');
+                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_advanced', 'angelleye_ppcp');
+                                    }
                                     break;
                                 case 'paypal_credit_card_rest':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status);
                                     break;
                                 case 'paypal':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_to_ppcp();
-                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal', 'angelleye_ppcp');
+                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal', 'angelleye_ppcp');
+                                    }
                                     break;
                                 case 'ppec_paypal':
                                     $this->ppcp_migration->angelleye_ppcp_ppec_paypal_to_ppcp();
-                                    $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('ppec_paypal', 'angelleye_ppcp');
+                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('ppec_paypal', 'angelleye_ppcp');
+                                    }
                                     break;
                                 default:
                                     break;

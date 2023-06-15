@@ -693,7 +693,20 @@ hr {
 .angelleye-ppcp-disconnect {
     margin-top: 25px !important;
 }
+li.ppcp_migration_report {
+  padding-top: 10px;
 
+
+}
+.ppcp_migration_report p {
+    margin: 5px auto;
+}
+.ppcp_migration_report .wrap {
+    margin-bottom: 30px;
+}
+.wplk-button.angelleye_ppcp_revert_changes {
+  background: red;
+}
 
 
 @media only all and (max-width: 500px) {

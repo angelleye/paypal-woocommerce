@@ -27,6 +27,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public $paypal_fee_structure;
     public $is_paypal_vault_approved = false;
     public $subscription_support_enabled;
+    public $angelleye_ppcp_migration_wizard_notice_key = 'angelleye_ppcp_migration_wizard_notice_key';
+    public $angelleye_ppcp_migration_wizard_notice_data = array();
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -247,6 +249,22 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public function display_view() {
         try {
+            if (isset($_GET['migration_action']) && 'angelleye_ppcp_revert_changes' === $_GET['migration_action']) {
+                try {
+                    $this->angelleye_ppcp_revert_back_to_original_payment_method();
+                    $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('Migration Reverted Successfully! Starting from the next payment cycle, your original payment method will be used for all transactions.');
+                    update_option($this->angelleye_ppcp_migration_wizard_notice_key, $this->angelleye_ppcp_migration_wizard_notice_data);
+                    $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce');
+                    unset($_GET);
+                    wp_safe_redirect($redirect_url, 302);
+                    exit();
+                } catch (Exception $ex) {
+                    $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce');
+                    unset($_GET);
+                    wp_safe_redirect($redirect_url, 302);
+                    exit();
+                }
+            }
             $this->angelleye_ppcp_load_variable();
             $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
             $active_classic_gateway_list = array();
@@ -336,6 +354,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
         try {
             $this->angelleye_ppcp_load_variable();
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_header.php');
             ?>
             <div id="angelleye_paypal_marketing_table">
                 <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
@@ -521,7 +540,20 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <div id="angelleye_ppcp_sendy_msg"></div>
                         </li>
                     <?php } ?>
-
+                    <?php
+                    $result = $this->angelleye_ppcp_get_result_migrate_to_ppcp();
+                    if (!empty($result)) {
+                        ?>
+                        <li class="ppcp_migration_report">
+                            <p><?php echo __('Migration Report', 'paypal-for-woocommerce'); ?></p>
+                            <div class="wrap">
+                                <?php
+                                echo $this->angelleye_ppcp_build_html($result);
+                                ?>
+                            </div>
+                            <a class="wplk-button angelleye_ppcp_revert_changes" href="<?php echo admin_url('options-general.php?page=paypal-for-woocommerce&migration_action=angelleye_ppcp_revert_changes'); ?>">Revert Changes</a>
+                        </li>
+                    <?php } ?>
                     <li>
                         <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
                         <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
@@ -581,6 +613,75 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             } else {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_build_html($array) {
+        $html = '<table class="widefat striped fixed">';
+        $html .= '<tbody><tr>';
+        foreach ($array[0] as $key => $value) {
+            $html .= '<th><b>' . htmlspecialchars($key) . '</b></th>';
+        }
+        $html .= '</tr>';
+        $html .= '<tr>';
+        $payment_gateways = WC()->payment_gateways->payment_gateways();
+        foreach ($array[0] as $key => $value) {
+            if (isset($payment_gateways[$value])) {
+                if (isset($payment_gateways[$value]->method_title)) {
+                    $html .= '<td>' . htmlspecialchars($payment_gateways[$value]->method_title) . '</td>';
+                } else {
+                    $html .= '<td>' . htmlspecialchars($value) . '</td>';
+                }
+            } else {
+                $html .= '<td>' . htmlspecialchars($value) . '</td>';
+            }
+        }
+        $html .= '</tr>';
+        $html .= '</tbody>';
+        $html .= '</table>';
+        return $html;
+    }
+
+    public function angelleye_ppcp_get_result_migrate_to_ppcp() {
+        global $wpdb;
+        try {
+            $payment_methods = $wpdb->get_results("SELECT pm2.meta_value AS 'Old Payment Method', pm.meta_value AS 'New Payment Method', COUNT(DISTINCT p.ID) AS 'Total Orders'
+                FROM {$wpdb->posts} p
+                JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_payment_method'
+                JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_old_payment_method'
+                JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = '_angelleye_ppcp_old_payment_method'
+                WHERE p.post_type = 'shop_subscription'
+                AND pm.meta_value != pm2.meta_value
+                GROUP BY pm2.meta_value, pm.meta_value;", ARRAY_A);
+            return $payment_methods;
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_revert_back_to_original_payment_method() {
+        global $wpdb;
+        try {
+            $wpdb->query("UPDATE {$wpdb->postmeta} AS pm1
+                    LEFT JOIN {$wpdb->postmeta} AS pm2 ON pm1.post_id = pm2.post_id AND pm2.meta_key = '_old_payment_method'
+                    LEFT JOIN {$wpdb->postmeta} AS pm3 ON pm1.post_id = pm3.post_id AND pm3.meta_key = '_old_payment_method_title'
+                    SET pm1.meta_value =
+                        CASE pm1.meta_key
+                            WHEN '_payment_method' THEN IFNULL(pm2.meta_value, pm1.meta_value)
+                            WHEN '_payment_method_title' THEN IFNULL(pm3.meta_value, pm1.meta_value)
+                        END
+                    WHERE pm1.meta_key IN ('_payment_method', '_payment_method_title')
+                    AND pm1.post_id IN (
+                        SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_'
+                    )
+                    AND pm1.post_id IN (
+                        SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
+                    )");
+            $wpdb->query("DELETE FROM {$wpdb->postmeta} WHERE meta_key = '_angelleye_ppcp_old_payment_method' AND post_id IN (
+                        SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
+                    )");
         } catch (Exception $ex) {
             
         }
