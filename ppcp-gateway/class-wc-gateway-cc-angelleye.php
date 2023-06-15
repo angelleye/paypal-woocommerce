@@ -200,6 +200,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     angelleye_ppcp_add_css_js();
                     if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
                         if ($this->supports('tokenization')) {
+                            echo '<ul class="woocommerce-SavedPaymentMethods wc-saved-payment-methods" data-count=""></ul>';
                             $this->save_payment_method_checkbox();
                         }
                     }

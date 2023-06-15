@@ -35,3 +35,19 @@ div.ppcp_success_logo {
 .ppcp_separator {
     border: 1px solid #000;
 }
+
+.apple-pay-domain-add-form {
+    margin: 17px 0;
+}
+
+a.processing {
+    cursor: wait !important;
+    pointer-events: none !important;
+    color: #888 !important;
+}
+
+.submit_btn_processing {
+    cursor: wait !important;
+    pointer-events: none !important;
+    background: #888 !important;
+}

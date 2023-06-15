@@ -218,7 +218,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function enqueue_scripts() {
         if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
             wp_enqueue_style('wc-gateway-ppcp-angelleye-settings-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-gateway-admin' . $this->minified_version . '.css', array(), VERSION_PFW, 'all');
-            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings' . $this->minified_version . '.js', array('jquery'), VERSION_PFW, true);
+            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings' . $this->minified_version . '.js', array('jquery'), ($this->minified_version ? VERSION_PFW : time()), true);
             wp_localize_script('wc-gateway-ppcp-angelleye-settings', 'ppcp_angelleye_param', array(
                 'angelleye_ppcp_is_local_server' => ( angelleye_ppcp_is_local_server() == true) ? 'yes' : 'no',
                 'angelleye_ppcp_onboarding_endpoint' => WC_AJAX::get_endpoint('ppcp_login_seller'),
@@ -787,8 +787,15 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                             }?>
                         </label>
                         <?php
-                        echo $this->get_description_html($data); ?>
-                        <div><strong>Note: </strong>You need to make sure you've added and verified the domain name in your PayPal Account to enable the Apple Pay Button. Apple Pay button only works on Safari browser or Apple devices. Click here to know more. </div>
+                        echo $this->get_description_html($data);
+                        if ($is_apple_pay_approved && $is_apple_pay_enabled) {
+                            add_thickbox();
+                            ?>
+                            <div style="margin-top: 10px"><a title="Apple Pay Domains" href="<?php echo add_query_arg(['action' => 'angelleye_list_apple_pay_domain'], admin_url('admin-ajax.php')) ?>" class="thickbox wplk-button button-primary"><?php echo __('Manage Apple Pay Domains', 'paypal-for-woocommerce'); ?></a></div><br>
+                            <div><strong>Note: </strong><?php echo __('You need to make sure you have added and verified the domain name in your PayPal Account to enable the Apple Pay Button. Apple Pay button only works on Safari browser or Apple devices. Click here to know more.', 'paypal-for-woocommerce') ?> </div>
+                            <?php
+                        }
+                        ?>
                         <?php
                         if (isset($data['need_to_display_apple_pay_button']) && true === $data['need_to_display_apple_pay_button']) {
                             $signup_link = $this->angelleye_get_signup_link($testmode, 'apple_pay');
