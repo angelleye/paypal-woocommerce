@@ -207,7 +207,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -224,7 +224,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -241,7 +241,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -263,30 +263,23 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     }
                 }
             }
-            if(count($active_classic_gateway_list) > 0) {
-                if('US' === $this->ppcp_paypal_country) {
+            if (count($active_classic_gateway_list) > 0) {
+                if ('US' === $this->ppcp_paypal_country && $this->subscription_support_enabled) {
                     $this->migration_view($active_classic_gateway_list);
-                } elseif('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled) {
+                } elseif ('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled) {
                     $this->view();
-                } elseif('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled === false) {
+                } elseif ('US' === $this->ppcp_paypal_country && $this->subscription_support_enabled === false) {
+                    $this->migration_view($active_classic_gateway_list);
+                } elseif ('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled === false) {
                     $this->migration_view($active_classic_gateway_list);
                 } else {
-                    
+                    $this->view();
                 }
             } else {
                 $this->view();
             }
-            if('US' === $this->ppcp_paypal_country && $this->subscription_support_enabled && count($active_classic_gateway_list) > 0) {
-                $this->migration_view($active_classic_gateway_list);
-            } elseif('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled) {
-                $this->view();
-            } elseif('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled === false && count($active_classic_gateway_list) > 0) {
-                $this->migration_view($active_classic_gateway_list);
-            } else {
-                
-            }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -302,7 +295,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             ");
             return $payment_methods;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -335,7 +328,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -528,7 +521,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <div id="angelleye_ppcp_sendy_msg"></div>
                         </li>
                     <?php } ?>
-                    
+
                     <li>
                         <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
                         <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
@@ -541,7 +534,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -553,7 +546,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -589,7 +582,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
