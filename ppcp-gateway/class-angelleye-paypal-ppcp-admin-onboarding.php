@@ -444,7 +444,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                     }
                                 }
                                 ?>
-                                <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
+                                <a href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                                 <br><br>
                             </div>
                         </div>
@@ -497,7 +497,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                     }
                                 }
                                 ?>
-                                <a href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
+                                <a href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                                 <br><br>
                             </div>
                         </div>
@@ -528,7 +528,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     </li>
                     <li>
                         <p><?php echo __('Plugin Documentation', 'paypal-for-woocommerce'); ?></p>
-                        <a class="wplk-button" href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" target="_blank"><?php echo __('Plugin Documentation', 'paypal-for-woocommerce'); ?></a>
+                        <a class="wplk-button" href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/" target="_blank"><?php echo __('Plugin Documentation', 'paypal-for-woocommerce'); ?></a>
                     </li>
                 </ul>
             </div>

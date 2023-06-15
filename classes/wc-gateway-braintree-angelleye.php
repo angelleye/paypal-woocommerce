@@ -3338,13 +3338,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     });
                                 }
                             });
-                            });
                         });
                     });
-                }(jQuery));
+                });
+            }(jQuery));
 
         </script>
-        <?php
+            <?php
         }
     }
 }

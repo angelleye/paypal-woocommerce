@@ -11,6 +11,6 @@
     </li>
     <li>
         <p><?php echo __('Plugin Documentation', 'paypal-for-woocommerce'); ?></p>
-        <a class="wplk-button" href="https://www.angelleye.com/paypal-complete-payments-setup-guide/" target="_blank"><?php echo __('Plugin Documentation', 'paypal-for-woocommerce'); ?></a>
+        <a class="wplk-button" href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/" target="_blank"><?php echo __('Plugin Documentation', 'paypal-for-woocommerce'); ?></a>
     </li>
 </ul>
