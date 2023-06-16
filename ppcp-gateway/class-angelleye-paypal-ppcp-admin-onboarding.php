@@ -261,6 +261,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         foreach ($result as $key => $product_obj) {
                             if (isset($payment_gateways[$product_obj['Old Payment Method']])) {
                                 $product = $product_obj['Old Payment Method'];
+                                $this->setting_obj->set('enabled', 'no');
                                 switch ($product) {
                                     case 'paypal_express':
                                         $this->ppcp_migration_revert->angelleye_ppcp_to_paypal_express();
