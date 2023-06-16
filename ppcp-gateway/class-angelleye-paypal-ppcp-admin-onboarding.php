@@ -258,8 +258,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration-revert.php');
                         }
                         $this->ppcp_migration_revert = AngellEYE_PayPal_PPCP_Migration_Revert::instance();
-                        foreach ($result[0] as $key => $product) {
-                            if (isset($payment_gateways[$product])) {
+                        foreach ($result as $key => $product_obj) {
+                            if (isset($payment_gateways[$product_obj['Old Payment Method']])) {
+                                $product = $product_obj['Old Payment Method'];
                                 switch ($product) {
                                     case 'paypal_express':
                                         $this->ppcp_migration_revert->angelleye_ppcp_to_paypal_express();
