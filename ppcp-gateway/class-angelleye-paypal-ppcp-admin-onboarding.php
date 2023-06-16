@@ -647,7 +647,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public function angelleye_ppcp_get_result_migrate_to_ppcp() {
         global $wpdb;
         try {
-            $payment_methods = $wpdb->get_results("SELECT pm2.meta_value AS 'Old Payment Method', pm.meta_value AS 'New Payment Method', COUNT(DISTINCT p.ID) AS 'Total Orders'
+            $payment_methods = $wpdb->get_results("SELECT pm2.meta_value AS 'Old Payment Method', pm.meta_value AS 'New Payment Method', COUNT(DISTINCT p.ID) AS 'Total Subscription'
                 FROM {$wpdb->posts} p
                 JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_payment_method'
                 JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_old_payment_method'
