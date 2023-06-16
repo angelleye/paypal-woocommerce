@@ -209,7 +209,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -226,7 +226,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -243,7 +243,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -251,6 +251,43 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         try {
             if (isset($_GET['migration_action']) && 'angelleye_ppcp_revert_changes' === $_GET['migration_action']) {
                 try {
+                    $result = $this->angelleye_ppcp_get_result_migrate_to_ppcp();
+                    $payment_gateways = WC()->payment_gateways->payment_gateways();
+                    if (!empty($result[0])) {
+                        if (!class_exists('AngellEYE_PayPal_PPCP_Migration')) {
+                            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration-revert.php');
+                        }
+                        $this->ppcp_migration_revert = AngellEYE_PayPal_PPCP_Migration_Revert::instance();
+                        foreach ($result[0] as $key => $product) {
+                            if (isset($payment_gateways[$product])) {
+                                switch ($product) {
+                                    case 'paypal_express':
+                                        $this->ppcp_migration_revert->angelleye_ppcp_to_paypal_express();
+                                        break;
+                                    case 'paypal_pro':
+                                        $this->ppcp_migration_revert->angelleye_ppcp_to_paypal_pro();
+                                        break;
+                                    case 'paypal_pro_payflow':
+                                        $this->ppcp_migration_revert->angelleye_ppcp_to_paypal_pro_payflow();
+                                        break;
+                                    case 'paypal_advanced':
+                                        $this->ppcp_migration_revert->angelleye_ppcp_to_paypal_advanced();
+                                        break;
+                                    case 'paypal_credit_card_rest':
+                                        $this->ppcp_migration_revert->angelleye_ppcp_to_paypal_credit_card_rest();
+                                        break;
+                                    case 'paypal':
+                                        $this->ppcp_migration_revert->angelleye_ppcp_to_paypal();
+                                        break;
+                                    case 'ppec_paypal':
+                                        $this->ppcp_migration_revert->angelleye_ppcp_to_ppec_paypal();
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    }
                     $this->angelleye_ppcp_revert_back_to_original_payment_method();
                     $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('Migration Reverted Successfully! Starting from the next payment cycle, your original payment method will be used for all transactions.');
                     update_option($this->angelleye_ppcp_migration_wizard_notice_key, $this->angelleye_ppcp_migration_wizard_notice_data);
@@ -297,7 +334,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $this->view();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -313,7 +350,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             ");
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -346,7 +383,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -566,7 +603,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -578,7 +615,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -614,7 +651,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -657,7 +694,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 GROUP BY pm2.meta_value, pm.meta_value;", ARRAY_A);
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -665,25 +702,25 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         global $wpdb;
         try {
             $wpdb->query("UPDATE {$wpdb->postmeta} AS pm1
-                    LEFT JOIN {$wpdb->postmeta} AS pm2 ON pm1.post_id = pm2.post_id AND pm2.meta_key = '_old_payment_method'
-                    LEFT JOIN {$wpdb->postmeta} AS pm3 ON pm1.post_id = pm3.post_id AND pm3.meta_key = '_old_payment_method_title'
-                    SET pm1.meta_value =
-                        CASE pm1.meta_key
-                            WHEN '_payment_method' THEN IFNULL(pm2.meta_value, pm1.meta_value)
-                            WHEN '_payment_method_title' THEN IFNULL(pm3.meta_value, pm1.meta_value)
-                        END
-                    WHERE pm1.meta_key IN ('_payment_method', '_payment_method_title')
-                    AND pm1.post_id IN (
-                        SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_'
-                    )
-                    AND pm1.post_id IN (
-                        SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
-                    )");
+                LEFT JOIN {$wpdb->postmeta} AS pm2 ON pm1.post_id = pm2.post_id AND pm2.meta_key = '_old_payment_method'
+                LEFT JOIN {$wpdb->postmeta} AS pm3 ON pm1.post_id = pm3.post_id AND pm3.meta_key = '_old_payment_method_title'
+                SET pm1.meta_value =
+                    CASE pm1.meta_key
+                        WHEN '_payment_method' THEN IFNULL(pm2.meta_value, pm1.meta_value)
+                        WHEN '_payment_method_title' THEN IFNULL(pm3.meta_value, pm1.meta_value)
+                    END
+                WHERE pm1.meta_key IN ('_payment_method', '_payment_method_title')
+                AND pm1.post_id IN (
+                    SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_angelleye_ppcp_old_payment_method'
+                )
+                AND pm1.post_id IN (
+                    SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
+                )");
             $wpdb->query("DELETE FROM {$wpdb->postmeta} WHERE meta_key = '_angelleye_ppcp_old_payment_method' AND post_id IN (
                         SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
                     )");
         } catch (Exception $ex) {
-            
+
         }
     }
 
