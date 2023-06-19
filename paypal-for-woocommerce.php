@@ -291,9 +291,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         function admin_notices() {
             global $current_user, $pp_settings ;
             $user_id = $current_user->ID;
-            $pp_pro = get_option('woocommerce_paypal_pro_settings');
-            $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
-            $pp_standard = get_option('woocommerce_paypal_settings');
+            $pp_pro = get_option('woocommerce_paypal_pro_settings', array());
+            $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings', array());
+            $pp_standard = get_option('woocommerce_paypal_settings', array());
 
             do_action( 'angelleye_admin_notices', $pp_pro, $pp_payflow, $pp_standard );
             

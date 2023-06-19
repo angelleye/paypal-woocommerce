@@ -14,7 +14,7 @@ if (!empty($angelleye_ppcp_migration_wizard_notice_data)) {
 
 function display_ppcp_notice($type, $message) {
     try {
-        echo '<div class="' . $type . ' angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . $message . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss">Dismiss</button></div></div>';
+        echo '<div class="notice notice-' . $type . ' angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . $message . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss">Dismiss</button></div></div>';
     } catch (Exception $ex) {
         
     }
