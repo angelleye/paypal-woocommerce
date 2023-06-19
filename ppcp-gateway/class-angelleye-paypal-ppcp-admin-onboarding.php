@@ -209,7 +209,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -226,7 +226,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -243,7 +243,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -337,7 +337,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $this->view();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -353,7 +353,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             ");
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -386,7 +386,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -489,14 +489,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                         $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
                                         ?>
                                         <script type="text/javascript">
-                                            document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
-                                                element.addEventListener('click', (e) => {
-                                                    if ('undefined' === typeof PAYPAL) {
-                                                        e.preventDefault();
-                                                        alert('PayPal');
-                                                    }
-                                                });
-                                            });</script>
+                                        document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                            element.addEventListener('click', (e) => {
+                                                if ('undefined' === typeof PAYPAL) {
+                                                    e.preventDefault();
+                                                    alert('PayPal');
+                                                }
+                                            });
+                                        });</script>
                                         <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
                                     } else {
                                         echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
@@ -542,14 +542,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                         $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
                                         ?>
                                         <script type="text/javascript">
-                                            document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
-                                                element.addEventListener('click', (e) => {
-                                                    if ('undefined' === typeof PAYPAL) {
-                                                        e.preventDefault();
-                                                        alert('PayPal');
-                                                    }
-                                                });
-                                            });</script>
+                                        document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                            element.addEventListener('click', (e) => {
+                                                if ('undefined' === typeof PAYPAL) {
+                                                    e.preventDefault();
+                                                    alert('PayPal');
+                                                }
+                                            });
+                                        });</script>
                                         <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
                                     } else {
                                         echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
@@ -606,7 +606,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -618,7 +618,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -641,20 +641,20 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
                 ?>
                 <script type="text/javascript">
-                                    document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
-                                        element.addEventListener('click', (e) => {
-                                            if ('undefined' === typeof PAYPAL) {
-                                                e.preventDefault();
-                                                alert('PayPal');
-                                            }
-                                        });
-                                    });</script>
+                                        document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                            element.addEventListener('click', (e) => {
+                                                if ('undefined' === typeof PAYPAL) {
+                                                    e.preventDefault();
+                                                    alert('PayPal');
+                                                }
+                                            });
+                                        });</script>
                 <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
             } else {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -699,7 +699,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 GROUP BY pm2.meta_value, pm.meta_value;", ARRAY_A);
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -725,8 +725,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
                     )");
         } catch (Exception $ex) {
-            
+
         }
     }
-
 }
