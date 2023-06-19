@@ -22,10 +22,10 @@
 
 #angelleye_ppcp_sendy_msg {
     font-size: 15px;
-    margin: 10px 11px;  
+    margin: 10px 11px;
 }
 .ppcp_email_confirm p {
-    margin: 15px 0;   
+    margin: 15px 0;
 }
 .angelleye-paypal-for-woocommerce-shipping-tools-wrap {
     background: #fff none repeat scroll 0 0;
@@ -502,7 +502,7 @@ hr {
     padding-left: 30px;
 }
 #angelleye_ppcp_sendy_email {
-  max-width: 350px;
+    max-width: 350px;
 }
 .paypal_woocommerce_support_downloads li {
     display: flex;
@@ -694,7 +694,7 @@ hr {
     margin-top: 25px !important;
 }
 li.ppcp_migration_report {
-  padding-top: 10px;
+    padding-top: 10px;
 
 
 }
@@ -705,7 +705,10 @@ li.ppcp_migration_report {
     margin-bottom: 30px;
 }
 .wplk-button.angelleye_ppcp_revert_changes {
-  background: red;
+    background: red;
+}
+#ppcp_notice_classic_upgrade .angelleye-notice-action {
+    margin-top: 15px;
 }
 
 
