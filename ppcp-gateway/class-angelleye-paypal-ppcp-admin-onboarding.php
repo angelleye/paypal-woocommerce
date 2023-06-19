@@ -41,15 +41,15 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         try {
             $this->angelleye_ppcp_load_class();
             $this->paypal_fee_structure = array(
-                'US' => array('paypal' => '3.59% + 49¢', 'acc' => '2.69% + 49¢'),
-                'UK' => array('paypal' => '3.0% + 30¢', 'acc' => '1.30% + 30¢'),
-                'CA' => array('paypal' => '3.0% + 30¢', 'acc' => '2.80% + 30¢'),
-                'AU' => array('paypal' => '2.70% + 30¢', 'acc' => '1.85% + 30¢'),
-                'FR' => array('paypal' => '3.00% + 35¢', 'acc' => '1.30% + 35¢'),
-                'DE' => array('paypal' => '3.09% + 39¢', 'acc' => '3.09% + 39¢'),
-                'IT' => array('paypal' => '3,50% + 35¢', 'acc' => '1,30% + 35¢'),
-                'ES' => array('paypal' => '3,00% + 05¢', 'acc' => '1,30% + 35¢'),
-                'default' => array('paypal' => '3.59% + 49¢', 'acc' => '2.69% + 49¢'),
+                'US' => array('paypal' => '3.59% + 49Â¢', 'acc' => '2.69% + 49Â¢'),
+                'UK' => array('paypal' => '3.0% + 30Â¢', 'acc' => '1.30% + 30Â¢'),
+                'CA' => array('paypal' => '3.0% + 30Â¢', 'acc' => '2.80% + 30Â¢'),
+                'AU' => array('paypal' => '2.70% + 30Â¢', 'acc' => '1.85% + 30Â¢'),
+                'FR' => array('paypal' => '3.00% + 35Â¢', 'acc' => '1.30% + 35Â¢'),
+                'DE' => array('paypal' => '3.09% + 39Â¢', 'acc' => '3.09% + 39Â¢'),
+                'IT' => array('paypal' => '3,50% + 35Â¢', 'acc' => '1,30% + 35Â¢'),
+                'ES' => array('paypal' => '3,00% + 05Â¢', 'acc' => '1,30% + 35Â¢'),
+                'default' => array('paypal' => '3.59% + 49Â¢', 'acc' => '2.69% + 49Â¢'),
             );
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
                 $this->subscription_support_enabled = true;
@@ -209,7 +209,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -226,7 +226,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -243,7 +243,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -337,7 +337,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $this->view();
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -353,7 +353,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             ");
             return $payment_methods;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -378,7 +378,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             } elseif (isset($active_classic_gateway_list['ppec_paypal'])) {
                 $layout_type = 'paypal_express';
             }
-            $footer_note = ' All of PayPal’s new features and functionality will be released on the PayPal Commerce Platform.  The Classic Gateways are no longer officially supported.  Please update by <strong>September 30, 2023</strong> in order to avoid potential interruptions.';
+            $footer_note = ' All of PayPalâ€™s new features and functionality will be released on the PayPal Commerce Platform.  The Classic Gateways are no longer officially supported.  Please update by <strong>September 30, 2023</strong> in order to avoid potential interruptions.';
             $footer_note .= '<br /><br /> For more details about the new fee structure please review our <a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/">pricing page</a>.';
             $products = urlencode(wp_json_encode(array_values($active_classic_gateway_list)));
             if (!empty($layout_type)) {
@@ -386,7 +386,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -461,7 +461,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <div class="paypal_woocommerce_product_onboard_content">
                                 <br>
                                 <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                                <p><?php echo __('You’re currently setup and enjoying the benefits of PayPal Commerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
+                                <p><?php echo __('Youâ€™re currently setup and enjoying the benefits of PayPal Commerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                                 <p><?php echo sprintf(__('However, we need additional verification to approve you for the reduced <br>rate of %s on debit/credit cards.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?></p>
                                 <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
                                 <?php if ($this->is_paypal_vault_approved === false) { ?>
@@ -489,14 +489,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                         $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
                                         ?>
                                         <script type="text/javascript">
-                                        document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
-                                            element.addEventListener('click', (e) => {
-                                                if ('undefined' === typeof PAYPAL) {
-                                                    e.preventDefault();
-                                                    alert('PayPal');
-                                                }
-                                            });
-                                        });</script>
+                                            document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                                element.addEventListener('click', (e) => {
+                                                    if ('undefined' === typeof PAYPAL) {
+                                                        e.preventDefault();
+                                                        alert('PayPal');
+                                                    }
+                                                });
+                                            });</script>
                                         <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
                                     } else {
                                         echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
@@ -516,7 +516,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <div class="paypal_woocommerce_product_onboard_content">
                                 <br>
                                 <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
-                                <p><?php echo __('You’re currently setup and enjoying the benefits of PayPal Commerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
+                                <p><?php echo __('Youâ€™re currently setup and enjoying the benefits of PayPal Commerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                                 <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
                                 <?php if ($this->is_paypal_vault_approved === false) { ?>
                                     <p><?php echo __('Your PayPal account is not approved for the Vault functionality<br>which is required for Subscriptions (token payments). <br>Please Reconnect your PayPal account to apply for this feature.', 'paypal-for-woocommerce'); ?></p>
@@ -542,14 +542,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                         $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
                                         ?>
                                         <script type="text/javascript">
-                                        document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
-                                            element.addEventListener('click', (e) => {
-                                                if ('undefined' === typeof PAYPAL) {
-                                                    e.preventDefault();
-                                                    alert('PayPal');
-                                                }
-                                            });
-                                        });</script>
+                                            document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                                element.addEventListener('click', (e) => {
+                                                    if ('undefined' === typeof PAYPAL) {
+                                                        e.preventDefault();
+                                                        alert('PayPal');
+                                                    }
+                                                });
+                                            });</script>
                                         <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
                                     } else {
                                         echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
@@ -606,7 +606,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -618,7 +618,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -641,44 +641,46 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
                 ?>
                 <script type="text/javascript">
-                                        document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
-                                            element.addEventListener('click', (e) => {
-                                                if ('undefined' === typeof PAYPAL) {
-                                                    e.preventDefault();
-                                                    alert('PayPal');
-                                                }
-                                            });
-                                        });</script>
+                                    document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+                                        element.addEventListener('click', (e) => {
+                                            if ('undefined' === typeof PAYPAL) {
+                                                e.preventDefault();
+                                                alert('PayPal');
+                                            }
+                                        });
+                                    });</script>
                 <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
             } else {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
-    public function angelleye_ppcp_build_html($array) {
+    public function angelleye_ppcp_build_html($results) {
         $html = '<table class="widefat striped fixed">';
         $html .= '<tbody><tr>';
-        foreach ($array[0] as $key => $value) {
+        foreach ($results[0] as $key => $value) {
             $html .= '<th><b>' . htmlspecialchars($key) . '</b></th>';
         }
         $html .= '</tr>';
-        $html .= '<tr>';
         $payment_gateways = WC()->payment_gateways->payment_gateways();
-        foreach ($array[0] as $key => $value) {
-            if (isset($payment_gateways[$value])) {
-                if (isset($payment_gateways[$value]->method_title)) {
-                    $html .= '<td>' . htmlspecialchars($payment_gateways[$value]->method_title) . '</td>';
+        foreach ($results as $key => $result) {
+            $html .= '<tr>';
+            foreach ($result as $key => $value) {
+                if (isset($payment_gateways[$value])) {
+                    if (isset($payment_gateways[$value]->method_title)) {
+                        $html .= '<td>' . htmlspecialchars($payment_gateways[$value]->method_title) . '</td>';
+                    } else {
+                        $html .= '<td>' . htmlspecialchars($value) . '</td>';
+                    }
                 } else {
                     $html .= '<td>' . htmlspecialchars($value) . '</td>';
                 }
-            } else {
-                $html .= '<td>' . htmlspecialchars($value) . '</td>';
             }
+            $html .= '</tr>';
         }
-        $html .= '</tr>';
         $html .= '</tbody>';
         $html .= '</table>';
         return $html;
@@ -697,7 +699,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 GROUP BY pm2.meta_value, pm.meta_value;", ARRAY_A);
             return $payment_methods;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -723,7 +725,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
                     )");
         } catch (Exception $ex) {
-
+            
         }
     }
 
