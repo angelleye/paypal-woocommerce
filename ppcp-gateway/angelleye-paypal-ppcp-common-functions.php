@@ -1050,7 +1050,7 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
                     . '<div class="angelleye-notice-message-inner">'
                     . '<p>' . $response_data->ans_message_description . '</p>'
                     . '<div class="angelleye-notice-action">'
-                    . '<a target="_blank" href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a>';
+                    . '<a href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a>';
 
             if (isset($response_data->is_button_secondary) && $response_data->is_button_secondary === true) {
                 $message .= '&nbsp&nbsp&nbsp<a target="_blank" href="' . $response_data->ans_secondary_button_url . '" class="button button-secondary">' . $response_data->ans_secondary_button_label . '</a>';
