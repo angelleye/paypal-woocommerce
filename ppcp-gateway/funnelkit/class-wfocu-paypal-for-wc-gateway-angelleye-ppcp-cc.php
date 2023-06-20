@@ -237,6 +237,8 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
 			$is_successful = false;
 		}
 
+		add_action( 'wfocu_offer_new_order_created_'.$this->get_key(), array( $this, 'add_paypal_meta_in_new_order' ), 10, 2 );
+
 		return $this->handle_result( $is_successful );
 	}
 
@@ -252,6 +254,13 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
             'invoice_prefix' => $this->invoice_prefix,
         );
     }
+
+    public function add_paypal_meta_in_new_order( $get_order ) {
+		if ( ! empty( $this->payal_order_id ) ) {
+			$get_order->update_meta_data( '_transaction_id', $this->payal_order_id );
+			$get_order->save();
+		}
+	}
 
     /**
      * Create purchase units data
@@ -433,20 +442,6 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
 			return ($this->is_sandbox == 'yes') ? $sandbox_url : $live_url;
 		} else {
 			return ( 'live' === $mode ) ? $live_url : $sandbox_url;
-		}
-	}
-
-	public function add_order_id_as_meta( $event ) {
-		if ( ! empty( $this->payal_order_id ) ) {
-			WFOCU_Core()->track->add_meta( $event, '_paypal_order_id', $this->payal_order_id );
-		}
-	}
-
-	public function add_paypal_meta_in_new_order( $get_order ) {
-		if ( ! empty( $this->payal_order_id ) ) {
-			$get_order->update_meta_data( '_ppcp_paypal_order_id', $this->payal_order_id );
-			$get_order->update_meta_data( '_ppcp_paypal_intent', 'CAPTURE' );
-			$get_order->save();
 		}
 	}
 

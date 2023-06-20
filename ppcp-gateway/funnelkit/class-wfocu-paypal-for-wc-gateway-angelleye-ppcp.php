@@ -18,6 +18,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
     public $api_request;
     public $paymentaction;
     public $setting_obj;
+    public $payal_order_id;
 	protected static $ins = null;
 	protected $paypal_order_id = null;
 
@@ -35,14 +36,12 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
             $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
         }
         $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
-                
-		add_filter( 'wfocu_allow_ajax_actions_for_charge_setup', array( $this, 'allow_action' ) );
-		add_action( 'wc_ajax_angelleye_wfocu_front_handle_paypal_payments', array($this, 'angelleye_handle_paypal_payments') );
-		add_action( 'woocommerce_api_wfocu_angelleye_paypal_payments', array($this, 'angelleye_capture_upsell_order') );
-        add_action('wp_enqueue_scripts', array($this, 'wfocu_angelleye_ppcp_frontend_scripts'));
 
+        // Force tokenization if funnel is initiated
+        add_filter( "angelleye_ppcp_is_save_payment_method", array( $this, "angelleye_force_token_save" ), 20 );
 		$this->refund_supported = true;
 	}
+
 
 	/**
 	 * @return null|WFOCU_Paypal_For_WC_Gateway_Express_Checkout
@@ -66,9 +65,14 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
             if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
+	            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
+	        }
+            
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -80,42 +84,74 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
 		return true;
 	}
 
-	public function wfocu_angelleye_ppcp_frontend_scripts() {
-		$order = WFOCU_Core()->data->get_current_order();
+	public function angelleye_force_token_save($is_enabled) {
+		if ( false !== $this->should_tokenize() ) {
 
-		if ( ! $order instanceof WC_Order ) {
-			return;
+			return true;
 		}
 
-		if ( $this->get_key() !== $order->get_payment_method() ) {
-			return;
-		}
-		if ( ! $this->is_enabled() ) {
-			return;
-		}
-
-		wp_enqueue_script("angelleye-ppcp-funnelkit", PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/funnelkit/js/funnelkit-frontend.js', array('jquery'), VERSION_PFW, true);
-
-	}
-
-	
-	public function allow_action($actions) {
-		array_push( $actions, 'angelleye_wfocu_front_handle_paypal_payments' );
-
-		return $actions;
+		return $is_enabled;
 	}
 
 	/**
-	 * Process paypal payment order
+	 * Try and get the payment token saved by the gateway
+	 *
+	 * @param WC_Order $order
+	 *
+	 * @return boolean on success false otherwise
 	 */
-	public function angelleye_handle_paypal_payments() {
-		$this->process_client_order();
+	public function has_token( $order ) {
+		if ( !is_a( $variable, 'WC_Order' ) ) {
+			return false;
+		}
+		$get_id      = $order->get_id();
+		$this->token = get_post_meta( $get_id, '_payment_tokens_id', true );
+		if ( ! empty( $this->token ) ) {
+			return true;
+		}
+
+		return false;
+
 	}
 
 	/**
-	 * Process order request
+	 * Try and get the payment token saved by the gateway
+	 *
+	 * @param WC_Order $order
+	 *
+	 * @return boolean on success false otherwise
 	 */
-	public function process_client_order() {
+	public function get_token( $order ) { 
+		$get_id      = $order->get_id();
+		$this->token = get_post_meta( $get_id, '_payment_tokens_id', true );
+		
+		if ( empty($this->token) ) {
+            $payment_tokens_list = $this->payment_request->angelleye_ppcp_get_all_payment_tokens();
+            $payment_method = $order->get_payment_method();
+            if($payment_method == 'angelleye_ppcp') {
+            	foreach ($payment_tokens_list as $key => $token) {
+            		if(isset($token['payment_source']['paypal']) && !empty($token['payment_source']['paypal'])) {
+            			$this->token = $token['id'];
+            			break;
+            		}
+            	}
+            }
+		}
+
+		if ( ! empty( $this->token ) ) {
+			return $this->token;
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * This function is placed here as a fallback function when JS client side integration fails mysteriosly
+	 */
+	public function process_charge( $order ) {
+		WFOCU_Core()->log->log( 'process charge paypal advanced credit card' );
+		$is_successful = false;
 		$get_current_offer      = WFOCU_Core()->data->get( 'current_offer' );
 		$get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta( $get_current_offer );
 		WFOCU_Core()->data->set( '_offer_result', true );
@@ -131,100 +167,100 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
 			WFOCU_Core()->data->set( 'upsell_package', $offer_package, 'paypal' );
 			WFOCU_Core()->data->save( 'paypal' );
 			WFOCU_Core()->data->save();
-
-			
-			$data = array(
-				'intent'              => $ppcp_data['intent'],
-				'purchase_units'      => $this->get_purchase_units( $get_order, $offer_package, $ppcp_data ),
-				'application_context' => array(
-					'user_action'  => 'CONTINUE',
-					'landing_page' => 'NO_PREFERENCE',
-					'brand_name'   => html_entity_decode( get_bloginfo( 'name' ), ENT_NOQUOTES, 'UTF-8' ),
-					'return_url'   => add_query_arg( array( 'wfocu-si' => WFOCU_Core()->data->get_transient_key() ), WC()->api_request_url( 'wfocu_angelleye_paypal_payments' ) ),
-					'cancel_url'   => add_query_arg( array( 'wfocu-si' => WFOCU_Core()->data->get_transient_key() ), WFOCU_Core()->public->get_the_upsell_url( WFOCU_Core()->data->get_current_offer() ) ),
-
-				),
-				'payment_method'      => array(
-					'payee_preferred' => 'UNRESTRICTED',
-					'payer_selected'  => 'PAYPAL',
-				),
-				'payment_instruction' => array(
-					'disbursement_mode' => 'INSTANT',
-
-				),
-
+			$data = array();
+			$data['timeout'] = 30;
+			$data['intent'] = $ppcp_data['intent'];
+			$data['purchase_units'] = $this->get_purchase_units( $get_order, $offer_package, $ppcp_data );
+			$data['application_context'] = array(
+				'user_action'  => 'CONTINUE',
+				'landing_page' => 'NO_PREFERENCE',
+				'brand_name'   => html_entity_decode( get_bloginfo( 'name' ), ENT_NOQUOTES, 'UTF-8' ),
+				'return_url'   => add_query_arg( array( 'wfocu-si' => WFOCU_Core()->data->get_transient_key() ), WC()->api_request_url( 'wfocu_angelleye_paypal_payments' ) ),
+				'cancel_url'   => add_query_arg( array( 'wfocu-si' => WFOCU_Core()->data->get_transient_key() ), WFOCU_Core()->public->get_the_upsell_url( WFOCU_Core()->data->get_current_offer() ) ),
 			);
-			$payment_env = $get_order->get_meta('_enviorment');
-			WFOCU_Core()->log->log( "Order: #" . $get_order->get_id() . " paypal args" . print_r( $data, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+			$data['payment_instruction'] = array(
+				'disbursement_mode' => 'INSTANT',
+			);
+			$data['payment_method'] = array(
+				'payee_preferred' => 'UNRESTRICTED',
+				'payer_selected'  => 'PAYPAL',
+			);
+			$payment_token = $this->get_token( $get_order );
+			$token_id = angelleye_ppcp_get_token_id_by_token($payment_token);
+			$data_store = WC_Data_Store::load( 'payment-token' );
+			$token_metadata = $data_store->get_metadata( $token_id );
+			$data['payment_source'] = array(
+				$token_metadata['_angelleye_ppcp_used_payment_method'][0] => array(
+					'vault_id' => $payment_token,
+				)
+			);
+
+			if($token_metadata['_angelleye_ppcp_used_payment_method'][0] === 'card') {
+				$data['payment_source'][$token_metadata['_angelleye_ppcp_used_payment_method'][0]]['stored_credential'] = array(
+                    'payment_initiator' => 'MERCHANT',
+                    'payment_type' => 'UNSCHEDULED',
+                    'usage' => 'SUBSEQUENT'
+                );
+			}
+			
+			WFOCU_Core()->log->log( "Order: #" . $get_order->get_id() . " paypal args" . print_r( $data, true ) );
+
+			$payment_env = $get_order->get_meta( '_enviorment' );
 			$arguments   = apply_filters( 'wfocu_ppcp_gateway_process_client_order_api_args', array(
 				'method'  => 'POST',
 				'headers' => array(
-					'Content-Type'  		=> 'application/json',
-					'Authorization' 		=> '',
-					"prefer" 				=> "return=representation",
-					'PayPal-Request-Id' 	=> $this->generate_request_id(),
+					'Content-Type'  => 'application/json',
+					'Authorization' => '',
+					"prefer" => "return=representation",
+					'PayPal-Request-Id' => $this->generate_request_id(),
 					'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion($payment_env),
 				),
 				'body'    => $data,
 			), $get_order, $posted_data, $offer_package );
-
+			
 			$url = $this->get_api_base( $payment_env ) . 'v2/checkout/orders';
+
 			$ppcp_resp = $this->api_request->request($url, $arguments, 'create_order');
+			WFOCU_Core()->log->log( "Order: #" . $get_order->get_id() . " paypal response" . print_r( $ppcp_resp, true ) );
 			
 			if ( !isset($ppcp_resp['id']) || empty($ppcp_resp['id']) ) {
 
 				$data = WFOCU_Core()->process_offer->_handle_upsell_charge( false );
-
-				$json_response = array(
-					'status'       => false,
-					'redirect_url' => $data['redirect_url'],
-				);
-
-
+				$is_successful = false;
 				WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Unable to create paypal Order refer error below' . print_r( $ppcp_resp, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-				wp_send_json( $json_response );
 
 			} else {
 
-				/*
-				 * The call to Orders API to create or initiate a charge using a PayPal account as the payment source results in a PAYER_ACTION_REQUIRED contingency.
-				 * Once the buyer has identified their PayPal account, authenticated, and been redirected
-				 */
-				if (  'CREATED' === $ppcp_resp['status'] || 'PAYER_ACTION_REQUIRED' === $ppcp_resp['status'] ) {
+				angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $ppcp_resp['id']);
+				$this->payal_order_id = $ppcp_resp['id'];
 
-					$approve_link = $ppcp_resp['links'][1]['href'];
+				if ( 'COMPLETED' == $ppcp_resp['status'] ) {
 
 					// Update Order Created ID (PayPal Order ID) in the order.
 					$get_order->update_meta_data( 'wfocu_ppcp_order_current', $ppcp_resp['id'] );
 					$get_order->save();
 
 					WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': PayPal Order successfully created' );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-					$json_response = array(
-						'status'       => true,
-						'redirect_url' => $approve_link,
-					);
+					$transaction_id = $ppcp_resp['purchase_units'][0]['payments']['captures']['id'];
+					WFOCU_Core()->data->set( '_transaction_id', $transaction_id );
+					$is_successful = true;
 
 				} else {
-					$data = WFOCU_Core()->process_offer->_handle_upsell_charge( false );
-
-					$json_response = array(
-						'status'       => false,
-						'redirect_url' => $data['redirect_url'],
-					);
-
+					
+					$is_successful = false;
 
 					WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Unable to create paypal Order refer error below' . print_r( $ppcp_resp, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-					wp_send_json( $json_response );
 				}
 			}
-
-			wp_send_json( $json_response );
-			die();
+			
+		} else {
+			$is_successful = false;
 		}
+
+		add_action( 'wfocu_offer_new_order_created_'.$this->get_key(), array( $this, 'add_paypal_meta_in_new_order' ), 10, 2 );
+		return $this->handle_result( $is_successful );
 	}
+
 
 	/**
 	 * Get paypal settings configuration
@@ -238,6 +274,13 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
             'invoice_prefix' => $this->invoice_prefix,
         );
     }
+
+    public function add_paypal_meta_in_new_order( $get_order ) {
+		if ( ! empty( $this->payal_order_id ) ) {
+			$get_order->update_meta_data( '_transaction_id', $this->payal_order_id );
+			$get_order->save();
+		}
+	}
 
     /**
      * Create purchase units data
@@ -347,6 +390,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
 			);
 
 		};
+		
         return $order_items;
     }
 
@@ -421,100 +465,6 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
 		}
 	}
 
-	public function angelleye_capture_upsell_order() {
-		/**
-		 * Setting up necessary data for this api call
-		 */
-		add_filter( 'wfocu_valid_state_for_data_setup', '__return_true' );
-		WFOCU_Core()->template_loader->set_offer_id( WFOCU_Core()->data->get_current_offer() );
-
-		WFOCU_Core()->template_loader->maybe_setup_offer();
-
-		$get_order       = WFOCU_Core()->data->get_parent_order();
-		$paypal_order_id = $get_order->get_meta( 'wfocu_ppcp_order_current' );
-		$environment     = $get_order->get_meta( '_enviorment' );
-		$capture_args    = array(
-			'method'  => 'POST',
-			'headers' => array(
-				'Authorization'         => '',
-				'Content-Type'          => 'application/json',
-				'prefer' 				=> "return=representation",
-				'PayPal-Request-Id' 	=> $this->generate_request_id(),
-				'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion($environment),
-			),
-		);
-
-
-		$capture_url = $this->get_api_base( $environment ) . 'v2/checkout/orders/' . $paypal_order_id . '/capture';
-
-		$ppcp_resp = $this->api_request->request($capture_url, $capture_args, 'capture_order');
-
-		$existing_package = WFOCU_Core()->data->get( 'upsell_package', '', 'paypal' );
-		
-		WFOCU_Core()->data->set( '_upsell_package', $existing_package );
-
-		if ( !isset($ppcp_resp['id']) || empty($ppcp_resp['id']) ) {
-
-			$data = WFOCU_Core()->process_offer->_handle_upsell_charge( false );
-			WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Unable to capture paypal Order refer error below' . print_r( $ppcp_resp, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-		} else {
-
-			
-			if ( isset( $ppcp_resp['status'] ) && 'COMPLETED' === $ppcp_resp['status'] ) {
-				if( isset( $ppcp_resp['payment_source']['paypal']['attributes']['vault']['id'] ) && isset( $ppcp_resp['payment_source']['paypal']['attributes']['vault']['status'] ) && 'CREATED' === $ppcp_resp['payment_source']['paypal']['attributes']['vault']['status'] ) {
-					/*
-					 * Successfully created vault token
-					 * This token can be used in subsequent transactions to charge the buyer's PayPal account, than requiring them to identify and log in for every purchase.
-					 */
-					$txn_id = $ppcp_resp['payment_source']['paypal']['attributes']['vault']['id'];
-
-					update_post_meta( WFOCU_WC_Compatibility::get_order_id( $get_order ), 'wfocu_ppcp_renewal_payment_token', $txn_id );
-					WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': vault token created' );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-
-				} else {
-					$txn_id = $ppcp_resp['purchase_units'][0]['payments']['captures'][0]['id'];
-				}
-
-				WFOCU_Core()->data->set( '_transaction_id', $txn_id );
-				add_action( 'wfocu_db_event_row_created_' . WFOCU_DB_Track::OFFER_ACCEPTED_ACTION_ID, array( $this, 'add_order_id_as_meta' ) );
-				add_action( 'wfocu_offer_new_order_created_'.$this->get_key(), array( $this, 'add_paypal_meta_in_new_order' ), 10, 2 );
-
-				$this->payal_order_id = $paypal_order_id;
-				$data                 = WFOCU_Core()->process_offer->_handle_upsell_charge( true );
-
-
-			} else if ( isset( $ppcp_resp['details'] ) && is_array( $ppcp_resp['details'] ) && ( 'ORDER_ALREADY_CAPTURED' === $ppcp_resp['details'][0]['issue'] ) ) {
-				$get_offer            = WFOCU_Core()->offers->get_the_next_offer();
-				$data                 = [];
-				$data['redirect_url'] = WFOCU_Core()->public->get_the_upsell_url( $get_offer );
-
-			} else {
-				$data = WFOCU_Core()->process_offer->_handle_upsell_charge( false );
-				WFOCU_Core()->log->log( 'Order #' . WFOCU_WC_Compatibility::get_order_id( $get_order ) . ': Unable to capture paypal Order refer error below' . print_r( $ppcp_resp, true ) );  // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-
-			}
-		}
-
-		wp_redirect( $data['redirect_url'] );
-		exit;
-
-	}
-
-	public function add_order_id_as_meta( $event ) {
-		if ( ! empty( $this->payal_order_id ) ) {
-			WFOCU_Core()->track->add_meta( $event, '_paypal_order_id', $this->payal_order_id );
-		}
-	}
-
-	public function add_paypal_meta_in_new_order( $get_order ) {
-		if ( ! empty( $this->payal_order_id ) ) {
-			$get_order->update_meta_data( '_ppcp_paypal_order_id', $this->payal_order_id );
-			$get_order->update_meta_data( '_ppcp_paypal_intent', 'CAPTURE' );
-			$get_order->save();
-		}
-	}
 
 	/**
 	 * Handling refund offer request
