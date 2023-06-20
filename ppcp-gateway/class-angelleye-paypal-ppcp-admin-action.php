@@ -529,7 +529,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'id' => 'ppcp_notice_classic_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'Important PayPal Update Required',
-                'ans_message_description' => sprintf('Upgrade now to PayPal Commerce for better features, enhanced security, reduced fees, and future-proof integration. <a target="_blank" href="%s">Click here</a> to learn more and start the upgrade process. Don\'t miss out on the advantages of PayPal Commerce! <br><br>Please upgrade by September 30, 2023 to avoid potential interruptions.<br>', admin_url('options-general.php?page=paypal-for-woocommerce')),
+                'ans_message_description' => sprintf('Upgrade now to PayPal Commerce for better features, enhanced security, reduced fees, and future-proof integration. <a href="%s">Click here</a> to learn more and start the upgrade process. Don\'t miss out on the advantages of PayPal Commerce! <br><br>Please upgrade by September 30, 2023 to avoid potential interruptions.<br>', admin_url('options-general.php?page=paypal-for-woocommerce')),
                 'ans_button_url' => admin_url('options-general.php?page=paypal-for-woocommerce'),
                 'ans_button_label' => 'Upgrade Now',
                 'is_dismiss' => false,
