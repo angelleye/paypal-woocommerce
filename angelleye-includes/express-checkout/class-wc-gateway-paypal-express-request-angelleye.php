@@ -38,6 +38,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->send_items = 'yes' === $this->gateway->get_option('send_items', 'yes');
             $this->id = 'paypal_express';
             if ($this->testmode == false) {
+                if (!class_exists('AngellEYE_Utility')) {
+                    require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+                }
                 $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
             }
             if ($this->testmode == true) {
@@ -617,6 +620,9 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
 
     public function angelleye_load_paypal_class($gateway, $current, $order_id = null) {
         if ($this->testmode == false) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id);
         }
         if ($this->testmode == true) {

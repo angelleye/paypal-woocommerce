@@ -70,7 +70,7 @@ class AngellEYE_Utility {
                 return false;
             }
             if ($this->testmode == false) {
-                $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($this->order_id);
+                $this->testmode = self::angelleye_paypal_for_woocommerce_is_set_sandbox_product($this->order_id);
             }
             if ($this->testmode == true) {
                 $this->api_username = $gateway_obj->get_option('sandbox_api_username');
