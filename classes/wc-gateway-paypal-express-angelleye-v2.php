@@ -2976,7 +2976,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             if (!is_user_logged_in() && $is_registration_required) {
                                 $paypal_express_request->angelleye_process_customer($order_id);
                             }
-                            do_action('woocommerce_checkout_order_processed', $order_id, $this->posted, $order);
+                            
                         } else {
                             $_POST = angelleye_get_session('post_data');
                             $_POST['post_data'] = angelleye_get_session('post_data');
@@ -3043,7 +3043,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             if (!is_user_logged_in() && $is_registration_required) {
                                 $paypal_express_request->angelleye_process_customer($order_id);
                             }
-                            do_action('woocommerce_checkout_order_processed', $order_id, $this->posted, $order);
                         }
                         if (!$order instanceof WC_Order) {
                             $order = wc_get_order($order_id);
@@ -3098,6 +3097,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         }
                         $_GET['order_id'] = $order_id;
                     }
+                    do_action('woocommerce_checkout_order_processed', $order_id, $this->posted, $order);
                     $paypal_express_request->angelleye_do_express_checkout_payment();
                     break;
                 case 'do_express_checkout_payment':

@@ -238,7 +238,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_filter('woocommerce_ship_to_different_address_checked', array($this, 'angelleye_ship_to_different_address_checked'), 10, 1);
                 add_filter('woocommerce_order_button_html', array($this, 'angelleye_woocommerce_order_button_html'), 10, 1);
                 add_filter('woocommerce_coupons_enabled', array($this, 'angelleye_woocommerce_coupons_enabled'), 10, 1);
-                add_action('woocommerce_cart_shipping_packages', array($this, 'maybe_add_shipping_information'));
+                add_filter('woocommerce_cart_shipping_packages', array($this, 'maybe_add_shipping_information'), 10, 1);
                 add_action('admin_notices', array($this, 'angelleye_billing_agreement_notice'));
                 add_action('wc_ajax_wc_angelleye_ppec_update_shipping_costs', array($this, 'wc_ajax_update_shipping_costs'));
                 add_filter('script_loader_tag', array($this, 'angelleye_in_content_js'), 10, 2);
@@ -1017,7 +1017,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         if (!wp_doing_ajax()) {
             if ($this->function_helper->ec_is_express_checkout() || $this->ec_get_session_data('shipping_details')) {
                 $destination = $this->ec_get_session_data('shipping_details');
-                if (!empty($destination['country'])) {
+                if (!empty($destination['country']) && isset($packages[0]['destination'])) {
                     $packages[0]['destination']['country'] = isset($destination['country']) ? $destination['country'] : '';
                     $packages[0]['destination']['state'] = isset($destination['state']) ? $destination['state'] : '';
                     $packages[0]['destination']['postcode'] = isset($destination['postcode']) ? $destination['postcode'] : '';
