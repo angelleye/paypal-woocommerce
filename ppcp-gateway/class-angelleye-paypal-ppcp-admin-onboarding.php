@@ -209,7 +209,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -226,7 +226,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -243,7 +243,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -337,7 +337,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $this->view();
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -353,12 +353,19 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             ");
             return $payment_methods;
         } catch (Exception $ex) {
-
+            
         }
     }
 
     public function migration_view($active_classic_gateway_list) {
         try {
+            ?>
+            <style type="text/css">
+                .angelleye-tool.nav-tab {
+                    display: none;
+                }
+            </style>
+            <?php
             wp_enqueue_style('ppcp_account_request_form_css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-admin-migration.css', null, time());
             $layout_type = '';
             if (isset($active_classic_gateway_list['paypal_express']) && (isset($active_classic_gateway_list['paypal_pro']) || isset($active_classic_gateway_list['paypal_pro_payflow']))) {
@@ -386,7 +393,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -585,7 +592,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     if (!empty($result)) {
                         ?>
                         <li class="ppcp_migration_report">
-                            <p><?php echo __('Migration Report', 'paypal-for-woocommerce'); ?></p>
+                            <p><?php echo __('Subscription Migration Report', 'paypal-for-woocommerce'); ?></p>
+                            <div class="wrap" style="margin-bottom: 20px;">
+                                This report outlines all of the active / on hold subscription profiles that were updated as a part of this migration wizard.  
+                                If you feel you need to, you can use the "Revert Changes" button to undue this migration.  
+                                This will reset the payment gateway(s) and subscription profiles to use PayPal Classic again as if the migration never happened.
+                            </div>
                             <div class="wrap">
                                 <?php
                                 echo $this->angelleye_ppcp_build_html($result);
@@ -606,7 +618,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -618,7 +630,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -654,7 +666,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -699,7 +711,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 GROUP BY pm2.meta_value, pm.meta_value;", ARRAY_A);
             return $payment_methods;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -725,7 +737,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
                     )");
         } catch (Exception $ex) {
-
+            
         }
     }
+
 }

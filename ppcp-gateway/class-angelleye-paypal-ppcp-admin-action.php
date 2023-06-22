@@ -302,7 +302,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public function angelleye_ppcp_display_payment_action() {
         ?>
         <div class='wrap'>
-        <?php if (isset($this->angelleye_ppcp_order_actions) && !empty($this->angelleye_ppcp_order_actions)) { ?>
+            <?php if (isset($this->angelleye_ppcp_order_actions) && !empty($this->angelleye_ppcp_order_actions)) { ?>
                 <table class="form-table">
                     <tbody>
                         <tr>
@@ -310,27 +310,27 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                                 <label for="angelleye_ppcp_payment_action"><?php echo __('Select PayPal Action', 'paypal-for-woocommerce'); ?></label>
                             </th>
                             <td class="forminp forminp-text">
-            <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
+                                <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
                                     <select name="angelleye_ppcp_payment_action" id="angelleye_ppcp_payment_action">
-                                    <?php
-                                    $i = 0;
-                                    foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
-                                        if ($i == 0) {
-                                            echo "<option value=''>" . __('Select Action', 'paypal-for-woocommerce') . "</option>";
-                                        }
-                                        ?>
+                                        <?php
+                                        $i = 0;
+                                        foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
+                                            if ($i == 0) {
+                                                echo "<option value=''>" . __('Select Action', 'paypal-for-woocommerce') . "</option>";
+                                            }
+                                            ?>
                                             <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($v); ?></option>
                                             <?php
                                             $i = $i + 1;
                                         endforeach;
                                         ?>
                                     </select>
-                                    <?php } ?>
+                                <?php } ?>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-        <?php } ?>
+            <?php } ?>
             <?php if (isset($this->angelleye_ppcp_order_status_data['capture']) && isset($this->angelleye_ppcp_order_actions['capture'])) { ?>
                 <p class="angelleye_ppcp_capture_box" style="display: none;"><b style="font-size: 14px;"><?php echo __('Enter the capture details below to move funds from your buyer\'s account to your account.', 'paypal-for-woocommerce'); ?></b></p>
                 <table class="form-table angelleye_ppcp_capture_box" style="display: none;">
@@ -360,7 +360,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         </tr>
                     </tbody>
                 </table>
-        <?php } ?>
+            <?php } ?>
             <?php if (isset($this->angelleye_ppcp_order_status_data['refund']) && isset($this->angelleye_ppcp_order_actions['refund'])) { ?>
                 <p class="angelleye_ppcp_refund_box" style="display: none;"><b style="font-size: 14px;"><?php echo __('You can issue a full or partial refund for 180 days after the original payment was sent.', 'paypal-for-woocommerce'); ?></b></p>
                 <table class="form-table angelleye_ppcp_refund_box" style="display: none;">
@@ -369,13 +369,13 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             <th scope="row"><?php echo __('Transaction Id', ''); ?></th>
                             <td>
                                 <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data">
-            <?php
-            $i = 0;
-            foreach ($this->angelleye_ppcp_order_status_data['refund'] as $k => $v) :
-                if ($i == 0) {
-                    echo "<option value=''>" . __('Select Transaction Id', '') . "</option>";
-                }
-                ?>
+                                    <?php
+                                    $i = 0;
+                                    foreach ($this->angelleye_ppcp_order_status_data['refund'] as $k => $v) :
+                                        if ($i == 0) {
+                                            echo "<option value=''>" . __('Select Transaction Id', '') . "</option>";
+                                        }
+                                        ?>
                                         <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
                                         <?php
                                         $i = $i + 1;
@@ -434,24 +434,24 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     <td><?php echo __('Order Total:', 'paypal-for-woocommerce'); ?></td>
                     <td><?php echo $this->order->get_formatted_order_total(); ?></td>
                 </tr>
-        <?php if (isset($this->ae_capture_amount) && $this->ae_capture_amount > 0) { ?>
+                <?php if (isset($this->ae_capture_amount) && $this->ae_capture_amount > 0) { ?>
                     <tr>
                         <td><?php echo __('Capture: ', 'paypal-for-woocommerce'); ?></td>
                         <td><?php echo wc_price($this->ae_capture_amount, array('currency' => $this->currency_code)); ?></td>
                     </tr>
-        <?php } ?>
+                <?php } ?>
                 <?php if (isset($this->ae_refund_amount) && $this->ae_refund_amount > 0) { ?>
                     <tr>
                         <td><?php echo __('Refund:', 'paypal-for-woocommerce'); ?></td>
                         <td><?php echo wc_price($this->ae_refund_amount, array('currency' => $this->currency_code)); ?></td>
                     </tr>
-        <?php } ?>
+                <?php } ?>
                 <?php if (isset($this->ae_void_amount) && $this->ae_void_amount > 0) { ?>
                     <tr>
                         <td><?php echo __('Void:', 'paypal-for-woocommerce'); ?></td>
                         <td><?php echo wc_price($this->ae_void_amount, array('currency' => $this->currency_code)); ?></td>
                     </tr>
-        <?php } ?>
+                <?php } ?>
             </tbody>
         </table>
         <?php
@@ -480,17 +480,17 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     </tr>
                 </tfoot>
                 <tbody>
-            <?php
-            foreach ($table_rows as $key => $table_field) {
-                echo '<tr>';
-                echo '<td>' . $table_field['transaction_id'] . '</td>';
-                echo '<td>' . $table_field['amount'] . '</td>';
-                echo '<td>' . $table_field['payment_status'] . '</td>';
-                echo '<td>' . $table_field['expired_date'] . '</td>';
-                echo '<td>' . $table_field['payment_action'] . '</td>';
-                echo '</tr>';
-            }
-            ?>
+                    <?php
+                    foreach ($table_rows as $key => $table_field) {
+                        echo '<tr>';
+                        echo '<td>' . $table_field['transaction_id'] . '</td>';
+                        echo '<td>' . $table_field['amount'] . '</td>';
+                        echo '<td>' . $table_field['payment_status'] . '</td>';
+                        echo '<td>' . $table_field['expired_date'] . '</td>';
+                        echo '<td>' . $table_field['payment_action'] . '</td>';
+                        echo '</tr>';
+                    }
+                    ?>
                 </tbody>
             </table>
             <?php
@@ -525,6 +525,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             if (isset($_GET['page']) && 'paypal-for-woocommerce' === $_GET['page']) {
                 return;
             }
+            if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+                return;
+            }
             $notice_data['classic_upgrade'] = array(
                 'id' => 'ppcp_notice_classic_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
@@ -546,6 +549,17 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'ans_button_label' => 'Enable the PayPal Vault',
                 'is_dismiss' => true
             );
+            $notice_data['outside_us'] = array(
+                'id' => 'ppcp_notice_outside_us',
+                'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
+                'ans_message_title' => '',
+                'ans_message_description' => 'We notice that are running WooCommerce Subscriptions and your store country is outside the United States.<br>  
+                    Unfortunately, the PayPal Commerce Platform Vault functionality, which is required for Subscriptions, is only available for United States PayPal accounts.<br>
+                    If your PayPal account is in fact based in the United States, you can continue with this update.<br>
+                    However, if your PayPal account is not based in the U.S. you will need to wait until this feature is available in your country.<br>
+                    Please submit a <a href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">help desk</a> ticket with any questions or concerns about this.',
+                'is_dismiss' => true,
+            );
             $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->merchant_id);
             $notice_data = json_decode(json_encode($notice_data));
             $notice_type = angelleye_ppcp_display_upgrade_notice_type($result);
@@ -555,6 +569,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         angelleye_ppcp_display_notice($notice_data->$key);
                     }
                     if ('vault_upgrade' === $key && $type === true && isset($notice_data->$key)) {
+                        angelleye_ppcp_display_notice($notice_data->$key);
+                    }
+                    if ('outside_us' === $key && $type === true && isset($notice_data->$key)) {
                         angelleye_ppcp_display_notice($notice_data->$key);
                     }
                 }

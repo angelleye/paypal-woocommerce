@@ -100,7 +100,7 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
         if ($old_wc) {
             $order_meta_value = get_post_meta($order->id, $key, $bool);
         } else {
-            if('_payment_method_title' === $key) {
+            if ('_payment_method_title' === $key) {
                 $order_meta_value = $order->get_payment_method_title();
             } else {
                 $order_meta_value = $order->get_meta($key, $bool);
@@ -219,7 +219,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -933,7 +933,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -958,7 +958,7 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -990,6 +990,7 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
             $notice_type = array();
             $notice_type['vault_upgrade'] = false;
             $notice_type['classic_upgrade'] = false;
+            $notice_type['outside_us'] = false;
             $is_subscriptions = false;
             $is_us = false;
             $is_classic = false;
@@ -1013,7 +1014,9 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
             if (count($active_classic_gateway_list) > 0) {
                 $is_classic = true;
             }
-            if ($is_classic === true && $is_subscriptions === true && $is_us === true) {
+            if ($is_classic === true && $is_us === false && $is_subscriptions === true) {
+                $notice_type['outside_us'] = true;
+            } elseif ($is_classic === true && $is_subscriptions === true && $is_us === true) {
                 $notice_type['classic_upgrade'] = true;
             } elseif ($is_classic === true && $is_subscriptions === false) {
                 $notice_type['classic_upgrade'] = true;
@@ -1045,12 +1048,15 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
             }
             $message = '<div class="notice notice-success angelleye-notice" style="display:none;" id="' . $response_data->id . '">'
                     . '<div class="angelleye-notice-logo-push"><span> <img width="60px"src="' . $response_data->ans_company_logo . '"> </span></div>'
-                    . '<div class="angelleye-notice-message">'
-                    . '<h2>' . $response_data->ans_message_title . '</h2>'
-                    . '<div class="angelleye-notice-message-inner">'
-                    . '<p>' . $response_data->ans_message_description . '</p>'
-                    . '<div class="angelleye-notice-action">'
-                    . '<a href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a>';
+                    . '<div class="angelleye-notice-message">';
+            if (!empty($response_data->ans_message_title)) {
+                $message .= '<h2>' . $response_data->ans_message_title . '</h2>';
+            }
+            $message .= '<div class="angelleye-notice-message-inner">'
+                    . '<p style="margin-top: 15px !important;line-height: 20px;">' . $response_data->ans_message_description . '</p><div class="angelleye-notice-action">';
+            if (!empty($response_data->ans_button_url)) {
+                $message .= '<a href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a>';
+            }
 
             if (isset($response_data->is_button_secondary) && $response_data->is_button_secondary === true) {
                 $message .= '&nbsp&nbsp&nbsp<a target="_blank" href="' . $response_data->ans_secondary_button_url . '" class="button button-secondary">' . $response_data->ans_secondary_button_label . '</a>';

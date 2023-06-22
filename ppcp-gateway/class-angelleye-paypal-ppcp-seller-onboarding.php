@@ -287,25 +287,25 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                             switch ($product) {
                                 case 'paypal_express':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status);
-                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
                                         $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_express', 'angelleye_ppcp');
                                     }
                                     break;
                                 case 'paypal_pro':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
-                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
                                         $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp');
                                     }
                                     break;
                                 case 'paypal_pro_payflow':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status);
-                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
                                         $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro_payflow', 'angelleye_ppcp');
                                     }
                                     break;
                                 case 'paypal_advanced':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status);
-                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
                                         $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_advanced', 'angelleye_ppcp');
                                     }
                                     break;
@@ -314,13 +314,13 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                     break;
                                 case 'paypal':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_to_ppcp();
-                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
                                         $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal', 'angelleye_ppcp');
                                     }
                                     break;
                                 case 'ppec_paypal':
                                     $this->ppcp_migration->angelleye_ppcp_ppec_paypal_to_ppcp();
-                                    if($this->subscription_support_enabled === true && $this->is_vaulting_enable === true ) {
+                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
                                         $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('ppec_paypal', 'angelleye_ppcp');
                                     }
                                     break;
@@ -331,9 +331,19 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     }
                 } else {
                     if (isset($seller_onboarding_status['country']) && 'US' === $seller_onboarding_status['country']) {
-                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('Your PayPal account is not approved for the Vault functionality which is required for Subscriptions (token payments).');
+                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('We see that you are running WooCommerce Subscriptions.<br>
+                            Unfortunately, your PayPal account was not instantly approved for the PayPal Vault, which is required for Subscriptions functionality.<br>
+                            As such, you will not be able to update to PayPal Commerce until your account is fully approved for the PayPal Vault feature.<br>
+                            No changes have been made, and you can continue running PayPal Classic.<br>
+                            Please try this wizard again in 2 - 3 business days.  If the problem persists, please submit a <a target="_blank" href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">support ticket</a> and we can help you get it approved.');
                     } else {
-                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('The PayPal Vault is currently only available in the United States.  Unfortunately, you will not be able to migrate until the Vault functionality is available in your country. Please submit a ticket for other options to migrate.');
+                        $country = WC()->countries->countries[ $country ];
+                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('You are currently running WooCommerce Subscriptions.<br>
+                            Unfortunately, the PayPal Vault feature (which is required for Subscriptions / Token Payments) is only currently available for United States PayPal accounts.<br>
+                            Your PayPal account is based in ' . $country . '.  As such, you cannot upgrade to PayPal Commerce Platform at this time.<br>
+                            Please look for future updates and details about when the PayPal Vault is available in your country.<br>
+                            For now, you will remain on PayPal Classic.<br>
+                            Feel free to submit a <a target="_blank" href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">support ticket</a> if you have any questions or concerns.');
                     }
                     update_option($this->angelleye_ppcp_migration_wizard_notice_key, $this->angelleye_ppcp_migration_wizard_notice_data);
                 }
