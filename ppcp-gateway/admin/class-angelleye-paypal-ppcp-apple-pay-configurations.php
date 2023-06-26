@@ -6,6 +6,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
     private ?AngellEYE_PayPal_PPCP_Request $api_request;
     private ?AngellEYE_PayPal_PPCP_Payment $payment_request;
     private string $host;
+    private AngellEye_PayPal_PPCP_Apple_Domain_Validation $apple_pay_domain_validation;
 
     public static function instance()
     {
@@ -25,7 +26,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         }
         $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
         $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
-
+        $this->apple_pay_domain_validation = AngellEye_PayPal_PPCP_Apple_Domain_Validation::instance();
         if ($this->payment_request->is_sandbox) {
             $this->host = 'api.sandbox.paypal.com';
         } else {

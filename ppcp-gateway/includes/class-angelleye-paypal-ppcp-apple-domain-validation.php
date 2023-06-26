@@ -14,9 +14,9 @@ class AngellEye_PayPal_PPCP_Apple_Domain_Validation {
 
     public function addDomainValidationRoute()
     {
-        $file_name = $this->isSandbox() ? 'domain-association-file-sandbox' : 'apple-developer-merchantid-domain-association';
-        if ('yes' === $this->setting_obj->get('enable_apple_pay', 'yes')) {
-            $this->route_handler->addRoute('.well-known/' . $file_name, [$this, 'domainAssociationFile']);
+        $file_name = $this->getDomainAssociationFilePath();
+        if (!empty($file_name)) {
+            $this->route_handler->addRoute($file_name, [$this, 'domainAssociationFile']);
         }
     }
 
@@ -33,6 +33,15 @@ class AngellEye_PayPal_PPCP_Apple_Domain_Validation {
         $contents = ob_get_clean();
         echo $contents;
         exit();
+    }
+
+    public function getDomainAssociationFilePath($include_site_url = false): string
+    {
+        $file_name = $this->isSandbox() ? 'domain-association-file-sandbox' : 'apple-developer-merchantid-domain-association';
+        if ('yes' === $this->setting_obj->get('enable_apple_pay', 'yes')) {
+            return (!empty($include_site_url) ? get_bloginfo('url') . '/' : '')  . '.well-known/' . $file_name;
+        }
+        return '';
     }
 
 }
