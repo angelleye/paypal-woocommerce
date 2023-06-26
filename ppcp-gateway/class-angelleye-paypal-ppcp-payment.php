@@ -432,6 +432,40 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
+    /**
+     * This method returns the line items for an order on order pay page
+     * @param WC_Order $order
+     * @return array
+     */
+    public function getOrderLineItems(WC_Order $order): array
+    {
+        $lineItems = [];
+        $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
+        foreach ($order->get_items() as $item) {
+            $lineItems[] = [
+                'label' => $item->get_name(''),
+                'amount' => angelleye_ppcp_round($item['total'], $decimals)
+            ];
+        }
+
+        if ($order->needs_shipping_address()) {
+            $lineItems[] = [
+                'label' => 'Shipping',
+                'amount' => angelleye_ppcp_round($order->get_shipping_total(''), $decimals)
+            ];
+        }
+
+        $tax = $order->get_total_tax('');
+        if ($tax > 0) {
+            $lineItems[] = [
+                'label' => 'Tax',
+                'amount' => angelleye_ppcp_round($tax, $decimals)
+            ];
+        }
+
+        return $lineItems;
+    }
+
     public function getCartLineItems(): array
     {
         $lineItems = [];
@@ -448,7 +482,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         if (WC()->cart->needs_shipping()) {
             $lineItems[] = [
                 'label' => 'Shipping',
-                'amount' => $details['shipping']
+                'amount' => angelleye_ppcp_round($details['shipping'], $decimals)
             ];
         }
         $tax = WC()->cart->get_total_tax();
@@ -2506,7 +2540,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                         $request['payment_source'][$payment_method_name]['attributes'] = $attributes;
                         $request['payment_source'][$payment_method_name]['stored_credential'] = [
-                            "payment_initiator" => "CUSTOMER", "payment_type" => "UNSCHEDULED"
+                            "payment_initiator" => "CUSTOMER", "payment_type" => "RECURRING"
                         ];
                         break;
                     default:

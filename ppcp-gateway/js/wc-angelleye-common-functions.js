@@ -11,6 +11,10 @@ const angelleyeOrder = {
 	isSale: () => {
 		return 'capture' === angelleye_ppcp_manager.paymentaction;
 	},
+	isOrderPayPage: () => {
+		const url = new URL(window.location.href);
+		return url.searchParams.has('pay_for_order');
+	},
 	isOrderCompletePage: () => {
 		const url = new URL(window.location.href);
 		//  && url.searchParams.has('paypal_payer_id')
@@ -532,6 +536,22 @@ const angelleyeOrder = {
 			console.log('error: ', JSON.stringify(err));
 		});
 	},
+	applePayDataInit: async () => {
+		if (angelleyeOrder.isApplePayEnabled()) {
+			// block the apple pay button UI to make sure nobody can click it while its updating.
+			angelleyeOrder.showProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
+			// trigger an ajax call to update the total amount, in case there is no shipping required object
+			let response = await angelleyeOrder.shippingAddressUpdate({});
+			angelleyeOrder.hideProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
+			if (typeof response.totalAmount !== 'undefined') {
+				// successful response
+				window.angelleye_cart_totals = response;
+			} else {
+				// in case of unsuccessful response, refresh the page.
+				window.location.reload();
+			}
+		}
+	},
 	queuedEvents: {},
 	addEventsForCallback: (eventType, event, data) => {
 		angelleyeOrder.queuedEvents[eventType] = {event, data};
@@ -570,20 +590,7 @@ const angelleyeOrder = {
 			if (angelleyeOrder.isCartPage()) {
 				jQuery(document.body).on('updated_cart_totals', async function (event) {
 					angelleyeOrder.dequeueEvent(event.type);
-					if (angelleyeOrder.isApplePayEnabled()) {
-						// block the apple pay button UI to make sure nobody can click it while its updating.
-						angelleyeOrder.showProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
-						// trigger an ajax call to update the total amount, in case there is no shipping required object
-						let response = await angelleyeOrder.shippingAddressUpdate({});
-						angelleyeOrder.hideProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
-						if (typeof response.totalAmount !== 'undefined') {
-							// successful response
-							window.angelleye_cart_totals = response;
-						} else {
-							// in case of unsuccessful response, refresh the page.
-							window.location.reload();
-						}
-					}
+					await angelleyeOrder.applePayDataInit();
 				});
 			}
 		},

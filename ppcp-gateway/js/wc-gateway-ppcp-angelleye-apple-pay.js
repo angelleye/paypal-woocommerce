@@ -84,7 +84,7 @@ class ApplePayCheckoutButton {
     }
 
     initProductCartPage() {
-        if (angelleyeOrder.isProductPage() || angelleyeOrder.isCartPage()) {
+        if (angelleyeOrder.isProductPage() || angelleyeOrder.isCartPage() || angelleyeOrder.isOrderPayPage()) {
             window.angelleye_cart_totals = angelleye_ppcp_manager.product_cart_details;
         }
     }

@@ -344,7 +344,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             } else {
                 $button_selector['angelleye_ppcp_cart'] = '#angelleye_ppcp_cart';
             }
-            $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();;
+            $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
             $button_selector['angelleye_ppcp_cart_shortcode'] = '#angelleye_ppcp_cart_shortcode';
         } elseif (is_checkout_pay_page()) {
             $page = 'checkout';
@@ -357,6 +357,19 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $button_selector['angelleye_ppcp_checkout'] = '#angelleye_ppcp_checkout';
             }
             $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
+
+            // get order details
+            global $wp;
+            $order_id = $wp->query_vars['order-pay'];
+            $order = wc_get_order($order_id);
+            $product_cart_amounts['totalAmount'] = $order->get_total('');
+            $product_cart_amounts['shippingRequired'] = $order->needs_shipping_address();
+            $recurring_items = 0;
+            if (class_exists('WC_Subscriptions_Order')) {
+                $recurring_items = WC_Subscriptions_Order::get_recurring_items($order);
+            }
+            $product_cart_amounts['isSubscriptionRequired'] = $recurring_items > 0;
+            $product_cart_amounts['lineItems'] = $this->payment_request->getOrderLineItems($order);
             $is_pay_page = 'yes';
         } elseif (is_checkout()) {
             $page = 'checkout';
