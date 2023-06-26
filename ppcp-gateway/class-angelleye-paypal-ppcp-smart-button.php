@@ -366,7 +366,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $product_cart_amounts['shippingRequired'] = $order->needs_shipping_address();
             $recurring_items = 0;
             if (class_exists('WC_Subscriptions_Order')) {
-                $recurring_items = WC_Subscriptions_Order::get_recurring_items($order);
+                $recurring_items = count(WC_Subscriptions_Order::get_recurring_items($order));
             }
             $product_cart_amounts['isSubscriptionRequired'] = $recurring_items > 0;
             $product_cart_amounts['lineItems'] = $this->payment_request->getOrderLineItems($order);
