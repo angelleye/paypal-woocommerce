@@ -2501,7 +2501,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                         $request['payment_source'][$payment_method_name]['attributes'] = $attributes;
                         $request['payment_source'][$payment_method_name]['stored_credential'] = [
-                            "payment_initiator" => "CUSTOMER", "payment_type" => "RECURRING"
+                            "payment_initiator" => "CUSTOMER", "payment_type" => "UNSCHEDULED"
                         ];
                         break;
                     default:
