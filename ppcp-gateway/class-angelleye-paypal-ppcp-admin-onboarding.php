@@ -590,10 +590,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     <?php
                     $result = $this->angelleye_ppcp_get_result_migrate_to_ppcp();
                     if (!empty($result)) {
+                        if(!get_user_meta(get_current_user_id(), 'ppcp_migration_report')) : 
                         ?>
                         <li class="ppcp_migration_report">
                             <p><?php echo __('Subscription Migration Report', 'paypal-for-woocommerce'); ?></p>
-                            <div class="wrap" style="margin-bottom: 20px;">
+                            <button type="button" class="angelleye-notice ppcp-dismiss angelleye-notice-dismiss" data-msg="ppcp_migration_report"><span class="screen-reader-text">Dismiss this notice.</span></button>
+                            <div class="wrap" style="margin-bottom: 20px;margin-top: -10px;">
                                 This report outlines all of the active / on hold subscription profiles that were updated as a part of this migration wizard.  
                                 If you feel you need to, you can use the "Revert Changes" button to undue this migration.  
                                 This will reset the payment gateway(s) and subscription profiles to use PayPal Classic again as if the migration never happened.
@@ -605,7 +607,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             </div>
                             <a class="wplk-button angelleye_ppcp_revert_changes" href="<?php echo admin_url('options-general.php?page=paypal-for-woocommerce&migration_action=angelleye_ppcp_revert_changes'); ?>">Revert Changes</a>
                         </li>
-                    <?php } ?>
+                    <?php endif; } ?>
                     <li>
                         <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
                         <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>

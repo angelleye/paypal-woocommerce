@@ -710,6 +710,38 @@ li.ppcp_migration_report {
 #ppcp_notice_classic_upgrade .angelleye-notice-action {
     margin-top: 15px;
 }
+.ppcp-dismiss {
+  position: relative;
+  top: -55px;
+  left: 276px;
+  border: none;
+  margin: 0;
+  background: none;
+  color: #787c82;
+  cursor: pointer;
+  float: revert;
+  overflow: auto;
+  color: #787c82;
+  cursor: pointer;
+}
+
+.ppcp-dismiss:hover::before, .ppcp-dismiss:active::before, .ppcp-dismiss:focus::before {
+  color: #d63638;
+}
+
+.ppcp-dismiss::before {
+  background: none;
+  color: #787c82;
+  content: "\f153";
+  display: block;
+  font: normal 16px/20px dashicons;
+  speak: never;
+  height: 20px;
+  text-align: center;
+  width: 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 
 @media only all and (max-width: 500px) {

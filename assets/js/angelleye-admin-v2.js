@@ -23,6 +23,9 @@ jQuery(function () {
     el_notice.fadeIn(750);
     jQuery(".angelleye-notice-dismiss").click(function (e) {
         e.preventDefault();
+        jQuery(this).parent('li.ppcp_migration_report').fadeOut(600, function () {
+            jQuery(this).parent('li.ppcp_migration_report').remove();
+        });
         jQuery(this).parent().parent(".angelleye-notice").fadeOut(600, function () {
             jQuery(this).parent().parent(".angelleye-notice").remove();
         });
