@@ -41,21 +41,11 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             }
             if (angelleye_ppcp_is_subs_change_payment() === true) {
                 $this->form();
-                if( count( $this->get_tokens() ) > 0 ) {
-                    $this->saved_payment_methods();
-                }
             } elseif (is_checkout() || is_checkout_pay_page()) {
                 $orderTotal = angelleye_ppcp_get_order_total();
                 if ($orderTotal > 0) {
                     $this->form();
-                    if (!isset($_GET['paypal_order_id']) && count($this->get_tokens()) > 0) {
-                        $this->saved_payment_methods();
-                    }
                     angelleye_ppcp_add_css_js();
-                    if (!isset($_GET['paypal_order_id']) && angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments && $this->supports('tokenization') && is_account_page() === false) {
-                        echo '<ul class="woocommerce-SavedPaymentMethods wc-saved-payment-methods" data-count=""></ul>';
-                        $this->save_payment_method_checkbox();
-                    }
                 } elseif ($orderTotal === 0) {
                     $this->form();
                 }
