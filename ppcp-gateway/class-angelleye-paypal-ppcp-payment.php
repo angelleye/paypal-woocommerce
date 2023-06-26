@@ -3942,16 +3942,10 @@ class AngellEYE_PayPal_PPCP_Payment {
         $storedCredentials = [];
         switch ($paymentMethod) {
             case 'card':
-                $storedCredentials = array(
-                    'payment_initiator' => 'MERCHANT',
-                    'payment_type' => 'UNSCHEDULED',
-                    'usage' => 'SUBSEQUENT'
-                );
-                break;
             case 'apple_pay':
                 $storedCredentials = array(
                     'payment_initiator' => 'MERCHANT',
-                    'payment_type' => 'RECURRING',
+                    'payment_type' => 'UNSCHEDULED',
                     'usage' => 'SUBSEQUENT'
                 );
                 break;

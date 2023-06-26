@@ -7,7 +7,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     private $version;
     public $checkout_details;
     public $client_token;
-    protected static $_instance = null;
     public $advanced_card_payments_display_position;
     public $enable_paypal_checkout_page;
     public $checkout_page_display_option;
@@ -15,13 +14,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $vault_supported_payment_method = array('card', 'venmo');
     public $vault_not_supported_payment_method = array('credit', 'paylater', 'bancontact', 'blik', 'eps', 'giropay', 'ideal', 'mercadopago', 'mybank', 'p24', 'sepa', 'sofort');
     public static $jsUrl = '';
-
-    public static function instance() {
-        if (is_null(self::$_instance)) {
-            self::$_instance = new self();
-        }
-        return self::$_instance;
-    }
 
     public function __construct() {
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';

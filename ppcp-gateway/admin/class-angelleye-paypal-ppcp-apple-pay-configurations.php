@@ -1,7 +1,5 @@
 <?php
 
-use JetBrains\PhpStorm\NoReturn;
-
 class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
 {
     public static $_instance;
