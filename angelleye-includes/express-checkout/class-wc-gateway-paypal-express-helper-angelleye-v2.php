@@ -248,7 +248,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     add_action('woocommerce_review_order_after_submit', array($this, 'angelleye_display_paypal_button_checkout_page'));
                 }
                 $this->is_order_completed = true;
-                add_filter('woocommerce_locate_template', array($this, 'angelleye_woocommerce_locate_template'), 10, 3);
                 if ($this->wsc_cart_disable_smart_button == 'no') {
                     add_action('xoo_wsc_after_footer_btns', array($this, 'angelleye_xoo_cu_wsc_paypal_express'), 10);
                 }
@@ -1369,30 +1368,6 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             return apply_filters('angelleye_ec_force_to_display_checkout_page', false);
         }
         return apply_filters('angelleye_ec_force_to_display_checkout_page', $force_to_display_checkout_page);
-    }
-
-    public function angelleye_woocommerce_locate_template($template, $template_name, $template_path) {
-        if ($template_name != 'cart/proceed-to-checkout-button.php') {
-            return $template;
-        }
-        $change_proceed_checkout_button_text = get_option('change_proceed_checkout_button_text');
-        if (empty($change_proceed_checkout_button_text)) {
-            return $template;
-        }
-        global $woocommerce;
-        $_template = $template;
-        if (!$template_path) {
-            $template_path = $woocommerce->template_url;
-        }
-        $plugin_path = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/';
-        $template = locate_template(array($template_path . $template_name, $template_name));
-        if (!$template && file_exists($plugin_path . $template_name)) {
-            $template = $plugin_path . $template_name;
-        }
-        if (!$template) {
-            $template = $_template;
-        }
-        return $template;
     }
 
     public function angelleye_display_paypal_button_checkout_page() {

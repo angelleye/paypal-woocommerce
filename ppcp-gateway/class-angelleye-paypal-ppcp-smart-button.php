@@ -1463,7 +1463,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $template_path = $woocommerce->template_url;
         }
         $ppcp_plugin_path = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/';
-        //$ppcp_template = locate_template(array($ppcp_plugin_path . $template_name, $template_name));
         $ppcp_template = false;
         if (file_exists($ppcp_plugin_path . $template_name)) {
             $ppcp_template = $ppcp_plugin_path . $template_name;
