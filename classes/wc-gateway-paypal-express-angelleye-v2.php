@@ -85,6 +85,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->prevent_to_add_additional_item = 'yes' === $this->get_option('prevent_to_add_additional_item', 'no');
         $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
         if ($this->testmode == false) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
         $this->debug = 'yes' === $this->get_option('debug', 'no');
