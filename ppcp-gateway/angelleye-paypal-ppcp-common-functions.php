@@ -1,5 +1,4 @@
 <?php
-
 if (!function_exists('angelleye_ppcp_remove_empty_key')) {
 
     function angelleye_ppcp_remove_empty_key($data) {
@@ -100,7 +99,7 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
         if ($old_wc) {
             $order_meta_value = get_post_meta($order->id, $key, $bool);
         } else {
-            if('_payment_method_title' === $key) {
+            if ('_payment_method_title' === $key) {
                 $order_meta_value = $order->get_payment_method_title();
             } else {
                 $order_meta_value = $order->get_meta($key, $bool);
@@ -219,7 +218,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -914,7 +913,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -939,11 +938,28 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
 }
 
+global $change_proceed_checkout_button_text;
 
+$change_proceed_checkout_button_text = get_option('change_proceed_checkout_button_text');
 
+if (!empty($change_proceed_checkout_button_text)) {
+
+    if (!function_exists('woocommerce_button_proceed_to_checkout')) {
+
+        function woocommerce_button_proceed_to_checkout() {
+            global $change_proceed_checkout_button_text;
+            ?>
+            <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button alt wc-forward<?php echo esc_attr(wc_wp_theme_get_element_class_name('button') ? ' ' . wc_wp_theme_get_element_class_name('button') : '' ); ?>">
+            <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'woocommerce'); ?>
+            </a>
+            <?php
+        }
+
+    }
+}
