@@ -65,9 +65,6 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (empty($this->pay_later_messaging_page_type)) {
             $this->enabled_pay_later_messaging = false;
         }
-        if($this->enable_tokenized_payments) {
-            $this->enabled_pay_later_messaging = false;
-        }
         $this->minified_version = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
     }
 

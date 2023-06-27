@@ -408,7 +408,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         if (angelleye_ppcp_is_vault_required($this->enable_tokenized_payments)) {
-            $this->enabled_pay_later_messaging = false;
             if (!empty($this->disable_funding)) {
                 foreach ($this->disable_funding as $key => $value) {
                     if (in_array($value, $this->vault_supported_payment_method)) {
@@ -1463,7 +1462,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $template_path = $woocommerce->template_url;
         }
         $ppcp_plugin_path = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/';
-        //$ppcp_template = locate_template(array($ppcp_plugin_path . $template_name, $template_name));
         $ppcp_template = false;
         if (file_exists($ppcp_plugin_path . $template_name)) {
             $ppcp_template = $ppcp_plugin_path . $template_name;
