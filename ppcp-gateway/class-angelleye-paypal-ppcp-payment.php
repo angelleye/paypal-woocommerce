@@ -168,7 +168,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         'reference_id' => $reference_id,
                         'amount' =>
                         array(
-                            'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                            'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['order_total']),
                             'value' => $cart['order_total'],
                             'breakdown' => array()
                         )
@@ -204,31 +204,31 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($this->send_items === true) {
                 if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['total_item_amount']),
                         'value' => $cart['total_item_amount'],
                     );
                 }
                 if (isset($cart['shipping']) && $cart['shipping'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['shipping'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['shipping']),
                         'value' => $cart['shipping'],
                     );
                 }
                 if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['shipping_discount'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), angelleye_ppcp_round($cart['ship_discount_amount'], $decimals)),
                         'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
                     );
                 }
                 if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['tax_total'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['order_tax']),
                         'value' => $cart['order_tax'],
                     );
                 }
                 if (isset($cart['discount']) && $cart['discount'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['discount'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['discount']),
                         'value' => $cart['discount'],
                     );
                 }
@@ -244,7 +244,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                             'quantity' => $order_items['quantity'],
                             'unit_amount' =>
                             array(
-                                'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                                'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $order_items['amount']),
                                 'value' => $order_items['amount'],
                             ),
                         );
@@ -1026,7 +1026,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'soft_descriptor' => angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor),
                 'amount' =>
                 array(
-                    'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                    'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $cart['order_total']),
                     'value' => $cart['order_total'],
                     'breakdown' => array()
                 )
@@ -1037,31 +1037,31 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($this->send_items === true) {
                 if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                     $purchase_units['amount']['breakdown']['item_total'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $cart['total_item_amount']),
                         'value' => $cart['total_item_amount'],
                     );
                 }
                 if (isset($cart['shipping']) && $cart['shipping'] > 0) {
                     $purchase_units['amount']['breakdown']['shipping'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $cart['shipping']),
                         'value' => $cart['shipping'],
                     );
                 }
                 if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
                     $purchase_units['amount']['breakdown']['shipping_discount'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), angelleye_ppcp_round($cart['ship_discount_amount'], $decimals)),
                         'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
                     );
                 }
                 if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
                     $purchase_units['amount']['breakdown']['tax_total'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $cart['order_tax']),
                         'value' => $cart['order_tax'],
                     );
                 }
                 if (isset($cart['discount']) && $cart['discount'] > 0) {
                     $purchase_units['amount']['breakdown']['discount'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $cart['discount']),
                         'value' => $cart['discount'],
                     );
                 }
@@ -1078,7 +1078,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                             'quantity' => $order_items['quantity'],
                             'unit_amount' =>
                             array(
-                                'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                                'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $order_items['amount']),
                                 'value' => $order_items['amount'],
                             ),
                         );
@@ -1251,7 +1251,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($amount) && $amount > 0) {
                 $body_request['amount'] = array(
                     'value' => angelleye_ppcp_round($amount, $decimals),
-                    'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', $order->get_currency())
+                    'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', $order->get_currency(), angelleye_ppcp_round($amount, $decimals))
                 );
             }
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
@@ -1513,7 +1513,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'amount' =>
                 array(
                     'value' => $order->get_total(),
-                    'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()),
+                    'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), $order->get_total()),
                 ),
                 'invoice_id' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number()),
                 'payment_instruction' => array('payee' => array('merchant_id' => $this->merchant_id)),
@@ -1825,7 +1825,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         'reference_id' => $reference_id,
                         'amount' =>
                         array(
-                            'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                            'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['order_total']),
                             'value' => $cart['order_total'],
                             'breakdown' => array()
                         )
@@ -1844,31 +1844,31 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($this->send_items === true) {
                 if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['total_item_amount']),
                         'value' => $cart['total_item_amount'],
                     );
                 }
                 if (isset($cart['shipping']) && $cart['shipping'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['shipping'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['shipping']),
                         'value' => $cart['shipping'],
                     );
                 }
                 if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['shipping_discount'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), angelleye_ppcp_round($cart['ship_discount_amount'], $decimals)),
                         'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
                     );
                 }
                 if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['tax_total'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['order_tax']),
                         'value' => $cart['order_tax'],
                     );
                 }
                 if (isset($cart['discount']) && $cart['discount'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['discount'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['discount']),
                         'value' => $cart['discount'],
                     );
                 }
@@ -1885,7 +1885,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                             'quantity' => $order_items['quantity'],
                             'unit_amount' =>
                             array(
-                                'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id))),
+                                'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $order_items['amount']),
                                 'value' => $order_items['amount'],
                             ),
                         );
@@ -2200,11 +2200,12 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
+            $amount_value = isset($order_data['_angelleye_ppcp_regular_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_regular_price'], $decimals) : '';
             $capture_arg = array(
                 'amount' =>
                 array(
-                    'value' => isset($order_data['_angelleye_ppcp_regular_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_regular_price'], $decimals) : '',
-                    'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()),
+                    'value' => $amount_value,
+                    'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), $amount_value),
                 ),
                 'note_to_payer' => $note_to_payer,
                 'payment_instruction' => array('payee' => array('merchant_id' => $this->merchant_id)),
@@ -2315,9 +2316,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
+            $amount_value = isset($order_data['_angelleye_ppcp_refund_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_refund_price'], $decimals) : '';
             $body_request['amount'] = array(
-                'value' => isset($order_data['_angelleye_ppcp_refund_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_refund_price'], $decimals) : '',
-                'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', $order->get_currency())
+                'value' => $amount_value,
+                'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', $order->get_currency(), $amount_value)
             );
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $transaction_id = isset($order_data['angelleye_ppcp_refund_data']) ? $order_data['angelleye_ppcp_refund_data'] : '';
@@ -2463,7 +2465,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         'reference_id' => $reference_id,
                         'amount' =>
                         array(
-                            'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                            'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $cart['order_total']),
                             'value' => $cart['order_total'],
                             'breakdown' => array()
                         )
@@ -2477,31 +2479,31 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($this->send_items === true) {
                 if (isset($cart['total_item_amount']) && $cart['total_item_amount'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['item_total'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $cart['total_item_amount']),
                         'value' => $cart['total_item_amount'],
                     );
                 }
                 if (isset($cart['shipping']) && $cart['shipping'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['shipping'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $cart['shipping']),
                         'value' => $cart['shipping'],
                     );
                 }
                 if (isset($cart['ship_discount_amount']) && $cart['ship_discount_amount'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['shipping_discount'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), angelleye_ppcp_round($cart['ship_discount_amount'], $decimals)),
                         'value' => angelleye_ppcp_round($cart['ship_discount_amount'], $decimals),
                     );
                 }
                 if (isset($cart['order_tax']) && $cart['order_tax'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['tax_total'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $cart['order_tax']),
                         'value' => $cart['order_tax'],
                     );
                 }
                 if (isset($cart['discount']) && $cart['discount'] > 0) {
                     $body_request['purchase_units'][0]['amount']['breakdown']['discount'] = array(
-                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                        'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $cart['discount']),
                         'value' => $cart['discount'],
                     );
                 }
@@ -2518,7 +2520,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                             'quantity' => $order_items['quantity'],
                             'unit_amount' =>
                             array(
-                                'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id)),
+                                'currency_code' => add_filter('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $order_items['amount']),
                                 'value' => $order_items['amount'],
                             ),
                         );
