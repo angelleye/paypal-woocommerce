@@ -58,6 +58,9 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
         $this->enabled = $this->get_option('enabled');
         $this->testmode = 'yes' === $this->get_option('testmode', 'no');
         if ($this->testmode == false) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix', '');
@@ -2301,6 +2304,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
     public function angelleye_load_paypal_payflow_class($gateway, $current, $order_id = null) {
         if ($this->testmode == false) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id);
         }
         if ($this->testmode == true) {

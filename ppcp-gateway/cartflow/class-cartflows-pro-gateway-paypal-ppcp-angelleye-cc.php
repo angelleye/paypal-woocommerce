@@ -159,6 +159,9 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
             );
             $url = 'https://api-m.' . $args['ppcp_data']['environment'] . '.paypal.com/v2/checkout/orders';
             $response = $this->api_request->request($url, $arguments, 'create_order');
+            if (ob_get_length()) {
+                ob_end_clean();
+            }
             if (is_wp_error($response)) {
                 $json_response = array(
                     'status' => false,

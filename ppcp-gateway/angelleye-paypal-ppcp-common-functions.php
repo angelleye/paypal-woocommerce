@@ -1,5 +1,4 @@
 <?php
-
 if (!function_exists('angelleye_ppcp_remove_empty_key')) {
 
     function angelleye_ppcp_remove_empty_key($data) {
@@ -100,7 +99,11 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
         if ($old_wc) {
             $order_meta_value = get_post_meta($order->id, $key, $bool);
         } else {
-            $order_meta_value = $order->get_meta($key, $bool);
+            if ('_payment_method_title' === $key) {
+                $order_meta_value = $order->get_payment_method_title();
+            } else {
+                $order_meta_value = $order->get_meta($key, $bool);
+            }
         }
         if (empty($order_meta_value) && $key === '_paymentaction') {
             if ($old_wc) {
@@ -215,7 +218,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -354,6 +357,9 @@ if (!function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
             }
             if (!empty($billing_details['country'])) {
                 $customer->set_billing_country($billing_details['country']);
+            }
+            if (!empty($billing_details['phone'])) {
+                $customer->set_billing_phone($billing_details['phone']);
             }
             if (!empty($shipping_details['address_1'])) {
                 $customer->set_shipping_address($shipping_details['address_1']);
@@ -749,6 +755,19 @@ if (!function_exists('angelleye_ppcp_add_css_js')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_add_async_js')) {
+
+    function angelleye_ppcp_add_async_js() {
+        AngellEYE_PayPal_PPCP_Smart_Button::instance();
+        $jsUrl = AngellEYE_PayPal_PPCP_Smart_Button::$jsUrl;
+        if (!empty($jsUrl)) {
+            wp_register_script('angelleye-paypal-checkout-sdk-async', $jsUrl, [], null, true);
+            wp_enqueue_script('angelleye-paypal-checkout-sdk-async');
+        }
+    }
+
+}
+
 if (!function_exists('angelleye_ppcp_get_value')) {
 
     function angelleye_ppcp_get_value($key, $value) {
@@ -788,17 +807,23 @@ if (!function_exists('angelleye_ppcp_is_subs_change_payment')) {
 
 if (!function_exists('angelleye_ppcp_get_order_total')) {
 
-    function angelleye_ppcp_get_order_total() {
+    function angelleye_ppcp_get_order_total($order_id = null) {
         try {
             global $product;
             $total = 0;
-            $order_id = absint(get_query_var('order-pay'));
+            if (is_null($order_id)) {
+                $order_id = absint(get_query_var('order-pay'));
+            }
             if (is_product()) {
                 $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 1;
             } elseif (0 < $order_id) {
                 $order = wc_get_order($order_id);
                 if ($order === false) {
-                    return 0;
+                    if (isset(WC()->cart) && 0 < WC()->cart->total) {
+                        $total = (float) WC()->cart->total;
+                    } else {
+                        return 0;
+                    }
                 }
                 $total = (float) $order->get_total();
             } elseif (isset(WC()->cart) && 0 < WC()->cart->total) {
@@ -888,7 +913,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -900,23 +925,41 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
     function angelleye_ppcp_add_used_payment_method_name_to_subscription($order_id) {
         $wc_pre_30 = version_compare(WC_VERSION, '3.0.0', '<');
         try {
-            $subscriptions = wcs_get_subscriptions_for_order($order_id);
-            if (!empty($subscriptions)) {
-                foreach ($subscriptions as $subscription) {
-                    $subscription_id = $wc_pre_30 ? $subscription->id : $subscription->get_id();
-                    $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
-                    if (!empty($angelleye_ppcp_used_payment_method)) {
-                        update_post_meta($subscription_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+            if (function_exists('wcs_get_subscriptions_for_order')) {
+                $subscriptions = wcs_get_subscriptions_for_order($order_id);
+                if (!empty($subscriptions)) {
+                    foreach ($subscriptions as $subscription) {
+                        $subscription_id = $wc_pre_30 ? $subscription->id : $subscription->get_id();
+                        $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+                        if (!empty($angelleye_ppcp_used_payment_method)) {
+                            update_post_meta($subscription_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                        }
                     }
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
 }
 
+global $change_proceed_checkout_button_text;
 
+$change_proceed_checkout_button_text = get_option('change_proceed_checkout_button_text');
 
-    
+if (!empty($change_proceed_checkout_button_text)) {
+
+    if (!function_exists('woocommerce_button_proceed_to_checkout')) {
+
+        function woocommerce_button_proceed_to_checkout() {
+            global $change_proceed_checkout_button_text;
+            ?>
+            <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button alt wc-forward<?php echo esc_attr(wc_wp_theme_get_element_class_name('button') ? ' ' . wc_wp_theme_get_element_class_name('button') : '' ); ?>">
+            <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'woocommerce'); ?>
+            </a>
+            <?php
+        }
+
+    }
+}

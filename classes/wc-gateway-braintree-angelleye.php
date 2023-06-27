@@ -53,6 +53,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->sandbox = 'yes' === $this->get_option('sandbox', 'yes');
         if ($this->sandbox == false) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             $this->sandbox = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
         $this->merchant_account_id = '';
@@ -1697,6 +1700,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_braintree_lib($order_id = null) {
         if ($this->sandbox == false) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             $this->sandbox = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id);
         }
         if ($this->sandbox == true) {

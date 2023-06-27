@@ -14,7 +14,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->method_description = __('Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce');
             $this->has_fields = true;
             $this->angelleye_ppcp_load_class();
-            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit Card'));
+            $this->method_title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
             $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
             if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
                 $this->supports = array(
@@ -58,8 +58,6 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     'pay_button'
                 );
             }
-            $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
-            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit Card'));
             $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
             $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
             $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');
@@ -160,12 +158,18 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 if ($is_success) {
                     WC()->cart->empty_cart();
                     unset(WC()->session->angelleye_ppcp_session);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return array(
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order),
                     );
                 } else {
                     unset(WC()->session->angelleye_ppcp_session);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return array(
                         'result' => 'failure',
                         'redirect' => wc_get_cart_url()
@@ -191,12 +195,18 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 if ($is_success) {
                     WC()->cart->empty_cart();
                     unset(WC()->session->angelleye_ppcp_session);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return array(
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order),
                     );
                 } else {
                     unset(WC()->session->angelleye_ppcp_session);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     return array(
                         'result' => 'failure',
                         'redirect' => wc_get_cart_url()
@@ -242,18 +252,21 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->tokenization_script();
             }
             if (angelleye_ppcp_is_subs_change_payment() === true) {
-                if( count( $this->get_tokens() ) > 0 ) {
+                if (count($this->get_tokens()) > 0) {
                     $this->saved_payment_methods();
                 }
                 $this->angelleye_ppcp_cc_form();
             } elseif ((is_checkout() || is_checkout_pay_page()) && angelleye_ppcp_get_order_total() > 0) {
-                if( count( $this->get_tokens() ) > 0 ) {
+                if (count($this->get_tokens()) > 0) {
                     $this->saved_payment_methods();
                 }
                 $this->form();
                 angelleye_ppcp_add_css_js();
                 if (angelleye_ppcp_is_cart_subscription() === false && $this->enable_tokenized_payments) {
                     if ($this->supports('tokenization')) {
+                        $html = '<ul class="woocommerce-SavedPaymentMethods wc-saved-payment-methods" data-count="">';
+                        $html .= '</ul>';
+                        echo $html;
                         $this->save_payment_method_checkbox();
                     }
                 }
@@ -353,25 +366,6 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $transaction_id = $order->get_transaction_id();
             $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
             return $bool;
-        } catch (Exception $ex) {
-            
-        }
-    }
-
-    public function get_title() {
-        try {
-            $payment_method_title = '';
-            if (isset($_GET['post'])) {
-                $theorder = wc_get_order($_GET['post']);
-                if ($theorder) {
-                    $payment_method_title = angelleye_ppcp_get_post_meta($theorder, '_payment_method_title', true);
-                }
-            }
-            if (!empty($payment_method_title)) {
-                return $payment_method_title;
-            } else {
-                return parent::get_title();
-            }
         } catch (Exception $ex) {
             
         }
@@ -552,4 +546,15 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
         return apply_filters('woocommerce_payment_gateway_get_saved_payment_method_option_html', $html, $token, $this);
     }
+
+    public function get_transaction_url($order) {
+        $enviorment = angelleye_ppcp_get_post_meta($order, '_enviorment', true);
+        if ($enviorment === 'sandbox') {
+            $this->view_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
+        } else {
+            $this->view_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
+        }
+        return parent::get_transaction_url($order);
+    }
+
 }

@@ -47,9 +47,7 @@ class AngellEYE_PayPal_PPCP_Response {
                                     'REFUND',
                                     'ADVANCED_TRANSACTIONS_SEARCH',
                                     'ACCESS_MERCHANT_INFORMATION',
-                                    'PARTNER_FEE',
-                                    "VAULT",
-                                    "BILLING_AGREEMENT"
+                                    'PARTNER_FEE'
                                 ),
                             ),
                         ),
@@ -96,7 +94,7 @@ class AngellEYE_PayPal_PPCP_Response {
            return false;
         }
         if($action_name === 'seller_onboarding_status' && !isset($_GET['merchantIdInPayPal'])) {
-            return false;
+          //  return false;
         }
         $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
         $this->api_log->log('PayPal Environment: ' . $environment);
@@ -112,6 +110,9 @@ class AngellEYE_PayPal_PPCP_Response {
             $this->api_log->log('Request Body: ' . wc_print_r($request['body'], true));
         } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
             $this->api_log->log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
+        }
+        if (!empty($response_body['requestId'])) {
+            $this->api_log->log('Request ID: ' . wc_print_r($response_body['requestId'], true));
         }
         if (!empty($response_body['headers'])) {
             $this->api_log->log('Response Headers: ' . wc_print_r($response_body['headers'], true));
@@ -237,6 +238,9 @@ class AngellEYE_PayPal_PPCP_Response {
             }
             if (isset($data['capabilities'])) {
                 $this->generate_signup_link_default_request_param['capabilities'] = $data['capabilities'];
+            }
+            if (isset($data['third_party_features'])) {
+                $this->generate_signup_link_default_request_param['operations'][0]['api_integration_preference']['rest_api_integration']['third_party_details']['features'] = array_merge($this->generate_signup_link_default_request_param['operations'][0]['api_integration_preference']['rest_api_integration']['third_party_details']['features'], $data['third_party_features']);
             }
             $this->api_log->log('Request Body: ' . wc_print_r($this->generate_signup_link_default_request_param, true));
         }

@@ -83,7 +83,7 @@ jQuery(function ($) {
                         if ($("#wc-paypal_express-new-payment-method").is(':checked')) {
                             angelleye_action = angelleye_action + '&ec_save_to_account=true';
                         }
-                        return paypal.request.post(angelleye_action, data_param).then(function (data) {
+                        return $.post(angelleye_action, data_param).then(function (data) {
                             var params = {
                                 request_from: 'JSv4'
                             };

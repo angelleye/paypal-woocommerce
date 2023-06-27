@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Commerce - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           4.0.2
+ * Version:           4.0.20
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,9 +13,9 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.8
- * Tested up to: 6.2
+ * Tested up to: 6.2.2
  * WC requires at least: 3.0.0
- * WC tested up to: 7.5.1
+ * WC tested up to: 7.8.0
  *
  *************
  * Attribution
@@ -39,7 +39,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '4.0.2');
+    define('VERSION_PFW', '4.0.20');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -124,7 +124,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-payment-logger.php';
             AngellEYE_PFW_Payment_Logger::instance();
-            include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             if( is_admin() ) {
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-admin-order-payment-process.php';
                 $admin_order_payment = new AngellEYE_Admin_Order_Payment_Process();
@@ -139,6 +141,19 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
            
             add_action('wp_enqueue_scripts', array($this, 'angelleye_cc_ui_style'), 100);
+            // To load the deferred PayPal JS SDK to cache the data in advance
+            /* add_action('wp_enqueue_scripts', function() {
+                $wp_scripts = wp_scripts();
+                if (!isset($wp_scripts->registered['angelleye-paypal-checkout-sdk'])) {
+                    angelleye_ppcp_add_async_js();
+                }
+            },  PHP_INT_MAX );
+            add_filter('script_loader_tag', function ( $tag, $handle ) {
+                if ('angelleye-paypal-checkout-sdk-async' !== $handle) {
+                    return $tag;
+                }
+                return str_replace( ' src', ' async src', $tag );
+            }, 10, 2 ); */
             
             add_action( 'parse_request', array($this, 'wc_gateway_payment_token_api_parser') , 99);
             add_action('wp_ajax_angelleye_dismiss_notice', array($this, 'angelleye_dismiss_notice'), 10);
