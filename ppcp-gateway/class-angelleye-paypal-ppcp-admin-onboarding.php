@@ -129,6 +129,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if (isset($this->result['country'])) {
                     $this->ppcp_paypal_country = $this->result['country'];
                 }
+                if (defined('PPCP_PAYPAL_COUNTRY')) {
+                    $this->ppcp_paypal_country = PPCP_PAYPAL_COUNTRY;
+                }
                 if (!empty($this->result['primary_email'])) {
                     own_angelleye_sendy_list($this->result['primary_email']);
                     $this->email_confirm_text_1 = __('We see that your PayPal email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>';
@@ -471,14 +474,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 <p><?php echo __('You’re currently setup and enjoying the benefits of PayPal Commerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                                 <p><?php echo sprintf(__('However, we need additional verification to approve you for the reduced <br>rate of %s on debit/credit cards.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?></p>
                                 <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
-                                <?php if ($this->is_paypal_vault_approved === false) { ?>
+                                <?php if ($this->is_paypal_vault_approved === false && $this->ppcp_paypal_country === 'US') { ?>
                                     <p><?php echo __('Your PayPal account is not approved for the Vault functionality<br>which is required for Subscriptions (token payments). <br>Please Reconnect your PayPal account to apply for this feature.', 'paypal-for-woocommerce'); ?></p>
                                 <?php } ?>
                                 <br>
                                 <a class="green-button open_ppcp_account_request_form" ><?php echo __('Apply for Cheaper Fees!', 'paypal-for-woocommerce'); ?></a>
                                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
                                 <?php
-                                if ($this->is_paypal_vault_approved === false) {
+                                if ($this->is_paypal_vault_approved === false && $this->ppcp_paypal_country === 'US') {
                                     if (isset($_GET['testmode'])) {
                                         $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
                                     } else {
@@ -525,13 +528,13 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
                                 <p><?php echo __('You’re currently setup and enjoying the benefits of PayPal Commerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                                 <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
-                                <?php if ($this->is_paypal_vault_approved === false) { ?>
+                                <?php if ($this->is_paypal_vault_approved === false && $this->ppcp_paypal_country === 'US') { ?>
                                     <p><?php echo __('Your PayPal account is not approved for the Vault functionality<br>which is required for Subscriptions (token payments). <br>Please Reconnect your PayPal account to apply for this feature.', 'paypal-for-woocommerce'); ?></p>
                                 <?php } ?>
                                 <br>
                                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
                                 <?php
-                                if ($this->is_paypal_vault_approved === false) {
+                                if ($this->is_paypal_vault_approved === false && $this->ppcp_paypal_country === 'US') {
                                     if (isset($_GET['testmode'])) {
                                         $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
                                     } else {

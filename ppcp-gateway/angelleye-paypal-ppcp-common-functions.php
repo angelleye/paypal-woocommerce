@@ -218,7 +218,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -932,7 +932,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -957,7 +957,7 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -966,6 +966,9 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
 if (!function_exists('angelleye_is_vaulting_enable')) {
 
     function angelleye_is_vaulting_enable($result) {
+        if (defined('PPCP_VAULT_DISABLE')) {
+            return PPCP_VAULT_DISABLE;
+        }
         if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
             foreach ($result['products'] as $key => $product) {
                 if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
@@ -993,11 +996,20 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
             $is_subscriptions = false;
             $is_us = false;
             $is_classic = false;
-            if (function_exists('wc_get_base_location')) {
+            if (isset($result['country']) && !empty($result['country']) && 'US' === $result['country']) {
+                $is_us = true;
+            } elseif (function_exists('wc_get_base_location')) {
                 $default = wc_get_base_location();
                 $country = apply_filters('woocommerce_countries_base_country', $default['country']);
                 if ($country === 'US') {
                     $is_us = true;
+                }
+            }
+            if (defined('PPCP_PAYPAL_COUNTRY')) {
+                if( PPCP_PAYPAL_COUNTRY === 'US') {
+                    $is_us = true;
+                } else {
+                    $is_us = false;
                 }
             }
             if (class_exists('WC_Subscriptions_Order')) {
@@ -1088,7 +1100,7 @@ if (!empty($change_proceed_checkout_button_text)) {
             global $change_proceed_checkout_button_text;
             ?>
             <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button alt wc-forward<?php echo esc_attr(wc_wp_theme_get_element_class_name('button') ? ' ' . wc_wp_theme_get_element_class_name('button') : '' ); ?>">
-            <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'woocommerce'); ?>
+                <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'woocommerce'); ?>
             </a>
             <?php
         }
