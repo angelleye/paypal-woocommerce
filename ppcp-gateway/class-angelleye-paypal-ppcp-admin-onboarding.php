@@ -292,7 +292,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         }
                     }
                     $this->angelleye_ppcp_revert_back_to_original_payment_method();
-                    $this->angelleye_ppcp_migration_wizard_notice_data['success'][] = __('Migration Reverted Successfully! Starting from the next payment cycle, your original payment method will be used for all transactions.');
+                    $this->angelleye_ppcp_migration_wizard_notice_data['success'][] = __('The migration has been successfully reverted! Starting from the next payment cycle, your original payment method will be used for all transactions.');
                     update_option($this->angelleye_ppcp_migration_wizard_notice_key, $this->angelleye_ppcp_migration_wizard_notice_data);
                     $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce');
                     unset($_GET);
