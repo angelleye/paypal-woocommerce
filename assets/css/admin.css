@@ -576,7 +576,8 @@ hr {
     font-family: arial;
     height: 60px;
     border-radius: 8px;
-    margin-right: 12px;
+    width: 200px;
+    text-align: center;
 }
 .paypal_woocommerce_product_onboard [class*="green-button"] {
     min-width: 150px;

@@ -309,35 +309,40 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
             }
             $this->angelleye_ppcp_load_variable();
-            $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
-            $active_classic_gateway_list = array();
-            foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
-                if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
-                    $active_classic_gateway_list[$gateway->id] = $gateway->id;
-                }
-            }
-            $other_payment_methods = $this->angelleye_ppcp_get_other_payment_methods();
-            if (!empty($other_payment_methods)) {
-                foreach ($other_payment_methods as $gateway_id) {
-                    if (in_array($gateway_id, array('paypal', 'ppec_paypal'))) {
-                        $active_classic_gateway_list[$gateway_id] = $gateway_id;
+
+            if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+                $this->view();
+            } else {
+                $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+                $active_classic_gateway_list = array();
+                foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+                    if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
+                        $active_classic_gateway_list[$gateway->id] = $gateway->id;
                     }
                 }
-            }
-            if (count($active_classic_gateway_list) > 0) {
-                if ('US' === $this->ppcp_paypal_country && $this->subscription_support_enabled) {
-                    $this->migration_view($active_classic_gateway_list);
-                } elseif ('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled) {
-                    $this->view();
-                } elseif ('US' === $this->ppcp_paypal_country && $this->subscription_support_enabled === false) {
-                    $this->migration_view($active_classic_gateway_list);
-                } elseif ('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled === false) {
-                    $this->migration_view($active_classic_gateway_list);
+                $other_payment_methods = $this->angelleye_ppcp_get_other_payment_methods();
+                if (!empty($other_payment_methods)) {
+                    foreach ($other_payment_methods as $gateway_id) {
+                        if (in_array($gateway_id, array('paypal', 'ppec_paypal'))) {
+                            $active_classic_gateway_list[$gateway_id] = $gateway_id;
+                        }
+                    }
+                }
+                if (count($active_classic_gateway_list) > 0) {
+                    if ('US' === $this->ppcp_paypal_country && $this->subscription_support_enabled) {
+                        $this->migration_view($active_classic_gateway_list);
+                    } elseif ('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled) {
+                        $this->view();
+                    } elseif ('US' === $this->ppcp_paypal_country && $this->subscription_support_enabled === false) {
+                        $this->migration_view($active_classic_gateway_list);
+                    } elseif ('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled === false) {
+                        $this->migration_view($active_classic_gateway_list);
+                    } else {
+                        $this->view();
+                    }
                 } else {
                     $this->view();
                 }
-            } else {
-                $this->view();
             }
         } catch (Exception $ex) {
             
@@ -407,13 +412,22 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_header.php');
             ?>
             <div id="angelleye_paypal_marketing_table">
-                <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
+                <?php if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) { ?>
                     <div class="paypal_woocommerce_product">
                         <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
                             <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
                             <br><br>
                             <div class="paypal_woocommerce_product_onboard_content">
-                                <p><?php echo __('Welcome to the most PayPal Commerce solution available for WooCommerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
+                                <p><?php echo __('We’re sorry, but the PayPal Multi-Account functionality you are currently using is not yet supported by the PayPal Commerce gateway.  We are actively working on this, and should have updates ready for you very soon.  Stay tuned!', 'paypal-for-woocommerce'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                <?php } elseif ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
+                    <div class="paypal_woocommerce_product">
+                        <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
+                            <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
+                            <br><br>
+                            <div class="paypal_woocommerce_product_onboard_content">
                                 <p><?php echo __('Welcome to the PayPal Commerce solution for WooCommerce. <br> Built by Angelleye.', 'paypal-for-woocommerce'); ?></p>
                                 <?php
                                 if (isset($_GET['testmode'])) {
@@ -442,9 +456,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                             });
                                         });</script>
                                     <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
-                                } else {
-                                    echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
-                                }
+                } else {
+                    echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                }
                                 ?>
                                 <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
                                     <br><br>
@@ -508,10 +522,10 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                             });
                                         });</script>
                                         <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
-                                    } else {
-                                        echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
-                                    }
-                                }
+                    } else {
+                        echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                    }
+                }
                                 ?>
                                 <a href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                                 <br><br>
@@ -561,10 +575,10 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                             });
                                         });</script>
                                         <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
-                                    } else {
-                                        echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
-                                    }
-                                }
+                    } else {
+                        echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                    }
+                }
                                 ?>
                                 <a href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                                 <br><br>
@@ -593,29 +607,32 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     <?php
                     $result = $this->angelleye_ppcp_get_result_migrate_to_ppcp();
                     if (!empty($result)) {
-                        if(!get_user_meta(get_current_user_id(), 'ppcp_migration_report')) : 
-                        ?>
-                        <li class="ppcp_migration_report">
-                            <style type="text/css">
-                                .paypal_woocommerce_product_onboard li {
-                                    width: 530px;
-                                }
-                            </style>
-                            <p><?php echo __('Subscription Migration Report', 'paypal-for-woocommerce'); ?></p>
-                            <button type="button" class="angelleye-notice ppcp-dismiss angelleye-notice-dismiss" data-msg="ppcp_migration_report"><span class="screen-reader-text">Dismiss this notice.</span></button>
-                            <div class="wrap" style="margin-bottom: 20px;margin-top: -10px;">
-                                This report outlines all of the active / on hold subscription profiles that were updated as a part of this migration wizard.  
-                                If you feel you need to, you can use the "Revert Changes" button to undue this migration.  
-                                This will reset the payment gateway(s) and subscription profiles to use PayPal Classic again as if the migration never happened.
-                            </div>
-                            <div class="wrap">
-                                <?php
-                                echo $this->angelleye_ppcp_build_html($result);
-                                ?>
-                            </div>
-                            <a class="wplk-button angelleye_ppcp_revert_changes" href="<?php echo admin_url('options-general.php?page=paypal-for-woocommerce&migration_action=angelleye_ppcp_revert_changes'); ?>">Revert Changes</a>
-                        </li>
-                    <?php endif; } ?>
+                        if (!get_user_meta(get_current_user_id(), 'ppcp_migration_report')) :
+                            ?>
+                            <li class="ppcp_migration_report">
+                                <style type="text/css">
+                                    .paypal_woocommerce_product_onboard li {
+                                        width: 530px;
+                                    }
+                                </style>
+                                <p><?php echo __('Subscription Migration Report', 'paypal-for-woocommerce'); ?></p>
+                                <button type="button" class="angelleye-notice ppcp-dismiss angelleye-notice-dismiss" data-msg="ppcp_migration_report"><span class="screen-reader-text">Dismiss this notice.</span></button>
+                                <div class="wrap" style="margin-bottom: 20px;margin-top: -10px;">
+                                    This report outlines all of the active / on hold subscription profiles that were updated as a part of this migration wizard.  
+                                    If you feel you need to, you can use the "Revert Changes" button to undue this migration.  
+                                    This will reset the payment gateway(s) and subscription profiles to use PayPal Classic again as if the migration never happened.
+                                </div>
+                                <div class="wrap">
+                                    <?php
+                                    echo $this->angelleye_ppcp_build_html($result);
+                                    ?>
+                                </div>
+                                <a class="wplk-button angelleye_ppcp_revert_changes" href="<?php echo admin_url('options-general.php?page=paypal-for-woocommerce&migration_action=angelleye_ppcp_revert_changes'); ?>">Revert Changes</a>
+                            </li>
+                        <?php
+                        endif;
+                    }
+                    ?>
                     <li>
                         <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
                         <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
@@ -750,5 +767,4 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             
         }
     }
-
 }

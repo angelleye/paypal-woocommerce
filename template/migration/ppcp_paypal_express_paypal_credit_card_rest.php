@@ -7,14 +7,13 @@
                     <div class="pt-30">
                         <h4><?php echo __('Great new features and cost savings!', 'paypal-for-woocommerce'); ?></h4>
                     </div>
-                    <div class="pt-5">
-                        <p><?php echo __('Everything PayPal Express Checkout and REST Credit Cards give you and more.', 'paypal-for-woocommerce'); ?></p>
-                    </div>
                     <div class="pt-15 font-bold">
                         <ul>
                             <li><?php echo __('PayPal Checkout', 'paypal-for-woocommerce'); ?></li>
                             <li><?php echo __('Venmo', 'paypal-for-woocommerce'); ?></li>
                             <li><?php echo __('Pay Later', 'paypal-for-woocommerce'); ?></li>
+                            <li><?php echo __('Apple Pay', 'paypal-for-woocommerce'); ?></li>
+                            <li><?php echo __('Full Support for Subscriptions / Token Payments', 'paypal-for-woocommerce'); ?></li>  
                             <li><?php echo __('Direct Credit Cards (No Login Required!)', 'paypal-for-woocommerce'); ?></li>
                             <li><?php echo __('Credit Card Fees Reduced to 2.69%!', 'paypal-for-woocommerce'); ?></li>
                             <li><?php echo __('Pro No Longer Required – No Monthly Fees!', 'paypal-for-woocommerce'); ?></li>
@@ -39,12 +38,12 @@
                 <div class="ml-auto">
                     <h3 class="pb-20"><?php echo __('Updated PayPal Integration', 'paypal-for-woocommerce'); ?></h3>
                     <ul>
-                        <li><?php echo __('PayPal Complete Payments', 'paypal-for-woocommerce'); ?></li>
+                        <li><?php echo __('PayPal Commerce Platform', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('PayPal Checkout | Venmo | Pay Later', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('Direct Credit Card Processing – No Branding', 'paypal-for-woocommerce'); ?></li>
                         <li><strong><?php echo __('Total Fee of 2.69%¹', 'paypal-for-woocommerce'); ?></strong></li>
                         <li><strong><?php echo __('No Monthly Fee!', 'paypal-for-woocommerce'); ?></strong></li>
-                        <li><?php echo __('Fully Supported Now and with Future Improvements', 'paypal-for-woocommerce'); ?></li>
+                        <li><?php echo __('Fully Supported by PayPal + Future Improvements', 'paypal-for-woocommerce'); ?></li>
                     </ul>
                 </div>
             </div>
