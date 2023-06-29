@@ -456,9 +456,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                             });
                                         });</script>
                                     <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
-                } else {
-                    echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
-                }
+                                } else {
+                                    echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                                }
                                 ?>
                                 <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
                                     <br><br>
@@ -522,10 +522,10 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                             });
                                         });</script>
                                         <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
-                    } else {
-                        echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
-                    }
-                }
+                                    } else {
+                                        echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                                    }
+                                }
                                 ?>
                                 <a href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                                 <br><br>
@@ -575,10 +575,10 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                             });
                                         });</script>
                                         <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
-                    } else {
-                        echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
-                    }
-                }
+                                    } else {
+                                        echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                                    }
+                                }
                                 ?>
                                 <a href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
                                 <br><br>
@@ -629,7 +629,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 </div>
                                 <a class="wplk-button angelleye_ppcp_revert_changes" href="<?php echo admin_url('options-general.php?page=paypal-for-woocommerce&migration_action=angelleye_ppcp_revert_changes'); ?>">Revert Changes</a>
                             </li>
-                        <?php
+                            <?php
                         endif;
                     }
                     ?>
@@ -675,7 +675,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 );
                 $url = add_query_arg($args, $signup_link);
                 ?>
-                <h3 class="pb-30"><a class="wplk-button" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Update to PayPal Commerce Platform', 'paypal-for-woocommerce'); ?></a></h3>
+                <h3 style="text-align: center;font-weight: 600;font-size: 16px;">Log in to upgrade to the PayPal Commerce Platform</h3>
+                <a class="update_to_paypal_commerce_platform" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><img alt="Qries" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/update_to_paypal_commerce_platform.png'; ?>"></a>
                 <?php
                 $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
                 ?>

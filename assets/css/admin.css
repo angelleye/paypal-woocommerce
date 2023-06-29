@@ -1,5 +1,5 @@
 .button-primary-own {
-    background: #6558f5 !important;
+    background: #0070BA !important;
 }
 
 .ppcp_sendy_confirm_parent {
@@ -413,7 +413,7 @@ hr {
     height: 31px;
     border-radius: 100px;
     background-color: #0070ba;
-    color: #fff;
+    color: #FFFFFF;
     border: none;
     cursor: pointer;
     font-size: .8rem;
@@ -569,9 +569,9 @@ hr {
     transition: color .2s ease,background .2s ease,transform .2s ease,border-color .2s ease,box-shadow .2s ease;
 }
 .paypal_woocommerce_product_onboard .wplk-button {
-    color: #fdfdfe;
-    background: #6558f5;
-    border-color: #e2e6eb;
+    color: #FFFFFF;
+    background: #0070BA;
+    border-color: #0070BA;
     font-size: 16px;
     font-family: arial;
     height: 60px;
@@ -743,7 +743,9 @@ li.ppcp_migration_report {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+.paypal_woocommerce_product_onboard a:focus {
+    box-shadow: none;
+}
 
 @media only all and (max-width: 500px) {
     .wp-core-ui .angelleye-notice > .angelleye-notice-cta > input[type="email"],
