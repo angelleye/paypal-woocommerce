@@ -1304,8 +1304,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         wp_send_json_success();
                     }
                 }
-                add_user_meta($user_id, wc_clean($_POST['data']), 'true', true);
-                wp_send_json_success();
+                if(isset($_POST['data'])) {
+                    add_user_meta($user_id, wc_clean($_POST['data']), 'true', true);
+                    wp_send_json_success();
+                }
             }
         }
         
