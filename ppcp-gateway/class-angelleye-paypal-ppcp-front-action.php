@@ -152,12 +152,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-product.php');
                             }
                             $paymentMethod = $_REQUEST['angelleye_ppcp_payment_method_title'] ?? null;
-                            $orderTotal = angelleye_ppcp_get_order_total();
-                            if ($orderTotal === 0 || $paymentMethod !== WC_Gateway_Apple_Pay_AngellEYE::PAYMENT_METHOD) {
+                            if (angelleye_ppcp_get_order_total() === 0 || $paymentMethod !== WC_Gateway_Apple_Pay_AngellEYE::PAYMENT_METHOD) {
                                 $this->product = AngellEYE_PayPal_PPCP_Product::instance();
                                 $this->product::angelleye_ppcp_add_to_cart_action();
                             }
-                             if ($orderTotal === 0) {
+                             if (angelleye_ppcp_get_order_total() === 0) {
                                 $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
                                 wc_add_notice($wc_notice);
                                 wp_send_json_error($wc_notice);
