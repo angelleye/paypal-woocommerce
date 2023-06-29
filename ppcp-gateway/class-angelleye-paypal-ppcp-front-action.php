@@ -105,7 +105,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         }
                     }
 
-
                     if (isset($_GET['from']) && 'pay_page' === $_GET['from']) {
                         $woo_order_id = $_POST['woo_order_id'];
                         if (isset(WC()->session) && !WC()->session->has_session()) {

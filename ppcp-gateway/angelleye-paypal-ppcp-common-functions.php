@@ -249,12 +249,25 @@ if (!function_exists('angelleye_ppcp_readable')) {
 if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
 
     function angelleye_ppcp_get_mapped_billing_address($checkout_details, $is_name_only = false) {
+        global $woocommerce;
+        $billing_address = [
+            'first_name' => $woocommerce->customer->get_billing_first_name(),
+            'last_name' => $woocommerce->customer->get_billing_last_name(),
+            'email' => $woocommerce->customer->get_billing_email(),
+            'country' => $woocommerce->customer->get_billing_country(),
+            'address_1' => $woocommerce->customer->get_billing_address_1(),
+            'address_2' => $woocommerce->customer->get_billing_address_2(),
+            'city' => $woocommerce->customer->get_billing_city(),
+            'state' => $woocommerce->customer->get_billing_state(),
+            'postcode' => $woocommerce->customer->get_billing_postcode(),
+            'phone' => $woocommerce->customer->get_billing_phone(),
+            'company' => $woocommerce->customer->get_billing_company()
+        ];
         if (empty($checkout_details->payer)) {
-            return array();
+            return $billing_address;
         }
         $angelleye_ppcp_checkout_post = angelleye_ppcp_get_session('angelleye_ppcp_checkout_post');
         if (!empty($angelleye_ppcp_checkout_post)) {
-            $billing_address = array();
             $billing_address['first_name'] = !empty($angelleye_ppcp_checkout_post['billing_first_name']) ? $angelleye_ppcp_checkout_post['billing_first_name'] : '';
             $billing_address['last_name'] = !empty($angelleye_ppcp_checkout_post['billing_last_name']) ? $angelleye_ppcp_checkout_post['billing_last_name'] : '';
             $billing_address['company'] = !empty($angelleye_ppcp_checkout_post['billing_company']) ? $angelleye_ppcp_checkout_post['billing_company'] : '';

@@ -123,6 +123,10 @@ class ApplePayCheckoutButton {
             return;
         }
 
+        if (window.angelleye_cart_totals.totalAmount <= 0) {
+            angelleyeOrder.showError("Your shopping cart seems to be empty.");
+        }
+
         let shippingAddressRequired = [];
         if (window.angelleye_cart_totals.shippingRequired) {
             shippingAddressRequired = ["postalAddress", "name", "email"];
