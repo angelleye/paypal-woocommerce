@@ -124,7 +124,8 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
             add_action('wp_loaded', array($this, 'load_funnelkit_pro_plugin_compatible_gateways'), 5);
             // Funnelkit Supported gateways
-            add_filter( 'wfocu_wc_get_supported_gateways', array( $this, 'wfocu_paypal_for_wc_integration' ), 99, 1 );
+            add_filter( 'wfocu_wc_get_supported_gateways', array( $this, 'wfocu_upsell_supported_gateways' ), 99, 1 );
+            add_filter( 'wfocu_subscriptions_get_supported_gateways', array( $this, 'wfocu_subscription_supported_gateways' ), 99, 1 );
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-payment-logger.php';
             AngellEYE_PFW_Payment_Logger::instance();
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
@@ -1470,15 +1471,24 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
         public function load_funnelkit_pro_plugin_compatible_gateways() {
             if (defined('WFFN_PRO_FILE')) {
+                
                 require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp.php';
                 require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp-cc.php';
+                require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-upstroke-subscriptions-angelleye-ppcp.php';
+                require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-upstroke-subscriptions-angelleye-ppcp-cc.php';
 
             }
         }
 
-        public function wfocu_paypal_for_wc_integration($gateways) {
+        public function wfocu_upsell_supported_gateways($gateways) {
             $gateways['angelleye_ppcp']     = 'WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP';
             $gateways['angelleye_ppcp_cc']  = 'WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC';
+            return $gateways;
+        }
+
+        public function wfocu_subscription_supported_gateways($gateways) {
+            $gateways[] = 'angelleye_ppcp';
+            $gateways[] = 'angelleye_ppcp_cc';
             return $gateways;
         }
         

@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP
  *
  */
-if(class_exists("WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP")) {
+if(class_exists("WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP") || !class_exists("WFOCU_Gateway")) {
 	return;
 }
 class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
