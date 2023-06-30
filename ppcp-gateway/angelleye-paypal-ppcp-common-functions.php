@@ -1057,7 +1057,7 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
             if (get_user_meta($user_id, $response_data->id)) {
                 return;
             }
-            $message = '<div class="notice notice-info angelleye-notice" style="display:none;" id="' . $response_data->id . '">'
+            $message = '<div class="notice notice-warning angelleye-notice" style="display:none;" id="' . $response_data->id . '">'
                     . '<div class="angelleye-notice-logo-push"><span> <img width="60px"src="' . $response_data->ans_company_logo . '"> </span></div>'
                     . '<div class="angelleye-notice-message">';
             if (!empty($response_data->ans_message_title)) {

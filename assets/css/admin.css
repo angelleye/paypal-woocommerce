@@ -696,8 +696,7 @@ hr {
 }
 li.ppcp_migration_report {
     padding-top: 10px;
-
-
+    border-radius: 0px 20px 0px 0px;
 }
 .ppcp_migration_report p {
     margin: 5px auto;
@@ -712,36 +711,37 @@ li.ppcp_migration_report {
     margin-top: 15px;
 }
 .ppcp-dismiss {
-  position: relative;
-  top: -62px;
-  left: 287px;
-  border: none;
-  margin: 0;
-  background: none;
-  color: #787c82;
-  cursor: pointer;
-  float: revert;
-  overflow: auto;
-  color: #787c82;
-  cursor: pointer;
+    position: relative;
+    top: -4%;
+    left: 51%;
+    border: none;
+    margin: 0;
+    background: none;
+    color: #787c82;
+    cursor: pointer;
+    float: revert;
+    overflow: auto;
+    color: #787c82;
+    cursor: pointer;
+    display: inline;
 }
 
 .ppcp-dismiss:hover::before, .ppcp-dismiss:active::before, .ppcp-dismiss:focus::before {
-  color: #d63638;
+    color: #d63638;
 }
 
 .ppcp-dismiss::before {
-  background: none;
-  color: #787c82;
-  content: "\f153";
-  display: block;
-  font: normal 16px/20px dashicons;
-  speak: never;
-  height: 20px;
-  text-align: center;
-  width: 20px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    background: none;
+    color: #787c82;
+    content: "\f153";
+    display: block;
+    font: normal 50px/50px dashicons;
+    speak: never;
+    height: 50px;
+    text-align: center;
+    width: 50px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 .paypal_woocommerce_product_onboard a:focus {
     box-shadow: none;
@@ -775,4 +775,54 @@ li.ppcp_migration_report {
         width: 100%;
     }
 
+}
+
+@media only screen and (max-width: 750px) {
+    .paypal_woocommerce_product {
+        width: 100%;
+        margin-bottom: 20px;
+        padding: 0px;
+    }
+    .paypal_woocommerce_support_downloads {
+        margin: 0px 0px 0px 0px;
+        padding-left: 0px;
+    }
+    .ppcp-dismiss {
+        top: -5%;
+        left: 51%;
+    }
+}
+
+
+@media only screen and (min-width: 600px) {
+    .ppcp-dismiss {
+        top: -3%;
+        left: 53%;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .ppcp-dismiss {
+        top: -3%;
+        left: 52%;
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    .ppcp-dismiss {
+        top: -3%;
+        left: 52%;
+    }
+}
+@media only screen and (min-width: 1200px) {
+    .ppcp-dismiss {
+        top: -3%;
+        left: 52%;
+    }
+}
+@media only screen and (min-width: 1400px) {
+    .ppcp-dismiss {
+        top: -4%;
+        left: 51%;
+    }
 }
