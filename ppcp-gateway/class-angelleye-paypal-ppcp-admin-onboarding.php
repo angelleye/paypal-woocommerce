@@ -749,21 +749,32 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             $wpdb->query("UPDATE {$wpdb->postmeta} AS pm1
                 LEFT JOIN {$wpdb->postmeta} AS pm2 ON pm1.post_id = pm2.post_id AND pm2.meta_key = '_old_payment_method'
                 LEFT JOIN {$wpdb->postmeta} AS pm3 ON pm1.post_id = pm3.post_id AND pm3.meta_key = '_old_payment_method_title'
+                INNER JOIN (
+                    SELECT post_id
+                    FROM {$wpdb->postmeta}
+                    WHERE meta_key = '_angelleye_ppcp_old_payment_method'
+                ) AS subquery1 ON pm1.post_id = subquery1.post_id
+                INNER JOIN (
+                    SELECT post_id
+                    FROM {$wpdb->postmeta}
+                    WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
+                ) AS subquery2 ON pm1.post_id = subquery2.post_id
                 SET pm1.meta_value =
                     CASE pm1.meta_key
                         WHEN '_payment_method' THEN IFNULL(pm2.meta_value, pm1.meta_value)
                         WHEN '_payment_method_title' THEN IFNULL(pm3.meta_value, pm1.meta_value)
                     END
-                WHERE pm1.meta_key IN ('_payment_method', '_payment_method_title')
-                AND pm1.post_id IN (
-                    SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_angelleye_ppcp_old_payment_method'
-                )
-                AND pm1.post_id IN (
-                    SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
+                WHERE pm1.meta_key IN ('_payment_method', '_payment_method_title')");
+            $wpdb->query("DELETE FROM {$wpdb->postmeta}
+                WHERE meta_key = '_angelleye_ppcp_old_payment_method'
+                AND post_id IN (
+                    SELECT post_id
+                    FROM (
+                        SELECT post_id
+                        FROM {$wpdb->postmeta}
+                        WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
+                    ) AS subquery
                 )");
-            $wpdb->query("DELETE FROM {$wpdb->postmeta} WHERE meta_key = '_angelleye_ppcp_old_payment_method' AND post_id IN (
-                        SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
-                    )");
         } catch (Exception $ex) {
             
         }
