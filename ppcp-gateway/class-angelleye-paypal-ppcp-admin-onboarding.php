@@ -460,12 +460,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                     echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
                                 }
                                 ?>
-                                <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
+                                <p class="ppcp_paypal_fee"><?php echo sprintf(__('Increase average order totals and conversion rates with <br>PayPal Checkout, PayPal Credit, Buy Now Pay Later, Venmo, and more! <br>All for a total PayPal + Angelleye fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'paypal')); ?>
                                     <br><br>
                                     <?php if ($this->ppcp_paypal_country === 'DE') { ?>
-                                        <?php echo sprintf(__('Fees on Visa/MasterCard/Discover transactions <br>transactions are a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
+                                        <?php echo sprintf(__('Fees on Visa/MasterCard/Discover transactions <br>transactions are a total PayPal + Angelleye fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
                                     <?php } else { ?>
-                                        <?php echo sprintf(__('Save money on Visa/MasterCard/Discover transactions <br>with a total fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
+                                        <?php echo sprintf(__('Save money on Visa/MasterCard/Discover transactions <br>with a total PayPal + Angelleye fee of only %s.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?>
                                     <?php } ?>
                                     <br><a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/"><small style="font-size:12px;">Learn More</small></a></p>
                             </div>
