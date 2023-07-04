@@ -195,6 +195,7 @@ jQuery(function ($) {
         }
         $('#woocommerce_angelleye_ppcp_enabled').val(0);
         $('#woocommerce_angelleye_ppcp_enabled').prop('checked', false);
+        $('#woocommerce_angelleye_ppcp_enable_apple_pay').prop('checked', false);
         $('.woocommerce-save-button').click();
     });
     $('#woocommerce_angelleye_ppcp_enable_product_button').change(function () {
@@ -909,12 +910,58 @@ jQuery(function ($) {
         }
 
     }).change();
-    url = new URL(window.location.href);
+    let url = new URL(window.location.href);
     if (url.searchParams.has('move')) {
-        if ($('#woocommerce_angelleye_ppcp_tokenization_subscriptions').length) {
+        let move_to_location = url.searchParams.get('move');
+        if (move_to_location == 'true') {
+            move_to_location = 'tokenization_subscriptions';
+        }
+        if ($('#woocommerce_angelleye_ppcp_' + move_to_location).length){
             $('html, body').animate({
-                scrollTop: $('#woocommerce_angelleye_ppcp_tokenization_subscriptions').offset().top
+                scrollTop: $('#woocommerce_angelleye_ppcp_' + move_to_location).offset().top - 150
             }, 'slow');
         }
     }
-}); 
+
+    // handle the ajax form submission
+    jQuery(document.body).on('submit', '.angelleye_apple_pay_ajax_form_submit', function (e) {
+        e.preventDefault()
+        let form = jQuery(this);
+        let actionUrl = form.attr('action');
+        let method = form.attr('method');
+        let button = form.find('.submit_btn')
+        button.addClass('submit_btn_processing')
+
+        jQuery.ajax({
+            type: method,
+            url: actionUrl,
+            data: form.serialize(),
+        }).then((response) => {
+            if (response.status) {
+                jQuery('input[name="apple_pay_domain"]').val('');
+                jQuery('.apple-pay-domain-listing-table').append('<tr><td>' + response.domain + '</td><td><a class="angelleye_apple_pay_remove_api_call" href="'+response.remove_url+'">Delete</a></td>');
+            }
+            alert(response.message);
+        }).then(() => {
+            button.removeClass('submit_btn_processing')
+        });
+    });
+    jQuery(document.body).on('click', '.angelleye_apple_pay_remove_api_call', function (e) {
+        e.preventDefault()
+        let link = jQuery(this);
+        let actionUrl = link.attr('href');
+        link.addClass('processing')
+        jQuery.ajax({
+            type: 'GET',
+            url: actionUrl
+        }).then((response) => {
+            console.log(response);
+            if (response.status) {
+                link.closest('tr').remove();
+            }
+            alert(response.message)
+        }).then(() => {
+            link.removeClass('processing')
+        });
+    })
+});

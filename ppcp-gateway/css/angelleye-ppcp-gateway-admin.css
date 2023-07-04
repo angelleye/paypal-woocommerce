@@ -45,3 +45,25 @@ div.ppcp_success_logo {
     border: 0 solid #333;
 }
 
+.apple-pay-domain-add-form {
+    margin: 17px 0;
+}
+
+a.processing {
+    cursor: wait !important;
+    pointer-events: none !important;
+    color: #888 !important;
+}
+
+.submit_btn_processing {
+    cursor: wait !important;
+    pointer-events: none !important;
+    background: #888 !important;
+}
+
+.no-padding {
+    padding: 0 !important;
+}
+.no-margin {
+    margin: 0 !important;
+}
