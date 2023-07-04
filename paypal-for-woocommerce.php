@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily enable PayPal Commerce - Powered by PayPal, PayPal Express Checkout, PayPal Pro, PayPal Advanced, PayPal REST, and PayPal Braintree.  Each option is available separately so you can enable them individually.
- * Version:           4.0.14
+ * Version:           4.0.20
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,9 +13,9 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.8
- * Tested up to: 6.2.1
+ * Tested up to: 6.2.2
  * WC requires at least: 3.0.0
- * WC tested up to: 7.7.0
+ * WC tested up to: 7.8.0
  *
  * ************
  * Attribution
@@ -37,7 +37,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '4.0.14');
+    define('VERSION_PFW', '4.0.20');
 }
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__);
@@ -120,8 +120,10 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-payment-logger.php';
             AngellEYE_PFW_Payment_Logger::instance();
-            include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-utility.php';
-            if (is_admin()) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
+            if( is_admin() ) {
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-admin-order-payment-process.php';
                 $admin_order_payment = new AngellEYE_Admin_Order_Payment_Process();
             }

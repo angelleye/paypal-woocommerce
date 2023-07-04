@@ -36,7 +36,7 @@ class PayPal_Rest_API_Utility {
 
     public function __construct($gateway) {
         $this->gateway = $gateway;
-        if(!is_object($this->gateway)) {
+        if (!is_object($this->gateway)) {
             return;
         }
         $this->payment_method = $this->gateway->id;
@@ -44,6 +44,9 @@ class PayPal_Rest_API_Utility {
         $this->create_transaction_method_obj();
         $this->testmode = 'yes' === $this->gateway->get_option('testmode', 'no');
         if ($this->testmode == false) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
         $this->softdescriptor = $this->gateway->get_option('softdescriptor', '');
@@ -75,9 +78,9 @@ class PayPal_Rest_API_Utility {
     public function create_payment($order, $card_data) {
         global $woocommerce;
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
+        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         $card = $this->get_posted_card();
-        if(AngellEYE_Utility::angelleye_is_save_payment_token($this->gateway, $order_id)) {
+        if (AngellEYE_Utility::angelleye_is_save_payment_token($this->gateway, $order_id)) {
             if ($card->type == 'maestro') {
                 throw new Exception(__('Your processor is unable to process the Card Type. Please try another card type', 'paypal-for-woocommerce'));
             }
@@ -114,7 +117,7 @@ class PayPal_Rest_API_Utility {
             if ($this->payment->state == "approved") {
                 $transactions = $this->payment->getTransactions();
                 $relatedResources = $transactions[0]->getRelatedResources();
-                if( $this->payment_action == 'sale' ) {
+                if ($this->payment_action == 'sale') {
                     $Sale = $relatedResources[0]->getSale();
                     $transaction_id = $Sale->getId();
                     do_action('angelleye_paypal_response_data', $Sale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
@@ -123,17 +126,17 @@ class PayPal_Rest_API_Utility {
                     $transaction_id = $Authorization->getId();
                     do_action('angelleye_paypal_response_data', $Authorization, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
                 }
-                
+
                 do_action('before_save_payment_token', $order_id);
                 $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
-                if(AngellEYE_Utility::angelleye_is_save_payment_token($this->gateway, $order_id)) {
+                if (AngellEYE_Utility::angelleye_is_save_payment_token($this->gateway, $order_id)) {
                     try {
-                        if( !empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new' ) {
-                            $token_id = wc_clean( $_POST['wc-paypal_credit_card_rest-payment-token'] );
-                            $token = WC_Payment_Tokens::get( $token_id );
+                        if (!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
+                            $token_id = wc_clean($_POST['wc-paypal_credit_card_rest-payment-token']);
+                            $token = WC_Payment_Tokens::get($token_id);
                             $order->add_payment_token($token);
                         } else {
-                            if ( 0 != $order->get_user_id() ) {
+                            if (0 != $order->get_user_id()) {
                                 $customer_id = $order->get_user_id();
                             } else {
                                 $customer_id = get_current_user_id();
@@ -142,28 +145,27 @@ class PayPal_Rest_API_Utility {
                             $creditcard_id = $this->card->getId();
                             $this->save_payment_token($order, $creditcard_id);
                             $token = new WC_Payment_Token_CC();
-                            $token->set_token( $creditcard_id );
-                            $token->set_gateway_id( $this->payment_method );
-                            $token->set_card_type( $this->card->type );
-                            $token->set_last4( substr( $this->card->number, -4 ) );
-                            $token->set_expiry_month( $this->card->expire_month );
-                            $token->set_expiry_year( $this->card->expire_year );
-                            $token->set_user_id( $customer_id );
-                            if( $token->validate() ) {
+                            $token->set_token($creditcard_id);
+                            $token->set_gateway_id($this->payment_method);
+                            $token->set_card_type($this->card->type);
+                            $token->set_last4(substr($this->card->number, -4));
+                            $token->set_expiry_month($this->card->expire_month);
+                            $token->set_expiry_year($this->card->expire_year);
+                            $token->set_user_id($customer_id);
+                            if ($token->validate()) {
                                 $save_result = $token->save();
                                 if ($save_result) {
                                     $order->add_payment_token($token);
                                 }
                             } else {
-                                $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
+                                $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
                             }
                         }
                     } catch (Exception $ex) {
-                        $order->add_order_note('ERROR: ' .  $ex->getMessage());
-                        if(function_exists('wc_add_notice')) {
-                            wc_add_notice(__('ERROR: ' .  $ex->getMessage()), 'error');
+                        $order->add_order_note('ERROR: ' . $ex->getMessage());
+                        if (function_exists('wc_add_notice')) {
+                            wc_add_notice(__('ERROR: ' . $ex->getMessage()), 'error');
                         }
-                        
                     }
                 }
                 $order->payment_complete($transaction_id);
@@ -172,7 +174,7 @@ class PayPal_Rest_API_Utility {
                 if ($old_wc) {
                     update_post_meta($order->id, 'is_sandbox', $is_sandbox);
                 } else {
-                    update_post_meta( $order->get_id(), 'is_sandbox', $is_sandbox );
+                    update_post_meta($order->get_id(), 'is_sandbox', $is_sandbox);
                 }
                 if ($this->is_renewal($order_id)) {
                     return true;
@@ -262,7 +264,7 @@ class PayPal_Rest_API_Utility {
         $this->payer->setPaymentMethod("credit_card");
         $this->payer->setFundingInstruments(array($this->fundingInstrument));
         if ($order->get_total() > 0) {
-            if( $this->payment_data['is_calculation_mismatch'] == false ) {
+            if ($this->payment_data['is_calculation_mismatch'] == false) {
                 $this->set_item($order);
                 $this->set_item_list();
                 $this->set_detail_values();
@@ -362,7 +364,7 @@ class PayPal_Rest_API_Utility {
     public function getAuth() {
         $this->mode = $this->testmode == true ? 'SANDBOX' : 'LIVE';
         $auth = new ApiContext(new OAuthTokenCredential($this->rest_client_id, $this->rest_secret_id));
-        $auth->setConfig(array('mode' => $this->mode, 'log.LogEnabled' => $this->debug , 'log.LogLevel' => ($this->mode == 'SANDBOX') ? 'DEBUG' : 'INFO', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
+        $auth->setConfig(array('mode' => $this->mode, 'log.LogEnabled' => $this->debug, 'log.LogLevel' => ($this->mode == 'SANDBOX') ? 'DEBUG' : 'INFO', 'log.FileName' => wc_get_log_file_path('paypal_credit_card_rest')));
         return $auth;
     }
 
@@ -428,7 +430,7 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_card_first_name($order) {
-        $this->card->setFirstName(version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name());
+        $this->card->setFirstName(version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name());
     }
 
     /**
@@ -436,7 +438,7 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_card_set_last_name($order) {
-        $this->card->setLastName(version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name());
+        $this->card->setLastName(version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name());
     }
 
     /**
@@ -559,12 +561,12 @@ class PayPal_Rest_API_Utility {
 
             $reason = html_entity_decode($reason, ENT_NOQUOTES, 'UTF-8');
         }
-        if( $this->payment_action == 'sale' ) {
+        if ($this->payment_action == 'sale') {
             $Transaction = Sale::get($order->get_transaction_id(), $this->getAuth());
         } else {
             $Transaction = Authorization::get($order->get_transaction_id(), $this->getAuth());
         }
-        
+
         $this->amount = new Amount();
         $this->amount->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
         $this->amount->setTotal($this->number_format($amount, $order));
@@ -572,7 +574,7 @@ class PayPal_Rest_API_Utility {
         $refund->setAmount($this->amount);
         try {
             $this->add_log('Refund Request: ' . print_r($refund, true));
-            if( $this->payment_action == 'sale' ) {
+            if ($this->payment_action == 'sale') {
                 $refundedSale = $Transaction->refund($refund, $this->getAuth());
                 if ($refundedSale->state == 'completed') {
                     do_action('angelleye_paypal_response_data', $refundedSale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
@@ -674,14 +676,14 @@ class PayPal_Rest_API_Utility {
                 $customer_id = get_current_user_id();
                 $creditcard_id = $this->card->getId();
                 $token = new WC_Payment_Token_CC();
-                $token->set_token( $creditcard_id );
-                $token->set_gateway_id( $this->payment_method );
-                $token->set_card_type( $this->card->type );
-                $token->set_last4( substr( $this->card->number, -4 ) );
-                $token->set_expiry_month( $this->card->expire_month );
-                $token->set_expiry_year( $this->card->expire_year );
-                $token->set_user_id( $customer_id );
-                if( $token->validate() ) {
+                $token->set_token($creditcard_id);
+                $token->set_gateway_id($this->payment_method);
+                $token->set_card_type($this->card->type);
+                $token->set_last4(substr($this->card->number, -4));
+                $token->set_expiry_month($this->card->expire_month);
+                $token->set_expiry_year($this->card->expire_year);
+                $token->set_user_id($customer_id);
+                if ($token->validate()) {
                     $save_result = $token->save();
                     if ($save_result) {
                         return array(
@@ -690,7 +692,7 @@ class PayPal_Rest_API_Utility {
                         );
                     }
                 } else {
-                    throw new Exception( __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ) );
+                    throw new Exception(__('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
                 }
             } else {
                 wc_add_notice(__("Error processing checkout. Please try again. ", 'paypal-for-woocommerce'), 'error');
@@ -748,7 +750,7 @@ class PayPal_Rest_API_Utility {
                     $order->add_payment_token($token);
                 } else {
                     $this->card->create($this->getAuth());
-                    if ( 0 != $order->get_user_id() ) {
+                    if (0 != $order->get_user_id()) {
                         $customer_id = $order->get_user_id();
                     } else {
                         $customer_id = get_current_user_id();
@@ -763,13 +765,13 @@ class PayPal_Rest_API_Utility {
                     $token->set_expiry_month(date('m'));
                     $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
                     $token->set_user_id($customer_id);
-                    if( $token->validate() ) {
+                    if ($token->validate()) {
                         $save_result = $token->save();
                         if ($save_result) {
                             $order->add_payment_token($token);
                         }
                     } else {
-                        $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
+                        $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
                     }
                 }
             } catch (Exception $ex) {
@@ -827,9 +829,9 @@ class PayPal_Rest_API_Utility {
             $emails['WC_Email_Failed_Order']->trigger($order_id);
         }
     }
-    
+
     public function is_renewal($order_id) {
-        return ( function_exists('wcs_order_contains_subscription') && wcs_order_contains_renewal($order_id)  );
+        return ( function_exists('wcs_order_contains_subscription') && wcs_order_contains_renewal($order_id) );
     }
 
     public function admin_process_payment($order, $token_id) {
@@ -844,7 +846,7 @@ class PayPal_Rest_API_Utility {
             $this->payer = new Payer();
             $this->payer->setPaymentMethod("credit_card");
             $this->payer->setFundingInstruments(array($this->fundingInstrument));
-            if( $this->payment_data['is_calculation_mismatch'] == false ) {
+            if ($this->payment_data['is_calculation_mismatch'] == false) {
                 $this->set_item($order);
                 $this->set_item_list();
                 $this->set_detail_values();
@@ -857,25 +859,23 @@ class PayPal_Rest_API_Utility {
             $this->set_transaction($order);
             $this->set_payment();
         } catch (Exception $ex) {
-
+            
         }
-        
+
         try {
             $this->add_log(print_r($this->payment, true));
             $this->payment->create($this->getAuth());
         } catch (PayPal\Exception\PayPalConnectionException $ex) {
             $this->add_log($ex->getMessage());
-
         } catch (Exception $ex) {
             $this->send_failed_order_email($order_id);
             $this->add_log($ex->getMessage());
-
         }
 
         if ($this->payment->state == "approved") {
             $transactions = $this->payment->getTransactions();
             $relatedResources = $transactions[0]->getRelatedResources();
-            if( $this->payment_action == 'sale' ) {
+            if ($this->payment_action == 'sale') {
                 $Sale = $relatedResources[0]->getSale();
                 $transaction_id = $Sale->getId();
                 do_action('angelleye_paypal_response_data', $Sale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
@@ -891,16 +891,15 @@ class PayPal_Rest_API_Utility {
             if ($old_wc) {
                 update_post_meta($order->id, 'is_sandbox', $is_sandbox);
             } else {
-                update_post_meta( $order->get_id(), 'is_sandbox', $is_sandbox );
+                update_post_meta($order->get_id(), 'is_sandbox', $is_sandbox);
             }
         } else {
             $this->send_failed_order_email($order_id);
             $this->add_log(__('Error Payment state:' . $this->payment->state, 'paypal-for-woocommerce'));
         }
-        
     }
-    
-     public function angelleye_set_shipping_address($order) {
+
+    public function angelleye_set_shipping_address($order) {
         if ($order->needs_shipping_address()) {
             $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
             $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
@@ -921,7 +920,7 @@ class PayPal_Rest_API_Utility {
             $this->item_list->setShippingAddress($shipping_address_array);
         }
     }
-    
+
     public function create_payment_for_subscription_change_payment($order, $card_data) {
         global $woocommerce;
         $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
@@ -936,7 +935,7 @@ class PayPal_Rest_API_Utility {
                     $order->add_payment_token($token);
                 } else {
                     $this->card->create($this->getAuth());
-                    if ( 0 != $order->get_user_id() ) {
+                    if (0 != $order->get_user_id()) {
                         $customer_id = $order->get_user_id();
                     } else {
                         $customer_id = get_current_user_id();
@@ -951,13 +950,13 @@ class PayPal_Rest_API_Utility {
                     $token->set_expiry_month(date('m'));
                     $token->set_expiry_year(date('Y', strtotime($this->card->valid_until)));
                     $token->set_user_id($customer_id);
-                    if( $token->validate() ) {
+                    if ($token->validate()) {
                         $save_result = $token->save();
                         if ($save_result) {
                             $order->add_payment_token($token);
                         }
                     } else {
-                        $order->add_order_note('ERROR MESSAGE: ' .  __( 'Invalid or missing payment token fields.', 'paypal-for-woocommerce' ));
+                        $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
                     }
                 }
             } catch (Exception $ex) {
@@ -972,7 +971,6 @@ class PayPal_Rest_API_Utility {
                 'result' => 'success',
                 'redirect' => wc_get_account_endpoint_url('payment-methods')
             );
-            
         } catch (PayPal\Exception\PayPalConnectionException $ex) {
             $this->send_failed_order_email($order_id);
             $this->add_log($ex->getData());
@@ -997,4 +995,5 @@ class PayPal_Rest_API_Utility {
             );
         }
     }
+
 }
