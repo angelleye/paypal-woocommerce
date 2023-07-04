@@ -920,6 +920,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
      * @return array|mixed|string|string[]
      */
     public function angelleye_ppcp_clean_url($tag, $handle) {
+        $data_merchant_id = '';
         if ('angelleye-paypal-checkout-sdk' === $handle) {
             $data_merchant_id = '';
             if (!empty($this->sdk_merchant_id)) {
@@ -937,7 +938,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $client_token = isset($attributes['data-client-token']) ? "data-client-token='{$attributes['data-client-token']}'" : '';
                 $user_id_token = isset($attributes['data-user-id-token']) ? "data-user-id-token='{$attributes['data-user-id-token']}'" : '';
             }
-            $tag = str_replace(' src=', ' ' . $client_token . $user_id_token . $data_merchant_id . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
+             $tag = str_replace(' src=', ' ' . $client_token . $user_id_token . $data_merchant_id . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
         }
         return $tag;
     }
