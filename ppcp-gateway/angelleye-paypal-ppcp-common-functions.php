@@ -434,13 +434,16 @@ if (!function_exists('angelleye_ppcp_is_valid_order')) {
 if (!function_exists('angelleye_ppcp_get_currency')) {
 
     function angelleye_ppcp_get_currency($woo_order_id = null) {
+        $currency_code = '';
 
         if ($woo_order_id != null) {
             $order = wc_get_order($woo_order_id);
-            return version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+            $currency_code = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+        } else {
+            $currency_code = get_woocommerce_currency();
         }
 
-        return get_woocommerce_currency();
+        return $currency_code;
     }
 
 }
