@@ -569,6 +569,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
     public function admin_options() {
         do_action('angelleye_classic_gateway_sub_menu');
+        do_action('angelleye_ppcp_upgrade_notice', 'paypal_pro_payflow');
         global $current_user;
         $GLOBALS['hide_save_button'] = true;
         $user_id = $current_user->ID;

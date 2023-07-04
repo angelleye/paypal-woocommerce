@@ -218,7 +218,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -785,6 +785,25 @@ if (!function_exists('angelleye_ppcp_get_value')) {
 
 }
 
+if (!function_exists('angelleye_is_acdc_payments_enable')) {
+
+    function angelleye_is_acdc_payments_enable($result) {
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('CUSTOM_CARD_PROCESSING', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $key => $capabilities) {
+                        if (isset($capabilities['name']) && 'CUSTOM_CARD_PROCESSING' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+}
+
 if (!function_exists('angelleye_ppcp_is_cart_contains_subscription')) {
 
     function angelleye_ppcp_is_cart_contains_subscription() {
@@ -913,7 +932,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -938,10 +957,135 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
+}
+
+if (!function_exists('angelleye_is_vaulting_enable')) {
+
+    function angelleye_is_vaulting_enable($result) {
+        if (defined('PPCP_VAULT_DISABLE')) {
+            return PPCP_VAULT_DISABLE;
+        }
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $key => $capabilities) {
+                        if (isset($capabilities['name']) && 'PAYPAL_WALLET_VAULTING_ADVANCED' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
+
+    function angelleye_ppcp_display_upgrade_notice_type($result = '') {
+        try {
+            $notice_type = array();
+            $notice_type['vault_upgrade'] = false;
+            $notice_type['classic_upgrade'] = false;
+            $notice_type['outside_us'] = false;
+            $is_subscriptions = false;
+            $is_us = false;
+            $is_classic = false;
+            if (isset($result['country']) && !empty($result['country']) && 'US' === $result['country']) {
+                $is_us = true;
+            } elseif (function_exists('wc_get_base_location')) {
+                $default = wc_get_base_location();
+                $country = apply_filters('woocommerce_countries_base_country', $default['country']);
+                if ($country === 'US') {
+                    $is_us = true;
+                }
+            }
+            if (defined('PPCP_PAYPAL_COUNTRY')) {
+                if( PPCP_PAYPAL_COUNTRY === 'US') {
+                    $is_us = true;
+                } else {
+                    $is_us = false;
+                }
+            }
+            if (class_exists('WC_Subscriptions_Order')) {
+                $is_subscriptions = true;
+            }
+            $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+            $active_classic_gateway_list = array();
+            foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+                if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
+                    $active_classic_gateway_list[$gateway->id] = $gateway->id;
+                }
+            }
+            if (count($active_classic_gateway_list) > 0) {
+                $is_classic = true;
+            }
+            if ($is_classic === true && $is_us === false && $is_subscriptions === true) {
+                $notice_type['outside_us'] = true;
+            } elseif ($is_classic === true && $is_subscriptions === true && $is_us === true) {
+                $notice_type['classic_upgrade'] = true;
+            } elseif ($is_classic === true && $is_subscriptions === false) {
+                $notice_type['classic_upgrade'] = true;
+            }
+            foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+                if (in_array($gateway->id, array('angelleye_ppcp')) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
+                    if (empty($result)) {
+                        $notice_type['vault_upgrade'] = false;
+                    } elseif (angelleye_is_vaulting_enable($result)) {
+                        $notice_type['vault_upgrade'] = false;
+                    } elseif ($is_us === true && angelleye_is_vaulting_enable($result) === false) {
+                        $notice_type['vault_upgrade'] = true;
+                    }
+                }
+            }
+            return $notice_type;
+        } catch (Exception $ex) {
+            return $notice_type;
+        }
+    }
+
+    if (!function_exists('angelleye_ppcp_display_notice')) {
+
+        function angelleye_ppcp_display_notice($response_data) {
+            global $current_user;
+            $user_id = $current_user->ID;
+            if (get_user_meta($user_id, $response_data->id)) {
+                return;
+            }
+            $message = '<div class="notice notice-warning angelleye-notice" style="display:none;" id="' . $response_data->id . '">'
+                    . '<div class="angelleye-notice-logo-push"><span> <img width="60px"src="' . $response_data->ans_company_logo . '"> </span></div>'
+                    . '<div class="angelleye-notice-message">';
+            if (!empty($response_data->ans_message_title)) {
+                $message .= '<h2>' . $response_data->ans_message_title . '</h2>';
+            }
+            $message .= '<div class="angelleye-notice-message-inner">'
+                    . '<p style="margin-top: 15px !important;line-height: 20px;">' . $response_data->ans_message_description . '</p><div class="angelleye-notice-action">';
+            if (!empty($response_data->ans_button_url)) {
+                $message .= '<a href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a>';
+            }
+
+            if (isset($response_data->is_button_secondary) && $response_data->is_button_secondary === true) {
+                $message .= '&nbsp&nbsp&nbsp<a target="_blank" href="' . $response_data->ans_secondary_button_url . '" class="button button-secondary">' . $response_data->ans_secondary_button_label . '</a>';
+            }
+            $message .= '</div></div>'
+                    . '</div>';
+            if ($response_data->is_dismiss) {
+                $message .= '<div class="angelleye-notice-cta">'
+                        . '<button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="' . $response_data->id . '">Dismiss</button>'
+                        . '</div>'
+                        . '</div>';
+            } else {
+                $message .= '</div>';
+            }
+            echo $message;
+        }
+
+    }
 }
 
 global $change_proceed_checkout_button_text;
@@ -956,7 +1100,7 @@ if (!empty($change_proceed_checkout_button_text)) {
             global $change_proceed_checkout_button_text;
             ?>
             <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button alt wc-forward<?php echo esc_attr(wc_wp_theme_get_element_class_name('button') ? ' ' . wc_wp_theme_get_element_class_name('button') : '' ); ?>">
-            <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'woocommerce'); ?>
+                <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'woocommerce'); ?>
             </a>
             <?php
         }

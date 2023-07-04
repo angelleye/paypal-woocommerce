@@ -527,6 +527,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function admin_options() {
         do_action('angelleye_classic_gateway_sub_menu');
+        do_action('angelleye_ppcp_upgrade_notice', 'paypal_pro');
         $GLOBALS['hide_save_button'] = true;
         echo '<h2>' . esc_html( $this->get_method_title() ) . '</h2>';
         echo wp_kses_post( wpautop( $this->get_method_description() ) );
