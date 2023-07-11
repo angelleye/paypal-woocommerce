@@ -36,8 +36,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
             $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
         }
         $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
-        $order = WFOCU_Core()->data->get_current_order();
-        
+                
         // Force tokenization if funnel is initiated
         add_filter( "angelleye_ppcp_is_save_payment_method", array( $this, "angelleye_force_token_save" ), 20 );
         		
@@ -92,7 +91,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
 	 * @return boolean on success false otherwise
 	 */
 	public function has_token( $order ) {
-		if ( !is_a( $variable, 'WC_Order' ) ) {
+		if ( !is_a( $order, 'WC_Order' ) ) {
 			return false;
 		}
 		$get_id      = $order->get_id();
@@ -266,7 +265,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
      * Create purchase units data
      */
     public function get_purchase_units($order, $offer_package, $args) {
-    	$invoice_id = $ppcp_data['invoice_prefix'] . '-wfocu-' . $this->get_order_number( $order );
+    	$invoice_id = $args['invoice_prefix'] . '-wfocu-' . $this->get_order_number( $order );
     	$total_amount = $offer_package['total'];
         $purchase_unit = array(
             'reference_id' => 'default',
@@ -278,7 +277,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
             'description' => __('One Time Offer - ' . $order->get_id(), 'upstroke-woocommerce-one-click-upsell-paypal-angell-eye'), // phpcs:ignore
             'items' => $this->add_offer_item_data($order, $offer_package),
             'payee' => array(
-                'merchant_id' => $ppcp_data['merchant_id']
+                'merchant_id' => $args['merchant_id']
             ),
             'shipping' => array(
                 'name' => array(
