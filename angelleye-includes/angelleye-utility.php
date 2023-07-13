@@ -1366,7 +1366,6 @@ class AngellEYE_Utility {
             if ($order->get_total() - $order->get_total_refunded() <= $this->total_Completed_DoAuthorization && $this->total_Pending_DoAuthorization == 0) {
                 do_action('woocommerce_order_status_pending_to_processing', $order_id);
                 $order->payment_complete($_first_transaction_id);
-                do_action('woocommerce_checkout_order_processed', $order_id, $posted = array(), $order);
             }
         }
     }
