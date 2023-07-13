@@ -1130,7 +1130,7 @@ class AngellEYE_Utility {
                             $('#angelleye_payment_submit_button').on('click', function (event) {
                                 if( $('#is_submited').val() == 'no') {
                                     $('#is_submited').val('yes');
-                                    var r = confirm(<?php echo __( 'Are you sure?', 'paypal-for-woocommerce' ) ?>);
+                                    var r = confirm("<?php echo __( 'Are you sure?', 'paypal-for-woocommerce' ) ?>");
                                     if (r == true) {
                                         jQuery("#angelleye-pw-order-action").block({message:null,overlayCSS:{background:"#fff",opacity:.6}});
                                         return r;
