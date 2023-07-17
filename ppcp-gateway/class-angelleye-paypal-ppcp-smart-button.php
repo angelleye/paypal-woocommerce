@@ -1027,7 +1027,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_hide_show_gateway($methods) {
-        if ((isset($_GET['page']) && 'wc-settings' === $_GET['page'])) {
+        if ((isset($_GET['page']) && 'wc-settings' === $_GET['page']) && isset($_GET['tab']) && 'checkout' === $_GET['tab']) {
 
         } else {
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
@@ -1255,6 +1255,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $_GET['wcf_checkout_id'] = $_POST['_wcf_checkout_id'];
             wc_maybe_define_constant('DOING_AJAX', true);
             wc_maybe_define_constant('WC_DOING_AJAX', true);
+        } elseif(isset( $_POST['woocommerce-process-checkout-nonce'])) {
+            $_GET['wc-ajax'] = 'checkout';
         }
     }
 
