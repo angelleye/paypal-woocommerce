@@ -353,7 +353,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'order_id' => $woo_order_id
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
-                wc_add_notice($error_message, 'error');
+                wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
                 if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
                     $order->add_order_note($error_message);
                 }
@@ -999,7 +999,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'order_id' => $woo_order_id
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
-                wc_add_notice($error_message, 'error');
+                wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
                 $order->add_order_note($error_message);
                 return false;
             }
@@ -1457,7 +1457,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 $order->add_order_note($error_message);
-                wc_add_notice($error_message, 'error');
+                wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
                 return false;
             }
         } catch (Exception $ex) {
@@ -1629,7 +1629,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 if (function_exists('wc_add_notice')) {
-                    wc_add_notice($error_message, 'error');
+                    wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
                 }
                 if (!empty($error_message)) {
                     $order->add_order_note('Error Message : ' . $error_message);
@@ -2013,7 +2013,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
                     $order->add_order_note($error_message);
                 }
-                wc_add_notice($error_message, 'error');
+                wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
                 return array(
                     'result' => 'fail',
                     'redirect' => ''
