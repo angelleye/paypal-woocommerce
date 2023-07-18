@@ -38,7 +38,6 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
         add_filter('cartflows_offer_js_localize', array($this, 'angelleye_ppcp_cartflows_offer_js_localize'));
         add_action('wp_enqueue_scripts', array($this, 'angelleye_ppcp_frontend_scripts'));
         add_filter('woocommerce_paypal_refund_request', array($this, 'angelleye_ppcp_offer_refund_request_data'), 10, 4);
-        //add_action('cartflows_offer_subscription_created', array($this, 'add_subscription_payment_meta_for_paypal'), 10, 3);
         add_action('cartflows_offer_child_order_created_' . $this->key, array($this, 'angelleye_ppcp_store_required_meta_keys_for_refund'), 10, 3);
         add_action('wp_ajax_wcf_create_paypal_ppcp_angelleye_payments_order', array($this, 'angelleye_ppcp_create_paypal_order'));
         add_action('wp_ajax_nopriv_wcf_create_paypal_ppcp_angelleye_payments_order', array($this, 'angelleye_ppcp_create_paypal_order'));
@@ -375,14 +374,6 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
         global $woocommerce;
         $gateways = $woocommerce->payment_gateways->payment_gateways();
         return $gateways[$this->key];
-    }
-
-    public function add_subscription_payment_meta_for_paypal($subscription, $order, $offer_product) {
-        if ('angelleye_ppcp' === $order->get_payment_method()) {
-            $subscription_id = $subscription->get_id();
-            update_post_meta($subscription_id, '_ppcp_paypal_order_id', $order->get_meta('_ppcp_paypal_order_id', true));
-            update_post_meta($subscription_id, 'payment_token_id', $order->get_meta('payment_token_id', true));
-        }
     }
 
     public function angelleye_ppcp_store_required_meta_keys_for_refund($parent_order, $child_order, $transaction_id) {

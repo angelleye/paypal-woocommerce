@@ -203,8 +203,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         } else {
             $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
         }
-        angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
-        angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+        $order->update_meta_data('_paymentaction', $this->paymentaction);
+        $order->update_meta_data('_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+        $order->save();
         unset(WC()->session->angelleye_ppcp_session);
         if ($is_success) {
             WC()->cart->empty_cart();
@@ -262,8 +263,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     } else {
                         $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
                     }
-                    angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
-                    angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+                    $order->update_meta_data('_paymentaction', $this->paymentaction);
+                    $order->update_meta_data('_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+                    $order->save();
                 } elseif ($liability_shift_result === 2) {
                     $is_success = false;
                     wc_add_notice(__('We cannot process your order with the payment information that you provided. Please use an alternate payment method.', 'paypal-for-woocommerce'), 'error');
