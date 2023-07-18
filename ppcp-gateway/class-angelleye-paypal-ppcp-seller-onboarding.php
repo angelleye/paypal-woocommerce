@@ -139,7 +139,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_generate_signup_link_for_migration($testmode, $products) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
-        if ($this->ppcp_paypal_country === 'US') {
+        if ($this->ppcp_paypal_country === 'US' && angelleye_ppcp_is_subscription_support_enabled() === true) {
             $body = $this->ppcp_vault_data();
         } else {
             $body = $this->default_data();
@@ -311,7 +311,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce');
             }
             if (isset($_GET['is_migration']) && 'yes' === $_GET['is_migration'] && isset($_GET['products'])) {
-                if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
+                if (angelleye_ppcp_is_subscription_support_enabled() === true) {
                     $this->subscription_support_enabled = true;
                 } else {
                     $this->subscription_support_enabled = false;
@@ -319,6 +319,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->is_vaulting_enable = angelleye_is_vaulting_enable($seller_onboarding_status);
                 if ($this->subscription_support_enabled === false || ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true )) {
                     $products = json_decode(stripslashes($_GET['products']), true);
+                    
+                    
+                    
+                    
                     if (!empty($products) && is_array($products)) {
                         if (!class_exists('AngellEYE_PayPal_PPCP_Migration')) {
                             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration.php');

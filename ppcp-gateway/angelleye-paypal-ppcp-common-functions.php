@@ -218,7 +218,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -966,7 +966,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -991,7 +991,7 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -1040,7 +1040,7 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
                 }
             }
             if (defined('PPCP_PAYPAL_COUNTRY')) {
-                if( PPCP_PAYPAL_COUNTRY === 'US') {
+                if (PPCP_PAYPAL_COUNTRY === 'US') {
                     $is_us = true;
                 } else {
                     $is_us = false;
@@ -1140,4 +1140,25 @@ if (!empty($change_proceed_checkout_button_text)) {
         }
 
     }
+}
+
+if (!function_exists('angelleye_ppcp_is_subscription_support_enabled')) {
+
+    function angelleye_ppcp_is_subscription_support_enabled() {
+        try {
+            if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
+                return true;
+            }
+            $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+            foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+                if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true && ('yes' === $gateway->enable_tokenized_payments || $gateway->enable_tokenized_payments === true)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception $ex) {
+            return false;
+        }
+    }
+
 }

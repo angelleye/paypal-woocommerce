@@ -49,8 +49,28 @@
                     </ul>
                 </div>
             </div>
-             <div class="pt-20 pb-20 text-center">
+            <div class="pt-20 pb-20 text-center">
                 <div class="angella_button_bg text-center paypal_woocommerce_product_onboard">
+                    <?php
+                    $product_list = json_decode(urldecode($products));
+                    if (in_array("paypal_pro_payflow", $product_list)) {
+                        $bool = false;
+                        foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+                            if ($gateway->id === 'paypal_pro_payflow' && $gateway->paypal_partner === 'PayPal') {
+                                $bool = true;
+                            }
+                        }
+                        if ($bool) {
+                            ?>
+                            <br>
+                            <P>We noticed that you are running PayPal PayFlow Pro.  Please make sure that the PayPal account you are connecting during the upgrade is the same as the PayPal account that you have been using with PayFlow Pro.</P><br><br>
+                        <?php } else { ?>
+                            <br>
+                            <p>By connecting PayPal Commerce you will be moving away from PayFlow entirely, and you will be using PayPal to process all of your credit card payments as well as PayPal, Pay Later, Venmo, Apple Pay, etc.  If this is not what you are intending, please submit a ticket so we can help you through this process more directly.</p><br><br>
+                            <?php
+                        }
+                    }
+                    ?>
                     <?php echo $this->angelleye_ppcp_generate_onboard_button($products); ?>
                 </div>
             </div>
@@ -61,4 +81,5 @@
         </div>
     </div>
 </div>
-<?php include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_sidebar.php');
+<?php
+include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_sidebar.php');

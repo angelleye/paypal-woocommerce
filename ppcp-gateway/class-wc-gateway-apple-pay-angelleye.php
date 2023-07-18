@@ -9,7 +9,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     /**
      * @var false|mixed
      */
-    private mixed $apple_pay_payments_description;
+    public $apple_pay_payments_description;
 
     public function __construct() {
         parent::__construct();
