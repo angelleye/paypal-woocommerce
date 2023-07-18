@@ -418,7 +418,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
                             <br><br>
                             <div class="paypal_woocommerce_product_onboard_content">
-                                <p><?php echo __('We’re sorry, but the PayPal Multi-Account functionality you are currently using is not yet supported by the PayPal Commerce gateway.  We are actively working on this, and should have updates ready for you very soon.  Stay tuned!', 'paypal-for-woocommerce'); ?></p>
+                                <p><?php echo __('We\'re sorry, but the PayPal Multi-Account functionality you are currently using is not yet supported by the PayPal Commerce gateway.', 'paypal-for-woocommerce'); ?></p>
+                                <p><?php echo __('For now, please continue using PayPal Classic - Express Checkout.  You will not experience any interruptions with your payment processing, so no worries!', 'paypal-for-woocommerce'); ?> </p>
+                                <p><?php echo __('We are actively working on PayPal Commerce compatibility, and should have updates ready for you very soon. <br>Stay tuned!', 'paypal-for-woocommerce'); ?></p>
                             </div>
                         </div>
                     </div>

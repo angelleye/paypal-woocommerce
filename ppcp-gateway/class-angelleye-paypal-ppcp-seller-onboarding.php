@@ -114,7 +114,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_generate_signup_link_with_feature($testmode, $page, $body) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
-
         if ($page === 'gateway_settings') {
             $body['return_url'] = add_query_arg(array('place' => 'gateway_settings', 'utm_nooverride' => '1'), untrailingslashit($body['return_url']));
         } else {
