@@ -1149,12 +1149,12 @@ if (!function_exists('angelleye_ppcp_is_subscription_support_enabled')) {
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
                 return true;
             }
-            $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
-            foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
-                if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true && ('yes' === $gateway->enable_tokenized_payments || $gateway->enable_tokenized_payments === true)) {
-                    return true;
-                }
-            }
+            /* $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+              foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+              if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true && ('yes' === $gateway->enable_tokenized_payments || $gateway->enable_tokenized_payments === true)) {
+              return true;
+              }
+              } */
             return false;
         } catch (Exception $ex) {
             return false;
@@ -1162,3 +1162,75 @@ if (!function_exists('angelleye_ppcp_is_subscription_support_enabled')) {
     }
 
 }
+
+if (!function_exists('angelleye_ppcp_get_paypal_details')) {
+
+    function angelleye_ppcp_get_paypal_details($account_details) {
+        try {
+            $PayPalConfig = array(
+                'Sandbox' => isset($account_details['testmode']) ? $account_details['testmode'] : '',
+                'APIUsername' => isset($account_details['api_username']) ? $account_details['api_username'] : '',
+                'APIPassword' => isset($account_details['api_password']) ? $account_details['api_password'] : '',
+                'APISignature' => isset($account_details['api_signature']) ? $account_details['api_signature'] : ''
+            );
+            if (!class_exists('Angelleye_PayPal_WC')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/lib/angelleye/paypal-php-library/includes/paypal.class.php' );
+            }
+            $PayPal = new Angelleye_PayPal_WC($PayPalConfig);
+            $PayPalResult = $PayPal->GetPalDetails();
+            if (isset($PayPalResult['ACK']) && $PayPalResult['ACK'] == 'Success') {
+                if (isset($PayPalResult['PAL']) && !empty($PayPalResult['PAL'])) {
+                    return $PayPalResult['PAL'];
+                }
+            }
+            return '';
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_get_classic_paypal_details')) {
+
+    function angelleye_ppcp_get_classic_paypal_details($gateway_id) {
+        try {
+
+            foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+                if ($gateway->id === $gateway_id && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
+                    switch ($gateway_id) {
+                        case 'paypal_express':
+                            $account_details['testmode'] = $gateway->testmode;
+                            $account_details['api_username'] = $gateway->api_username;
+                            $account_details['api_password'] = $gateway->api_password;
+                            $account_details['api_signature'] = $gateway->api_signature;
+                            $account_id = angelleye_ppcp_get_paypal_details($account_details);
+                            return $account_id;
+
+                        case 'paypal_pro':
+                            $account_details['testmode'] = $gateway->testmode;
+                            $account_details['api_username'] = $gateway->api_username;
+                            $account_details['api_password'] = $gateway->api_password;
+                            $account_details['api_signature'] = $gateway->api_signature;
+                            $account_id = angelleye_ppcp_get_paypal_details($account_details);
+                            return $account_id;
+
+                        /* case 'paypal_credit_card_rest':
+                          $gateway->rest_client_id;
+                          $gateway->rest_secret_id;
+                          break; */
+                        default:
+                            break;
+                    }
+                }
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+}
+
+
+
+

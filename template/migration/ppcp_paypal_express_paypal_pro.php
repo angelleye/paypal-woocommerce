@@ -2,6 +2,7 @@
     <div class="angelleye_ppcp_migration_content p-50 p-md-30 mb-30 ">
         <div class="entry-content">
             <h2 class="text-center pb-30"><?php echo __('Your PayPal integration is due for a required update.', 'paypal-for-woocommerce'); ?></h2>
+            <?php if (!isset($_GET['is_found_diffrent_account'])) { ?>
             <div class="d-flex d-md-flex">
                 <div class="col-md-6">
                     <div class="pt-30">
@@ -47,6 +48,15 @@
                     </ul>
                 </div>
             </div>
+            <?php } else { ?>
+                <div class="pt-20 pb-20">
+                    <div class="angella_button_bg text-center paypal_woocommerce_product_onboard">
+                        We noticed that the PayPal account you are connecting is different from the PayPal account you have configured in PayPal Classic.<br><br>
+                        Any subscription profiles or billing agreements that are running on this old account will not function properly if you connect a new account with PayPal Commerce.<br><br>
+                        Are you sure you want to switch PayPal accounts?
+                    </div>
+                </div>
+            <?php } ?>
             <div class="pt-20 pb-20 text-center">
                 <div class="angella_button_bg text-center paypal_woocommerce_product_onboard">
                     <?php echo $this->angelleye_ppcp_generate_onboard_button($products); ?>

@@ -144,7 +144,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         } else {
             $body = $this->default_data();
         }
-        $body['return_url'] = add_query_arg(array('place' => 'admin_settings_onboarding', 'utm_nooverride' => '1', 'products' => $products, 'is_migration' => 'yes'), untrailingslashit($body['return_url']));
+        $return_url = add_query_arg(array('place' => 'admin_settings_onboarding', 'utm_nooverride' => '1', 'products' => $products, 'is_migration' => 'yes'), untrailingslashit($body['return_url']));
+        if(isset($_GET['is_found_diffrent_account'])) {
+            $return_url = add_query_arg(array('do_not_check_diffrent_account' => 'yes'), untrailingslashit($return_url));
+        }
+        $body['return_url'] = $return_url;
         if ($this->is_sandbox) {
             $tracking_id = angelleye_key_generator();
             $body['tracking_id'] = $tracking_id;
@@ -178,16 +182,15 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         ));
     }
 
-    public function ppcp_apple_pay_data()
-    {
+    public function ppcp_apple_pay_data() {
         $testmode = ($this->is_sandbox) ? 'yes' : 'no';
         return array(
             'testmode' => $testmode,
             'return_url' => admin_url(
-                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=applepay&testmode=' . $testmode
+                    'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=applepay&testmode=' . $testmode
             ),
             'return_url_description' => __(
-                'Return to your shop.', 'paypal-for-woocommerce'
+                    'Return to your shop.', 'paypal-for-woocommerce'
             ),
             'capabilities' => array(
                 'APPLE_PAY'
@@ -196,7 +199,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
                 'PAYMENT_METHODS'
-            ));
+        ));
     }
 
     public function ppcp_vault_data() {
@@ -306,7 +309,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->setting_obj->persist();
             $seller_onboarding_status = $this->angelleye_get_seller_onboarding_status();
             if (isset($_GET['place']) && $_GET['place'] === 'gateway_settings') {
-                $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move='.$move_to_location);
+                $redirect_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=' . $move_to_location);
             } else {
                 $redirect_url = admin_url('options-general.php?page=paypal-for-woocommerce');
             }
@@ -319,10 +322,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->is_vaulting_enable = angelleye_is_vaulting_enable($seller_onboarding_status);
                 if ($this->subscription_support_enabled === false || ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true )) {
                     $products = json_decode(stripslashes($_GET['products']), true);
-                    
-                    
-                    
-                    
                     if (!empty($products) && is_array($products)) {
                         if (!class_exists('AngellEYE_PayPal_PPCP_Migration')) {
                             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration.php');
@@ -331,15 +330,29 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                         foreach ($products as $key => $product) {
                             switch ($product) {
                                 case 'paypal_express':
-                                    $this->ppcp_migration->angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status);
-                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
-                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_express', 'angelleye_ppcp');
+                                    $existing_paypal_account_details = angelleye_ppcp_get_classic_paypal_details($product);
+                                    if (isset($_GET['do_not_check_diffrent_account']) || (!empty($existing_paypal_account_details) && $existing_paypal_account_details === $merchant_id) || empty($existing_paypal_account_details)) {
+                                        $this->ppcp_migration->angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status);
+                                        if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
+                                            $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_express', 'angelleye_ppcp');
+                                        }
+                                    } else {
+                                        unset($_GET);
+                                        wp_redirect(add_query_arg(array('is_found_diffrent_account' => 'yes'), untrailingslashit($redirect_url)));
+                                        exit();
                                     }
                                     break;
                                 case 'paypal_pro':
-                                    $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
-                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
-                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp');
+                                    $existing_paypal_account_details = angelleye_ppcp_get_classic_paypal_details($product);
+                                    if (isset($_GET['do_not_check_diffrent_account']) || (!empty($existing_paypal_account_details) && $existing_paypal_account_details === $merchant_id) || empty($existing_paypal_account_details)) {
+                                        $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
+                                        if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
+                                            $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp');
+                                        }
+                                    } else {
+                                        unset($_GET);
+                                        wp_redirect(add_query_arg(array('is_found_diffrent_account' => 'yes'), untrailingslashit($redirect_url)));
+                                        exit();
                                     }
                                     break;
                                 case 'paypal_pro_payflow':
@@ -382,7 +395,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                             No changes have been made, and you can continue running PayPal Classic.<br>
                             Please try this wizard again in 2 - 3 business days.  If the problem persists, please submit a <a target="_blank" href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">support ticket</a> and we can help you get it approved.');
                     } else {
-                        $country = WC()->countries->countries[ $country ];
+                        $country = WC()->countries->countries[$country];
                         $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('You are currently running WooCommerce Subscriptions.<br>
                             Unfortunately, the PayPal Vault feature (which is required for Subscriptions / Token Payments) is only currently available for United States PayPal accounts.<br>
                             Your PayPal account is based in ' . $country . '.  As such, you cannot upgrade to PayPal Commerce Platform at this time.<br>
@@ -588,5 +601,4 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
         }
     }
-
 }
