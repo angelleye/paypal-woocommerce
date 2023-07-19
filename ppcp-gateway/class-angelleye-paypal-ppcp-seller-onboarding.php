@@ -289,6 +289,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 switch ($_GET['feature_activated']) {
                     case 'applepay':
                         set_transient('angelleye_ppcp_applepay_onboarding_done', 'yes', 29000);
+                        delete_transient('angelleye_apple_pay_domain_added');
                         $move_to_location = 'additional_authorizations';
                         break;
                 }

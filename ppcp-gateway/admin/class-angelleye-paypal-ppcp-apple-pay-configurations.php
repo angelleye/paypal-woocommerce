@@ -49,7 +49,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         ];
     }
 
-    public function listApplePayDomain()
+    public function listApplePayDomain($returnRawResponse = false)
     {
         $args = [
             'method' => 'GET',
@@ -82,9 +82,21 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
             $this->payment_request->error_email_notification = false;
             $jsonResponse['message'] = $this->payment_request->angelleye_ppcp_get_readable_message($response);
         }
-
+        if ($returnRawResponse) {
+            return $jsonResponse;
+        }
         require_once (PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/admin/templates/apple-pay-domain-list.php');
         die;
+    }
+
+    public static function isApplePayDomainAdded(): bool
+    {
+        $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
+        $addedDomains = $instance->listApplePayDomain(true);
+        if ($addedDomains['status'] && count($addedDomains['domains'])) {
+            return true;
+        }
+        return false;
     }
 
     public function registerApplePayDomain()
@@ -114,6 +126,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $domainGetUrl = 'https://' . $this->host . '/v1/customer/wallet-domains';
         $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_add');
         if (isset($response['domain'])) {
+            delete_transient('angelleye_apple_pay_domain_added');
             wp_send_json([
                 'status' => true,
                 'domain' => $domainNameToRegister,
@@ -156,6 +169,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $domainGetUrl = 'https://' . $this->host . '/v1/customer/unregister-wallet-domain';
         $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_remove');
         if (isset($response['domain'])) {
+            delete_transient('angelleye_apple_pay_domain_added');
             wp_send_json([
                 'status' => true,
                 'message' => __('Domain has been removed successfully.', 'paypal-for-woocommerce')

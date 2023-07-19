@@ -430,7 +430,7 @@ if (!function_exists('angelleye_ppcp_number_format')) {
     function angelleye_ppcp_number_format($price, $order) {
         $decimals = 2;
 
-        if (!$this->angelleye_ppcp_currency_has_decimals($order->get_currency())) {
+        if (!angelleye_ppcp_currency_has_decimals($order->get_currency())) {
             $decimals = 0;
         }
 

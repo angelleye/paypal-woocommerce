@@ -7,9 +7,9 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     protected bool $enable_apple_pay;
     const PAYMENT_METHOD = 'apple_pay';
     /**
-     * @var false|mixed
+     * @var ?string
      */
-    private mixed $apple_pay_payments_description;
+    public ?string $apple_pay_payments_description;
 
     public function __construct() {
         parent::__construct();
