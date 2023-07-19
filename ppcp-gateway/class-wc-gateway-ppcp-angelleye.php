@@ -793,7 +793,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                             add_thickbox();
                             ?>
                             <div style="margin-top: 10px"><a title="Apple Pay Domains" href="<?php echo add_query_arg(['action' => 'angelleye_list_apple_pay_domain'], admin_url('admin-ajax.php')) ?>" class="thickbox wplk-button button-primary"><?php echo __('Manage Apple Pay Domains', 'paypal-for-woocommerce'); ?></a></div>
-                            <?php if (!$is_domain_added) { ?><br><div><strong>Note: </strong><?php echo __('Please use the Manage Apple Pay Domains button and follow the instructions to add your site domain in order for Apple Pay to work properly.', 'paypal-for-woocommerce') ?> </div>
+                            <?php if (!$is_domain_added) { ?><br><div><strong>Note: </strong><?php echo __('Please use the Manage Apple Pay Domains button and follow the instructions to add your site domain in order for Apple Pay to work properly.', 'paypal-for-woocommerce') ?> <a target="_blank" href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/#apple-pay"><?php echo __('Learn more', 'paypal-for-woocommerce' ) ?></a> </div>
                             <?php }
                         }
                         ?>
