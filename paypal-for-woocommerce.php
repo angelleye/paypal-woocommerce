@@ -112,6 +112,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
     	protected $plugin_screen_hook_suffix = null;
     	protected $plugin_slug = 'paypal-for-woocommerce';
     	private $subscription_support_enabled = false;
+        public $minified_version;
         /**
          * General class constructor where we'll setup our actions, hooks, and shortcodes.
          *
@@ -120,6 +121,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         public $customer_id = '';
         public function __construct()
         {
+            $this->minified_version = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
             add_action('init', array($this, 'load_plugin_textdomain'));
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-payment-logger.php';
@@ -468,14 +470,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $payment_method = '';
                 $payment_action = '';
             }
-            $dir = plugin_dir_path( __FILE__ );
             wp_enqueue_media();
             wp_enqueue_script( 'jquery');
+            $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
             // Localize the script with new data
             if(is_angelleye_multi_account_active()) {
-                wp_register_script( 'angelleye_admin', plugins_url( '/assets/js/angelleye-admin-v1.js' , __FILE__ ), array( 'jquery' ), time());
+                wp_register_script( 'angelleye_admin', plugins_url( '/assets/js/angelleye-admin-v1.js' , __FILE__ ), array( 'jquery' ), $script_versions);
             } else {
-                wp_register_script( 'angelleye_admin', plugins_url( '/assets/js/angelleye-admin-v2.js' , __FILE__ ), array( 'jquery' ), time());
+                wp_register_script( 'angelleye_admin', plugins_url( '/assets/js/angelleye-admin-v2.js' , __FILE__ ), array( 'jquery' ), $script_versions);
             }
             $this->use_wp_locale_code = !empty($pp_settings['use_wp_locale_code']) ? $pp_settings['use_wp_locale_code'] : 'yes';
             $translation_array = array(

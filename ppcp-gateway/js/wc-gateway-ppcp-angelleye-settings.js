@@ -939,6 +939,7 @@ jQuery(function ($) {
         }).then((response) => {
             if (response.status) {
                 jQuery('input[name="apple_pay_domain"]').val('');
+                jQuery('.apple-pay-domain-listing-table tbody tr.no-apple-pay-domains-in-account').remove();
                 jQuery('.apple-pay-domain-listing-table').append('<tr><td>' + response.domain + '</td><td><a class="angelleye_apple_pay_remove_api_call" href="'+response.remove_url+'">Delete</a></td>');
             }
             alert(response.message);
