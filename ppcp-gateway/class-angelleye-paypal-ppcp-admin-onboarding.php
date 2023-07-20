@@ -119,8 +119,10 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             $this->is_live_third_party_used = 'no';
             $this->is_live_first_party_used = 'no';
         }
-
         $this->ppcp_paypal_country = $this->dcc_applies->country();
+
+        $region = wc_get_base_location();
+        $this->ppcp_paypal_country = $region['country'];
         if ($this->sandbox) {
             if ($this->is_sandbox_third_party_used === 'no' && $this->is_sandbox_first_party_used === 'no') {
                 $this->on_board_status = 'NOT_CONNECTED';
@@ -534,7 +536,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             </div>
                         </div>
                     </div>
-                <?php } elseif ($this->on_board_status === 'FULLY_CONNECTED') { ?>
+                <?php } elseif ($this->on_board_status === 'FULLY_CONNECTED') {
+                    $is_apple_pay_approved = $this->seller_onboarding->angelleye_is_apple_pay_approved($this->result);
+                    if ($is_apple_pay_approved) {
+                        AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoRegisterDomain();
+                    }
+                    ?>
                     <div class="paypal_woocommerce_product">
                         <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
                             <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
@@ -779,4 +786,5 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
         }
     }
+
 }

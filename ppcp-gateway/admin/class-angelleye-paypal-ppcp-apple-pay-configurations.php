@@ -91,21 +91,61 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
 
     public static function isApplePayDomainAdded(): bool
     {
-        $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
-        $addedDomains = $instance->listApplePayDomain(true);
+        $addedDomains = get_transient("angelleye_apple_pay_domain_list_cache");
+        if (!is_array($addedDomains)) {
+            $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
+            $addedDomains = $instance->listApplePayDomain(true);
+            set_transient("angelleye_apple_pay_domain_list_cache", $addedDomains,  HOUR_IN_SECONDS);
+        }
+
         if ($addedDomains['status'] && count($addedDomains['domains'])) {
-            return true;
+            $domainName = parse_url( get_site_url(), PHP_URL_HOST );
+            foreach ($addedDomains['domains'] as $addedDomain) {
+                if ($addedDomain['domain'] == $domainName) {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
-    public function registerApplePayDomain()
+    public static function autoRegisterDomain(): bool
     {
-        $domainNameToRegister = $_POST['apple_pay_domain'] ?? parse_url( get_site_url(), PHP_URL_HOST );
+        if (!self::isApplePayDomainAdded()) {
+            $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
+            try {
+                $domainNameToRegister = parse_url( get_site_url(), PHP_URL_HOST );
+                $result = $instance->registerDomain($domainNameToRegister);
+                return $result['status'];
+            } catch (Exception $ex) {
+                return false;
+            }
+        }
+        return true;
+    }
 
+    public static function autoUnRegisterDomain(): bool
+    {
+        if (self::isApplePayDomainAdded()) {
+            $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
+            try {
+                $domainNameToRemove = parse_url( get_site_url(), PHP_URL_HOST );
+                $result = $instance->removeDomain($domainNameToRemove);
+                return $result['status'];
+            } catch (Exception $ex) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function registerDomain($domainNameToRegister)
+    {
         if (!filter_var($domainNameToRegister, FILTER_VALIDATE_DOMAIN)) {
-            wp_send_json(['status' => false, 'message' => __('Please enter valid domain name to register.', 'paypal-for-woocommerce')]);
-            die;
+            throw new Exception(__('Please enter valid domain name to register.', 'paypal-for-woocommerce'));
         }
         $domainParams = [
             "provider_type" => "APPLE_PAY",
@@ -126,13 +166,13 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $domainGetUrl = 'https://' . $this->host . '/v1/customer/wallet-domains';
         $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_add');
         if (isset($response['domain'])) {
-            delete_transient('angelleye_apple_pay_domain_added');
-            wp_send_json([
+            delete_transient('angelleye_apple_pay_domain_list_cache');
+            return [
                 'status' => true,
                 'domain' => $domainNameToRegister,
                 'message' => __('Domain has been added successfully.', 'paypal-for-woocommerce'),
                 'remove_url' => add_query_arg(['domain' => $domainNameToRegister, 'action' => 'angelleye_remove_apple_pay_domain'], admin_url('admin-ajax.php'))
-            ]);
+            ];
         } else {
             $this->payment_request->error_email_notification = false;
             $message = $this->payment_request->angelleye_ppcp_get_readable_message($response);
@@ -141,14 +181,12 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
             } elseif (str_contains($message, 'DOMAIN_REGISTERED_WITH_ANOTHER_MERCHANT')) {
                 $message = __('Domain is registered with another merchant.', 'paypal-for-woocommerce');
             }
-            wp_send_json(['status' => false, 'message' => __('An error occurred.', 'paypal-for-woocommerce') . "\n\n" . $message]);
+            return ['status' => false, 'message' => __('An error occurred.', 'paypal-for-woocommerce') . "\n\n" . $message];
         }
-        die;
     }
 
-    public function removeApplePayDomain()
+    public function removeDomain($domainNameToRemove): array
     {
-        $domainNameToRemove = $_REQUEST['domain'] ?? parse_url( get_site_url(), PHP_URL_HOST );
         $domainParams = [
             "provider_type" => "APPLE_PAY",
             "domain" => [
@@ -169,15 +207,36 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $domainGetUrl = 'https://' . $this->host . '/v1/customer/unregister-wallet-domain';
         $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_remove');
         if (isset($response['domain'])) {
-            delete_transient('angelleye_apple_pay_domain_added');
-            wp_send_json([
+            delete_transient('angelleye_apple_pay_domain_list_cache');
+            return [
                 'status' => true,
                 'message' => __('Domain has been removed successfully.', 'paypal-for-woocommerce')
-            ]);
+            ];
         } else {
             $this->payment_request->error_email_notification = false;
             $message = $this->payment_request->angelleye_ppcp_get_readable_message($response);
-            wp_send_json(['status' => false, 'message' => 'An error occurred.' . "\n\n" .$message]);
+            return ['status' => false, 'message' => 'An error occurred.' . "\n\n" .$message];
         }
+    }
+
+    public function registerApplePayDomain()
+    {
+        $domainNameToRegister = $_POST['apple_pay_domain'] ?? parse_url( get_site_url(), PHP_URL_HOST );
+
+        try {
+            $result = $this->registerDomain($domainNameToRegister);
+            wp_send_json($result);
+        } catch (Exception $ex) {
+            wp_send_json(['status' => false, 'message' => $ex->getMessage()]);
+        }
+        die;
+    }
+
+    public function removeApplePayDomain()
+    {
+        $domainNameToRemove = $_REQUEST['domain'] ?? parse_url( get_site_url(), PHP_URL_HOST );
+        $result = $this->removeDomain($domainNameToRemove);
+        wp_send_json($result);
+        die;
     }
 }
