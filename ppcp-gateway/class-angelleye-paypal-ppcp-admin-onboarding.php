@@ -212,7 +212,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -229,7 +229,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -246,7 +246,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -345,7 +345,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -361,7 +361,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             ");
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -401,7 +401,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -418,7 +418,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
                             <br><br>
                             <div class="paypal_woocommerce_product_onboard_content">
-                                <p><?php echo __('We’re sorry, but the PayPal Multi-Account functionality you are currently using is not yet supported by the PayPal Commerce gateway.  We are actively working on this, and should have updates ready for you very soon.  Stay tuned!', 'paypal-for-woocommerce'); ?></p>
+                                <p><?php echo __('We\'re sorry, but the PayPal Multi-Account functionality you are currently using is not yet supported by the PayPal Commerce gateway.', 'paypal-for-woocommerce'); ?></p>
+                                <p><?php echo __('For now, please continue using PayPal Classic - Express Checkout.  You will not experience any interruptions with your payment processing, so no worries!', 'paypal-for-woocommerce'); ?> </p>
+                                <p><?php echo __('We are actively working on PayPal Commerce compatibility, and should have updates ready for you very soon. <br>Stay tuned!', 'paypal-for-woocommerce'); ?></p>
                             </div>
                         </div>
                     </div>
@@ -586,6 +588,32 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         </div>
                     </div>
                 <?php } ?>
+                <?php
+                $result = $this->angelleye_ppcp_get_result_migrate_to_ppcp();
+                if (!empty($result)) {
+                    if (!get_user_meta(get_current_user_id(), 'ppcp_migration_report')) :
+                        ?>
+                        <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard " style="margin-top:20px;">
+                            <button type="button" class="angelleye-notice ppcp-dismiss angelleye-notice-dismiss" data-msg="ppcp_migration_report"><span class="screen-reader-text">Dismiss this notice.</span></button>
+                            <div class="ppcp_migration_report">
+                                <h3><?php echo __('Subscription Migration Report', 'paypal-for-woocommerce'); ?></h3>
+                                <div class="wrap" style="margin-bottom: 20px;margin-top: -10px;">
+                                    This report outlines all of the active / on hold subscription profiles that were updated as a part of this migration wizard.
+                                    If you feel you need to, you can use the "Revert Changes" button to undue this migration.
+                                    This will reset the payment gateway(s) and subscription profiles to use PayPal Classic again as if the migration never happened.
+                                </div>
+                                <div class="wrap">
+                                    <?php
+                                    echo $this->angelleye_ppcp_build_html($result);
+                                    ?>
+                                </div>
+                                <a class="wplk-button angelleye_ppcp_revert_changes" href="<?php echo admin_url('options-general.php?page=paypal-for-woocommerce&migration_action=angelleye_ppcp_revert_changes'); ?>">Revert Changes</a>
+                            </div>
+                        </div>
+                        <?php
+                    endif;
+                }
+                ?>
                 <ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard ppcp_email_confirm">
                     <?php if (($this->on_board_status === 'CONNECTED_BUT_NOT_ACC' || $this->on_board_status === 'FULLY_CONNECTED') && !empty($this->email_confirm_text_1)) { ?>
                         <li>
@@ -604,30 +632,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <div id="angelleye_ppcp_sendy_msg"></div>
                         </li>
                     <?php } ?>
-                    <?php
-                    $result = $this->angelleye_ppcp_get_result_migrate_to_ppcp();
-                    if (!empty($result)) {
-                        if (!get_user_meta(get_current_user_id(), 'ppcp_migration_report')) :
-                            ?>
-                            <li class="ppcp_migration_report">
-                                <button type="button" class="angelleye-notice ppcp-dismiss angelleye-notice-dismiss" data-msg="ppcp_migration_report"><span class="screen-reader-text">Dismiss this notice.</span></button>
-                                <p><?php echo __('Subscription Migration Report', 'paypal-for-woocommerce'); ?></p>
-                                <div class="wrap" style="margin-bottom: 20px;margin-top: -10px;">
-                                    This report outlines all of the active / on hold subscription profiles that were updated as a part of this migration wizard.  
-                                    If you feel you need to, you can use the "Revert Changes" button to undue this migration.  
-                                    This will reset the payment gateway(s) and subscription profiles to use PayPal Classic again as if the migration never happened.
-                                </div>
-                                <div class="wrap">
-                                    <?php
-                                    echo $this->angelleye_ppcp_build_html($result);
-                                    ?>
-                                </div>
-                                <a class="wplk-button angelleye_ppcp_revert_changes" href="<?php echo admin_url('options-general.php?page=paypal-for-woocommerce&migration_action=angelleye_ppcp_revert_changes'); ?>">Revert Changes</a>
-                            </li>
-                            <?php
-                        endif;
-                    }
-                    ?>
+
                     <li>
                         <p><?php echo __('Have A Question Or Need Expert Help?', 'paypal-for-woocommerce'); ?></p>
                         <a class="wplk-button" href="https://angelleye.com/support" target="_blank"><?php echo __('Contact Support', 'paypal-for-woocommerce'); ?></a>
@@ -640,7 +645,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -652,7 +657,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -689,7 +694,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -734,7 +739,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 GROUP BY pm2.meta_value, pm.meta_value;", ARRAY_A);
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -771,7 +776,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     ) AS subquery
                 )");
         } catch (Exception $ex) {
-            
+
         }
     }
 }

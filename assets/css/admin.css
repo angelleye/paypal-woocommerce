@@ -519,7 +519,6 @@ hr {
 }
 
 .paypal_woocommerce_product {
-    padding: 20px;
     background: rgb(255, 255, 255);
     color: rgb(30, 30, 30);
     position: relative;
@@ -694,9 +693,8 @@ hr {
 .angelleye-ppcp-disconnect {
     margin-top: 25px !important;
 }
-li.ppcp_migration_report {
-    padding-top: 10px;
-    border-radius: 0px 20px 0px 0px;
+div.ppcp_migration_report {
+    padding: 40px 10px 20px 25px;
 }
 .ppcp_migration_report p {
     margin: 5px auto;
@@ -705,25 +703,26 @@ li.ppcp_migration_report {
     margin-bottom: 30px;
 }
 .wplk-button.angelleye_ppcp_revert_changes {
-    background: red;
+   background: red !important;
+   border-color: red !important;
 }
 #ppcp_notice_classic_upgrade .angelleye-notice-action {
     margin-top: 15px;
 }
 .ppcp-dismiss {
     position: relative;
-    top: -4%;
-    left: 51%;
     border: none;
     margin: 0;
     background: none;
     color: #787c82;
     cursor: pointer;
-    float: revert;
+    float: right;
     overflow: auto;
     color: #787c82;
     cursor: pointer;
     display: inline;
+    top: -8px;
+    right: -18px;
 }
 
 .ppcp-dismiss:hover::before, .ppcp-dismiss:active::before, .ppcp-dismiss:focus::before {
@@ -735,7 +734,7 @@ li.ppcp_migration_report {
     color: #787c82;
     content: "\f153";
     display: block;
-    font: normal 50px/50px dashicons;
+    font: normal 35px/35px dashicons;
     speak: never;
     height: 50px;
     text-align: center;
@@ -745,6 +744,10 @@ li.ppcp_migration_report {
 }
 .paypal_woocommerce_product_onboard a:focus {
     box-shadow: none;
+}
+
+.ppcp_migration_report h3 {
+    text-align: center;
 }
 
 @media only all and (max-width: 500px) {
@@ -787,42 +790,7 @@ li.ppcp_migration_report {
         margin: 0px 0px 0px 0px;
         padding-left: 0px;
     }
-    .ppcp-dismiss {
-        top: -5%;
-        left: 51%;
-    }
 }
 
 
-@media only screen and (min-width: 600px) {
-    .ppcp-dismiss {
-        top: -3%;
-        left: 53%;
-    }
-}
 
-@media only screen and (min-width: 768px) {
-    .ppcp-dismiss {
-        top: -3%;
-        left: 52%;
-    }
-}
-
-@media only screen and (min-width: 992px) {
-    .ppcp-dismiss {
-        top: -3%;
-        left: 52%;
-    }
-}
-@media only screen and (min-width: 1200px) {
-    .ppcp-dismiss {
-        top: -3%;
-        left: 52%;
-    }
-}
-@media only screen and (min-width: 1400px) {
-    .ppcp-dismiss {
-        top: -4%;
-        left: 51%;
-    }
-}
