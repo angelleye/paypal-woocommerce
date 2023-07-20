@@ -519,7 +519,6 @@ hr {
 }
 
 .paypal_woocommerce_product {
-    padding: 20px;
     background: rgb(255, 255, 255);
     color: rgb(30, 30, 30);
     position: relative;
@@ -695,7 +694,7 @@ hr {
     margin-top: 25px !important;
 }
 div.ppcp_migration_report {
-    padding-top: 10px;
+    padding: 40px 10px 20px 25px;
 }
 .ppcp_migration_report p {
     margin: 5px auto;
@@ -712,18 +711,18 @@ div.ppcp_migration_report {
 }
 .ppcp-dismiss {
     position: relative;
-    top: -4%;
-    left: 51%;
     border: none;
     margin: 0;
     background: none;
     color: #787c82;
     cursor: pointer;
-    float: revert;
+    float: right;
     overflow: auto;
     color: #787c82;
     cursor: pointer;
     display: inline;
+    top: -8px;
+    right: -18px;
 }
 
 .ppcp-dismiss:hover::before, .ppcp-dismiss:active::before, .ppcp-dismiss:focus::before {
@@ -735,7 +734,7 @@ div.ppcp_migration_report {
     color: #787c82;
     content: "\f153";
     display: block;
-    font: normal 50px/50px dashicons;
+    font: normal 35px/35px dashicons;
     speak: never;
     height: 50px;
     text-align: center;
@@ -791,42 +790,7 @@ div.ppcp_migration_report {
         margin: 0px 0px 0px 0px;
         padding-left: 0px;
     }
-    .ppcp-dismiss {
-        top: -5%;
-        left: 51%;
-    }
 }
 
 
-@media only screen and (min-width: 600px) {
-    .ppcp-dismiss {
-        top: -3%;
-        left: 53%;
-    }
-}
 
-@media only screen and (min-width: 768px) {
-    .ppcp-dismiss {
-        top: -3%;
-        left: 52%;
-    }
-}
-
-@media only screen and (min-width: 992px) {
-    .ppcp-dismiss {
-        top: -3%;
-        left: 52%;
-    }
-}
-@media only screen and (min-width: 1200px) {
-    .ppcp-dismiss {
-        top: -3%;
-        left: 52%;
-    }
-}
-@media only screen and (min-width: 1400px) {
-    .ppcp-dismiss {
-        top: -4%;
-        left: 51%;
-    }
-}

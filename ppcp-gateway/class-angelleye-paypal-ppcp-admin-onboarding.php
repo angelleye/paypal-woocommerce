@@ -212,7 +212,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -229,7 +229,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -246,7 +246,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -345,7 +345,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -361,7 +361,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             ");
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -401,7 +401,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -594,12 +594,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     if (!get_user_meta(get_current_user_id(), 'ppcp_migration_report')) :
                         ?>
                         <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard " style="margin-top:20px;">
+                            <button type="button" class="angelleye-notice ppcp-dismiss angelleye-notice-dismiss" data-msg="ppcp_migration_report"><span class="screen-reader-text">Dismiss this notice.</span></button>
                             <div class="ppcp_migration_report">
-                                <button type="button" class="angelleye-notice ppcp-dismiss angelleye-notice-dismiss" data-msg="ppcp_migration_report"><span class="screen-reader-text">Dismiss this notice.</span></button>
                                 <h3><?php echo __('Subscription Migration Report', 'paypal-for-woocommerce'); ?></h3>
                                 <div class="wrap" style="margin-bottom: 20px;margin-top: -10px;">
-                                    This report outlines all of the active / on hold subscription profiles that were updated as a part of this migration wizard.  
-                                    If you feel you need to, you can use the "Revert Changes" button to undue this migration.  
+                                    This report outlines all of the active / on hold subscription profiles that were updated as a part of this migration wizard.
+                                    If you feel you need to, you can use the "Revert Changes" button to undue this migration.
                                     This will reset the payment gateway(s) and subscription profiles to use PayPal Classic again as if the migration never happened.
                                 </div>
                                 <div class="wrap">
@@ -645,7 +645,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -657,7 +657,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -694,7 +694,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -739,7 +739,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 GROUP BY pm2.meta_value, pm.meta_value;", ARRAY_A);
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -776,7 +776,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     ) AS subquery
                 )");
         } catch (Exception $ex) {
-            
+
         }
     }
 }
