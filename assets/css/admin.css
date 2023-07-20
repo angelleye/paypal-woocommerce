@@ -694,9 +694,8 @@ hr {
 .angelleye-ppcp-disconnect {
     margin-top: 25px !important;
 }
-li.ppcp_migration_report {
+div.ppcp_migration_report {
     padding-top: 10px;
-    border-radius: 0px 20px 0px 0px;
 }
 .ppcp_migration_report p {
     margin: 5px auto;
@@ -705,7 +704,8 @@ li.ppcp_migration_report {
     margin-bottom: 30px;
 }
 .wplk-button.angelleye_ppcp_revert_changes {
-    background: red;
+   background: red !important;
+   border-color: red !important;
 }
 #ppcp_notice_classic_upgrade .angelleye-notice-action {
     margin-top: 15px;
@@ -745,6 +745,10 @@ li.ppcp_migration_report {
 }
 .paypal_woocommerce_product_onboard a:focus {
     box-shadow: none;
+}
+
+.ppcp_migration_report h3 {
+    text-align: center;
 }
 
 @media only all and (max-width: 500px) {
