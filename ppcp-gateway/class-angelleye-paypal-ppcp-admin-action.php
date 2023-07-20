@@ -91,7 +91,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
             $this->payment_request->angelleye_ppcp_void_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -103,7 +103,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
             $this->payment_request->angelleye_ppcp_capture_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -115,7 +115,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
             $this->payment_request->angelleye_ppcp_refund_order_admin($order, $order_data);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -174,7 +174,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -198,7 +198,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -295,7 +295,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 $this->angelleye_ppcp_display_paypal_activity_table($html_table_row);
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -495,7 +495,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             </table>
             <?php
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -545,7 +545,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'PayPal Commerce Now Supports Token Payments / Subscriptions',
                 'ans_message_description' => 'Maximize the power of PayPal Commerce in your WordPress store by enabling the Vault functionality. Unlock advanced features such as Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
-                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=woocommerce_angelleye_ppcp_tokenization_subscriptions'),
+                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
                 'ans_button_label' => 'Enable the PayPal Vault',
                 'is_dismiss' => true
             );
@@ -577,7 +577,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
