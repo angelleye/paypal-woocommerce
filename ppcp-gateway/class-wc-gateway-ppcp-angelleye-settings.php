@@ -596,7 +596,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'checkout_button_settings' => array(
                     'title' => __('Checkout Page Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Enable the checkout specific button settings, and the options set will be applied to the PayPal buttons on your checkout page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -745,7 +744,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'mini_cart_button_settings' => array(
                     'title' => __('Mini Cart Page Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Enable the Mini Cart specific button settings, and the options set will be applied to the PayPal buttons on your Mini Cart page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -872,7 +870,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_settings' => array(
                     'title' => __('Pay Later Messaging Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => '',
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -1342,7 +1339,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'custom_attributes' => $vaulting_custom_attributes
                 ),
                 'additional_authorizations' => array(
-                    'title' => __('Additional Payment Methods', 'paypal-for-woocommerce'),
+                    'title' => __('Apple Pay', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'description' => '',
                     'class' => 'ppcp_separator_heading',

@@ -198,7 +198,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -279,7 +279,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         </div>
                     </div>
                 </div>
-            <?php } elseif ($this->on_board_status === 'FULLY_CONNECTED') { ?>
+            <?php } elseif ($this->on_board_status === 'FULLY_CONNECTED') {
+                $is_apple_pay_approved = $this->seller_onboarding->angelleye_is_apple_pay_approved($this->result);
+                if ($is_apple_pay_approved) {
+                    AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoRegisterDomain();
+                }
+                ?>
                 <div class="paypal_woocommerce_product">
                     <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
                         <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
@@ -336,7 +341,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 

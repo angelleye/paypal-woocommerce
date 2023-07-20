@@ -106,6 +106,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_admin_options() {
         delete_transient(AE_FEE);
+        if (!isset($_POST['woocommerce_angelleye_ppcp_enabled']) || $_POST['woocommerce_angelleye_ppcp_enabled'] == "0") {
+            // run the automatic domain remove feature
+            AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoUnRegisterDomain();
+        }
         parent::process_admin_options();
     }
 
@@ -760,10 +764,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $is_apple_pay_enabled = $data['is_apple_pay_enable'] ?? false;
             $is_ppcp_connected = $data['is_ppcp_connected'] ?? false;
             $need_to_display_apple_pay_button = $data['need_to_display_apple_pay_button'] ?? false;
-            $is_domain_added = get_transient("angelleye_apple_pay_domain_added", '');
-            if ($is_domain_added == '') {
-                $is_domain_added = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::isApplePayDomainAdded();
-                set_transient("angelleye_apple_pay_domain_added", $is_domain_added,  HOUR_IN_SECONDS);
+            $is_domain_added = false;
+            if ($is_apple_pay_approved && $is_apple_pay_enabled) {
+                $is_domain_added = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoRegisterDomain();
             }
             ob_start();
             ?>
@@ -780,7 +783,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                             if ($is_apple_pay_enabled && $is_apple_pay_approved) {
                                 ?>
                                 <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/' . ($is_domain_added ? 'ppcp_check_mark_status.png' : 'ppcp_info_icon.png'); ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
-                                <b><?php echo __(($is_domain_added ? 'Apple Pay is active in your account!' : 'Register your domain to activate the Apple pay.'), 'paypal-for-woocommerce'); ?></b>
+                                <b><?php echo __(($is_domain_added ? 'Apple Pay is active in your account!' : 'Register your domain to activate Apple Pay.'), 'paypal-for-woocommerce'); ?></b>
                             <?php } else if ($is_ppcp_connected && !$is_apple_pay_approved && !$need_to_display_apple_pay_button) {
                                 ?>
                                 <br><br><b style="color:red"><?php echo __('Apple Pay is only currently available in the United States. PayPal is working to expand this to other countries as quickly as possible.', 'paypal-for-woocommerce'); ?></b>
@@ -789,7 +792,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                         </label>
                         <?php
                         echo $this->get_description_html($data);
-                        if ($is_apple_pay_approved && $is_apple_pay_enabled) {
+                        if ($is_apple_pay_approved && $is_apple_pay_enabled && !$is_domain_added) {
                             add_thickbox();
                             ?>
                             <div style="margin-top: 10px"><a title="Apple Pay Domains" href="<?php echo add_query_arg(['action' => 'angelleye_list_apple_pay_domain'], admin_url('admin-ajax.php')) ?>" class="thickbox wplk-button button-primary"><?php echo __('Manage Apple Pay Domains', 'paypal-for-woocommerce'); ?></a></div>

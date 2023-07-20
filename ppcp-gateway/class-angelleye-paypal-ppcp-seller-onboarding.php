@@ -256,7 +256,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 switch ($_GET['feature_activated']) {
                     case 'applepay':
                         set_transient('angelleye_ppcp_applepay_onboarding_done', 'yes', 29000);
-                        delete_transient('angelleye_apple_pay_domain_added');
+                        delete_transient('angelleye_apple_pay_domain_list_cache');
                         $move_to_location = 'additional_authorizations';
                         break;
                 }
@@ -266,12 +266,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->setting_obj->set('sandbox_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done', 'yes', 29000);
                 $this->api_log->log("sandbox_merchant_id: " . $merchant_id, 'error');
-                $this->setting_obj->set('enabled', 'yes');
             } else {
                 $this->setting_obj->set('live_merchant_id', $merchant_id);
                 set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
-                $this->setting_obj->set('enabled', 'yes');
             }
+            $this->setting_obj->set('enabled', 'yes');
             $this->setting_obj->persist();
             $this->angelleye_get_seller_onboarding_status();
             if (isset($_GET['place']) && $_GET['place'] === 'gateway_settings') {

@@ -937,12 +937,13 @@ jQuery(function ($) {
             url: actionUrl,
             data: form.serialize(),
         }).then((response) => {
+            alert(response.message);
             if (response.status) {
                 jQuery('input[name="apple_pay_domain"]').val('');
                 jQuery('.apple-pay-domain-listing-table tbody tr.no-apple-pay-domains-in-account').remove();
                 jQuery('.apple-pay-domain-listing-table').append('<tr><td>' + response.domain + '</td><td><a class="angelleye_apple_pay_remove_api_call" href="'+response.remove_url+'">Delete</a></td>');
+                window.location.reload();
             }
-            alert(response.message);
         }).then(() => {
             button.removeClass('submit_btn_processing')
         });
@@ -959,10 +960,11 @@ jQuery(function ($) {
             console.log(response);
             if (response.status) {
                 link.closest('tr').remove();
+                window.location.reload();
             }
             alert(response.message)
         }).then(() => {
             link.removeClass('processing')
         });
-    })
+    });
 });

@@ -18,6 +18,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public $api_log;
     public $ppcp_host;
     public $payment_request;
+    public static $capabilitiesToCheck = null;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -193,6 +194,9 @@ class AngellEYE_PayPal_PPCP_Request {
     }
 
     public static function angelleye_ppcp_get_available_endpoints($merchant_id) {
+        if (self::$capabilitiesToCheck !== null) {
+            return self::$capabilitiesToCheck;
+        }
         $availableEndpoints = array();
         if (empty($merchant_id)) {
             return false;
@@ -203,6 +207,7 @@ class AngellEYE_PayPal_PPCP_Request {
         $seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
         $result = $seller_onboarding->angelleye_track_seller_onboarding_status($merchant_id);
         if(!isset($result['products'])) {
+            self::$capabilitiesToCheck = false;
             return false;
         }
 
@@ -222,6 +227,7 @@ class AngellEYE_PayPal_PPCP_Request {
                 }
             }
         }
+        self::$capabilitiesToCheck = $availableEndpoints;
         return $availableEndpoints;
     }
 }
