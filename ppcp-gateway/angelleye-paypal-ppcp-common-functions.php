@@ -1076,6 +1076,15 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
                         $notice_type['vault_upgrade'] = true;
                     }
                 }
+                if (in_array($gateway->id, array('angelleye_ppcp')) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
+                    if (empty($result)) {
+                        $notice_type['enable_apple_pay'] = false;
+                    } elseif (angelleye_is_apple_pay_enable($result)) {
+                        $notice_type['enable_apple_pay'] = false;
+                    } elseif ($is_us === true && angelleye_is_apple_pay_enable($result) === false) {
+                        $notice_type['enable_apple_pay'] = true;
+                    }
+                }
             }
             return $notice_type;
         } catch (Exception $ex) {
@@ -1227,6 +1236,25 @@ if (!function_exists('angelleye_ppcp_get_classic_paypal_details')) {
         } catch (Exception $ex) {
             
         }
+    }
+
+}
+
+if (!function_exists('angelleye_is_apple_pay_enable')) {
+
+    function angelleye_is_apple_pay_enable($result) {
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('APPLE_PAY', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $key => $capabilities) {
+                        if (isset($capabilities['name']) && 'APPLE_PAY' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }

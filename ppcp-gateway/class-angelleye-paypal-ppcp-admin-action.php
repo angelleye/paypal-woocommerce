@@ -543,6 +543,24 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $notice_data['vault_upgrade'] = array(
                 'id' => 'ppcp_notice_vault_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
+                'ans_message_title' => 'PayPal Commerce Now Supports Token Payments / Subscriptions!',
+                'ans_message_description' => 'Maximize the power of PayPal Commerce in your WordPress store by enabling the Vault functionality. Unlock advanced features such as Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
+                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
+                'ans_button_label' => 'Enable PayPal Vault',
+                'is_dismiss' => true
+            );
+             $notice_data['enable_apple_pay'] = array(
+                'id' => 'ppcp_notice_apple_pay',
+                'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
+                'ans_message_title' => 'PayPal Commerce Now Supports Apple Pay!',
+                'ans_message_description' => 'Unlock advanced features such as Apple Pay. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
+                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
+                'ans_button_label' => 'Enable Apple Pay',
+                'is_dismiss' => true
+            );
+            $notice_data['vault_upgrade_enable_apple_pay'] = array(
+                'id' => 'ppcp_notice_vault_upgrade_apple_pay',
+                'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'PayPal Commerce Now Supports Apple Pay and Token Payments / Subscriptions!',
                 'ans_message_description' => 'Unlock advanced features such as Apple Pay, Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
                 'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
@@ -568,13 +586,17 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     if ('classic_upgrade' === $key && $type === true && isset($notice_data->$key)) {
                         angelleye_ppcp_display_notice($notice_data->$key);
                     }
-                    if ('vault_upgrade' === $key && $type === true && isset($notice_data->$key)) {
-                        angelleye_ppcp_display_notice($notice_data->$key);
-                    }
                     if ('outside_us' === $key && $type === true && isset($notice_data->$key)) {
                         angelleye_ppcp_display_notice($notice_data->$key);
                     }
                 }
+            }
+            if(isset($notice_type['vault_upgrade']) &&  $notice_type['vault_upgrade'] === true && isset($notice_type['enable_apple_pay']) &&  $notice_type['enable_apple_pay'] === true) {
+                angelleye_ppcp_display_notice($notice_data->vault_upgrade_enable_apple_pay);
+            } elseif(isset($notice_type['vault_upgrade']) &&  $notice_type['vault_upgrade'] === true) {
+                angelleye_ppcp_display_notice($notice_data->vault_upgrade);
+            } elseif(isset($notice_type['enable_apple_pay']) &&  $notice_type['enable_apple_pay'] === true) {
+                angelleye_ppcp_display_notice($notice_data->enable_apple_pay);
             }
         } catch (Exception $ex) {
 
