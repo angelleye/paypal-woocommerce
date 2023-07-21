@@ -4,7 +4,7 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public $setting_obj;
-    public $seller_onboarding;
+    public ?AngellEYE_PayPal_PPCP_Seller_Onboarding $seller_onboarding;
     public $sandbox;
     public $settings_sandbox;
     public $sandbox_merchant_id;
@@ -218,13 +218,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         }
     }
 
-    public function angelleye_get_signup_link_for_vault($testmode, $products) {
+    public function angelleye_get_signup_link_for_vault($testmode, $page) {
         try {
-            $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link_with_vault($testmode, $products);
+            $body = $this->seller_onboarding->ppcp_vault_data();
+            $seller_onboarding_result = $this->seller_onboarding->angelleye_generate_signup_link_with_feature($testmode, $page, $body);
             if (isset($seller_onboarding_result['links'])) {
                 foreach ($seller_onboarding_result['links'] as $link) {
                     if (isset($link['rel']) && 'action_url' === $link['rel']) {
-                        return isset($link['href']) ? $link['href'] : false;
+                        return $link['href'] ?? false;
                     }
                 }
             } else {
