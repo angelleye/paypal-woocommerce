@@ -24,7 +24,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
 
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay'));
             $this->title = $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay');
-            $this->enable_apple_pay = 'yes' === $this->setting_obj->get('enable_apple_pay', 'yes');
+            $this->enable_apple_pay = 'yes' === $this->setting_obj->get('enable_apple_pay', 'no');
             $this->apple_pay_payments_description = $this->setting_obj->get('apple_pay_payments_description', 'Complete your purchase by selecting your saved payment methods or using Apple Pay.');
         } catch (Exception $ex) {
 
