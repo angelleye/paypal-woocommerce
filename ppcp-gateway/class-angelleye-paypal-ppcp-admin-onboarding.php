@@ -600,7 +600,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if (!empty($result)) {
                     if (!get_user_meta(get_current_user_id(), 'ppcp_migration_report')) :
                         ?>
-                        <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard " style="margin-top:20px;">
+                        <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard ppcp_migration_report_parent" style="margin-top:30px;">
                             <button type="button" class="angelleye-notice ppcp-dismiss angelleye-notice-dismiss" data-msg="ppcp_migration_report"><span class="screen-reader-text">Dismiss this notice.</span></button>
                             <div class="ppcp_migration_report">
                                 <h3><?php echo __('Subscription Migration Report', 'paypal-for-woocommerce'); ?></h3>
