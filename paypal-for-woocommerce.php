@@ -335,9 +335,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) && !get_user_meta($user_id, 'ignore_pp_woo') && !is_plugin_active_for_network( 'woocommerce/woocommerce.php' )) {
                 echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf( __("WooCommerce PayPal Payments requires WooCommerce plugin to work normally. Please activate it or install it from <a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>here</a>.", 'paypal-for-woocommerce') ) . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_pp_woo">Dismiss</button></div></div>';
             }
-
             $screen = get_current_screen();
-
             if( $screen->id == "settings_page_paypal-for-woocommerce" ) {
                 $processed = (isset($_GET['processed']) ) ? $_GET['processed'] : FALSE;
                 if($processed) {
@@ -346,42 +344,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                     echo '</div>';
                 }
             }
-
             $this->angelleye_paypal_plus_notice($user_id);
-
-            $opt_in_log = get_option( 'angelleye_display_agree_disgree_opt_in_logging', 'yes');
-
-            $angelleye_send_opt_in_logging_details = get_option('angelleye_send_opt_in_logging_details', '');
-
-            if($opt_in_log == 'yes' && empty($angelleye_send_opt_in_logging_details)){
-                echo '<div class="notice notice-success angelleye-notice" style="display:none;" id="angelleye_send_opt_in_logging_details">'
-                        . '<div class="angelleye-notice-logo-original"><span></span></div>'
-                        . '<div class="angelleye-notice-message">'
-                            . '<h3>PayPal for WooCoomerce</h3>'
-                            . '<div class="angelleye-notice-message-inner">'.sprintf(__('We work directly with PayPal to improve your experience as a seller as well as your buyer\'s experience. May we log some basic details about your site (eg. URL) for future improvement purposes? It would be a big help, thanks!.','paypal-for-woocommerce'))
-                        . '</div></div>'
-                        . '<div class="angelleye-notice-cta">'
-                            . '<a href="'.  add_query_arg('angelleye_display_agree_disgree_opt_in_logging','yes').'" class="button button-primary">'.__('Sure, I\'ll help!','paypal-for-woocommerce').'</a>&nbsp;&nbsp;'
-                            .'<a href="'.  add_query_arg('angelleye_display_agree_disgree_opt_in_logging','no').'" class="button">'.__('No thanks.','paypal-for-woocommerce').'</a>'
-                        . '</div>'
-                    . '</div>';
-            }
-            if(isset($_GET['angelleye_display_agree_disgree_opt_in_logging']) && $_GET['angelleye_display_agree_disgree_opt_in_logging'] == 'yes'){
-                update_option('angelleye_send_opt_in_logging_details', 'yes');
-                global $woocommerce;
-                //Log activation in Angell EYE database via web service.
-                //@todo Need to turn this into an option people can enable by request.
-                $log_url = $_SERVER['HTTP_HOST'];
-                $log_plugin_id = 1;
-                $log_activation_status = 1;
-                wp_remote_request('http://www.angelleye.com/web-services/wordpress/update-plugin-status.php?url='.$log_url.'&plugin_id='.$log_plugin_id.'&activation_status='.$log_activation_status);
-                $set_ignore_tag_url =  remove_query_arg( 'angelleye_display_agree_disgree_opt_in_logging' );
-                wp_redirect($set_ignore_tag_url);
-            } elseif(isset($_GET['angelleye_display_agree_disgree_opt_in_logging']) && $_GET['angelleye_display_agree_disgree_opt_in_logging'] == 'no') {
-                update_option('angelleye_send_opt_in_logging_details', 'no');
-                $set_ignore_tag_url =  remove_query_arg( 'angelleye_display_agree_disgree_opt_in_logging' );
-                wp_redirect($set_ignore_tag_url);
-            }
             if (false === ( $response = get_transient('angelleye_push_notification_result') )) {
                 $response = AngellEYE_Utility::angelleye_get_push_notifications();
                 if(is_object($response)) {
