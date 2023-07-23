@@ -59,7 +59,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
         $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->setting_obj->get('payee_preferred', 'no');
-        $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP').'-'.strtoupper($this->generate_order_prefix());
+        $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
         $this->soft_descriptor = $this->setting_obj->get('soft_descriptor', substr(get_bloginfo('name'), 0, 21));
         $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
         $this->checkout_disable_smart_button = 'yes' === $this->setting_obj->get('checkout_disable_smart_button', 'no');
@@ -124,16 +124,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
-    }
-
-    /**
-     * Sometimes we receive DUPLICATE_INVOICE_ID error from PayPal,
-     * so this function adds prefix based on site title
-     * @return string
-     */
-    public function generate_order_prefix(): string
-    {
-        return substr(str_replace('-', '', sanitize_title(get_bloginfo('name'))), 0, 3);
     }
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
