@@ -47,12 +47,9 @@ class AngellEYE_PFW_Payment_Logger {
                 $request['METHOD'] = 'ProcessTransaction';
             }
             if (isset($request['METHOD']) && !empty($request['METHOD']) && in_array($request['METHOD'], $this->allow_method)) {
-                $opt_in = get_option('angelleye_send_opt_in_logging_details', 'no');
                 $request_param['site_url'] = '';
                 $request_param['merchant_id'] = '';
-                if ($opt_in == 'yes') {
-                    $request_param['site_url'] = get_bloginfo('url');
-                }
+                $request_param['site_url'] = get_bloginfo('url');
                 $request_param['type'] = $request['METHOD'];
                 if (is_array($result)) {
                     $request_param['status'] = isset($result['ACK']) ? $result['ACK'] : '';
@@ -112,10 +109,8 @@ class AngellEYE_PFW_Payment_Logger {
                     } else {
                         $request_param['status'] = 'Failure';
                     }
-                    if ($opt_in == 'yes') {
-                        if (isset($result->transaction->statusHistory[0]->user) && !empty($result->transaction->statusHistory[0]->user)) {
-                            $request_param['merchant_id'] = $result->transaction->statusHistory[0]->user;
-                        }
+                    if (isset($result->transaction->statusHistory[0]->user) && !empty($result->transaction->statusHistory[0]->user)) {
+                        $request_param['merchant_id'] = $result->transaction->statusHistory[0]->user;
                     }
                     $request_param['correlation_id'] = '';
                     $request_param['transaction_id'] = isset($result->transaction->id) ? $result->transaction->id : '';
