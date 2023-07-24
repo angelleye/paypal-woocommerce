@@ -325,14 +325,22 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $product_cart_amounts['isSubscriptionRequired'] = true;
             }
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction_product_page', $this->paymentaction, $product_id);
-            $decimals = $this->payment_request->angelleye_ppcp_get_number_of_decimal_digits();
-            $product_cart_amounts['totalAmount'] = angelleye_ppcp_round($product->get_price(), $decimals);
-            $product_cart_amounts['shippingRequired'] = !$product->is_virtual();
-
-            $product_cart_amounts['lineItems'] = [[
-                'label' => $product->get_name(),
-                'amount' => angelleye_ppcp_round($product->get_price(), $decimals)
-            ]];
+            if (angelleye_ppcp_is_product_purchasable($product, $this->enable_tokenized_payments) === true) {
+                $decimals = $this->payment_request->angelleye_ppcp_get_number_of_decimal_digits();
+                $product_cart_amounts['totalAmount'] = angelleye_ppcp_round($product->get_price(), $decimals);
+                $product_cart_amounts['shippingRequired'] = !$product->is_virtual();
+                $product_cart_amounts['lineItems'] = [[
+                    'label' => $product->get_name(),
+                    'amount' => angelleye_ppcp_round($product->get_price(), $decimals)
+                ]];
+            } else {
+                $product_cart_amounts['totalAmount'] = 0;
+                $product_cart_amounts['shippingRequired'] = !$product->is_virtual();
+                $product_cart_amounts['lineItems'] = [[
+                    'label' => $product->get_name(),
+                    'amount' => 0
+                ]];
+            }
             $button_selector['angelleye_ppcp_product_shortcode'] = '#angelleye_ppcp_product_shortcode';
         } elseif (is_cart() && !WC()->cart->is_empty()) {
             $page = 'cart';
