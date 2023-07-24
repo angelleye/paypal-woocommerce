@@ -4,12 +4,14 @@ if (!defined('ABSPATH')) {
 }
 
 class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
+
     protected bool $enable_apple_pay;
+
     const PAYMENT_METHOD = 'apple_pay';
+
     /**
      * @var ?string
      */
-
     public ?string $apple_pay_payments_description;
 
     public function __construct() {
@@ -20,14 +22,44 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             $this->method_description = __('Accept payments using Apple Pay.', 'paypal-for-woocommerce');
             $this->has_fields = true;
             $this->angelleye_ppcp_load_class();
-            $this->setGatewaySupports();
+            // disable temp $this->setGatewaySupports();
+
+            $baseSupports = array(
+                'products',
+                'refunds',
+                'pay_button'
+            );
+
+            $subscriptionSupports = [
+                'subscriptions',
+                'subscription_cancellation',
+                'subscription_reactivation',
+                'subscription_suspension',
+                'subscription_amount_changes',
+                'subscription_payment_method_change', // Subs 1.n compatibility.
+                'subscription_payment_method_change_customer',
+                'subscription_payment_method_change_admin',
+                'subscription_date_changes',
+                'multiple_subscriptions',
+                'add_payment_method'
+            ];
+
+            $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
+            
+            if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
+                $this->supports = array_merge($baseSupports, $subscriptionSupports);
+            } elseif ($this->enable_tokenized_payments || (isset($_GET['page']) && isset($_GET['tab']) && 'wc-settings' === $_GET['page'] && 'checkout' === $_GET['tab'])) {
+                $this->supports = array_merge($baseSupports, $subscriptionSupports, array('tokenization'));
+            } else {
+                $this->supports = $baseSupports;
+            }
 
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay'));
             $this->title = $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay');
             $this->enable_apple_pay = 'yes' === $this->setting_obj->get('enable_apple_pay', 'no');
             $this->apple_pay_payments_description = $this->setting_obj->get('apple_pay_payments_description', 'Complete your purchase by selecting your saved payment methods or using Apple Pay.');
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -52,7 +84,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -67,7 +99,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             </fieldset>
             <?php
         } catch (Exception $ex) {
-
+            
         }
     }
 
