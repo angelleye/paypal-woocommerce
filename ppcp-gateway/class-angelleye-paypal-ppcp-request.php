@@ -10,7 +10,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public $generate_token_url;
     public $basicAuth;
     public $client_token;
-    public $api_response;
+    public ?AngellEYE_PayPal_PPCP_Response $api_response;
     public $result;
     public $setting_obj;
     public $api_request;
@@ -18,6 +18,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public $api_log;
     public $ppcp_host;
     public $payment_request;
+    public static $capabilitiesToCheck = null;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -97,7 +98,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public function angelleye_ppcp_remote_get($paypal_url, $args, $action_name) {
         $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
         $body['paypal_url'] = $paypal_url;
-        $body['paypal_header'] = $args['headers'];
+        $body['paypal_header'] = $args['headers'] ?? [];
         $body['paypal_method'] = isset($args['method']) ? $args['method'] : 'GET';
         if (isset($args['body']) && is_array($args['body'])) {
             $body['paypal_body'] = $args['body'];
@@ -203,9 +204,12 @@ class AngellEYE_PayPal_PPCP_Request {
     }
 
     public static function angelleye_ppcp_get_available_endpoints($merchant_id) {
-        $available_endpoints = array();
+        if (self::$capabilitiesToCheck !== null) {
+            return self::$capabilitiesToCheck;
+        }
+        $availableEndpoints = array();
         if (empty($merchant_id)) {
-            return $available_endpoints = false;
+            return false;
         }
         if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
             include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php';
@@ -213,30 +217,27 @@ class AngellEYE_PayPal_PPCP_Request {
         $seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
         $result = $seller_onboarding->angelleye_track_seller_onboarding_status($merchant_id);
         if(!isset($result['products'])) {
+            self::$capabilitiesToCheck = false;
             return false;
         }
+
+        $capabilitiesToCheck = ['advanced_cc' => 'CUSTOM_CARD_PROCESSING', 'vaulting_advanced' => 'PAYPAL_WALLET_VAULTING_ADVANCED',
+            'apple_pay' => 'APPLE_PAY'];
+
         if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
             foreach ($result['products'] as $key => $product) {
-                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('CUSTOM_CARD_PROCESSING', $product['capabilities'])) {
-                    foreach ($result['capabilities'] as $key => $capabilities) {
-                        if (isset($capabilities['name']) && 'CUSTOM_CARD_PROCESSING' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
-                            $available_endpoints['advanced_cc'] = 'advanced_cc';
+                foreach ($capabilitiesToCheck as $capabilityKey => $capabilityName) {
+                    if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array($capabilityName, $product['capabilities'])) {
+                        foreach ($result['capabilities'] as $key => $capabilities) {
+                            if (isset($capabilities['name']) && $capabilityName === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                                $availableEndpoints[$capabilityKey] = $product['vetting_status'];
+                            }
                         }
                     }
                 }
             }
         }
-        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
-            foreach ($result['products'] as $key => $product) {
-                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
-                    foreach ($result['capabilities'] as $key => $capabilities) {
-                        if (isset($capabilities['name']) && 'PAYPAL_WALLET_VAULTING_ADVANCED' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
-                            $available_endpoints['vaulting_advanced'] = 'vaulting_advanced';
-                        }
-                    }
-                }
-            }
-        }
-        return $available_endpoints;
+        self::$capabilitiesToCheck = $availableEndpoints;
+        return $availableEndpoints;
     }
 }

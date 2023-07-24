@@ -19,14 +19,19 @@ function angelleyeLoadPayPalScript(config, onLoaded) {
 }
 
 function canShowPlaceOrderBtn() {
-    let paymentMethod = jQuery('input[name="payment_method"]:checked').val();
-    if (paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp') {
+    // This is to check if the user is on review order page then there we need to show the place order button.
+    // For logged in user we see the payment method that's why on checkout page we keep seeing the place order button
+    // that we need to fix by using a way to identify if its checkout or order review page
+    let isOrderCompletePage = angelleyeOrder.isOrderCompletePage();
+    // console.log('canShowPlaceOrderBtn', isOrderCompletePage, angelleyeOrder.isAngelleyePaymentMethodSelected());
+    if (!isOrderCompletePage && (angelleyeOrder.isAngelleyePaymentMethodSelected())) {
         return false;
     }
     return true;
 }
 
 function showHidePlaceOrderBtn() {
+    // console.log(canShowPlaceOrderBtn(), abc.sss);
     if (canShowPlaceOrderBtn()) {
         jQuery('#place_order').show();
     } else {

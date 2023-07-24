@@ -82,7 +82,7 @@ class PayPalHttpConnection
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLINFO_HEADER_OUT, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getHttpHeaders());
-
+      
         //Determine Curl Options based on Method
         switch ($this->httpConfig->getMethod()) {
             case 'POST':

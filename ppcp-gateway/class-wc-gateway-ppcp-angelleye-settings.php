@@ -13,6 +13,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         protected static $_instance = null;
         public $need_to_display_paypal_vault_onboard_button = false;
         public $is_paypal_vault_enable = false;
+        public $is_apple_pay_enable = false;
+        public $is_apple_pay_approved = false;
+        public $need_to_display_apple_pay_button = false;
+        public $merchant_id;
+        public bool $is_ppcp_connected;
 
         public static function instance() {
             if (is_null(self::$_instance)) {
@@ -37,7 +42,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 }
                 $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             } catch (Exception $ex) {
-                
+
             }
         }
 
@@ -71,11 +76,140 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 return false;
             }
             $this->setting_obj = get_option($this->gateway_key, array());
-            $defaults = array(
+            $defaults = array('enabled' => 'yes',
                 'title' => __('PayPal', 'paypal-for-woocommerce'),
                 'description' => __(
                         'The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce'
-                )
+                ),
+                'account_settings' => '',
+                'testmode' => 'yes',
+                'live_onboarding' => '',
+                'live_disconnect' => '',
+                'sandbox_onboarding' => '',
+                'sandbox_disconnect' => '',
+                'api_client_id' => '',
+                'api_secret' => '',
+                'live_merchant_id' => '',
+                'sandbox_client_id' => '',
+                'sandbox_api_secret' => '',
+                'sandbox_merchant_id' => '',
+                'product_button_settings' => '',
+                'enable_product_button' => 'yes',
+                'product_disallowed_funding_methods' => '',
+                'product_button_layout' => 'horizontal',
+                'product_style_color' => 'gold',
+                'product_style_shape' => 'rect',
+                'product_button_size' => 'responsive',
+                'product_button_height' => '',
+                'product_button_label' => 'paypal',
+                'product_button_tagline' => 'yes',
+                'cart_button_settings' => '',
+                'enable_cart_button' => 'yes',
+                'cart_button_position' => 'bottom',
+                'cart_disallowed_funding_methods' => '',
+                'cart_button_layout' => 'vertical',
+                'cart_style_color' => 'gold',
+                'cart_style_shape' => 'rect',
+                'cart_button_size' => 'responsive',
+                'cart_button_height' => '',
+                'cart_button_label' => 'paypal',
+                'cart_button_tagline' => 'yes',
+                'checkout_button_settings' => '',
+                'enable_paypal_checkout_page' => 'yes',
+                'checkout_page_display_option' => 'regular',
+                'checkout_disable_smart_button' => 'no',
+                'checkout_disallowed_funding_methods' => '',
+                'checkout_button_layout' => 'vertical',
+                'checkout_style_color' => 'gold',
+                'checkout_style_shape' => 'rect',
+                'checkout_button_size' => 'responsive',
+                'checkout_button_height' => '',
+                'checkout_button_label' => 'paypal',
+                'checkout_button_tagline' => 'yes',
+                'mini_cart_button_settings' => '',
+                'enable_mini_cart_button' => 'yes',
+                'mini_cart_disallowed_funding_methods' => '',
+                'mini_cart_button_layout' => 'vertical',
+                'mini_cart_style_color' => 'gold',
+                'mini_cart_style_shape' => 'rect',
+                'mini_cart_button_size' => 'responsive',
+                'mini_cart_button_height' => '',
+                'mini_cart_button_label' => 'paypal',
+                'mini_cart_button_tagline' => 'yes',
+                'pay_later_messaging_settings' => '',
+                'enabled_pay_later_messaging' => 'yes',
+                'pay_later_messaging_page_type' => array
+                    (
+                    '0' => 'product',
+                    '1' => 'cart',
+                    '2' => 'payment'
+                ),
+                'pay_later_messaging_home_page_settings' => '',
+                'pay_later_messaging_home_layout_type' => 'flex',
+                'pay_later_messaging_home_text_layout_logo_type' => 'primary',
+                'pay_later_messaging_home_text_layout_logo_position' => 'left',
+                'pay_later_messaging_home_text_layout_text_size' => '12',
+                'pay_later_messaging_home_text_layout_text_color' => 'black',
+                'pay_later_messaging_home_flex_layout_color' => 'blue',
+                'pay_later_messaging_home_flex_layout_ratio' => '8x1',
+                'pay_later_messaging_home_shortcode' => 'no',
+                'pay_later_messaging_home_preview_shortcode' => '[aepfw_bnpl_message placement="home"]',
+                'pay_later_messaging_category_page_settings' => '',
+                'pay_later_messaging_category_layout_type' => 'flex',
+                'pay_later_messaging_category_text_layout_logo_type' => 'primary',
+                'pay_later_messaging_category_text_layout_logo_position' => 'left',
+                'pay_later_messaging_category_text_layout_text_size' => '12',
+                'pay_later_messaging_category_text_layout_text_color' => 'black',
+                'pay_later_messaging_category_flex_layout_color' => 'blue',
+                'pay_later_messaging_category_flex_layout_ratio' => '8x1',
+                'pay_later_messaging_category_shortcode' => 'no',
+                'pay_later_messaging_category_preview_shortcode' => '[aepfw_bnpl_message placement="category"]',
+                'pay_later_messaging_product_page_settings' => '',
+                'pay_later_messaging_product_layout_type' => 'text',
+                'pay_later_messaging_product_text_layout_logo_type' => 'primary',
+                'pay_later_messaging_product_text_layout_logo_position' => 'left',
+                'pay_later_messaging_product_text_layout_text_size' => '12',
+                'pay_later_messaging_product_text_layout_text_color' => 'black',
+                'pay_later_messaging_product_flex_layout_color' => 'blue',
+                'pay_later_messaging_product_flex_layout_ratio' => '8x1',
+                'pay_later_messaging_product_shortcode' => 'no',
+                'pay_later_messaging_product_preview_shortcode' => '[aepfw_bnpl_message placement="product"]',
+                'pay_later_messaging_cart_page_settings' => '',
+                'pay_later_messaging_cart_layout_type' => 'text',
+                'pay_later_messaging_cart_text_layout_logo_type' => 'primary',
+                'pay_later_messaging_cart_text_layout_logo_position' => 'left',
+                'pay_later_messaging_cart_text_layout_text_size' => '12',
+                'pay_later_messaging_cart_text_layout_text_color' => 'black',
+                'pay_later_messaging_cart_flex_layout_color' => 'blue',
+                'pay_later_messaging_cart_flex_layout_ratio' => '8x1',
+                'pay_later_messaging_cart_shortcode' => 'no',
+                'pay_later_messaging_cart_preview_shortcode' => '[aepfw_bnpl_message placement="cart"]',
+                'pay_later_messaging_payment_page_settings' => '',
+                'pay_later_messaging_payment_layout_type' => 'text',
+                'pay_later_messaging_payment_text_layout_logo_type' => 'primary',
+                'pay_later_messaging_payment_text_layout_logo_position' => 'left',
+                'pay_later_messaging_payment_text_layout_text_size' => '12',
+                'pay_later_messaging_payment_text_layout_text_color' => 'black',
+                'pay_later_messaging_payment_flex_layout_color' => 'blue',
+                'pay_later_messaging_payment_flex_layout_ratio' => '8x1',
+                'pay_later_messaging_payment_shortcode' => 'no',
+                'pay_later_messaging_payment_preview_shortcode' => '[aepfw_bnpl_message placement="payment"]',
+                'advanced_settings' => '',
+                'paymentaction' => 'capture',
+                'invoice_prefix' => 'WC-PPCP',
+                'skip_final_review' => 'no',
+                'brand_name' => 'PPCP',
+                'landing_page' => 'NO_PREFERENCE',
+                'payee_preferred' => 'no',
+                'send_items' => 'yes',
+                'enable_advanced_card_payments' => 'no',
+                '3d_secure_contingency' => 'SCA_WHEN_REQUIRED',
+                'advanced_card_payments_title' => 'Credit Card',
+                'advanced_card_payments_display_position' => 'after',
+                'disable_cards' => '',
+                'soft_descriptor' => 'PPCP',
+                'error_email_notification' => 'yes',
+                'debug' => 'everything',
             );
             foreach ($defaults as $key => $value) {
                 if (isset($this->setting_obj[$key])) {
@@ -88,6 +222,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 
         public function angelleye_ppcp_setting_fields() {
             unset($this->setting_obj);
+            $this->setting_obj = array();
             $this->load();
             $this->is_sandbox = 'yes' === $this->get('testmode', 'no');
             if ($this->is_sandbox) {
@@ -170,9 +305,15 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             $advanced_cc_text = '';
             $vaulting_advanced_text = '';
+            $applePayText = '';
             $advanced_cc_custom_attributes = array();
             $vaulting_custom_attributes = array();
             $this->is_paypal_vault_enable = false;
+            $this->is_apple_pay_enable = false;
+            $this->is_ppcp_connected = !empty($this->merchant_id);
+            $region = wc_get_base_location();
+            $default_country = $region['country'];
+
             if ($available_endpoints === false) {
                 
             } elseif (!isset($available_endpoints['advanced_cc'])) {
@@ -193,6 +334,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $this->is_paypal_vault_enable = true;
                 $vaulting_advanced_text = __('The Vault / Subscriptions feature is enabled on your PayPal account.  You need to enable Tokenized Payments here in order this to be available on your site.', 'paypal-for-woocommerce');
             }
+            if ($available_endpoints === false) {
+                $applePayText = __('Allow buyers to pay using Apple Pay.', 'paypal-for-woocommerce');
+                $this->need_to_display_apple_pay_button = false;
+                $this->is_apple_pay_enable = false;
+            } elseif (!isset($available_endpoints['apple_pay'])) {
+                $applePayText = __('Apple Pay is not enabled on your PayPal account.', 'paypal-for-woocommerce');
+                $this->need_to_display_apple_pay_button = strtolower($default_country) === 'us';
+                $this->is_apple_pay_enable = true;
+            } elseif (isset($available_endpoints['apple_pay'])) {
+                $this->is_apple_pay_enable = true;
+                $this->is_apple_pay_approved = true; //$available_endpoints['apple_pay'] == 'APPROVED';
+                $applePayText = __('Apple Pay feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
+            }
+            $apple_pay_custom_attributes = $this->is_apple_pay_approved ? [] : array('disabled' => 'disabled');
+
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
@@ -572,7 +728,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'checkout_button_settings' => array(
                     'title' => __('Checkout Page Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Enable the checkout specific button settings, and the options set will be applied to the PayPal buttons on your checkout page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -721,7 +876,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'mini_cart_button_settings' => array(
                     'title' => __('Mini Cart Page Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => __('Enable the Mini Cart specific button settings, and the options set will be applied to the PayPal buttons on your Mini Cart page.', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -848,7 +1002,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'pay_later_messaging_settings' => array(
                     'title' => __('Pay Later Messaging Settings', 'paypal-for-woocommerce'),
-                    'class' => '',
                     'description' => '',
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
@@ -1316,6 +1469,54 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'need_to_display_paypal_vault_onboard_button' => $this->need_to_display_paypal_vault_onboard_button,
                     'is_paypal_vault_enable' => $this->is_paypal_vault_enable,
                     'custom_attributes' => $vaulting_custom_attributes
+                ),
+                'additional_authorizations' => array(
+                    'title' => __('Apple Pay', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'enable_apple_pay' => array(
+                    'title' => __('Enable Apple Pay', 'paypal-for-woocommerce'),
+                    'label' => __('Enable Apple Pay', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox_enable_paypal_apple_pay',
+                    'description' => $applePayText,
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'class' => 'enable_apple_pay',
+                    'need_to_display_apple_pay_button' => $this->need_to_display_apple_pay_button,
+                    'is_apple_pay_enable' => $this->is_apple_pay_enable,
+                    'is_apple_pay_approved' => $this->is_apple_pay_approved,
+                    'custom_attributes' => $apple_pay_custom_attributes,
+                    'is_ppcp_connected' => $this->is_ppcp_connected
+                ),
+                'apple_pay_payments_title' => array(
+                    'title' => __('Apple Pay Title', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
+                    'default' => __('Apple Pay', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'apple_pay_payments_description' => array(
+                    'title' => __('Apple Pay Payment Description', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This controls the description which the user sees when they select Apple Pay payment method during checkout.', 'paypal-for-woocommerce'),
+                    'default' => __('Accept payments using Apple Pay.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'apple_pay_rec_payment_desc' => array(
+                    'title' => __('Apple Pay Billing Agreement Title', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('A description of the recurring payment that Apple Pay displays to the user in the payment sheet.', 'paypal-for-woocommerce'),
+                    'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'apple_pay_rec_billing_agreement_desc' => array(
+                    'title' => __('Apple Pay Billing Agreement Description', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('A localized billing agreement that the payment sheet displays to the user before the user authorizes the payment.', 'paypal-for-woocommerce'),
+                    'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
                 ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),

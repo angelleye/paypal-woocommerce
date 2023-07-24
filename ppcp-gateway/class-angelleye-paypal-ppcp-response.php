@@ -94,7 +94,7 @@ class AngellEYE_PayPal_PPCP_Response {
            return false;
         }
         if($action_name === 'seller_onboarding_status' && !isset($_GET['merchantIdInPayPal'])) {
-          //  return false;
+            return false;
         }
         $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
         $this->api_log->log('PayPal Environment: ' . $environment);
@@ -161,7 +161,6 @@ class AngellEYE_PayPal_PPCP_Response {
                     } elseif (isset($response['id'])) {
                         $transaction_id = $response['id'];
                     }
-                    $opt_in = get_option('angelleye_send_opt_in_logging_details', 'no');
                     $payment_logger = AngellEYE_PFW_Payment_Logger::instance();
                     $request_param['type'] = 'ppcp_' . $action_name;
                     $request_param['amount'] = $amount;
