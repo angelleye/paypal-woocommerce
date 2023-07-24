@@ -1,4 +1,5 @@
 <?php
+
 defined('ABSPATH') || exit;
 
 class AngellEYE_PayPal_PPCP_Seller_Onboarding {
