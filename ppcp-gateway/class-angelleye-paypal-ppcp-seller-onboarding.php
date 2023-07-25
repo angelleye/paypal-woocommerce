@@ -286,6 +286,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $merchant_email = '';
             }
 
+            // Delete the transient so that system fetches the latest status after connecting the account
+            delete_transient('ae_seller_onboarding_status');
+
             $move_to_location = 'tokenization_subscriptions';
             if (isset($_GET['feature_activated'])) {
                 switch ($_GET['feature_activated']) {
@@ -486,33 +489,45 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return $this->result;
     }
 
-    public function angelleye_track_seller_onboarding_status($merchant_id) {
-        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
-        $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
-        if ($this->is_sandbox) {
-            $partner_merchant_id = $this->sandbox_partner_merchant_id;
-        } else {
-            $partner_merchant_id = $this->partner_merchant_id;
+    public function angelleye_track_seller_onboarding_status_from_cache($merchant_id, $force_refresh = false) {
+        $seller_onboarding_status_transient = false;
+        if (!$force_refresh) {
+            $seller_onboarding_status_transient = get_transient('ae_seller_onboarding_status');
         }
-        try {
-            $this->api_request = new AngellEYE_PayPal_PPCP_Request();
-            $url = trailingslashit($this->host) .
+        if (!$seller_onboarding_status_transient) {
+            $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
+            $this->host = ($this->is_sandbox) ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+            if ($this->is_sandbox) {
+                $partner_merchant_id = $this->sandbox_partner_merchant_id;
+            } else {
+                $partner_merchant_id = $this->partner_merchant_id;
+            }
+            try {
+                $this->api_request = new AngellEYE_PayPal_PPCP_Request();
+                $url = trailingslashit($this->host) .
                     'v1/customer/partners/' . $partner_merchant_id .
                     '/merchant-integrations/' . $merchant_id;
-            $args = array(
-                'method' => 'GET',
-                'headers' => array(
-                    'Authorization' => '',
-                    'Content-Type' => 'application/json',
-                ),
-            );
-            $this->result = $this->api_request->request($url, $args, 'seller_onboarding_status');
-            return $this->result;
-        } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
-            return false;
+                $args = array(
+                    'method' => 'GET',
+                    'headers' => array(
+                        'Authorization' => '',
+                        'Content-Type' => 'application/json',
+                    ),
+                );
+                $this->result = $this->api_request->request($url, $args, 'seller_onboarding_status');
+                $seller_onboarding_status_transient = $this->result;
+            } catch (Exception $ex) {
+                $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+                $this->api_log->log($ex->getMessage(), 'error');
+                $seller_onboarding_status_transient = [];
+            }
         }
+        set_transient('ae_seller_onboarding_status', $seller_onboarding_status_transient, HOUR_IN_SECONDS);
+        return $seller_onboarding_status_transient;
+    }
+
+    public function angelleye_track_seller_onboarding_status($merchant_id) {
+        return $this->angelleye_track_seller_onboarding_status_from_cache($merchant_id, true);
     }
 
     public function is_valid_site_request() {

@@ -580,7 +580,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     Please submit a <a href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">help desk</a> ticket with any questions or concerns about this.',
                 'is_dismiss' => true,
             );
-            $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->merchant_id);
+            $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status_from_cache($this->merchant_id);
             $notice_data = json_decode(json_encode($notice_data));
             $notice_type = angelleye_ppcp_display_upgrade_notice_type($result);
             if (!empty($notice_type)) {

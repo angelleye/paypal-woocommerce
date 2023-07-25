@@ -127,6 +127,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if (!isset($_POST['woocommerce_angelleye_ppcp_enabled']) || $_POST['woocommerce_angelleye_ppcp_enabled'] == "0") {
             // run the automatic domain remove feature
             AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoUnRegisterDomain();
+            delete_transient('ae_seller_onboarding_status');
         }
         parent::process_admin_options();
     }
@@ -893,7 +894,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
         }
     }
-    
+
     public function validate_checkbox_enable_paypal_vault_field($key, $value) {
         return ! is_null( $value ) ? 'yes' : 'no';
     }

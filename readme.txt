@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.2.2
-Stable tag: 4.1.3
+Stable tag: 4.1.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,21 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.1.8 - 07.25.2023 =
+* Tweak - Optimised the seller on-boarding status check to resolve load issues ([PFW-1499](https://github.com/angelleye/paypal-woocommerce/pull/1854))
+
+= 4.1.7 - 07.25.2023 =
+* Fix - Resolves Currency Conflict with PayPal JS SDK. ([PFW-1497](https://github.com/angelleye/paypal-woocommerce/pull/1853))
+
+= 4.1.6 - 07.25.2023 =
+* Fix - PHP error. ([PFW-1498](https://github.com/angelleye/paypal-woocommerce/pull/1852))
+
+= 4.1.5 - 07.25.2023 =
+* Fix - PHP error. ([PFW-1496](https://github.com/angelleye/paypal-woocommerce/pull/1851))
+
+= 4.1.4 - 07.25.2023 =
+* Fix - Resolves issues with price rounding. ([PFW-1496](https://github.com/angelleye/paypal-woocommerce/pull/1850))
 
 = 4.1.3 - 07.23.2023 =
 * Fix - Remove invoice prefix. ([PFW-1494](https://github.com/angelleye/paypal-woocommerce/pull/1849))
