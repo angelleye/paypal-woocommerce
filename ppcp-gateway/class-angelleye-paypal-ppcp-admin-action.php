@@ -19,6 +19,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public $setting_obj;
     public $is_auto_capture_auth;
     public $seller_onboarding;
+    public $is_sandbox;
+    public $merchant_id;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -214,7 +216,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id');
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
-            if (isset($this->payment_response) && !empty($this->payment_response) && $this->payment_response['intent'] === 'AUTHORIZE') {
+            if (isset($this->payment_response) && !empty($this->payment_response) && isset($this->payment_response['intent']) && $this->payment_response['intent'] === 'AUTHORIZE') {
                 if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']) && !empty($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {
                     if (isset($this->payment_response['purchase_units']['0']['payments']['refunds'])) {
                         foreach ($this->payment_response['purchase_units']['0']['payments']['refunds'] as $key => $refunds) {

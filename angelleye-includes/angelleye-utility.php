@@ -30,10 +30,18 @@ class AngellEYE_Utility {
     public $remain_authorize_amount;
     public $payflow_transstate;
     public $order_id = null;
+    public $softdescriptor;
+    public $mode;
+    public $debug;
+    public $rest_client_id;
+    public $rest_secret_id;
+    public $calculation_angelleye;
+   
 
     public function __construct($plugin_name, $version) {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
+        
         $this->load_dependencies();
         $this->payflow_transstate = array('0' => 'Account Verification', '1' => 'General error state', '3' => 'Authorization approved', '4' => 'Partial capture',
             '6' => 'Settlement pending', '7' => 'Settlement in progress', '8' => 'Settled successfully', '9' => 'Authorization captured', '10' => 'Capture failed',

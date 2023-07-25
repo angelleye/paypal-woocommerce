@@ -114,6 +114,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
     	protected $plugin_slug = 'paypal-for-woocommerce';
     	private $subscription_support_enabled = false;
         public $minified_version;
+        public $use_wp_locale_code;
         /**
          * General class constructor where we'll setup our actions, hooks, and shortcodes.
          *

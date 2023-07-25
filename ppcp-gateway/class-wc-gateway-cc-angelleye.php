@@ -5,6 +5,21 @@ if (!defined('ABSPATH')) {
 
 class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     use WC_Gateway_Base_AngellEYE;
+    public $enable_paypal_checkout_page;
+    public $checkout_page_display_option;
+    public $sandbox;
+    public $sandbox_merchant_id;
+    public $live_merchant_id;
+    public $sandbox_client_id;
+    public $sandbox_secret_id;
+    public $live_client_id;
+    public $live_secret_id;
+    public $advanced_card_payments;
+    public $merchant_id;
+    public $client_id;
+    public $secret_id;
+    public $enable_tokenized_payments;
+    
     public function __construct() {
         try {
             $this->id = 'angelleye_ppcp_cc';

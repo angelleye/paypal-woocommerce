@@ -10,6 +10,18 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     public $minified_version;
     public $enable_tokenized_payments;
     protected static $_instance = null;
+    public $title;
+    public $enabled;
+    public $is_sandbox;
+    public $sandbox_client_id;
+    public $sandbox_secret_id;
+    public $live_client_id;
+    public $live_secret_id;
+    public $merchant_id;
+    public $client_id;
+    public $secret_id;
+    public $enabled_pay_later_messaging;
+    public $pay_later_messaging_page_type;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -65,7 +77,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (empty($this->pay_later_messaging_page_type)) {
             $this->enabled_pay_later_messaging = false;
         }
-        $this->minified_version = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+        $this->minified_version = ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min';
     }
 
     public function angelleye_ppcp_pay_later_messaging_properties() {
@@ -468,5 +480,4 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         }
         return false;
     }
-
 }

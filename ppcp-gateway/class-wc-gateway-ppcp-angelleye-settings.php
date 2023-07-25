@@ -18,6 +18,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $need_to_display_apple_pay_button = false;
         public $merchant_id;
         public bool $is_ppcp_connected;
+        public $is_sandbox;
+        public $enable_tokenized_payments;
+        public $is_multi_account_active;
 
         public static function instance() {
             if (is_null(self::$_instance)) {

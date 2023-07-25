@@ -11,6 +11,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public $version;
     public $is_fraudnet_ready = false;
     private $minified_version;
+    public $enabled;
 
     /**
      * The single instance of the class

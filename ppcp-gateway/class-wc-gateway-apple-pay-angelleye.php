@@ -4,8 +4,28 @@ if (!defined('ABSPATH')) {
 }
 
 class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
+    
     protected bool $enable_apple_pay;
     const PAYMENT_METHOD = 'apple_pay';
+    public $sandbox;
+    public $sandbox_merchant_id;
+    public $live_merchant_id;
+    public $sandbox_client_id;
+    public $sandbox_secret_id;
+    public $live_client_id;
+    public $live_secret_id;
+    public $soft_descriptor;
+    public $is_sandbox_third_party_used;
+    public $is_sandbox_first_party_used;
+    public $is_live_third_party_used;
+    public $is_live_first_party_used;
+    public $merchant_id;
+    public $client_id;
+    public $secret_id;
+    public $paymentaction;
+    public $three_d_secure_contingency;
+    public $is_enabled;
+    
     /**
      * @var ?string
      */

@@ -3,6 +3,36 @@
 class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
     public $customer_id;
+    public $home_url;
+    public $testurl;
+    public $liveurl;
+    public $relay_response_url;
+    public $secure_token_id;
+    public $securetoken;
+    public $send_items_value;
+    public $send_items;
+    public $enable_tokenized_payments;
+    public $is_enabled;
+    public $testmode;
+    public $loginid;
+    public $resellerid;
+    public $user;
+    public $password;
+    public $debug;
+    public $invoice_id_prefix;
+    public $page_collapse_bgcolor;
+    public $page_collapse_textcolor;
+    public $page_button_bgcolor;
+    public $page_button_textcolor;
+    public $label_textcolor;
+    public $is_encrypt;
+    public $transtype;
+    public $mobilemode;
+    public $layout;
+    public $hostaddr;
+    public $softdescriptor;
+    public $subtotal_mismatch_behavior;
+    public $calculation_angelleye;
 
     public function __construct() {
         $this->id = 'paypal_advanced';
