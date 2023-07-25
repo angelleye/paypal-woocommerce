@@ -22,6 +22,12 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     public $secret_id;
     public $enabled_pay_later_messaging;
     public $pay_later_messaging_page_type;
+    public $pay_later_messaging_home_shortcode;
+    public $pay_later_messaging_category_shortcode;
+    public $pay_later_messaging_product_shortcode;
+    public $pay_later_messaging_cart_shortcode;
+    public $pay_later_messaging_payment_shortcode;
+
 
     public static function instance() {
         if (is_null(self::$_instance)) {
