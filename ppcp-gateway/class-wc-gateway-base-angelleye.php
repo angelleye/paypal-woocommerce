@@ -4,7 +4,7 @@ trait WC_Gateway_Base_AngellEYE
 {
     use AngellEye_PPCP_Core;
 
-    protected function setGatewaySupports($additionalSupports = [])
+    public function setGatewaySupports($additionalSupports = [])
     {
         $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
 
