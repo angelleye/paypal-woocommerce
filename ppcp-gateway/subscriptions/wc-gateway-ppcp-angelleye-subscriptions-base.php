@@ -1,7 +1,6 @@
 <?php
 
-trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base
-{
+trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
 
     public $wc_pre_30;
 
@@ -62,7 +61,8 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base
                 $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
                 $angelleye_ppcp_used_payment_method = get_post_meta($subscription_parent_id, '_angelleye_ppcp_used_payment_method', true);
                 if (!empty($angelleye_ppcp_used_payment_method)) {
-                    update_post_meta($renewal_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                    $renewal_order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                    $renewal_order->save();
                 }
             }
         }
@@ -85,11 +85,10 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base
     public function validate_subscription_payment_meta($payment_method_id, $payment_meta, $subscription) {
         if ($this->id === $payment_method_id) {
             if (empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
-                $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
                 $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
                 $payment_tokens_id = get_post_meta($subscription_parent_id, '_payment_tokens_id', true);
                 if (!empty($payment_tokens_id)) {
-                    update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
+                    $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                 } else {
                     throw new Exception('A "_payment_tokens_id" value is required.');
                 }
@@ -103,11 +102,8 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base
     }
 
     public function update_failing_payment_method($subscription, $renewal_order) {
-        if ($this->wc_pre_30) {
-            update_post_meta($subscription->id, '_payment_tokens_id', $renewal_order->payment_tokens_id);
-        } else {
-            $subscription->update_meta_data('_payment_tokens_id', $renewal_order->get_meta('_payment_tokens_id', true));
-        }
+        $subscription->update_meta_data('_payment_tokens_id', $renewal_order->get_meta('_payment_tokens_id', true));
+        $subscription->save();
     }
 
     public function free_signup_with_token_payment_tokenization($order_id) {
@@ -133,16 +129,16 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base
             }
             if (!empty($subscriptions)) {
                 foreach ($subscriptions as $subscription) {
-                    $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
                     $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
                     $payment_tokens_id = get_post_meta($subscription_parent_id, '_payment_tokens_id', true);
                     if (!empty($payment_tokens_id)) {
-                        update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
-                        update_post_meta($renewal_order_id, '_payment_tokens_id', $payment_tokens_id);
+                        $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                        $subscription->save();
+                        $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                        $renewal_order->save();
                     }
                 }
             }
         }
     }
-
 }

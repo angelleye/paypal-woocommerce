@@ -89,7 +89,8 @@ class WC_Gateway_CC_AngellEYE_Subscriptions extends WC_Gateway_CC_AngellEYE {
             if (empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
                 $payment_tokens_id = $subscription->get_meta('_payment_tokens_id', true);
                 if (!empty($payment_tokens_id)) {
-                    angelleye_ppcp_subscription_update_post_meta($subscription, '_payment_tokens_id', $payment_tokens_id);
+                    $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                    $subscription->save();
                 } else {
                     throw new Exception('A "_payment_tokens_id" value is required.');
                 }
@@ -102,7 +103,8 @@ class WC_Gateway_CC_AngellEYE_Subscriptions extends WC_Gateway_CC_AngellEYE {
     }
 
     public function update_failing_payment_method($subscription, $renewal_order) {
-        angelleye_ppcp_subscription_update_post_meta($subscription, '_payment_tokens_id', $renewal_order->get_meta('_payment_tokens_id', true));
+        $subscription->update_meta_data('_payment_tokens_id', $renewal_order->get_meta('_payment_tokens_id', true));
+        $subscription->save();
     }
 
     public function free_signup_with_token_payment_tokenization($order_id) {
@@ -132,15 +134,16 @@ class WC_Gateway_CC_AngellEYE_Subscriptions extends WC_Gateway_CC_AngellEYE {
                     $subscriptions_parent = wcs_get_subscriptions_for_order($subscription_parent_id);
                     $payment_tokens_id = $subscriptions_parent->get_meta('_payment_tokens_id', true);
                     if (!empty($payment_tokens_id)) {
-                        angelleye_ppcp_subscription_update_post_meta($subscription, '_payment_tokens_id', $renewal_order->payment_tokens_id);
+                        $subscription->update_meta_data('_payment_tokens_id', $renewal_order->payment_tokens_id);
                         $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                     }
                     $angelleye_ppcp_used_payment_method = $subscriptions_parent->get_meta('_angelleye_ppcp_used_payment_method', true);
                     if (!empty($angelleye_ppcp_used_payment_method)) {
                         $renewal_order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
-                        angelleye_ppcp_subscription_update_post_meta($subscription, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                        $subscription->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
                     }
                     $renewal_order->save();
+                    $subscription->save();
                 }
             }
         }

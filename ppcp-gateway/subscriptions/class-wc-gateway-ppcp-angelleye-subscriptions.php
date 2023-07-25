@@ -92,7 +92,8 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
             if (empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
                 $payment_tokens_id = $subscription->get_meta('_payment_tokens_id', true);
                 if (!empty($payment_tokens_id)) {
-                    angelleye_ppcp_subscription_update_post_meta($subscription, '_payment_tokens_id', $payment_tokens_id);
+                    $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                    $subscription->save();
                 } else {
                     throw new Exception('A "_payment_tokens_id" value is required.');
                 }
@@ -105,7 +106,8 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
     }
 
     public function update_failing_payment_method($subscription, $renewal_order) {
-        angelleye_ppcp_subscription_update_post_meta($subscription, '_payment_tokens_id', $renewal_order->payment_tokens_id);
+        $subscription->update_meta_data('_payment_tokens_id', $renewal_order->payment_tokens_id);
+        $subscription->save();
     }
 
     public function free_signup_with_token_payment_tokenization($order_id) {
@@ -135,8 +137,10 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
                     $subscription_parent = wcs_get_subscriptions_for_order($subscription_parent_id);
                     $payment_tokens_id = $subscription_parent->get_post_meta('_payment_tokens_id', true);
                     if (!empty($payment_tokens_id)) {
-                        angelleye_ppcp_subscription_update_post_meta($subscription, '_payment_tokens_id', $payment_tokens_id);
+                        $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                        $subscription->save();
                         $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                        $renewal_order->save();
                     }
                 }
             }

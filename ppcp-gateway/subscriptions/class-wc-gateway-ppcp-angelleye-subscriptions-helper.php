@@ -50,9 +50,10 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                angelleye_ppcp_subscription_update_post_meta($subscription, '_payment_tokens_id', $payment_tokens_id);
+                $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                 if (!empty($angelleye_ppcp_used_payment_method)) {
-                    angelleye_ppcp_subscription_update_post_meta($subscription, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                    $subscription->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                    $subscription->save();
                 }
             }
         } else {
