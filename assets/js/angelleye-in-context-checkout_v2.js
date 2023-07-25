@@ -19,8 +19,10 @@ function initExpressCheckout() {
 
     var angelleye_show_button = function () {
         showHidePlaceOrderBtn();
-        $('.angelleye_pp_message_payment:eq(1)').show();
-        $('.angelleye_smart_button_checkout_bottom').show();
+        if (!angelleyeOrder.isOrderCompletePage()) {
+            $('.angelleye_pp_message_payment:eq(1)').show();
+            $('.angelleye_smart_button_checkout_bottom').show();
+        }
     };
 
     var angelleye_manage_smart_button = function () {

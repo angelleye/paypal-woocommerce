@@ -6,8 +6,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     private $angelleye_ppcp_plugin_name;
     public $api_log;
-    public $payment_request;
+    public AngellEYE_PayPal_PPCP_Payment $payment_request;
     public $setting_obj;
+    public AngellEYE_PayPal_PPCP_Smart_Button $smart_button;
     protected static $_instance = null;
     public $procceed = 1;
     public $reject = 2;
@@ -50,10 +51,14 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Smart_Button')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php');
+            }
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
+            $this->smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -70,6 +75,36 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     exit();
                     break;
                 case "create_order":
+                    // check if billing and shipping details posted from frontend then update cart
+                    global $woocommerce;
+                    if (isset($_REQUEST['billing_address_source'])) {
+                        $billing_address = json_decode(stripslashes($_REQUEST['billing_address_source']), true);
+                        if (!empty($billing_address)) {
+                            !empty($billing_address['addressLines'][0]) ? $woocommerce->customer->set_billing_address_1($billing_address['addressLines'][0]) : null;
+                            !empty($billing_address['addressLines'][1]) ? $woocommerce->customer->set_billing_address_2($billing_address['addressLines'][1]) : null;
+                            $woocommerce->customer->set_billing_first_name($billing_address['givenName']);
+                            $woocommerce->customer->set_billing_last_name($billing_address['familyName']);
+                            $woocommerce->customer->set_billing_postcode($billing_address['postalCode']);
+                            $woocommerce->customer->set_billing_country($billing_address['countryCode']);
+                            $woocommerce->customer->set_billing_city($billing_address['locality']);
+                            $woocommerce->customer->set_billing_state($billing_address['administrativeArea']);
+                        }
+                    }
+                    if (isset($_REQUEST['shipping_address_source'])) {
+                        $shipping_address = json_decode(stripslashes($_REQUEST['shipping_address_source']), true);
+                        if (!empty($shipping_address)) {
+                            !empty($shipping_address['addressLines'][0]) ? $woocommerce->customer->set_shipping_address_1($shipping_address['addressLines'][0]) : null;
+                            !empty($shipping_address['addressLines'][1]) ? $woocommerce->customer->set_shipping_address_2($shipping_address['addressLines'][1]) : null;
+                            $woocommerce->customer->set_billing_email($shipping_address['emailAddress']);
+                            $woocommerce->customer->set_shipping_first_name($shipping_address['givenName']);
+                            $woocommerce->customer->set_shipping_last_name($shipping_address['familyName']);
+                            $woocommerce->customer->set_shipping_postcode($shipping_address['postalCode']);
+                            $woocommerce->customer->set_shipping_country($shipping_address['countryCode']);
+                            $woocommerce->customer->set_shipping_city($shipping_address['locality']);
+                            $woocommerce->customer->set_shipping_state($shipping_address['administrativeArea']);
+                        }
+                    }
+
                     if (isset($_GET['from']) && 'pay_page' === $_GET['from']) {
                         $woo_order_id = $_POST['woo_order_id'];
                         if (isset(WC()->session) && !WC()->session->has_session()) {
@@ -105,30 +140,30 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 wc_clear_notices();
                                 ob_start();
                                 wp_send_json_error(array('messages' => $error_messages));
-                                exit;
                             }
-                            exit();
                         } else {
                             $_GET['from'] = 'cart';
                             $this->payment_request->angelleye_ppcp_create_order_request();
-                            exit();
                         }
+                        exit();
                     } elseif (isset($_GET['from']) && 'product' === $_GET['from']) {
                         try {
                             if (!class_exists('AngellEYE_PayPal_PPCP_Product')) {
                                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-product.php');
                             }
-                            $this->product = AngellEYE_PayPal_PPCP_Product::instance();
-                            $this->product::angelleye_ppcp_add_to_cart_action();
+                            $paymentMethod = $_REQUEST['angelleye_ppcp_payment_method_title'] ?? null;
+                            if (angelleye_ppcp_get_order_total() === 0 || $paymentMethod !== WC_Gateway_Apple_Pay_AngellEYE::PAYMENT_METHOD) {
+                                $this->product = AngellEYE_PayPal_PPCP_Product::instance();
+                                $this->product::angelleye_ppcp_add_to_cart_action();
+                            }
                              if (angelleye_ppcp_get_order_total() === 0) {
                                 $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
                                 wc_add_notice($wc_notice);
                                 wp_send_json_error($wc_notice);
-                                exit();
-                            } else {      
+                             } else {
                                 $this->payment_request->angelleye_ppcp_create_order_request();
-                                exit();
-                            }
+                             }
+                            exit();
                         } catch (Exception $ex) {
                             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
                             $this->api_log->log($ex->getMessage(), 'error');
@@ -137,6 +172,45 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         $this->payment_request->angelleye_ppcp_create_order_request();
                         exit();
                     }
+                    break;
+                case 'shipping_address_update':
+                    global $woocommerce;
+                    if (isset($_REQUEST['shipping_address_source'])) {
+                        $shipping_address = json_decode(stripslashes($_REQUEST['shipping_address_source']), true);
+                        $shipping_address = $shipping_address['shippingDetails'] ?? null;
+                        if (!empty($shipping_address)) {
+                            !empty($shipping_address['addressLines'][0]) ? $woocommerce->customer->set_shipping_address_1($shipping_address['addressLines'][0]) : null;
+                            !empty($shipping_address['addressLines'][1]) ? $woocommerce->customer->set_shipping_address_2($shipping_address['addressLines'][1]) : null;
+                            $woocommerce->customer->set_billing_email($shipping_address['emailAddress']);
+                            $woocommerce->customer->set_shipping_first_name($shipping_address['givenName']);
+                            $woocommerce->customer->set_shipping_last_name($shipping_address['familyName']);
+                            $woocommerce->customer->set_shipping_postcode($shipping_address['postalCode']);
+                            $woocommerce->customer->set_shipping_country($shipping_address['countryCode']);
+                            $woocommerce->customer->set_shipping_city($shipping_address['locality']);
+                            $woocommerce->customer->set_shipping_state($shipping_address['administrativeArea']);
+                        }
+                    }
+                    $orderTotal = WC()->cart->get_total('');
+                    if (isset($_GET['from']) && 'product' === $_GET['from']) {
+                        try {
+                            if (!class_exists('AngellEYE_PayPal_PPCP_Product')) {
+                                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-product.php');
+                            }
+                            $this->product = AngellEYE_PayPal_PPCP_Product::instance();
+                            $this->product::angelleye_ppcp_add_to_cart_action();
+                        } catch (Exception $ex) {
+                            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+                            $this->api_log->log($ex->getMessage(), 'error');
+                        }
+                    }
+                    $details = $this->payment_request->getCartLineItems();
+                    wp_send_json([
+                        'currencyCode' => get_woocommerce_currency(),
+                        'totalAmount' => WC()->cart->get_total(''),
+                        'lineItems' => $details,
+                        'shippingRequired' => WC()->cart->needs_shipping(),
+                        'isSubscriptionRequired' => $this->smart_button->isSubscriptionRequired()
+                    ]);
                     break;
                 case "display_order_page":
                     $this->angelleye_ppcp_display_order_page();
@@ -179,7 +253,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "paypal_create_payment_token_sub_change_payment":
                     $this->payment_request->angelleye_ppcp_paypal_create_payment_token_sub_change_payment();
                     exit();
-                    
+
             }
         }
     }
@@ -488,7 +562,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     }
 
     private function no_liability_shift(AuthResult $result): int {
-        
+
     }
 
 }
