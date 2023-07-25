@@ -286,6 +286,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $merchant_email = '';
             }
 
+            // Delete the transient so that system fetches the latest status after connecting the account
+            delete_transient('ae_seller_onboarding_status');
+
             $move_to_location = 'tokenization_subscriptions';
             if (isset($_GET['feature_activated'])) {
                 switch ($_GET['feature_activated']) {
