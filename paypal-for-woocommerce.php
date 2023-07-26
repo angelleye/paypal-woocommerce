@@ -125,7 +125,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $this->minified_version = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
             add_action('init', array($this, 'load_plugin_textdomain'));
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
-            add_action('wp_loaded', array($this, 'load_funnelkit_pro_plugin_compatible_gateways'), 5);
+            add_action('plugins_loaded', array($this, 'load_funnelkit_pro_plugin_compatible_gateways'), 5);
             // Funnelkit Supported gateways
             add_filter( 'wfocu_wc_get_supported_gateways', array( $this, 'wfocu_upsell_supported_gateways' ), 99, 1 );
             add_filter( 'wfocu_subscriptions_get_supported_gateways', array( $this, 'wfocu_subscription_supported_gateways' ), 99, 1 );
