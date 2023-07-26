@@ -1,5 +1,5 @@
 .button-primary-own {
-    background: #6558f5 !important;
+    background: #0070BA !important;
 }
 
 .ppcp_sendy_confirm_parent {
@@ -22,10 +22,10 @@
 
 #angelleye_ppcp_sendy_msg {
     font-size: 15px;
-    margin: 10px 11px;  
+    margin: 10px 11px;
 }
 .ppcp_email_confirm p {
-    margin: 15px 0;   
+    margin: 15px 0;
 }
 .angelleye-paypal-for-woocommerce-shipping-tools-wrap {
     background: #fff none repeat scroll 0 0;
@@ -34,7 +34,7 @@
     padding: 0 20px 10px;
     width: 824px;
     border: 1px solid #dedede;
-    box-shadow: 0 20px 30px rgba(143, 163, 184, 0.15);
+    box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.3);
     border-radius: 3px;
 }
 
@@ -413,7 +413,7 @@ hr {
     height: 31px;
     border-radius: 100px;
     background-color: #0070ba;
-    color: #fff;
+    color: #FFFFFF;
     border: none;
     cursor: pointer;
     font-size: .8rem;
@@ -502,7 +502,7 @@ hr {
     padding-left: 30px;
 }
 #angelleye_ppcp_sendy_email {
-  max-width: 350px;
+    max-width: 350px;
 }
 .paypal_woocommerce_support_downloads li {
     display: flex;
@@ -519,13 +519,12 @@ hr {
 }
 
 .paypal_woocommerce_product {
-    padding: 20px;
     background: rgb(255, 255, 255);
     color: rgb(30, 30, 30);
     position: relative;
     outline: none;
     border: 1px solid #dedede;
-    box-shadow: 0 20px 30px rgba(143, 163, 184, 0.15);
+    box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.3);
     border-radius: 3px;
     width: 50%;
     float: left;
@@ -539,7 +538,7 @@ hr {
     margin-bottom: 30px;
     background: #fff;
     border-radius: 3px;
-    box-shadow: 0 20px 30px rgb(143 163 184 / 15%);
+    box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.3);
     transition: all .25s ease;
     border: 1px solid #dedede;
 }
@@ -569,14 +568,15 @@ hr {
     transition: color .2s ease,background .2s ease,transform .2s ease,border-color .2s ease,box-shadow .2s ease;
 }
 .paypal_woocommerce_product_onboard .wplk-button {
-    color: #fdfdfe;
-    background: #6558f5;
-    border-color: #e2e6eb;
+    color: #FFFFFF;
+    background: #0070BA;
+    border-color: #0070BA;
     font-size: 16px;
     font-family: arial;
     height: 60px;
     border-radius: 8px;
-    margin-right: 12px;
+    width: 200px;
+    text-align: center;
 }
 .paypal_woocommerce_product_onboard [class*="green-button"] {
     min-width: 150px;
@@ -693,8 +693,62 @@ hr {
 .angelleye-ppcp-disconnect {
     margin-top: 25px !important;
 }
+div.ppcp_migration_report {
+    padding: 40px 10px 20px 25px;
+}
+.ppcp_migration_report p {
+    margin: 5px auto;
+}
+.ppcp_migration_report .wrap {
+    margin-bottom: 30px;
+}
+.wplk-button.angelleye_ppcp_revert_changes {
+   background: red !important;
+   border-color: red !important;
+}
+#ppcp_notice_classic_upgrade .angelleye-notice-action {
+    margin-top: 15px;
+}
+.ppcp-dismiss {
+    position: relative;
+    border: none;
+    margin: 0;
+    background: none;
+    color: #787c82;
+    cursor: pointer;
+    float: right;
+    overflow: auto;
+    color: #787c82;
+    cursor: pointer;
+    display: inline;
+    top: -8px;
+    right: -18px;
+}
 
+.ppcp-dismiss:hover::before, .ppcp-dismiss:active::before, .ppcp-dismiss:focus::before {
+    color: #d63638;
+}
 
+.ppcp-dismiss::before {
+    background: none;
+    color: #787c82;
+    content: "\f153";
+    display: block;
+    font: normal 35px/35px dashicons;
+    speak: never;
+    height: 50px;
+    text-align: center;
+    width: 50px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.paypal_woocommerce_product_onboard a:focus {
+    box-shadow: none;
+}
+
+.ppcp_migration_report h3 {
+    text-align: center;
+}
 
 @media only all and (max-width: 500px) {
     .wp-core-ui .angelleye-notice > .angelleye-notice-cta > input[type="email"],
@@ -725,3 +779,18 @@ hr {
     }
 
 }
+
+@media only screen and (max-width: 750px) {
+    .paypal_woocommerce_product {
+        width: 100%;
+        margin-bottom: 20px;
+        padding: 0px;
+    }
+    .paypal_woocommerce_support_downloads {
+        margin: 0px 0px 0px 0px;
+        padding-left: 0px;
+    }
+}
+
+
+

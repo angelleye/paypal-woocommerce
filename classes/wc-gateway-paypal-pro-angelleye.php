@@ -84,6 +84,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->api_signature = $this->get_option('api_signature');
         $this->testmode = 'yes' === $this->get_option('testmode', 'no');
         if( $this->testmode == false ) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
         $this->invoice_id_prefix = $this->get_option('invoice_id_prefix');
@@ -524,6 +527,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function admin_options() {
         do_action('angelleye_classic_gateway_sub_menu');
+        do_action('angelleye_ppcp_upgrade_notice', 'paypal_pro');
         $GLOBALS['hide_save_button'] = true;
         echo '<h2>' . esc_html( $this->get_method_title() ) . '</h2>';
         echo wp_kses_post( wpautop( $this->get_method_description() ) );
@@ -2235,6 +2239,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_load_paypal_pro_class($gateway, $current, $order_id = null) {
         if ($this->testmode == false) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id);
         }
         if ($this->testmode == true) {

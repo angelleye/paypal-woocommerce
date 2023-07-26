@@ -89,7 +89,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         $order = wc_get_order($order_id);
         if ($this->angelleye_is_order_need_payment($order) && $this->angelleye_is_admin_order_payment_method_available($order) == true && $this->angelleye_is_order_created_by_create_new_reference_order($order) == false) {
             $reason_array = $this->angelleye_get_reason_why_create_reference_transaction_order_button_not_available($order);
-            if (count($reason_array) > 1) {
+            if (count($reason_array) > 0) {
                 $is_disable_button = true;
             }
             $reason_message = $this->angelleye_reason_array_to_nice_message($reason_array);

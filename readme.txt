@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.2.2
-Stable tag: 4.0.16
+Stable tag: 4.1.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -25,7 +25,7 @@ Easily add PayPal payment options to your WordPress / WooCommerce website.
  * PayPal Braintree Credit Card Payments
  * Fully Supports WooCommerce Payment Tokens!
  * Compatible with WooCommerce Subscriptions!
- 
+
 [youtube https://www.youtube.com/watch?v=svq9ovWGp7I]
 
 [youtube https://www.youtube.com/watch?v=VhQT8rX7uwE]
@@ -47,20 +47,20 @@ This availability is limited based on your monthly volume, so you will need to b
 The BETA version of PayPal Plus that we had included with this plugin has been stripped out as of version 1.2.4.  We have moved PayPal Plus to its own separate plugin so that we may focus on all the different features and functionality it needs to work with the various countries it supports.  [Get the PayPal Plus Plugin!](https://www.angelleye.com/product/woocommerce-paypal-plus-plugin/)
 
 = Quality Control =
-Payment processing can't go wrong.  It's as simple as that.  Our certified PayPal engineers have developed and thoroughly tested this plugin on the PayPal sandbox (test) servers to ensure your customers don't have problems paying you.  
+Payment processing can't go wrong.  It's as simple as that.  Our certified PayPal engineers have developed and thoroughly tested this plugin on the PayPal sandbox (test) servers to ensure your customers don't have problems paying you.
 
 = Seamless PayPal Integration =
-Stop bouncing back and forth between WooCommerce and PayPal to manage and reconcile orders.  We've made sure to include all WooCommerce order data in PayPal transactions so that everything matches in both places.  If you're looking at a PayPal transaction details page it will have all of the same data as a WooCommerce order page, and vice-versa.  
+Stop bouncing back and forth between WooCommerce and PayPal to manage and reconcile orders.  We've made sure to include all WooCommerce order data in PayPal transactions so that everything matches in both places.  If you're looking at a PayPal transaction details page it will have all of the same data as a WooCommerce order page, and vice-versa.
 
 = Error Handling =
 PayPal's system can be tricky when it comes to handling errors.  Most PayPal plugins do not correctly process the PayPal response which can result in big problems.  For example:
 
-* Fraud Filters could throw a "warning" instead of a full "success" response even when the payment was completed successfully.  
+* Fraud Filters could throw a "warning" instead of a full "success" response even when the payment was completed successfully.
 * Many plugins treat these as failures and customers end up with duplicate payments if they continue to retry.
 
 Our plugins always handle these warnings/errors correctly so that you do not have to worry about dealing with those types of situations.
 
-= Localization = 
+= Localization =
 The PayPal Express Checkout buttons and checkout pages will translate based off your WordPress language setting by default.  The rest of the plugin was also developed with localization in mind and is ready for translation.
 
 If you're interested in helping translate please [let us know](http://www.angelleye.com/contact-us/)!
@@ -84,17 +84,17 @@ In the search field type PayPal for WooCommerce and click Search Plugins. Once y
 
 1. Unzip the files and upload the folder into your plugins folder (/wp-content/plugins/) overwriting older versions if they exist
 2. Activate the plugin in your WordPress admin area.
- 
-= Usage = 
+
+= Usage =
 
 1. Open the settings page for WooCommerce and click the "Checkout" tab
 2. Click on the sub-item for PayPal Express Checkout or Payments Pro.
-3. Enter your API credentials and adjust any other settings to suit your needs. 
+3. Enter your API credentials and adjust any other settings to suit your needs.
 
-= Updating = 
+= Updating =
 
 Automatic updates should work great for you.  As always, though, we recommend backing up your site prior to making any updates just to be sure nothing goes wrong.
- 
+
 == Screenshots ==
 
 1. Display Pay with Credit Card and Pay with PayPal / PayPal Credit options on the shopping cart page.
@@ -109,11 +109,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = How do I create sandbox accounts for testing? =
 
-* Login at http://developer.paypal.com.  
+* Login at http://developer.paypal.com.
 * Click the Applications tab in the top menu.
 * Click Sandbox Accounts in the left sidebar menu.
 * Click the Create Account button to create a new sandbox account.
-* TIP: Create at least one "seller" account and one "buyer" account if you want to fully test Express Checkout or other PayPal wallet payments. 
+* TIP: Create at least one "seller" account and one "buyer" account if you want to fully test Express Checkout or other PayPal wallet payments.
 * TUTORIAL: See our [step-by-step instructions with video guide](https://www.angelleye.com/create-paypal-sandbox-account/).
 
 = Where do I get my API credentials? =
@@ -121,11 +121,67 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Live credentials can be obtained by signing in to your live PayPal account here:  https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
 * Sandbox credentials can be obtained by viewing the sandbox account profile within your PayPal developer account, or by signing in with a sandbox account here:  https://www.sandbox.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
 
-= How do I know which version of Payments Pro I have? = 
+= How do I know which version of Payments Pro I have? =
 * If you have a PayPal Manager account at http://manager.paypal.com as well as your regular PayPal account at http://www.paypal.com, then you are on Payments Pro 2.0.
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.1.8 - 07.25.2023 =
+* Tweak - Optimised the seller on-boarding status check to resolve load issues ([PFW-1499](https://github.com/angelleye/paypal-woocommerce/pull/1854))
+
+= 4.1.7 - 07.25.2023 =
+* Fix - Resolves Currency Conflict with PayPal JS SDK. ([PFW-1497](https://github.com/angelleye/paypal-woocommerce/pull/1853))
+
+= 4.1.6 - 07.25.2023 =
+* Fix - PHP error. ([PFW-1498](https://github.com/angelleye/paypal-woocommerce/pull/1852))
+
+= 4.1.5 - 07.25.2023 =
+* Fix - PHP error. ([PFW-1496](https://github.com/angelleye/paypal-woocommerce/pull/1851))
+
+= 4.1.4 - 07.25.2023 =
+* Fix - Resolves issues with price rounding. ([PFW-1496](https://github.com/angelleye/paypal-woocommerce/pull/1850))
+
+= 4.1.3 - 07.23.2023 =
+* Fix - Remove invoice prefix. ([PFW-1494](https://github.com/angelleye/paypal-woocommerce/pull/1849))
+* Fix - Remove opt-in messaging. ([PFW-1493](https://github.com/angelleye/paypal-woocommerce/pull/1848))
+
+= 4.1.2 - 07.21.2023 =
+* Fix - Do not enable Apple Pay payment gateway by-default on checkout page. ([PFW-1488](https://github.com/angelleye/paypal-woocommerce/pull/1847))
+
+= 4.1.1 - 07.21.2023 =
+* Fix - Resolves issues with tokenization feature onboarding. ([PFW-1487](https://github.com/angelleye/paypal-woocommerce/pull/1846))
+
+= 4.1.0 - 07.21.2023 =
+* Feature - Adds Apple Pay Integration. ([PFW-1389](https://github.com/angelleye/paypal-woocommerce/pull/1820))
+* Feature - Adds Classic to PPCP Migration Wizard. ([PFW-1239](https://github.com/angelleye/paypal-woocommerce/tree/PFW-1239))
+
+= 4.0.23 - 07.13.2023 =
+* Fix - Resolves with WooCommerce Services. ([PFW-1484](https://github.com/angelleye/paypal-woocommerce/pull/1844))
+* Fix - Resolves JS error. ([PFW-1480](https://github.com/angelleye/paypal-woocommerce/pull/1843))
+
+= 4.0.22 - 07.10.2023 =
+* Feature - Adds Woo Precious Metals Discounts and Payment Fees Compatibility. ([PFW-1479](https://github.com/angelleye/paypal-woocommerce/pull/1842))
+
+ = 4.0.21 - 07.10.2023 =
+* Fix - Load the Library in the end so that DOM is loaded completely. AHD-20178
+
+= 4.0.20 - 06.27.2023 =
+* Tweak -  Remove Template override code for Proceed to checkout button. ([PFW-1471](https://github.com/angelleye/paypal-woocommerce/pull/1838))
+* Tweak -  Resolves Pay Later Messaging - Shortcode not rendering. ([PFW-1472](https://github.com/angelleye/paypal-woocommerce/pull/1837))
+* Fix - Resolves PHP Error. ([PFW-1469](https://github.com/angelleye/paypal-woocommerce/pull/1836))
+
+= 4.0.19 - 06.22.2023 =
+* Tweak -  Allows skip final review page for payment tokens. ([PFW-1466](https://github.com/angelleye/paypal-woocommerce/pull/1835))
+
+= 4.0.18 - 06.14.2023 =
+* Feature - Adds MX and JP to ACDC. ([PFW-1467](https://github.com/angelleye/paypal-woocommerce/pull/1833))
+* Tweak -  Adds allow manual migration classic to PPCP. ([PFW-1468](https://github.com/angelleye/paypal-woocommerce/pull/1834))
+* Fix -  Reference Transaction Order Adjustment. ([PFW-1465](https://github.com/angelleye/paypal-woocommerce/pull/1832))
+* Fix - Resolves PHP notice. ([PFW-1461](https://github.com/angelleye/paypal-woocommerce/pull/1831))
+
+= 4.0.17 - 06.06.2023 =
+* Feature - Adds PPCP - Order renewal compatibility for PayPal standard and Woo PayPal plugin. ([PFW-1464](https://github.com/angelleye/paypal-woocommerce/pull/1830))
 
 = 4.0.16 - 06.05.2023 =
 * Fix - Remove OR condition and proceed-to-checkout button. ([PFW-1456](https://github.com/angelleye/paypal-woocommerce/pull/1828))
@@ -400,7 +456,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves a issue when getmypid() has been disabled for security reasons. ([PFW-965](https://github.com/angelleye/paypal-woocommerce/pull/1650))
 
 = 3.0.14 - 01.11.2022 =
-* Feature - Adds CartFlows Pro Pro 1.8.0 compatibility. 
+* Feature - Adds CartFlows Pro Pro 1.8.0 compatibility.
 
 = 3.0.13 - 01.10.2022 =
 * Feature - Adds new funding methods list. ([PFW-950](https://github.com/angelleye/paypal-woocommerce/pull/1641))
@@ -1621,7 +1677,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Express Checkout now has the option to enable a Gift Wrap option for your buyers on the PayPal review pages.
 * Feature - Customer notes left on the PayPal review pages during an Express Checkout order are now saved in the Woo order notes.
 
-= 1.1.1 - 04/05/2014 = 
+= 1.1.1 - 04/05/2014 =
 * Fix - PayPal Express Checkout button no longer shows up on the product page for an external product.
 
 = 1.1 - 04/03/2014 =
@@ -1644,13 +1700,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 1.0.5 - 03/17/2014 =
 * Refactor - Minor code adjustments and cleanup.
 
-= 1.0.4 - 03/12/2014 = 
+= 1.0.4 - 03/12/2014 =
 * Fix - Resolves issue with invalid order number getting sent to PayPal for merchants in some countries.
 
 = 1.0.3 - 03/11/2014 =
 * Tweak - Update the checkout button verbiage based on enabled payment gateways.
 * Fix - Eliminate PHP warnings that would surface if error reporting was enabled on the server.
-* Fix - Eliminate conflict with WooCommerce if plugin is enabled while updating WooCommerce. 
+* Fix - Eliminate conflict with WooCommerce if plugin is enabled while updating WooCommerce.
 
 = 1.0.2 - 03/05/2014 =
 * Refactor - Stripped out all the original Woo PayPal integration code and replaced it with the Angelleye PHP Class Library for PayPal.

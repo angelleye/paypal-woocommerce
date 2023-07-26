@@ -13,8 +13,8 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
     <br>
     <?php if ($active_tab == 'general_settings') { ?>
         <h2 class="nav-tab-wrapper">
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=paypal_payment_gateway_products" class="nav-tab <?php echo $gateway == 'paypal_payment_gateway_products' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Commerce - Built by Angelleye', 'paypal-for-woocommerce'); ?></a>
-            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=tool" class="nav-tab <?php echo $gateway == 'tool' ? 'nav-tab-active' : ''; ?>"><?php echo __('Tools', 'paypal-for-woocommerce'); ?></a>
+            <a href="?page=<?php echo $this->plugin_slug; ?>" class="nav-tab <?php echo $gateway == 'paypal_payment_gateway_products' ? 'nav-tab-active' : ''; ?>"><?php echo __('PayPal Commerce - Built by Angelleye', 'paypal-for-woocommerce'); ?></a>
+            <a href="?page=<?php echo $this->plugin_slug; ?>&tab=general_settings&gateway=tool" class="angelleye-tool nav-tab <?php echo $gateway == 'tool' ? 'nav-tab-active' : ''; ?>"><?php echo __('Tools', 'paypal-for-woocommerce'); ?></a>
             <?php do_action('angelleye_paypal_for_woocommerce_general_settings_tab'); ?>
         </h2>
         <?php
@@ -26,7 +26,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
             ?>
             <div class="wrap angelleye_addons_wrap">
                 <?php
-                $admin_onboarding->view();
+                $admin_onboarding->display_view();
                 ?>
             </div>
         <?php

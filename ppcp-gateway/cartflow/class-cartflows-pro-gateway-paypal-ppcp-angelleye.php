@@ -261,7 +261,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
         $purchase_unit = array(
             'reference_id' => 'default',
             'amount' => array(
-                'currency_code' => $args['order_currency'],
+                'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', $args['order_currency'], $offer_product['price']),
                 'value' => $offer_product['price'],
                 'breakdown' => $this->get_item_breakdown($order, $offer_product),
             ),
@@ -287,12 +287,12 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
     public function get_item_breakdown($order, $offer_product) {
         $breakdown = array();
         $breakdown['item_total'] = array(
-            'currency_code' => wcf_pro()->wc_common->get_currency($order),
+            'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', wcf_pro()->wc_common->get_currency($order), $offer_product['unit_price_tax']),
             'value' => $offer_product['unit_price_tax'],
         );
         if (!empty($offer_product['shipping_fee'])) {
             $breakdown['shipping'] = array(
-                'currency_code' => wcf_pro()->wc_common->get_currency($order),
+                'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', wcf_pro()->wc_common->get_currency($order), $offer_product['shipping_fee_tax']),
                 'value' => $offer_product['shipping_fee_tax'],
             );
         }
@@ -307,7 +307,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
         $offer_items = array(
             'name' => $offer_product['name'],
             'unit_amount' => array(
-                'currency_code' => wcf_pro()->wc_common->get_currency($order),
+                'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', wcf_pro()->wc_common->get_currency($order), $offer_product['unit_price_tax']),
                 'value' => $offer_product['unit_price_tax'],
             ),
             'quantity' => $offer_product['qty'],

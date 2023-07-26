@@ -18,6 +18,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     protected static $_instance = null;
     public $setting_obj;
     public $is_auto_capture_auth;
+    public $seller_onboarding;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -43,6 +44,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php';
+            }
+            $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
@@ -54,6 +59,13 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
 
     public function angelleye_ppcp_add_hooks() {
         $this->is_auto_capture_auth = 'yes' === $this->setting_obj->get('auto_capture_auth', 'yes');
+        $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
+        if ($this->is_sandbox) {
+            $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
+        } else {
+            $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
+        }
+        add_action('admin_notices', array($this, 'admin_notices'));
         if ($this->is_auto_capture_auth) {
             add_action('woocommerce_order_status_processing', array($this, 'angelleye_ppcp_capture_payment'));
             add_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
@@ -505,6 +517,89 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     do_action('woocommerce_order_action_' . sanitize_title($hook_name), $order, $order_data);
                 }
             }
+        }
+    }
+
+    public function admin_notices() {
+        try {
+            if (isset($_GET['page']) && 'paypal-for-woocommerce' === $_GET['page']) {
+                return;
+            }
+            if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+                return;
+            }
+            $notice_data['classic_upgrade'] = array(
+                'id' => 'ppcp_notice_classic_upgrade',
+                'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
+                'ans_message_title' => 'Important PayPal Update Required',
+                'ans_message_description' => sprintf('Upgrade now to PayPal Commerce for better features, enhanced security, reduced fees, and future-proof integration. <a target="_blank" href="%s">Click to learn more about the upgrade process.</a> Don\'t miss out on the advantages of PayPal Commerce! <br><br>Please upgrade by September 30, 2023 to avoid potential interruptions.<br>', 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/'),
+                'ans_button_url' => admin_url('options-general.php?page=paypal-for-woocommerce'),
+                'ans_button_label' => 'Upgrade Now',
+                'is_dismiss' => false,
+                'is_button_secondary' => true,
+                'ans_secondary_button_label' => "Learn More",
+                'ans_secondary_button_url' => 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/'
+            );
+            $notice_data['vault_upgrade'] = array(
+                'id' => 'ppcp_notice_vault_upgrade',
+                'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
+                'ans_message_title' => 'PayPal Commerce Now Supports Token Payments / Subscriptions!',
+                'ans_message_description' => 'Maximize the power of PayPal Commerce in your WordPress store by enabling the Vault functionality. Unlock advanced features such as Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
+                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
+                'ans_button_label' => 'Enable PayPal Vault',
+                'is_dismiss' => true
+            );
+             $notice_data['enable_apple_pay'] = array(
+                'id' => 'ppcp_notice_apple_pay',
+                'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
+                'ans_message_title' => 'PayPal Commerce Now Supports Apple Pay!',
+                'ans_message_description' => 'Unlock advanced features such as Apple Pay. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
+                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
+                'ans_button_label' => 'Enable Apple Pay',
+                'is_dismiss' => true
+            );
+            $notice_data['vault_upgrade_enable_apple_pay'] = array(
+                'id' => 'ppcp_notice_vault_upgrade_apple_pay',
+                'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
+                'ans_message_title' => 'PayPal Commerce Now Supports Apple Pay and Token Payments / Subscriptions!',
+                'ans_message_description' => 'Unlock advanced features such as Apple Pay, Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
+                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
+                'ans_button_label' => 'Activate These Features',
+                'is_dismiss' => true
+            );
+            $notice_data['outside_us'] = array(
+                'id' => 'ppcp_notice_outside_us',
+                'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
+                'ans_message_title' => '',
+                'ans_message_description' => 'We notice that are running WooCommerce Subscriptions and your store country is outside the United States.<br>  
+                    Unfortunately, the PayPal Commerce Platform Vault functionality, which is required for Subscriptions, is only available for United States PayPal accounts.<br>
+                    If your PayPal account is in fact based in the United States, you can continue with this update.<br>
+                    However, if your PayPal account is not based in the U.S. you will need to wait until this feature is available in your country.<br>
+                    Please submit a <a href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">help desk</a> ticket with any questions or concerns about this.',
+                'is_dismiss' => true,
+            );
+            $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status_from_cache($this->merchant_id);
+            $notice_data = json_decode(json_encode($notice_data));
+            $notice_type = angelleye_ppcp_display_upgrade_notice_type($result);
+            if (!empty($notice_type)) {
+                foreach ($notice_type as $key => $type) {
+                    if ('classic_upgrade' === $key && $type === true && isset($notice_data->$key)) {
+                        angelleye_ppcp_display_notice($notice_data->$key);
+                    }
+                    if ('outside_us' === $key && $type === true && isset($notice_data->$key)) {
+                        angelleye_ppcp_display_notice($notice_data->$key);
+                    }
+                }
+            }
+            if(isset($notice_type['vault_upgrade']) &&  $notice_type['vault_upgrade'] === true && isset($notice_type['enable_apple_pay']) &&  $notice_type['enable_apple_pay'] === true) {
+                angelleye_ppcp_display_notice($notice_data->vault_upgrade_enable_apple_pay);
+            } elseif(isset($notice_type['vault_upgrade']) &&  $notice_type['vault_upgrade'] === true) {
+                angelleye_ppcp_display_notice($notice_data->vault_upgrade);
+            } elseif(isset($notice_type['enable_apple_pay']) &&  $notice_type['enable_apple_pay'] === true) {
+                angelleye_ppcp_display_notice($notice_data->enable_apple_pay);
+            }
+        } catch (Exception $ex) {
+
         }
     }
 

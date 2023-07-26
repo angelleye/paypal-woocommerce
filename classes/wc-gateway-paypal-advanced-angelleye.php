@@ -44,6 +44,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $this->description = $this->get_option('description');
         $this->testmode = 'yes' === $this->get_option('testmode', 'yes');
         if ($this->testmode == false) {
+            if (!class_exists('AngellEYE_Utility')) {
+                require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
+            }
             $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product();
         }
         if( $this->testmode == true ) {
@@ -691,6 +694,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      */
     public function admin_options() {
         do_action('angelleye_classic_gateway_sub_menu');
+        do_action('angelleye_ppcp_upgrade_notice', 'paypal_advanced');        
+
         $GLOBALS['hide_save_button'] = true;
         ?>
         <h3><?php _e('PayPal Advanced', 'paypal-for-woocommerce'); ?></h3>

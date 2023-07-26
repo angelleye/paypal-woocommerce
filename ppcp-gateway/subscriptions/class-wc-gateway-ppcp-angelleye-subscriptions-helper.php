@@ -24,7 +24,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
             }
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -70,11 +70,15 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
             $payment_token = $api_response['payment_source']['paypal']['attributes']['vault']['id'];
         } elseif (isset($api_response['payment_source']['venmo']['attributes']['vault']['id'])) {
             $payment_token = $api_response['payment_source']['venmo']['attributes']['vault']['id'];
+        } elseif (isset($api_response['payment_source']['apple_pay']['attributes']['vault']['id'])) {
+            $payment_token = $api_response['payment_source']['apple_pay']['attributes']['vault']['id'];
         }
         $order = wc_get_order($order_id);
         $this->save_payment_token($order, $payment_token);
         if (angelleye_ppcp_get_token_id_by_token($payment_token) === '') {
-            if (!empty($api_response['payment_source']['card']['attributes']['vault']['id'])) {
+            if (!empty($api_response['payment_source']['card']['attributes']['vault']['id']) || !empty($api_response['payment_source']['apple_pay']['attributes']['vault']['id'])) {
+                $payment_method = $api_response['payment_source']['card'] ? 'card' : 'apple_pay';
+                $payment_card = $api_response['payment_source']['card'] ?? $api_response['payment_source']['apple_pay']['card'];
                 $token = new WC_Payment_Token_CC();
                 $order = wc_get_order($order_id);
                 if (0 != $order->get_user_id()) {
@@ -84,18 +88,20 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 }
                 $token->set_token($payment_token);
                 $token->set_gateway_id($order->get_payment_method());
-                $token->set_card_type($api_response['payment_source']['card']['brand']);
-                $token->set_last4($api_response['payment_source']['card']['last_digits']);
-                if (isset($api_response['payment_source']['card']['expiry'])) {
-                    $card_expiry = array_map('trim', explode('-', $api_response['payment_source']['card']['expiry']));
+                $token->set_card_type($payment_card['brand']);
+                $token->set_last4($payment_card['last_digits']);
+                if (isset($payment_card['expiry'])) {
+                    $card_expiry = array_map('trim', explode('-', $payment_card['expiry']));
                     $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
                     $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
                     $token->set_expiry_month($card_exp_month);
                     $token->set_expiry_year($card_exp_year);
                 } else {
                     $this->angelleye_ppcp_load_class();
-                    $card_details = $this->payment_request->angelleye_ppcp_get_payment_token_details($api_response['payment_source']['card']['attributes']['vault']['id']);
-                    if (isset($card_details['payment_source']['card']['expiry'])) {
+                    $vault_data = $api_response['payment_source']['card']['attributes']['vault'] ?? $api_response['payment_source']['apple_pay']['attributes']['vault'];
+                    $card_details = $this->payment_request->angelleye_ppcp_get_payment_token_details($vault_data['id']);
+                    $payment_card = $card_details['payment_source']['card'] ?? $card_details['payment_source']['apple_pay']['card'];
+                    if (isset($payment_card['expiry'])) {
                         $card_expiry = array_map('trim', explode('-', $card_details['payment_source']['card']['expiry']));
                         $card_exp_year = str_pad($card_expiry[0], 4, "0", STR_PAD_LEFT);
                         $card_exp_month = isset($card_expiry[1]) ? $card_expiry[1] : '';
@@ -109,7 +115,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                 $token->set_user_id($customer_id);
                 if ($token->validate()) {
                     $token->save();
-                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', 'card');
+                    update_metadata('payment_token', $token->get_id(), '_angelleye_ppcp_used_payment_method', $payment_method);
                 } else {
                     $order->add_order_note('ERROR MESSAGE: ' . __('Invalid or missing payment token fields.', 'paypal-for-woocommerce'));
                 }

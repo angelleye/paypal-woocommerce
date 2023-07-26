@@ -70,7 +70,7 @@ class AngellEYE_Utility {
                 return false;
             }
             if ($this->testmode == false) {
-                $this->testmode = AngellEYE_Utility::angelleye_paypal_for_woocommerce_is_set_sandbox_product($this->order_id);
+                $this->testmode = self::angelleye_paypal_for_woocommerce_is_set_sandbox_product($this->order_id);
             }
             if ($this->testmode == true) {
                 $this->api_username = $gateway_obj->get_option('sandbox_api_username');
@@ -1130,7 +1130,7 @@ class AngellEYE_Utility {
                             $('#angelleye_payment_submit_button').on('click', function (event) {
                                 if( $('#is_submited').val() == 'no') {
                                     $('#is_submited').val('yes');
-                                    var r = confirm(<?php echo __( 'Are you sure?', 'paypal-for-woocommerce' ) ?>);
+                                    var r = confirm("<?php echo __( 'Are you sure?', 'paypal-for-woocommerce' ) ?>");
                                     if (r == true) {
                                         jQuery("#angelleye-pw-order-action").block({message:null,overlayCSS:{background:"#fff",opacity:.6}});
                                         return r;
@@ -1366,7 +1366,6 @@ class AngellEYE_Utility {
             if ($order->get_total() - $order->get_total_refunded() <= $this->total_Completed_DoAuthorization && $this->total_Pending_DoAuthorization == 0) {
                 do_action('woocommerce_order_status_pending_to_processing', $order_id);
                 $order->payment_complete($_first_transaction_id);
-                do_action('woocommerce_checkout_order_processed', $order_id, $posted = array(), $order);
             }
         }
     }
