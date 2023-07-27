@@ -38,7 +38,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
         $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
                 
         // Force tokenization if funnel is initiated
-        add_filter( "angelleye_ppcp_is_save_payment_method", array( $this, "angelleye_force_token_save" ), 20 );
+        //add_filter( "angelleye_ppcp_is_save_payment_method", array( $this, "angelleye_force_token_save" ), 20 );
         		
 		$this->refund_supported = true;
 	}
