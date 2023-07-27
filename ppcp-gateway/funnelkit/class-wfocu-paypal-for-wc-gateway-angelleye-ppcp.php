@@ -34,6 +34,8 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
         }
         $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
         $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
+        $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
+        $this->payee_preferred = 'yes' === $this->setting_obj->get('payee_preferred', 'no');
         if ($this->enable_tokenized_payments === false) {
             add_action('wfocu_footer_before_print_scripts', array($this, 'maybe_render_in_offer_transaction_scripts'), 999);
             add_filter('wfocu_allow_ajax_actions_for_charge_setup', array($this, 'allow_action'));
@@ -178,15 +180,14 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                 $data = array(
                     'intent' => 'CAPTURE',
                     'application_context' => array(
-                        'user_action' => 'CONTINUE',
-                        'landing_page' => 'NO_PREFERENCE',
+                        'user_action' => 'PAY_NOW',
+                        'landing_page' => $this->landing_page,
                         'brand_name' => html_entity_decode(get_bloginfo('name'), ENT_NOQUOTES, 'UTF-8'),
-                        'return_url' => add_query_arg(array('wfocu-si' => WFOCU_Core()->data->get_transient_key()), WC()->api_request_url('wfocu_paypal_payments')),
+                        'return_url' => add_query_arg(array('wfocu-si' => WFOCU_Core()->data->get_transient_key()), WC()->api_request_url('wfocu_angelleye_ppcp_payments')),
                         'cancel_url' => add_query_arg(array('wfocu-si' => WFOCU_Core()->data->get_transient_key()), WFOCU_Core()->public->get_the_upsell_url(WFOCU_Core()->data->get_current_offer())),
                     ),
                     'payment_method' => array(
-                        'payee_preferred' => 'UNRESTRICTED',
-                        'payer_selected' => 'PAYPAL',
+                        'payee_preferred' => $this->payee_preferred
                     ),
                     'purchase_units' => $this->get_purchase_units($get_order, $offer_package, $ppcp_data),
                     'payment_instruction' => array(
@@ -354,7 +355,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                     $data['purchase_units'] = $this->get_purchase_units($get_order, $offer_package, $ppcp_data);
                     $data['application_context'] = array(
                         'user_action' => 'CONTINUE',
-                        'landing_page' => 'NO_PREFERENCE',
+                        'landing_page' => $this->landing_page,
                         'brand_name' => html_entity_decode(get_bloginfo('name'), ENT_NOQUOTES, 'UTF-8'),
                         'return_url' => add_query_arg(array('wfocu-si' => WFOCU_Core()->data->get_transient_key()), WC()->api_request_url('wfocu_angelleye_angelleye_ppcp_payments')),
                         'cancel_url' => add_query_arg(array('wfocu-si' => WFOCU_Core()->data->get_transient_key()), WFOCU_Core()->public->get_the_upsell_url(WFOCU_Core()->data->get_current_offer())),
@@ -363,8 +364,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                         'disbursement_mode' => 'INSTANT',
                     );
                     $data['payment_method'] = array(
-                        'payee_preferred' => 'UNRESTRICTED',
-                        'payer_selected' => 'PAYPAL',
+                        'payee_preferred' => $this->payee_preferred
                     );
                     $payment_token = $this->get_token($get_order);
                     $token_id = angelleye_ppcp_get_token_id_by_token($payment_token);
