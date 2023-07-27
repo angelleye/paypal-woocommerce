@@ -133,7 +133,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                 $data = WFOCU_Core()->process_offer->_handle_upsell_charge(false);
                 WFOCU_Core()->log->log('Order #' . WFOCU_WC_Compatibility::get_order_id($get_order) . ': Unable to capture paypal Order refer error below' . print_r($resp_body, true));
             } else {
-                $resp_body = json_decode($resp_body($resp_body), FALSE);
+                $resp_body = json_decode(json_encode($resp_body), FALSE);
                 if (isset($resp_body->status) && 'COMPLETED' === $resp_body->status) {
                     if (isset($resp_body->payment_source->paypal->attributes->vault->id) && isset($resp_body->payment_source->paypal->attributes->vault->status) && 'CREATED' === $resp_body->payment_source->paypal->attributes->vault->status) {
                         $txn_id = $resp_body->payment_source->paypal->attributes->vault->id;
