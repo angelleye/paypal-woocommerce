@@ -56,9 +56,10 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
                     update_post_meta($subscription_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
                 }
             }
-        } else {
-            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
         }
+        
+        update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+        
     }
 
     public function angelleye_ppcp_wc_save_payment_token($order_id, $api_response) {

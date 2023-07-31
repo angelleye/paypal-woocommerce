@@ -66,7 +66,7 @@ class AngellEYE_PayPal_PPCP_Response {
             if (is_wp_error($paypal_api_response)) {
                 delete_transient('is_angelleye_aws_down');
                 $response = array(
-                    'status' => 'faild',
+                    'status' => 'failed',
                     'body' => array('error_message' => $paypal_api_response->get_error_message(), 'error_code' => $paypal_api_response->get_error_code())
                 );
             } else {

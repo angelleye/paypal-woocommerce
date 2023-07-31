@@ -290,6 +290,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         // Currently, This is to support the applepay, so that we can pass the total amount to SDK popup
         add_filter('woocommerce_update_order_review_fragments', array($this, 'add_order_checkout_data_for_direct_checkouts'), 99);
 
+        
+        add_filter('wfocu_wc_get_supported_gateways', array($this, 'wfocu_upsell_supported_gateways'), 99, 1);
+        if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
+            add_filter('wfocu_subscriptions_get_supported_gateways', array($this, 'wfocu_subscription_supported_gateways'), 99, 1);
+        }
+
         $asyncJsParams = $this->getClientIdMerchantId();
         self::$jsUrl = add_query_arg($asyncJsParams, 'https://www.paypal.com/sdk/js');
     }
@@ -386,15 +392,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $product_cart_amounts['totalAmount'] = angelleye_ppcp_round($product->get_price(), $decimals);
                 $product_cart_amounts['shippingRequired'] = !$product->is_virtual();
                 $product_cart_amounts['lineItems'] = [[
-                    'label' => $product->get_name(),
-                    'amount' => angelleye_ppcp_round($product->get_price(), $decimals)
+                'label' => $product->get_name(),
+                'amount' => angelleye_ppcp_round($product->get_price(), $decimals)
                 ]];
             } else {
                 $product_cart_amounts['totalAmount'] = 0;
                 $product_cart_amounts['shippingRequired'] = !$product->is_virtual();
                 $product_cart_amounts['lineItems'] = [[
-                    'label' => $product->get_name(),
-                    'amount' => 0
+                'label' => $product->get_name(),
+                'amount' => 0
                 ]];
             }
             $button_selector['angelleye_ppcp_product_shortcode'] = '#angelleye_ppcp_product_shortcode';
@@ -481,7 +487,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $smart_js_arg['enable-funding'] = implode(',', $this->vault_supported_payment_method);
             }
             if (!empty($this->vault_not_supported_payment_method) && count($this->vault_not_supported_payment_method) > 0) {
-                $smart_js_arg['disable-funding'] = implode(',', $this->vault_not_supported_payment_method);
+                // $smart_js_arg['disable-funding'] = implode(',', $this->vault_not_supported_payment_method);
             }
         } else {
             if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
@@ -1651,5 +1657,35 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             return $order_status_list;
         }
         return $order_status_list;
+    }
+
+    public function wfocu_upsell_supported_gateways($gateways) {
+        try {
+            if ($this->enabled) {
+                $gateways['angelleye_ppcp'] = 'WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP';
+            }
+            if ($this->advanced_card_payments) {
+                $gateways['angelleye_ppcp_cc'] = 'WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC';
+            }
+            return $gateways;
+        } catch (Exception $ex) {
+            return $gateways;
+        }
+    }
+
+    public function wfocu_subscription_supported_gateways($gateways) {
+        try {
+            if ($this->enable_tokenized_payments) {
+                if ($this->enabled) {
+                    $gateways[] = 'angelleye_ppcp';
+                }
+                if ($this->advanced_card_payments) {
+                    $gateways[] = 'angelleye_ppcp_cc';
+                }
+            }
+            return $gateways;
+        } catch (Exception $ex) {
+            return $gateways;
+        }
     }
 }
