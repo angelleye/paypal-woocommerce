@@ -125,6 +125,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $this->minified_version = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
             add_action('init', array($this, 'load_plugin_textdomain'));
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
+            
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-payment-logger.php';
             AngellEYE_PFW_Payment_Logger::instance();
             if (!class_exists('AngellEYE_Utility')) {
@@ -136,6 +137,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, VERSION_PFW);
             add_action( 'plugins_loaded', array($this, 'init'));
+            add_action('plugins_loaded', array($this, 'load_funnelkit_pro_plugin_compatible_gateways'), 5);
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
 
@@ -144,24 +146,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
 
             add_action('wp_enqueue_scripts', array($this, 'angelleye_cc_ui_style'), 100);
-            // To load the deferred PayPal JS SDK to cache the data in advance
-            /* add_action('wp_enqueue_scripts', function() {
-                $wp_scripts = wp_scripts();
-                if (!isset($wp_scripts->registered['angelleye-paypal-checkout-sdk'])) {
-                    angelleye_ppcp_add_async_js();
-                }
-            },  PHP_INT_MAX );
-            add_filter('script_loader_tag', function ( $tag, $handle ) {
-                if ('angelleye-paypal-checkout-sdk-async' !== $handle) {
-                    return $tag;
-                }
-                return str_replace( ' src', ' async src', $tag );
-            }, 10, 2 ); */
 
             add_action( 'parse_request', array($this, 'wc_gateway_payment_token_api_parser') , 99);
             add_action('wp_ajax_angelleye_dismiss_notice', array($this, 'angelleye_dismiss_notice'), 10);
 
-            // http://stackoverflow.com/questions/22577727/problems-adding-action-links-to-wordpress-plugin
             $basename = plugin_basename(__FILE__);
             $prefix = is_network_admin() ? 'network_admin_' : '';
             add_filter("{$prefix}plugin_action_links_$basename",array($this,'plugin_action_links'),10,4);
@@ -1450,6 +1438,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             }
         }
 
+
+        
+        
         /**
         * Process the delete payment method form.
         */
@@ -1614,6 +1605,21 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 		exit;
             }
 
+        }
+        
+        public function load_funnelkit_pro_plugin_compatible_gateways() {
+            try {
+                if (defined('WFFN_PRO_FILE')) {
+                    require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp.php';
+                    require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp-cc.php';
+                    if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
+                        require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-upstroke-subscriptions-angelleye-ppcp.php';
+                        require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-upstroke-subscriptions-angelleye-ppcp-cc.php';
+                    }
+                }
+            } catch (Exception $ex) {
+
+            }
         }
     }
 }
