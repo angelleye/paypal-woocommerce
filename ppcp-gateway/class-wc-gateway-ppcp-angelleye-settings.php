@@ -82,7 +82,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce'
                 ),
                 'account_settings' => '',
-                'testmode' => 'yes',
+                'testmode' => 'no',
                 'live_onboarding' => '',
                 'live_disconnect' => '',
                 'sandbox_onboarding' => '',

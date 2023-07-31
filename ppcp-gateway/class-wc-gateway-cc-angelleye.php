@@ -109,6 +109,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $order->update_meta_data('_angelleye_ppcp_used_payment_method', 'card');
                 angelleye_ppcp_add_used_payment_method_name_to_subscription($woo_order_id);
                 $order->update_meta_data('_payment_tokens_id', $token->get_token());
+                $order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
                 $order->save();
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 $is_success = $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($woo_order_id);
