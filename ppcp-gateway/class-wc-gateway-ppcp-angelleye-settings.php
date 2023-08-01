@@ -1534,6 +1534,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'authorize' => __('Authorize', 'paypal-for-woocommerce'),
                     ),
                 ),
+                'auto_capture_auth' => array(
+                    'title' => __('Automatic Capture of Pending Authorizations', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('Automatic Capture of Pending Authorizations.', 'paypal-for-woocommerce'),
+                    'default' => 'yes',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'desc_tip' => true
+                ),
                 'invoice_prefix' => array(
                     'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
                     'type' => 'text',
@@ -1671,14 +1679,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
                     'default' => 'yes',
                     'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce'),
-                    'desc_tip' => true
-                ),
-                'auto_capture_auth' => array(
-                    'title' => __('Automatic Capture of Pending Authorizations', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('Automatic Capture of Pending Authorizations.', 'paypal-for-woocommerce'),
-                    'default' => 'yes',
-                    'description' => __('', 'paypal-for-woocommerce'),
                     'desc_tip' => true
                 ),
                 'debug' => array(
