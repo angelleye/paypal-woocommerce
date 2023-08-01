@@ -340,6 +340,15 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                             $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_express', 'angelleye_ppcp');
                                         }
                                     } else {
+                                        if ($this->is_sandbox) {
+                                            $this->setting_obj->set('sandbox_merchant_id', '');
+                                            delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done');
+                                        } else {
+                                            $this->setting_obj->set('live_merchant_id', '');
+                                            delete_transient('angelleye_ppcp_live_seller_onboarding_process_done');
+                                        }
+                                        $this->setting_obj->set('enabled', 'no');
+                                        $this->setting_obj->persist();
                                         unset($_GET);
                                         wp_redirect(add_query_arg(array('is_found_diffrent_account' => 'yes'), untrailingslashit($redirect_url)));
                                         exit();
@@ -353,6 +362,15 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                             $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp');
                                         }
                                     } else {
+                                        if ($this->is_sandbox) {
+                                            $this->setting_obj->set('sandbox_merchant_id', '');
+                                            delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done');
+                                        } else {
+                                            $this->setting_obj->set('live_merchant_id', '');
+                                            delete_transient('angelleye_ppcp_live_seller_onboarding_process_done');
+                                        }
+                                        $this->setting_obj->set('enabled', 'no');
+                                        $this->setting_obj->persist();
                                         unset($_GET);
                                         wp_redirect(add_query_arg(array('is_found_diffrent_account' => 'yes'), untrailingslashit($redirect_url)));
                                         exit();
