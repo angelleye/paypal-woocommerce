@@ -1418,6 +1418,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_order_auth_request($woo_order_id) {
         try {
+            $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             $order = wc_get_order($woo_order_id);
             $this->angelleye_ppcp_update_order($order);
             $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
