@@ -1238,10 +1238,21 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'body' => $patch_request,
                 'user-agent' => 'PPCP/' . VERSION_PFW,
             );
+            if (empty($paypal_order_id)) {
+                angelleye_session_expired_exception();
+            }
             $this->api_request->request($this->paypal_order_api . $paypal_order_id, $args, 'update_order');
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
+
+            // Redirect the user to the checkout page in case order update fails
+            if ($ex->getCode() == 302) {
+                $this->api_log->log('Request URL: ' . $this->paypal_order_api . $paypal_order_id);
+                $this->api_log->log('Request Body: ' . wc_print_r($args, true));
+                wc_add_notice($ex->getMessage());
+                wp_redirect(wc_get_checkout_url());
+            }
         }
     }
 
@@ -2744,7 +2755,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                                 }
                             }
                         }
-                        
+
                     }
                     if ($this->paymentaction === 'capture') {
                         $processor_response = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response'] : '';
