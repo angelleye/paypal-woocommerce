@@ -20,6 +20,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     public $title;
     public $advanced_card_payments;
     public $three_d_secure_contingency;
+    public $product;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
