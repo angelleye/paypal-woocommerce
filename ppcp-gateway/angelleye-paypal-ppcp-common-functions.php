@@ -83,7 +83,7 @@ if (!function_exists('angelleye_ppcp_update_post_meta')) {
             update_post_meta($order->id, $key, $value);
         } else {
             $order->update_meta_data($key, $value);
-            $order->save_meta_data();
+            $order->save();
         }
     }
 
