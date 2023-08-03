@@ -118,7 +118,7 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
 
     public function angelleye_scheduled_subscription_payment_retry_compability($renewal_order) {
         $renewal_order_id = $this->wc_pre_30 ? $renewal_order->id : $renewal_order->get_id();
-        $payment_tokens_id = get_post_meta($renewal_order_id, '_payment_tokens_id', true);
+        $payment_tokens_id = $renewal_order->get_meta($renewal_order_id, '_payment_tokens_id', true);
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($renewal_order_id)) {
                 $subscriptions = wcs_get_subscriptions_for_order($renewal_order_id);

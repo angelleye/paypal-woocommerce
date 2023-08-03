@@ -219,7 +219,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $this->ae_auth_amount = 0;
             $html_table_row = array();
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-            $paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id');
+            $paypal_order_id = angelleye_ppcp_get_post_meta($order, '_paypal_order_id');
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
             if (isset($this->payment_response) && !empty($this->payment_response) && $this->payment_response['intent'] === 'AUTHORIZE') {
                 if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']) && !empty($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {

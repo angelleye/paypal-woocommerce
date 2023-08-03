@@ -118,7 +118,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         // api call for an order and initiate the order create again on button click
         if (!empty($woo_order_id)) {
             $order = wc_get_order($woo_order_id);
-            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id');
+            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($order, '_paypal_order_id');
 
             if (!empty($existing_paypal_order_id)) {
                 // set the order id in session so that update_order can update the order details
@@ -939,7 +939,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     }
 
     public function get_payment_method_title_for_order($woo_order_id = null) {
-        return get_post_meta($woo_order_id, '_payment_method_title', $this->title);
+        return angelleye_ppcp_get_post_meta($woo_order_id, '_payment_method_title', $this->title);
     }
 
     public function angelleye_ppcp_order_capture_request($woo_order_id, $need_to_update_order = true) {
@@ -3965,14 +3965,14 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order = wc_get_order($order_id);
             $user_id = (int) $order->get_customer_id();
             $all_payment_tokens = $this->angelleye_ppcp_get_all_payment_tokens_for_renewal($user_id);
-            $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
+            $payment_tokens_id = angelleye_ppcp_get_post_meta($order, '_payment_tokens_id', true);
             if (empty($payment_tokens_id)) {
-                $payment_tokens_id = get_post_meta($order_id, 'payment_token_id', true);
+                $payment_tokens_id = angelleye_ppcp_get_post_meta($order, 'payment_token_id', true);
             }
             if (empty($payment_tokens_id)) {
-                $payment_tokens_id = get_post_meta($order_id, '_ppec_billing_agreement_id', true);
+                $payment_tokens_id = angelleye_ppcp_get_post_meta($order, '_ppec_billing_agreement_id', true);
             }
-            $paypal_subscription_id = get_post_meta($order_id, '_paypal_subscription_id', true);
+            $paypal_subscription_id = angelleye_ppcp_get_post_meta($order, '_paypal_subscription_id', true);
             if (empty($all_payment_tokens) && empty($payment_tokens_id) && empty($paypal_subscription_id)) {
                 return $body_request;
             } elseif (!empty($paypal_subscription_id)) {
@@ -4007,9 +4007,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
-            $angelleye_ppcp_old_payment_method = get_post_meta($order_id, '_angelleye_ppcp_old_payment_method', true);
+            $angelleye_ppcp_old_payment_method = angelleye_ppcp_get_post_meta($order, '_angelleye_ppcp_old_payment_method', true);
             if (empty($angelleye_ppcp_old_payment_method)) {
-                $angelleye_ppcp_old_payment_method = get_post_meta($order_id, '_old_payment_method', true);
+                $angelleye_ppcp_old_payment_method = angelleye_ppcp_get_post_meta($order, '_old_payment_method', true);
             }
             if (!empty($angelleye_ppcp_old_payment_method)) {
                 $tokenType = '';
@@ -4038,7 +4038,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
             if (!isset($body_request['payment_source'])) {
                 if (empty($all_payment_tokens) && !empty($payment_tokens_id)) {
-                    $payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+                    $payment_method = angelleye_ppcp_get_post_meta($order, '_angelleye_ppcp_used_payment_method', true);
                     if (in_array($payment_method, ['PayPal Checkout', 'PayPal Credit'])) {
                         $payment_method = 'paypal';
                     }

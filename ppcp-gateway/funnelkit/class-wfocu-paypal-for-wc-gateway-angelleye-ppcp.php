@@ -95,8 +95,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
             if (!is_a($order, 'WC_Order')) {
                 return false;
             }
-            $get_id = $order->get_id();
-            $this->token = get_post_meta($get_id, '_payment_tokens_id', true);
+            $this->token = angelleye_ppcp_get_post_meta($order, '_payment_tokens_id', true);
             if (!empty($this->token)) {
                 return true;
             }
@@ -309,8 +308,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
 
     public function get_token($order) {
         try {
-            $get_id = $order->get_id();
-            $this->token = get_post_meta($get_id, '_payment_tokens_id', true);
+            $this->token = angelleye_ppcp_get_post_meta($order, '_payment_tokens_id', true);
             if (empty($this->token)) {
                 $payment_tokens_list = $this->payment_request->angelleye_ppcp_get_all_payment_tokens();
                 $payment_method = $order->get_payment_method();
