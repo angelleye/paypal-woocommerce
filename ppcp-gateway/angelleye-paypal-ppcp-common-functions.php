@@ -200,7 +200,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -405,7 +405,7 @@ if (!function_exists('angelleye_ppcp_round')) {
             $round_price = round($price, $precision);
             return number_format($round_price, $precision, '.', '');
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -807,7 +807,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -832,7 +832,7 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1035,7 +1035,7 @@ if (!function_exists('angelleye_ppcp_get_paypal_details')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1075,7 +1075,7 @@ if (!function_exists('angelleye_ppcp_get_classic_paypal_details')) {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1099,3 +1099,16 @@ if (!function_exists('angelleye_is_apple_pay_enable')) {
     }
 
 }
+
+if (!function_exists('angelleye_session_expired_exception')) {
+
+    /**
+     * Throws session not found exception message
+     * @throws Exception
+     */
+    function angelleye_session_expired_exception() {
+        throw new Exception(__('Sorry, your session has expired.', 'woocommerce'), 302);
+    }
+
+}
+

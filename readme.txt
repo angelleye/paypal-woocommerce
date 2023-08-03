@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.2.2
-Stable tag: 4.1.9
+Stable tag: 4.1.11
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.1.11 - 08.03.2023 =
+* Fix - Resolves JS angelleyeOrder is not defined issue. ([PFW-1510](https://github.com/angelleye/paypal-woocommerce/pull/1861))
+
+= 4.1.10 - 08.01.2023 =
+* Tweak - Added the SiteGround plugin compatibility with PPCP. ([PFW-1507](https://github.com/angelleye/paypal-woocommerce/pull/1858))
+* Tweak - Handled missing order id in session. ([PFW-1505](https://github.com/angelleye/paypal-woocommerce/pull/1857))
 
 = 4.1.9 - 07.31.2023 =
 * Feature - Adds FunnelKit Compatibility. ([PFW-1311](https://github.com/angelleye/paypal-woocommerce/pull/1829))
