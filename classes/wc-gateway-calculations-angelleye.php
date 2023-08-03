@@ -21,6 +21,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
         public $payment_method;
         public $temp_total;
         public $is_separate_discount;
+        public $subtotal_mismatch_behavior;
 
         public function __construct($payment_method = null, $subtotal_mismatch_behavior = 'add') {
             $this->order_items = array();

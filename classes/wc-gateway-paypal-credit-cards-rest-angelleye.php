@@ -12,6 +12,15 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
      */
     public $paypal_rest_api;
     public $customer_id;
+    public $woocommerce_paypal_supported_currencies;
+    public $enable_tokenized_payments;
+    public $testmode;
+    public $debug;
+    public $is_encrypt;
+    public $rest_client_id;
+    public $rest_secret_id;
+    public $payment_action;
+    public $softdescriptor;
 
     function __construct() {
         $this->id = 'paypal_credit_card_rest';

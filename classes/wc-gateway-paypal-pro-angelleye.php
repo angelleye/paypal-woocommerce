@@ -14,6 +14,43 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     public $customer_id;
     public $PayPal;
     public $gateway;
+    public $liveurl;
+    public $testurl;
+    public $liveurl_3ds;
+    public $testurl_3ds;
+    public $available_card_types;
+    public $iso4217;
+    public $send_items_value;
+    public $send_items;
+    public $api_username ;
+    public $api_password;
+    public $api_signature;
+    public $testmode;
+    public $invoice_id_prefix;
+    public $error_email_notify;
+    public $error_display_type;
+    public $enable_3dsecure;
+    public $liability_shift;
+    public $debug;
+    public $payment_action;
+    public $subtotal_mismatch_behavior;
+    public $enable_notifyurl;
+    public $is_encrypt;
+    public $softdescriptor;
+    public $avs_cvv2_result_admin_email;
+    public $fraud_management_filters;
+    public $notifyurl;
+    public $enable_cardholder_first_last_name;
+    public $enable_tokenized_payments;
+    public $Force_tls_one_point_two;
+    public $credit_card_month_field;
+    public $credit_card_year_field;
+    public $pending_authorization_order_status;
+    public $successwithwarning_payment_response;
+    public $enable_google_recaptcha;
+    public $recaptcha_site_key;
+    public $recaptcha_secret_key;
+    public $calculation_angelleye;
     /**
      * __construct function.
      *

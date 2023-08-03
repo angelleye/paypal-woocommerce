@@ -13,6 +13,14 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     public $procceed = 1;
     public $reject = 2;
     public $retry = 3;
+    public $is_sandbox;
+    public $merchant_id;
+    public $dcc_applies;
+    public $paymentaction;
+    public $title;
+    public $advanced_card_payments;
+    public $three_d_secure_contingency;
+    public $product;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -110,7 +118,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         if (isset(WC()->session) && !WC()->session->has_session()) {
                             WC()->session->set_customer_session_cookie(true);
                         }
-                        WC()->session->set( 'order_awaiting_payment', $woo_order_id );
+                        WC()->session->set('order_awaiting_payment', $woo_order_id);
                         $order = wc_get_order($woo_order_id);
                         do_action('woocommerce_before_pay_action', $order);
                         $error_messages = wc_get_notices('error');
@@ -156,13 +164,13 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 $this->product = AngellEYE_PayPal_PPCP_Product::instance();
                                 $this->product::angelleye_ppcp_add_to_cart_action();
                             }
-                             if (angelleye_ppcp_get_order_total() === 0) {
+                            if (angelleye_ppcp_get_order_total() === 0) {
                                 $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
                                 wc_add_notice($wc_notice);
                                 wp_send_json_error($wc_notice);
-                             } else {
+                            } else {
                                 $this->payment_request->angelleye_ppcp_create_order_request();
-                             }
+                            }
                             exit();
                         } catch (Exception $ex) {
                             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -253,7 +261,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "paypal_create_payment_token_sub_change_payment":
                     $this->payment_request->angelleye_ppcp_paypal_create_payment_token_sub_change_payment();
                     exit();
-
             }
         }
     }
@@ -560,7 +567,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     }
 
     private function no_liability_shift(AuthResult $result): int {
-
+        
     }
-
 }

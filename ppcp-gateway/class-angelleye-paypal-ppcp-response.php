@@ -8,6 +8,7 @@ class AngellEYE_PayPal_PPCP_Response {
     public $setting_obj;
     public $generate_signup_link_default_request_param;
     protected static $_instance = null;
+    public $is_sandbox;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
