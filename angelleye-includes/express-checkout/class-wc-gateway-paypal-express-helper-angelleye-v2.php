@@ -1897,6 +1897,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
 
     public function angelleye_exclude_javascript($excluded_handles) {
         $excluded_handles[] = 'jquery-core';
+        $excluded_handles[] = 'angelleye_ppcp-common-functions';
         $excluded_handles[] = 'angelleye-paypal-checkout-sdk';
         $excluded_handles[] = 'angelleye-in-context-checkout-js-frontend';
         return $excluded_handles;
