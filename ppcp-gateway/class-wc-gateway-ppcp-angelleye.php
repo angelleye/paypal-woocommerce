@@ -113,8 +113,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function angelleye_defind_hooks() {
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-        if (!has_action('woocommerce_admin_order_totals_after_total', array($this, 'angelleye_ppcp_display_order_fee'))) {
-            add_action('woocommerce_admin_order_totals_after_total', array($this, 'angelleye_ppcp_display_order_fee'));
+        if (!has_action('woocommerce_admin_order_totals_after_total', array('WC_Gateway_PPCP_AngellEYE', 'angelleye_ppcp_display_order_fee'))) {
+            add_action('woocommerce_admin_order_totals_after_total', array('WC_Gateway_PPCP_AngellEYE', 'angelleye_ppcp_display_order_fee'));
         }
         if (apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
             add_action('woocommerce_review_order_before_submit', array($this, 'ppcp_payment_fields'));
@@ -492,7 +492,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         return $bool;
     }
 
-    public function angelleye_ppcp_display_order_fee($order_id) {
+    public static function angelleye_ppcp_display_order_fee($order_id) {
         $order = wc_get_order($order_id);
         $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         if ('angelleye_ppcp' !== $payment_method) {
