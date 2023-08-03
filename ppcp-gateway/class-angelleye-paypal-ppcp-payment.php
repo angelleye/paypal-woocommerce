@@ -121,6 +121,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id');
 
             if (!empty($existing_paypal_order_id)) {
+                // set the order id in session so that update_order can update the order details
+                angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', $existing_paypal_order_id);
                 $this->angelleye_ppcp_update_order($order);
                 $return_response['currencyCode'] = $order->get_currency('');
                 $return_response['totalAmount'] = $order->get_total('');
