@@ -118,7 +118,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         // api call for an order and initiate the order create again on button click
         if (!empty($woo_order_id)) {
             $order = wc_get_order($woo_order_id);
-            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id', null);
+            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id');
 
             if (!empty($existing_paypal_order_id)) {
                 $this->angelleye_ppcp_update_order($order);
@@ -2592,7 +2592,6 @@ class AngellEYE_PayPal_PPCP_Payment {
         try {
             $order = wc_get_order($order_id);
             $angelleye_ppcp_payment_method_title = $this->get_payment_method_title_for_order($order_id);
-            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id', null);
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
