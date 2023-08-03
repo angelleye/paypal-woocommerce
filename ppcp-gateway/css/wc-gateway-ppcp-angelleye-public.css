@@ -313,6 +313,23 @@
 .woocommerce-terms-and-conditions-wrapper {
   margin-bottom: 10px;
 }
+.payment_method_angelleye_ppcp_cc>label {
+    display: flex !important;
+}
+.payment_method_angelleye_ppcp_cc .ae-cc-icons-list {
+    display: flex;
+    justify-content: right;
+    float: right;
+    flex-wrap: wrap;
+    flex: 1;
+}
+.clearfix {
+    clear: both;
+}
+.flex-break {
+    flex-basis: 100%;
+    width: 0;
+}
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_vertical_responsive, .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large, .angelleye_ppcp_horizontal_responsive {
         width: 100%;
