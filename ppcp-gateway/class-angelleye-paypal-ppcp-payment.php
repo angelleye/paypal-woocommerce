@@ -20,6 +20,35 @@ class AngellEYE_PayPal_PPCP_Payment {
     public $payment_tokens_url;
     public $angelleye_ppcp_used_payment_method;
     public $is_auto_capture_auth;
+    public $token_url;
+    public $order_url;
+    public $paypal_order_api;
+    public $paypal_refund_api;
+    public $auth;
+    public $generate_token_url;
+    public $generate_id_token;
+    public $merchant_id;
+    public $partner_client_id;
+    public $title;
+    public $brand_name;
+    public $paymentaction;
+    public $landing_page;
+    public $payee_preferred;
+    public $invoice_prefix;
+    public $soft_descriptor;
+    public $advanced_card_payments;
+    public $checkout_disable_smart_button;
+    public $error_email_notification;
+    public $enable_paypal_checkout_page;
+    public $send_items;
+    public $AVSCodes;
+    public $CVV2Codes;
+    public $client_token;
+    public $ppcp_error_handler;
+    public $avs_code;
+    public $cvv_code;
+    public $response_code;
+    public $payment_advice_code;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -69,33 +98,11 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
         $this->send_items = 'yes' === $this->setting_obj->get('send_items', 'yes');
         $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
-        $this->AVSCodes = array("A" => "Address Matches Only (No ZIP)",
-            "B" => "Address Matches Only (No ZIP)",
-            "C" => "This tranaction was declined.",
-            "D" => "Address and Postal Code Match",
-            "E" => "This transaction was declined.",
-            "F" => "Address and Postal Code Match",
-            "G" => "Global Unavailable - N/A",
-            "I" => "International Unavailable - N/A",
-            "N" => "None - Transaction was declined.",
-            "P" => "Postal Code Match Only (No Address)",
-            "R" => "Retry - N/A",
-            "S" => "Service not supported - N/A",
-            "U" => "Unavailable - N/A",
-            "W" => "Nine-Digit ZIP Code Match (No Address)",
-            "X" => "Exact Match - Address and Nine-Digit ZIP",
-            "Y" => "Address and five-digit Zip match",
-            "Z" => "Five-Digit ZIP Matches (No Address)");
+        $this->avs_code = $this->ppcp_error_handler->avs_code;
+        $this->cvv_code = $this->ppcp_error_handler->cvv_code;
+        $this->response_code = $this->ppcp_error_handler->response_code;
+        $this->payment_advice_code = $this->ppcp_error_handler->payment_advice_code;
 
-        $this->CVV2Codes = array(
-            "E" => "N/A",
-            "M" => "Match",
-            "N" => "No Match",
-            "P" => "Not Processed - N/A",
-            "S" => "Service Not Supported - N/A",
-            "U" => "Service Unavailable - N/A",
-            "X" => "No Response - N/A"
-        );
         $this->is_auto_capture_auth = 'yes' === $this->setting_obj->get('auto_capture_auth', 'yes');
     }
 
@@ -116,11 +123,15 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-subscriptions-helper.php';
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Error')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-error.php';
+            }
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             $this->ppcp_payment_token = WC_AngellEYE_PayPal_PPCP_Payment_Token::instance();
             $this->subscriptions_helper = WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper::instance();
+            $this->ppcp_error_handler = AngellEYE_PayPal_PPCP_Error::instance();
             add_filter('angelleye_ppcp_add_payment_source', array($this, 'angelleye_ppcp_add_payment_source'), 10, 2);
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -133,9 +144,11 @@ class AngellEYE_PayPal_PPCP_Payment {
         // api call for an order and initiate the order create again on button click
         if (!empty($woo_order_id)) {
             $order = wc_get_order($woo_order_id);
-            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id', null);
+            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id');
 
             if (!empty($existing_paypal_order_id)) {
+                // set the order id in session so that update_order can update the order details
+                angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', $existing_paypal_order_id);
                 $this->angelleye_ppcp_update_order($order);
                 $return_response['currencyCode'] = $order->get_currency('');
                 $return_response['totalAmount'] = $order->get_total('');
@@ -388,7 +401,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'order_id' => $woo_order_id
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
-                wc_add_notice($error_message, 'error');
+                wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
                 if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
                     $order->add_order_note($error_message);
                 }
@@ -1111,8 +1124,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
                         }
                     }
-                    $currency_code = $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] ?? '';
-                    $value = $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value'] ?? '';
+                    if (!empty($processor_response['payment_advice_code'])) {
+                        $payment_advice_code = __('Payment Advice Codes Result', 'paypal-for-woocommerce');
+                        $payment_advice_code .= "\n";
+                        $payment_advice_code .= $processor_response['payment_advice_code'];
+                        if (isset($this->payment_advice_code[$processor_response['payment_advice_code']])) {
+                            $payment_advice_code .= ' : ' . $this->payment_advice_code[$processor_response['payment_advice_code']];
+                        }
+                        $order->add_order_note($payment_advice_code);
+                    }
+                    $currency_code = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
+                    $value = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value'] : '';
                     angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
                     angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
                     angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
@@ -1148,7 +1170,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'order_id' => $woo_order_id
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
-                wc_add_notice($error_message, 'error');
+                wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
                 $order->add_order_note($error_message);
                 return false;
             }
@@ -1316,10 +1338,21 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'body' => $patch_request,
                 'user-agent' => 'PPCP/' . VERSION_PFW,
             );
+            if (empty($paypal_order_id)) {
+                angelleye_session_expired_exception();
+            }
             $this->api_request->request($this->paypal_order_api . $paypal_order_id, $args, 'update_order');
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
+
+            // Redirect the user to the checkout page in case order update fails
+            if ($ex->getCode() == 302) {
+                $this->api_log->log('Request URL: ' . $this->paypal_order_api . $paypal_order_id);
+                $this->api_log->log('Request Body: ' . wc_print_r($args, true));
+                wc_add_notice($ex->getMessage());
+                wp_redirect(wc_get_checkout_url());
+            }
         }
     }
 
@@ -1485,6 +1518,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_order_auth_request($woo_order_id) {
         try {
+            $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             $order = wc_get_order($woo_order_id);
             $this->angelleye_ppcp_update_order($order);
             $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
@@ -1563,8 +1597,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
                         $avs_response_order_note .= "\n";
                         $avs_response_order_note .= $processor_response['avs_code'];
-                        if (isset($this->AVSCodes[$processor_response['avs_code']])) {
-                            $avs_response_order_note .= ' : ' . $this->AVSCodes[$processor_response['avs_code']];
+                        if (isset($this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']])) {
+                            $avs_response_order_note .= ' : ' . $this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']];
                         }
                         $order->add_order_note($avs_response_order_note);
                     }
@@ -1572,8 +1606,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $cvv2_response_code = __('Card Security Code Result', 'paypal-for-woocommerce');
                         $cvv2_response_code .= "\n";
                         $cvv2_response_code .= $processor_response['cvv_code'];
-                        if (isset($this->CVV2Codes[$processor_response['cvv_code']])) {
-                            $cvv2_response_code .= ' : ' . $this->CVV2Codes[$processor_response['cvv_code']];
+                        if (isset($this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']])) {
+                            $cvv2_response_code .= ' : ' . $this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']];
                         }
                         $order->add_order_note($cvv2_response_code);
                     }
@@ -1581,13 +1615,22 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $response_code = __('Processor response code Result', 'paypal-for-woocommerce');
                         $response_code .= "\n";
                         $response_code .= $processor_response['response_code'];
-                        if (angelleye_ppcp_processor_response_code($processor_response['response_code'])) {
-                            $response_code .= ' : ' . angelleye_ppcp_processor_response_code($processor_response['response_code']);
+                        if (isset($this->response_code[$processor_response['response_code']])) {
+                            $response_code .= ' : ' . $this->response_code[$processor_response['response_code']];
                         }
                         $order->add_order_note($response_code);
                     }
-                    $currency_code = $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] ?? '';
-                    $value = $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['value'] ?? '';
+                    if (!empty($processor_response['payment_advice_code'])) {
+                        $payment_advice_code = __('Payment Advice Codes Result', 'paypal-for-woocommerce');
+                        $payment_advice_code .= "\n";
+                        $payment_advice_code .= $processor_response['payment_advice_code'];
+                        if (isset($this->payment_advice_code[$processor_response['payment_advice_code']])) {
+                            $payment_advice_code .= ' : ' . $this->payment_advice_code[$processor_response['payment_advice_code']];
+                        }
+                        $order->add_order_note($payment_advice_code);
+                    }
+                    $currency_code = isset($this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
+                    $value = isset($this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['value'] : '';
                     angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
                     angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
                     angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
@@ -1608,7 +1651,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
                     angelleye_ppcp_update_post_meta($order, '_transaction_id', $transaction_id);
                     angelleye_ppcp_update_post_meta($order, '_auth_transaction_id', $transaction_id);
-                    angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
+                    angelleye_ppcp_update_post_meta($order, '_paymentaction', 'authorize');
                     $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                     $order->update_status('on-hold');
@@ -1627,7 +1670,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 $order->add_order_note($error_message);
-                wc_add_notice($error_message, 'error');
+                wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
                 return false;
             }
         } catch (Exception $ex) {
@@ -1730,8 +1773,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
                     $avs_response_order_note .= "\n";
                     $avs_response_order_note .= $processor_response['avs_code'];
-                    if (isset($this->AVSCodes[$processor_response['avs_code']])) {
-                        $avs_response_order_note .= ' : ' . $this->AVSCodes[$processor_response['avs_code']];
+                    if (isset($this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']])) {
+                        $avs_response_order_note .= ' : ' . $this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']];
                     }
                     $order->add_order_note($avs_response_order_note);
                 }
@@ -1739,8 +1782,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $cvv2_response_code = __('Card Security Code Result', 'paypal-for-woocommerce');
                     $cvv2_response_code .= "\n";
                     $cvv2_response_code .= $processor_response['cvv_code'];
-                    if (isset($this->CVV2Codes[$processor_response['cvv_code']])) {
-                        $cvv2_response_code .= ' : ' . $this->CVV2Codes[$processor_response['cvv_code']];
+                    if (isset($this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']])) {
+                        $cvv2_response_code .= ' : ' . $this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']];
                     }
                     $order->add_order_note($cvv2_response_code);
                 }
@@ -1748,13 +1791,22 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $response_code = __('Processor response code Result', 'paypal-for-woocommerce');
                     $response_code .= "\n";
                     $response_code .= $processor_response['response_code'];
-                    if (angelleye_ppcp_processor_response_code($processor_response['response_code'])) {
-                        $response_code .= ' : ' . angelleye_ppcp_processor_response_code($processor_response['response_code']);
+                    if (isset($this->response_code[$processor_response['response_code']])) {
+                        $response_code .= ' : ' . $this->response_code[$processor_response['response_code']];
                     }
                     $order->add_order_note($response_code);
                 }
-                $currency_code = $this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code'] ?? '';
-                $value = $this->api_response['seller_receivable_breakdown']['paypal_fee']['value'] ?? '';
+                if (!empty($processor_response['payment_advice_code'])) {
+                    $payment_advice_code = __('Payment Advice Codes Result', 'paypal-for-woocommerce');
+                    $payment_advice_code .= "\n";
+                    $payment_advice_code .= $processor_response['payment_advice_code'];
+                    if (isset($this->payment_advice_code[$processor_response['payment_advice_code']])) {
+                        $payment_advice_code .= ' : ' . $this->payment_advice_code[$processor_response['payment_advice_code']];
+                    }
+                    $order->add_order_note($payment_advice_code);
+                }
+                $currency_code = isset($this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
+                $value = isset($this->api_response['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['seller_receivable_breakdown']['paypal_fee']['value'] : '';
                 angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
                 angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
                 angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
@@ -1787,7 +1839,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 if (function_exists('wc_add_notice')) {
-                    wc_add_notice($error_message, 'error');
+                    wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
                 }
                 if (!empty($error_message)) {
                     $order->add_order_note('Error Message : ' . $error_message);
@@ -1835,8 +1887,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
                 $avs_response_order_note .= "\n";
                 $avs_response_order_note .= $processor_response->avs_code;
-                if (isset($this->AVSCodes[$processor_response->avs_code])) {
-                    $avs_response_order_note .= ' : ' . $this->AVSCodes[$processor_response->avs_code];
+                if (isset($this->avs_code[$processor_response->avs_code][$payment_source->card->brand])) {
+                    $avs_response_order_note .= ' : ' . $this->avs_code[$processor_response->avs_code][$payment_source->card->brand];
                 }
                 $order->add_order_note($avs_response_order_note);
             }
@@ -1844,22 +1896,31 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $cvv2_response_code = __('Card Security Code Result', 'paypal-for-woocommerce');
                 $cvv2_response_code .= "\n";
                 $cvv2_response_code .= $processor_response->cvv_code;
-                if (isset($this->CVV2Codes[$processor_response->cvv_code])) {
-                    $cvv2_response_code .= ' : ' . $this->CVV2Codes[$processor_response->cvv_code];
+                if (isset($this->cvv_code[$processor_response->cvv_code][$payment_source->card->brand])) {
+                    $cvv2_response_code .= ' : ' . $this->cvv_code[$processor_response->cvv_code][$payment_source->card->brand];
                 }
                 $order->add_order_note($cvv2_response_code);
             }
-            if (!empty($processor_response['response_code'])) {
+            if (!empty($processor_response->response_code)) {
                 $response_code = __('Processor response code Result', 'paypal-for-woocommerce');
                 $response_code .= "\n";
-                $response_code .= $processor_response['response_code'];
-                if (angelleye_ppcp_processor_response_code($processor_response['response_code'])) {
-                    $response_code .= ' : ' . angelleye_ppcp_processor_response_code($processor_response['response_code']);
+                $response_code .= $processor_response->response_code;
+                if (isset($this->response_code[$processor_response->response_code])) {
+                    $response_code .= ' : ' . $this->response_code[$processor_response->response_code];
                 }
                 $order->add_order_note($response_code);
             }
-            $currency_code = $this->checkout_details->purchase_units[0]->payments->captures[0]->seller_receivable_breakdown->paypal_fee->currency_code ?? '';
-            $value = $this->checkout_details->purchase_units[0]->payments->captures[0]->seller_receivable_breakdown->paypal_fee->value ?? '';
+            if (!empty($processor_response->payment_advice_code)) {
+                $payment_advice_code = __('Payment Advice Codes Result', 'paypal-for-woocommerce');
+                $payment_advice_code .= "\n";
+                $payment_advice_code .= $processor_response->payment_advice_code;
+                if (isset($this->payment_advice_code[$processor_response->payment_advice_code])) {
+                    $payment_advice_code .= ' : ' . $this->payment_advice_code[$processor_response->payment_advice_code];
+                }
+                $order->add_order_note($payment_advice_code);
+            }
+            $currency_code = isset($this->checkout_details->purchase_units[0]->payments->captures[0]->seller_receivable_breakdown->paypal_fee->currency_code) ? $this->checkout_details->purchase_units[0]->payments->captures[0]->seller_receivable_breakdown->paypal_fee->currency_code : '';
+            $value = isset($this->checkout_details->purchase_units[0]->payments->captures[0]->seller_receivable_breakdown->paypal_fee->value) ? $this->checkout_details->purchase_units[0]->payments->captures[0]->seller_receivable_breakdown->paypal_fee->value : '';
             angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
             angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
             angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
@@ -2158,7 +2219,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
                     $order->add_order_note($error_message);
                 }
-                wc_add_notice($error_message, 'error');
+                wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
                 return array(
                     'result' => 'fail',
                     'redirect' => ''
@@ -2593,8 +2654,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
                     $avs_response_order_note .= "\n";
                     $avs_response_order_note .= $processor_response['avs_code'];
-                    if (isset($this->AVSCodes[$processor_response['avs_code']])) {
-                        $avs_response_order_note .= ' : ' . $this->AVSCodes[$processor_response['avs_code']];
+                    if (isset($this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']])) {
+                        $avs_response_order_note .= ' : ' . $this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']];
                     }
                     $order->add_order_note($avs_response_order_note);
                 }
@@ -2602,8 +2663,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $cvv2_response_code = __('Card Security Code Result', 'paypal-for-woocommerce');
                     $cvv2_response_code .= "\n";
                     $cvv2_response_code .= $processor_response['cvv_code'];
-                    if (isset($this->CVV2Codes[$processor_response['cvv_code']])) {
-                        $cvv2_response_code .= ' : ' . $this->CVV2Codes[$processor_response['cvv_code']];
+                    if (isset($this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']])) {
+                        $cvv2_response_code .= ' : ' . $this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']];
                     }
                     $order->add_order_note($cvv2_response_code);
                 }
@@ -2611,13 +2672,22 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $response_code = __('Processor response code Result', 'paypal-for-woocommerce');
                     $response_code .= "\n";
                     $response_code .= $processor_response['response_code'];
-                    if (angelleye_ppcp_processor_response_code($processor_response['response_code'])) {
-                        $response_code .= ' : ' . angelleye_ppcp_processor_response_code($processor_response['response_code']);
+                    if (isset($this->response_code[$processor_response['response_code']])) {
+                        $response_code .= ' : ' . $this->response_code[$processor_response['response_code']];
                     }
                     $order->add_order_note($response_code);
                 }
-                $transaction_id = $this->api_response['id'] ?? '';
-                $seller_protection = $this->api_response['seller_protection']['status'] ?? '';
+                if (!empty($processor_response['payment_advice_code'])) {
+                    $payment_advice_code = __('Payment Advice Codes Result', 'paypal-for-woocommerce');
+                    $payment_advice_code .= "\n";
+                    $payment_advice_code .= $processor_response['payment_advice_code'];
+                    if (isset($this->payment_advice_code[$processor_response['payment_advice_code']])) {
+                        $payment_advice_code .= ' : ' . $this->payment_advice_code[$processor_response['payment_advice_code']];
+                    }
+                    $order->add_order_note($payment_advice_code);
+                }
+                $transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
+                $seller_protection = isset($this->api_response['seller_protection']['status']) ? $this->api_response['seller_protection']['status'] : '';
                 $this->api_response = $this->angelleye_ppcp_get_authorized_payment($authorization_id);
                 $payment_status = $this->api_response['status'] ?? '';
                 angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
@@ -2803,7 +2873,6 @@ class AngellEYE_PayPal_PPCP_Payment {
         try {
             $order = wc_get_order($order_id);
             $angelleye_ppcp_payment_method_title = $this->get_payment_method_title_for_order($order_id);
-            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id', null);
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
@@ -2966,6 +3035,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                                 }
                             }
                         }
+
+                    }
+                    if ($this->paymentaction === 'capture') {
+                        $processor_response = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response'] : '';
+                        $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
                         $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
                         $card_response_order_note .= "\n";
                         $card_response_order_note .= 'Last digits : ' . $payment_source['card']['last_digits'];
@@ -2974,15 +3048,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $card_response_order_note .= "\n";
                         $card_response_order_note .= 'Card type : ' . angelleye_ppcp_readable($payment_source['card']['type']);
                         $order->add_order_note($card_response_order_note);
-                    }
-                    if ($this->paymentaction === 'capture') {
-                        $processor_response = $this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response'] ?? '';
                         if (!empty($processor_response['avs_code'])) {
                             $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
                             $avs_response_order_note .= "\n";
                             $avs_response_order_note .= $processor_response['avs_code'];
-                            if (isset($this->AVSCodes[$processor_response['avs_code']])) {
-                                $avs_response_order_note .= ' : ' . $this->AVSCodes[$processor_response['avs_code']];
+                            if (isset($this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']])) {
+                                $avs_response_order_note .= ' : ' . $this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']];
                             }
                             $order->add_order_note($avs_response_order_note);
                         }
@@ -2990,8 +3061,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $cvv2_response_code = __('Card Security Code Result', 'paypal-for-woocommerce');
                             $cvv2_response_code .= "\n";
                             $cvv2_response_code .= $processor_response['cvv_code'];
-                            if (isset($this->CVV2Codes[$processor_response['cvv_code']])) {
-                                $cvv2_response_code .= ' : ' . $this->CVV2Codes[$processor_response['cvv_code']];
+                            if (isset($this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']])) {
+                                $cvv2_response_code .= ' : ' . $this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']];
                             }
                             $order->add_order_note($cvv2_response_code);
                         }
@@ -2999,13 +3070,22 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $response_code = __('Processor response code Result', 'paypal-for-woocommerce');
                             $response_code .= "\n";
                             $response_code .= $processor_response['response_code'];
-                            if (angelleye_ppcp_processor_response_code($processor_response['response_code'])) {
-                                $response_code .= ' : ' . angelleye_ppcp_processor_response_code($processor_response['response_code']);
+                            if (isset($this->response_code[$processor_response['response_code']])) {
+                                $response_code .= ' : ' . $this->response_code[$processor_response['response_code']];
                             }
                             $order->add_order_note($response_code);
                         }
-                        $currency_code = $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] ?? '';
-                        $value = $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value'] ?? '';
+                        if (!empty($processor_response['payment_advice_code'])) {
+                            $payment_advice_code = __('Payment Advice Codes Result', 'paypal-for-woocommerce');
+                            $payment_advice_code .= "\n";
+                            $payment_advice_code .= $processor_response['payment_advice_code'];
+                            if (isset($this->payment_advice_code[$processor_response['payment_advice_code']])) {
+                                $payment_advice_code .= ' : ' . $this->payment_advice_code[$processor_response['payment_advice_code']];
+                            }
+                            $order->add_order_note($payment_advice_code);
+                        }
+                        $currency_code = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
+                        $value = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value'] : '';
                         angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
                         angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
                         angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
@@ -3035,8 +3115,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
                             $avs_response_order_note .= "\n";
                             $avs_response_order_note .= $processor_response['avs_code'];
-                            if (isset($this->AVSCodes[$processor_response['avs_code']])) {
-                                $avs_response_order_note .= ' : ' . $this->AVSCodes[$processor_response['avs_code']];
+                            if (isset($this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']])) {
+                                $avs_response_order_note .= ' : ' . $this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']];
                             }
                             $order->add_order_note($avs_response_order_note);
                         }
@@ -3044,8 +3124,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $cvv2_response_code = __('Card Security Code Result', 'paypal-for-woocommerce');
                             $cvv2_response_code .= "\n";
                             $cvv2_response_code .= $processor_response['cvv_code'];
-                            if (isset($this->CVV2Codes[$processor_response['cvv_code']])) {
-                                $cvv2_response_code .= ' : ' . $this->CVV2Codes[$processor_response['cvv_code']];
+                            if (isset($this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']])) {
+                                $cvv2_response_code .= ' : ' . $this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']];
                             }
                             $order->add_order_note($cvv2_response_code);
                         }
@@ -3053,13 +3133,22 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $response_code = __('Processor response code Result', 'paypal-for-woocommerce');
                             $response_code .= "\n";
                             $response_code .= $processor_response['response_code'];
-                            if (angelleye_ppcp_processor_response_code($processor_response['response_code'])) {
-                                $response_code .= ' : ' . angelleye_ppcp_processor_response_code($processor_response['response_code']);
+                            if ($this->response_code[$processor_response['response_code']]) {
+                                $response_code .= ' : ' . $this->response_code[$processor_response['response_code']];
                             }
                             $order->add_order_note($response_code);
                         }
-                        $currency_code = $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] ?? '';
-                        $value = $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['value'] ?? '';
+                        if (!empty($processor_response['payment_advice_code'])) {
+                            $payment_advice_code = __('Payment Advice Codes Result', 'paypal-for-woocommerce');
+                            $payment_advice_code .= "\n";
+                            $payment_advice_code .= $processor_response['payment_advice_code'];
+                            if (isset($this->payment_advice_code[$processor_response['payment_advice_code']])) {
+                                $payment_advice_code .= ' : ' . $this->payment_advice_code[$processor_response['payment_advice_code']];
+                            }
+                            $order->add_order_note($payment_advice_code);
+                        }
+                        $currency_code = isset($this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
+                        $value = isset($this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['value'] : '';
                         angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
                         angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
                         angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
@@ -3082,7 +3171,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         angelleye_ppcp_update_post_meta($order, '_payment_status', $payment_status);
                         angelleye_ppcp_update_post_meta($order, '_transaction_id', $transaction_id);
                         angelleye_ppcp_update_post_meta($order, '_auth_transaction_id', $transaction_id);
-                        angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
+                        angelleye_ppcp_update_post_meta($order, '_paymentaction', 'authorize');
                         $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                         $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                         $order->update_status('on-hold');
@@ -4180,7 +4269,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             $angelleye_ppcp_old_payment_method = get_post_meta($order_id, '_angelleye_ppcp_old_payment_method', true);
-            if(empty($angelleye_ppcp_old_payment_method)) {
+            if (empty($angelleye_ppcp_old_payment_method)) {
                 $angelleye_ppcp_old_payment_method = get_post_meta($order_id, '_old_payment_method', true);
             }
             if (!empty($angelleye_ppcp_old_payment_method)) {
@@ -4258,5 +4347,4 @@ class AngellEYE_PayPal_PPCP_Payment {
 
         }
     }
-
 }

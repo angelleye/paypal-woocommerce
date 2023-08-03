@@ -46,6 +46,12 @@ class Angelleye_PayPal_WC
 	var $PathToCertKeyPEM = '';
 	var $SSL = '';
         var $Force_tls_one_point_two = '';
+        public $NVPCredentials;
+        public $Countries;
+        public $States;
+        public $AVSCodes;
+        public $CVV2Codes;
+        public $CurrencyCodes;
 	
 	/**
 	 * Constructor

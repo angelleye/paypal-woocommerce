@@ -1,4 +1,25 @@
 (function ($) {
+
+    const PPCP_CartFlowsHelper = {
+        getUrlParameter( param ) {
+            const page_url = decodeURIComponent(
+                    window.location.search.substring( 1 )
+                ),
+                url_variables = page_url.split( '&' );
+            let parameter_name, i;
+
+            for ( i = 0; i < url_variables.length; i++ ) {
+                parameter_name = url_variables[ i ].split( '=' );
+
+                if ( parameter_name[ 0 ] === param ) {
+                    return parameter_name[ 1 ] === undefined
+                        ? true
+                        : parameter_name[ 1 ];
+                }
+            }
+        },
+    };
+
     var wcf_init_create_paypal_ppcp_angelleye_payments_order = function (ajax_data, gateway) {
         ajax_data.action = 'wcf_create_paypal_ppcp_angelleye_payments_order';
         $.ajax({
@@ -18,7 +39,7 @@
     };
     var wcf_capture_paypal_ppcp_angelleye_payments_order = function () {
         if ('undefined' !== typeof cartflows_offer) {
-            var is_ppcp_return = CartFlowsHelper.getUrlParameter('wcf-ppcp-angelleye-return');
+            var is_ppcp_return = PPCP_CartFlowsHelper.getUrlParameter('wcf-ppcp-angelleye-return');
             var ppcp_nonce = '';
             if (is_ppcp_return) {
                 var ajax_data = {

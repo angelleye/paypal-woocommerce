@@ -83,7 +83,7 @@ if (!function_exists('angelleye_ppcp_update_post_meta')) {
             update_post_meta($order->id, $key, $value);
         } else {
             $order->update_meta_data($key, $value);
-            $order->save_meta_data();
+            $order->save();
         }
     }
 
@@ -218,7 +218,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -419,8 +419,12 @@ if (!function_exists('angelleye_ppcp_currency_has_decimals')) {
 if (!function_exists('angelleye_ppcp_round')) {
 
     function angelleye_ppcp_round($price, $precision) {
-        $round_price = round($price, $precision);
-        return number_format($round_price, $precision, '.', '');
+        try {
+            $round_price = round($price, $precision);
+            return number_format($round_price, $precision, '.', '');
+        } catch (Exception $ex) {
+
+        }
     }
 
 }
@@ -502,151 +506,6 @@ if (!function_exists('is_angelleye_aws_down')) {
         }
         if ($status === 'yes') {
             return true;
-        }
-        return false;
-    }
-
-}
-if (!function_exists('angelleye_ppcp_processor_response_code')) {
-
-    function angelleye_ppcp_processor_response_code($code = '') {
-        $code_list = array('0000' => 'APPROVED',
-            '0100' => 'REFERRAL',
-            '0800' => 'BAD_RESPONSE_REVERSAL_REQUIRED',
-            '1000' => 'PARTIAL_AUTHORIZATION',
-            '1300' => 'INVALID_DATA_FORMAT',
-            '1310' => 'INVALID_AMOUNT',
-            '1312' => 'INVALID_TRANSACTION_CARD_ISSUER_ACQUIRER',
-            '1317' => 'INVALID_CAPTURE_DATE',
-            '1320' => 'INVALID_CURRENCY_CODE',
-            '1330' => 'INVALID_ACCOUNT',
-            '1335' => 'INVALID_ACCOUNT_RECURRING',
-            '1340' => 'INVALID_TERMINAL',
-            '1350' => 'INVALID_MERCHANT',
-            '1360' => 'BAD_PROCESSING_CODE',
-            '1370' => 'INVALID_MCC',
-            '1380' => 'INVALID_EXPIRATION',
-            '1382' => 'INVALID_CARD_VERIFICATION_VALUE',
-            '1384' => 'INVALID_LIFE_CYCLE_OF_TRANSACTION',
-            '1390' => 'INVALID_ORDER',
-            '1393' => 'TRANSACTION_CANNOT_BE_COMPLETED',
-            '0500' => 'DO_NOT_HONOR',
-            '5100' => 'GENERIC_DECLINE',
-            '5110' => 'CVV2_FAILURE',
-            '5120' => 'INSUFFICIENT_FUNDS',
-            '5130' => 'INVALID_PIN',
-            '5140' => 'CARD_CLOSED',
-            '5150' => 'PICKUP_CARD_SPECIAL_CONDITIONS. Try using another card. Do not retry the same card.',
-            '5160' => 'UNAUTHORIZED_USER',
-            '5170' => 'AVS_FAILURE',
-            '5180' => 'INVALID_OR_RESTRICTED_CARD. Try using another card. Do not retry the same card',
-            '5190' => 'SOFT_AVS',
-            '5200' => 'DUPLICATE_TRANSACTION',
-            '5210' => 'INVALID_TRANSACTION',
-            '5400' => 'EXPIRED_CARD',
-            '5500' => 'INCORRECT_PIN_REENTER',
-            '5700' => 'TRANSACTION_NOT_PERMITTED. Outside of scope of accepted business.',
-            '5800' => 'REVERSAL_REJECTED',
-            '5900' => 'INVALID_ISSUE',
-            '5910' => 'ISSUER_NOT_AVAILABLE_NOT_RETRIABLE',
-            '5920' => 'ISSUER_NOT_AVAILABLE_RETRIABLE',
-            '6300' => 'ACCOUNT_NOT_ON_FILE',
-            '7600' => 'APPROVED_NON_CAPTURE',
-            '7700' => 'ERROR_3DS',
-            '7710' => 'AUTHENTICATION_FAILED',
-            '7800' => 'BIN_ERROR',
-            '7900' => 'PIN_ERROR',
-            '8000' => 'PROCESSOR_SYSTEM_ERROR',
-            '8010' => 'HOST_KEY_ERROR',
-            '8020' => 'CONFIGURATION_ERROR',
-            '8030' => 'UNSUPPORTED_OPERATION',
-            '8100' => 'FATAL_COMMUNICATION_ERROR',
-            '8110' => 'RETRIABLE_COMMUNICATION_ERROR',
-            '8220' => 'SYSTEM_UNAVAILABLE',
-            '9100' => 'DECLINED_PLEASE_RETRY. Retry.',
-            '9500' => 'SUSPECTED_FRAUD. Try using another card. Do not retry the same card',
-            '9510' => 'SECURITY_VIOLATION',
-            '9520' => 'LOST_OR_STOLEN. Try using another card. Do not retry the same card',
-            '9530' => 'HOLD_CALL_CENTER. The merchant must call the number on the back of the card. POS scenario',
-            '9540' => 'REFUSED_CARD',
-            '9600' => 'UNRECOGNIZED_RESPONSE_CODE',
-            '5930' => 'CARD_NOT_ACTIVATED',
-            'PPMD' => 'PPMD',
-            'PPCE' => 'CE_REGISTRATION_INCOMPLETE',
-            'PPNT' => 'NETWORK_ERROR',
-            'PPCT' => 'CARD_TYPE_UNSUPPORTED',
-            'PPTT' => 'TRANSACTION_TYPE_UNSUPPORTED',
-            'PPCU' => 'CURRENCY_USED_INVALID',
-            'PPQC' => 'QUASI_CASH_UNSUPPORTED',
-            'PPVE' => 'VALIDATION_ERROR',
-            'PPVT' => 'VIRTUAL_TERMINAL_UNSUPPORTED',
-            'PPDC' => 'DCC_UNSUPPORTED',
-            'PPER' => 'INTERNAL_SYSTEM_ERROR',
-            'PPIM' => 'ID_MISMATCH',
-            'PPH1' => 'H1_ERROR',
-            'PPSD' => 'STATUS_DESCRIPTION',
-            'PPAG' => 'ADULT_GAMING_UNSUPPORTED',
-            'PPLS' => 'LARGE_STATUS_CODE',
-            'PPCO' => 'COUNTRY',
-            'PPAD' => 'BILLING_ADDRESS',
-            'PPAU' => 'MCC_CODE',
-            'PPUC' => 'CURRENCY_CODE_UNSUPPORTED',
-            'PPUR' => 'UNSUPPORTED_REVERSAL',
-            'PPVC' => 'VALIDATE_CURRENCY',
-            'PPS0' => 'BANKAUTH_ROW_MISMATCH',
-            'PPS1' => 'BANKAUTH_ROW_SETTLED',
-            'PPS2' => 'BANKAUTH_ROW_VOIDED',
-            'PPS3' => 'BANKAUTH_EXPIRED',
-            'PPS4' => 'CURRENCY_MISMATCH',
-            'PPS5' => 'CREDITCARD_MISMATCH',
-            'PPS6' => 'AMOUNT_MISMATCH',
-            'PPRF' => 'INVALID_PARENT_TRANSACTION_STATUS',
-            'PPEX' => 'EXPIRY_DATE',
-            'PPAX' => 'AMOUNT_EXCEEDED',
-            'PPDV' => 'AUTH_MESSAGE',
-            'PPDI' => 'DINERS_REJECT',
-            'PPAR' => 'AUTH_RESULT',
-            'PPBG' => 'BAD_GAMING',
-            'PPGR' => 'GAMING_REFUND_ERROR',
-            'PPCR' => 'CREDIT_ERROR',
-            'PPAI' => 'AMOUNT_INCOMPATIBLE',
-            'PPIF' => 'IDEMPOTENCY_FAILURE',
-            'PPMC' => 'BLOCKED_Mastercard',
-            'PPAE' => 'AMEX_DISABLED',
-            'PPFV' => 'FIELD_VALIDATION_FAILED',
-            'PPII' => 'INVALID_INPUT_FAILURE',
-            'PPPM' => 'INVALID_PAYMENT_METHOD',
-            'PPUA' => 'USER_NOT_AUTHORIZED',
-            'PPFI' => 'INVALID_FUNDING_INSTRUMENT',
-            'PPEF' => 'EXPIRED_FUNDING_INSTRUMENT',
-            'PPFR' => 'RESTRICTED_FUNDING_INSTRUMENT',
-            'PPEL' => 'EXCEEDS_FREQUENCY_LIMIT',
-            'PCVV' => 'CVV_FAILURE',
-            'PPTV' => 'INVALID_VERIFICATION_TOKEN',
-            'PPTE' => 'VERIFICATION_TOKEN_EXPIRED',
-            'PPPI' => 'INVALID_PRODUCT',
-            'PPIT' => 'INVALID_TRACE_ID',
-            'PPTF' => 'INVALID_TRACE_REFERENCE',
-            'PPFE' => 'FUNDING_SOURCE_ALREADY_EXISTS',
-            'PPTR' => 'VERIFICATION_TOKEN_REVOKED',
-            'PPTI' => 'INVALID_TRANSACTION_ID',
-            'PPD3' => 'SECURE_ERROR_3DS',
-            'PPPH' => 'NO_PHONE_FOR_DCC_TRANSACTION',
-            'PPAV' => 'ARC_AVS',
-            'PPC2' => 'ARC_CVV',
-            'PPLR' => 'LATE_REVERSAL',
-            'PPNC' => 'NOT_SUPPORTED_NRC',
-            'PPRR' => 'MERCHANT_NOT_REGISTERED',
-            'PPSC' => 'ARC_SCORE',
-            'PPSE' => 'AMEX_DENIED',
-            'PPUE' => 'UNSUPPORT_ENTITY',
-            'PPUI' => 'UNSUPPORT_INSTALLMENT',
-            'PPUP' => 'UNSUPPORT_POS_FLAG',
-            'PPRE' => 'UNSUPPORT_REFUND_ON_PENDING_BC',
-        );
-
-        if (isset($code_list[$code])) {
-            return $code_list[$code];
         }
         return false;
     }
@@ -966,7 +825,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -991,7 +850,7 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1285,7 +1144,7 @@ if (!function_exists('angelleye_ppcp_get_paypal_details')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1325,7 +1184,7 @@ if (!function_exists('angelleye_ppcp_get_classic_paypal_details')) {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1350,6 +1209,12 @@ if (!function_exists('angelleye_is_apple_pay_enable')) {
 
 }
 
-
-
-
+if (!function_exists('angelleye_session_expired_exception')) {
+    /**
+     * Throws session not found exception message
+     * @throws Exception
+     */
+    function angelleye_session_expired_exception() {
+        throw new Exception(__('Sorry, your session has expired.', 'woocommerce'), 302);
+    }
+}

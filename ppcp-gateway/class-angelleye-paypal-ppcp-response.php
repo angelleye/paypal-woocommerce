@@ -8,6 +8,7 @@ class AngellEYE_PayPal_PPCP_Response {
     public $setting_obj;
     public $generate_signup_link_default_request_param;
     protected static $_instance = null;
+    public $is_sandbox;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -65,7 +66,7 @@ class AngellEYE_PayPal_PPCP_Response {
             if (is_wp_error($paypal_api_response)) {
                 delete_transient('is_angelleye_aws_down');
                 $response = array(
-                    'status' => 'faild',
+                    'status' => 'failed',
                     'body' => array('error_message' => $paypal_api_response->get_error_message(), 'error_code' => $paypal_api_response->get_error_code())
                 );
             } else {

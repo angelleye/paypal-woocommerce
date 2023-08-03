@@ -18,6 +18,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $need_to_display_apple_pay_button = false;
         public $merchant_id;
         public bool $is_ppcp_connected;
+        public $is_sandbox;
+        public $enable_tokenized_payments;
+        public $is_multi_account_active;
 
         public static function instance() {
             if (is_null(self::$_instance)) {
@@ -82,7 +85,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce'
                 ),
                 'account_settings' => '',
-                'testmode' => 'yes',
+                'testmode' => 'no',
                 'live_onboarding' => '',
                 'live_disconnect' => '',
                 'sandbox_onboarding' => '',
@@ -1533,6 +1536,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'options' => $paymentaction_options,
                 ),
+                'auto_capture_auth' => array(
+                    'title' => __('Automatic Capture of Pending Authorizations', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('Automatic Capture of Pending Authorizations.', 'paypal-for-woocommerce'),
+                    'default' => 'yes',
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'desc_tip' => true
+                ),
                 'invoice_prefix' => array(
                     'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
                     'type' => 'text',
@@ -1670,14 +1681,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'label' => __('Enable admin email notifications for errors.', 'paypal-for-woocommerce'),
                     'default' => 'yes',
                     'description' => __('This will send a detailed error email to the WordPress site administrator if a PayPal API error occurs.', 'paypal-for-woocommerce'),
-                    'desc_tip' => true
-                ),
-                'auto_capture_auth' => array(
-                    'title' => __('Automatic Capture of Pending Authorizations', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('Automatic Capture of Pending Authorizations.', 'paypal-for-woocommerce'),
-                    'default' => 'yes',
-                    'description' => __('', 'paypal-for-woocommerce'),
                     'desc_tip' => true
                 ),
                 'debug' => array(

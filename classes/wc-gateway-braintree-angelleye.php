@@ -14,6 +14,28 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public $braintree_gateway;
     public $gateway;
     public $client_token;
+    public $enable_tokenized_payments;
+    public $sandbox;
+    public $merchant_account_id;
+    public $environment;
+    public $merchant_id;
+    public $private_key;
+    public $public_key;
+    public $enable_braintree_drop_in;
+    public $debug;
+    public $is_encrypt;
+    public $threed_secure_enabled;
+    public $softdescriptor_value;
+    public $softdescriptor;
+    public $fraud_tool;
+    public $payment_action;
+    public $enable_google_pay;
+    public $enable_apple_pay;
+    public $enable_braintree_ach;
+    public $ach_tokenization_key;
+    public $ach_business_name;
+    public $response;
+    public $storeInVaultOnSuccess;
     
     function __construct() {
         $this->id = 'braintree';

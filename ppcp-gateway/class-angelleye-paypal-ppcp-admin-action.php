@@ -19,6 +19,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public $setting_obj;
     public $is_auto_capture_auth;
     public $seller_onboarding;
+    public $is_sandbox;
+    public $merchant_id;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -202,10 +204,17 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         }
     }
 
-    public function angelleye_ppcp_order_action_callback() {
+    public function angelleye_ppcp_order_action_callback($post, $metabox) {
         try {
             global $theorder;
+            if ( ! is_object( $theorder ) ) {
+                $theorder = wc_get_order( $post->ID );
+            }
             $order = $theorder;
+            if (empty($order)) {
+                echo __('Error: Unable to detect the order, please refresh again to retry or Contact PayPal For WooCommerce support.', 'paypal-for-woocommerce');
+                return;
+            }
             $this->order = $order;
             $this->ae_capture_amount = 0;
             $this->ae_refund_amount = 0;
@@ -214,7 +223,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id');
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
-            if (isset($this->payment_response) && !empty($this->payment_response) && $this->payment_response['intent'] === 'AUTHORIZE') {
+            if (isset($this->payment_response) && !empty($this->payment_response) && isset($this->payment_response['intent']) && $this->payment_response['intent'] === 'AUTHORIZE') {
                 if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']) && !empty($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {
                     if (isset($this->payment_response['purchase_units']['0']['payments']['refunds'])) {
                         foreach ($this->payment_response['purchase_units']['0']['payments']['refunds'] as $key => $refunds) {
@@ -578,7 +587,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     Please submit a <a href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">help desk</a> ticket with any questions or concerns about this.',
                 'is_dismiss' => true,
             );
-            $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status($this->merchant_id);
+            $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status_from_cache($this->merchant_id);
             $notice_data = json_decode(json_encode($notice_data));
             $notice_type = angelleye_ppcp_display_upgrade_notice_type($result);
             if (!empty($notice_type)) {

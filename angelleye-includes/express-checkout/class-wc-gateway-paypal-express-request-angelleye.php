@@ -19,6 +19,22 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     public $order_param;
     public $user_email_address;
     public $send_items;
+    public $skip_final_review;
+    public $billing_address;
+    public $disable_term;
+    public $softdescriptor;
+    public $testmode;
+    public $fraud_management_filters;
+    public $email_notify_order_cancellations;
+    public $pending_authorization_order_status;
+    public $enable_in_context_checkout_flow;
+    public $id;
+    public $API_Endpoint;
+    public $PAYPAL_URL;
+    public $api_username;
+    public $api_password;
+    public $api_signature;
+    public $Force_tls_one_point_two;
 
     public function __construct($gateway) {
         try {

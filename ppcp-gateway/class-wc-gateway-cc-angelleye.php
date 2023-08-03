@@ -5,6 +5,21 @@ if (!defined('ABSPATH')) {
 
 class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     use WC_Gateway_Base_AngellEYE;
+    public $enable_paypal_checkout_page;
+    public $checkout_page_display_option;
+    public $sandbox;
+    public $sandbox_merchant_id;
+    public $live_merchant_id;
+    public $sandbox_client_id;
+    public $sandbox_secret_id;
+    public $live_client_id;
+    public $live_secret_id;
+    public $advanced_card_payments;
+    public $merchant_id;
+    public $client_id;
+    public $secret_id;
+    public $enable_tokenized_payments;
+    
     public function __construct() {
         try {
             $this->id = 'angelleye_ppcp_cc';
@@ -109,6 +124,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', 'card');
                 angelleye_ppcp_add_used_payment_method_name_to_subscription($woo_order_id);
                 update_post_meta($woo_order_id, '_payment_tokens_id', $token->get_token());
+                angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 $is_success = $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($woo_order_id);
                 if ($is_success) {

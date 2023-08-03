@@ -19,6 +19,36 @@ class AngellEYE_PayPal_PPCP_Request {
     public $ppcp_host;
     public $payment_request;
     public static $capabilitiesToCheck = null;
+    public $paymentaction;
+    public $sandbox_client_id;
+    public $sandbox_secret_id;
+    public $live_client_id;
+    public $live_secret_id;
+    public $is_sandbox_third_party_used;
+    public $is_sandbox_first_party_used;
+    public $is_live_third_party_used;
+    public $is_live_first_party_used;
+    public $merchant_id;
+    public $client_id;
+    public $secret_id;
+    public $is_first_party_used;
+    public $skip_final_review;
+    public $billing_address;
+    public $disable_term;
+    public $softdescriptor;
+    public $testmode;
+    public $fraud_management_filters;
+    public $email_notify_order_cancellations;
+    public $pending_authorization_order_status;
+    public $enable_in_context_checkout_flow;
+    public $id;
+    public $API_Endpoint;
+    public $PAYPAL_URL;
+    public $api_username;
+    public $api_password;
+    public $api_signature;
+    public $Force_tls_one_point_two;
+    
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -216,7 +246,7 @@ class AngellEYE_PayPal_PPCP_Request {
         }
         $seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
         $result = $seller_onboarding->angelleye_track_seller_onboarding_status($merchant_id);
-        if(!isset($result['products'])) {
+        if (!isset($result['products'])) {
             self::$capabilitiesToCheck = false;
             return false;
         }
