@@ -1026,6 +1026,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if ($this->enable_tokenized_payments && is_user_logged_in()) {
                 $attributes['data-user-id-token'] = $this->payment_request->angelleye_ppcp_get_generate_id_token();
             }
+            if (!empty($this->sdk_merchant_id)) {
+                if (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) > 0) {
+                    $sdk_merchant_id_string = implode(',', $this->sdk_merchant_id);
+                    $attributes['data-merchant-id'] = $sdk_merchant_id_string;
+                }
+            }
         }
         return $attributes;
     }
