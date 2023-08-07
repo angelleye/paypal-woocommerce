@@ -500,7 +500,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
-    public function angelleye_ppcp_display_order_fee($order_id) {
+    public static function angelleye_ppcp_display_order_fee($order_id) {
         $order = wc_get_order($order_id);
         $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         if ('angelleye_ppcp' !== $payment_method) {

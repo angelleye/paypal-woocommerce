@@ -19,7 +19,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     public $client_id;
     public $secret_id;
     public $enable_tokenized_payments;
-    
+
     public function __construct() {
         try {
             $this->id = 'angelleye_ppcp_cc';
@@ -55,24 +55,24 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function get_icon() {
-        $icon = parent::get_icon();
         $icons = $this->setting_obj->get('disable_cards', array());
-        if (empty($icons)) {
-            return $icon;
-        }
         $title_options = $this->card_labels();
+        $images = [];
+        $totalIcons = 0;
         foreach ($title_options as $icon_key => $icon_value) {
             if (!in_array($icon_key, $icons)) {
                 if ($this->dcc_applies->can_process_card($icon_key)) {
-                    $images[] = '<img
-                 title="' . esc_attr($title_options[$icon_key]) . '"
-                 src="' . esc_url(PAYPAL_FOR_WOOCOMMERCE_ASSET_URL) . 'ppcp-gateway/images/' . esc_attr($icon_key) . '.svg"
-                 class="ppcp-card-icon"
-                > ';
+                    if ($totalIcons> 0 && $totalIcons % 4 === 0) {
+                        $images[] = '<div class="flex-break"></div>';
+                    }
+                    $iconUrl = esc_url(PAYPAL_FOR_WOOCOMMERCE_ASSET_URL) . 'ppcp-gateway/images/' . esc_attr($icon_key) . '.svg';
+                    $iconTitle = esc_attr($icon_value);
+                    $images[] = sprintf('<img title="%s" src="%s" class="ppcp-card-icon ae-icon-%s" />', $iconTitle, $iconUrl, $iconTitle);
+                    $totalIcons++;
                 }
             }
         }
-        return implode('', $images);
+        return '<div class="ae-cc-icons-list">' . implode('', $images) . '</div><div class="clearfix"></div>';
     }
 
     private function card_labels(): array {
@@ -86,6 +86,11 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     'Mastercard',
                     'Name of credit card',
                     'paypal-for-woocommerce'
+            ),
+            'maestro' => _x(
+                'Maestro',
+                'Name of credit card',
+                'paypal-for-woocommerce'
             ),
             'amex' => _x(
                     'American Express',
@@ -125,7 +130,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 angelleye_ppcp_add_used_payment_method_name_to_subscription($woo_order_id);
                 update_post_meta($woo_order_id, '_payment_tokens_id', $token->get_token());
                 angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
-                
+
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 $is_success = $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($woo_order_id);
                 if ($is_success) {
