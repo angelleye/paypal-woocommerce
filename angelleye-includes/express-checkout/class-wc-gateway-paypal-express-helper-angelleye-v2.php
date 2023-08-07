@@ -841,11 +841,11 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function woocommerce_paypal_express_checkout_button_angelleye($return = false, $possition = null) {
-        if (!defined('WOOCOMMERCE_CART')) {
-            define('WOOCOMMERCE_CART', true);
-        }
         if (!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
             return false;
+        }
+        if (!defined('WOOCOMMERCE_CART')) {
+            define('WOOCOMMERCE_CART', true);
         }
         if ($this->enabled == 'yes' && $this->show_on_cart == 'yes' && isset(WC()->cart) && WC()->cart->needs_payment()) {
             $cart_button_html = '';
@@ -918,11 +918,11 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     }
 
     public function checkout_message() {
-        if (!defined('WOOCOMMERCE_CART')) {
-            define('WOOCOMMERCE_CART', true);
-        }
         if (AngellEYE_Utility::is_express_checkout_credentials_is_set() == false) {
             return false;
+        }
+        if (!defined('WOOCOMMERCE_CART')) {
+            define('WOOCOMMERCE_CART', true);
         }
         if (!AngellEYE_Utility::is_valid_for_use_paypal_express()) {
             return false;
