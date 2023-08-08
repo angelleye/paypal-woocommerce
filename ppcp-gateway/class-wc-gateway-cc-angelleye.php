@@ -40,6 +40,9 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->live_client_id = $this->setting_obj->get('api_client_id', '');
             $this->live_secret_id = $this->setting_obj->get('api_secret', '');
             $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
+            if ($this->dcc_applies->for_country_currency() === false) {
+                $this->advanced_card_payments = false;
+            }
             if ($this->sandbox) {
                 $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
                 $this->client_id = $this->sandbox_client_id;
