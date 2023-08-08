@@ -43,6 +43,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
+
+        add_filter('woocommerce_currency', array($this, 'angelleye_get_scm_current_woocommerce_currency'), 99, 1);
+
+        add_action("woocommerce_checkout_create_order", array($this, "angelleye_convert_order_prices_to_active_currency"), 9999, 2);
     }
 
     public function angelleye_ppcp_load_class() {
@@ -568,5 +572,80 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     private function no_liability_shift(AuthResult $result): int {
         
+    }
+
+    /**
+     * Get current active woocommerce currency by scm multicurrency plugin
+     */
+    public function angelleye_get_scm_current_woocommerce_currency( $currency ) {
+        if(function_exists("scd_get_bool_option")) {
+            $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
+        } else {
+            $scd_option = get_option('scd_general_options');
+            $multicurrency_payment = ( isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true ) ? true : false;
+        }
+        if(function_exists("scd_get_target_currency") && $multicurrency_payment) {
+            $currency = scd_get_target_currency();
+        }
+        return $currency;
+    }
+
+    /**
+     * Convert the order prices to active currency
+     */
+    public function angelleye_convert_order_prices_to_active_currency($order, $data) {
+        if(function_exists("scd_get_bool_option")) {
+            $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
+        } else {
+            $scd_option = get_option('scd_general_options');
+            $multicurrency_payment = ( isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true ) ? true : false;
+        }
+        if(function_exists("scd_get_target_currency") && $multicurrency_payment) {
+            // Get the woocommerce base currency
+            $base_currency = get_option( 'woocommerce_currency');
+
+            // Get the target currency
+            $target_currency = scd_get_target_currency();
+            
+            $rate = scd_get_conversion_rate_origine ($target_currency,$base_currency);
+            
+            $rate_c = scd_get_conversion_rate ($base_currency, $target_currency);
+            foreach( $order->get_items( array( 'line_item', 'tax', 'shipping', 'fee', 'coupon'  ) ) as $item_id => $item ) {
+
+                // Line items types are products. Convert their price.
+                if( $item['type'] === 'line_item' ) {
+                    $product = $item->get_product();
+                    $product_id = $product->get_id();
+                    
+                    $new_price = $item->get_subtotal() * $rate_c;
+                    
+                    $item->set_subtotal( $new_price ); 
+                        
+                    $new_price = $item->get_total() * $rate_c ;
+                        
+                    $item->set_total( $new_price ); 
+
+                } else if( $item['type'] === 'shipping' ) {
+
+                    $new_price = $item->get_total() * $rate_c ;
+                    // Set the shipping total
+                    $item->set_total( $new_price );
+                } elseif( $item['type'] === 'fee' ) {
+                    
+                    $new_price = $item->get_amount() * $rate_c ;
+                    // Set the fee total
+                    $item->set_total( $new_price );
+                } elseif( $item['type'] === 'coupon' ) {
+
+                    $new_price = $item->get_discount() * $rate_c;
+                    // Set the discount price
+                    $item->set_discount( $new_price );
+
+                    $coupons_used = true;
+                }
+                
+            }
+            $order->calculate_totals();
+        }
     }
 }

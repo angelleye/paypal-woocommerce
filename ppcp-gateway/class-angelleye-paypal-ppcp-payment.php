@@ -420,15 +420,49 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $rounded_total = $this->angelleye_ppcp_get_rounded_total_in_cart();
             $discounts = WC()->cart->get_cart_discount_total();
+            
+            /**
+             * SCM Multicurrency plugin compatibility start
+             */
+            $cart_contents_total = WC()->cart->cart_contents_total + $discounts;
+            $order_tax = WC()->cart->tax_total + WC()->cart->shipping_tax_total;
+            $shipping_total = WC()->cart->shipping_total;
+            $cart_total = WC()->cart->total;
+            $items = $this->angelleye_ppcp_get_paypal_line_items_from_cart();
+            
+            if(function_exists("scd_get_bool_option")) {
+                $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
+            } else {
+                $scd_option = get_option('scd_general_options');
+                $multicurrency_payment = ( isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true ) ? true : false;
+            }
+            if(function_exists("scd_get_target_currency") && $multicurrency_payment) {
+                $target_currency = scd_get_target_currency();
+                // Get the woocommerce base currency
+                $base_currency = get_option( 'woocommerce_currency');
+                $rate = scd_get_conversion_rate_origine ($target_currency,$base_currency);
+                $rate_c = scd_get_conversion_rate ($base_currency, $target_currency);
+                $cart_contents_total = $cart_contents_total * $rate_c;
+                $order_tax = $order_tax * $rate_c;
+                $shipping_total = $shipping_total * $rate_c;
+                $cart_total = $cart_total * $rate_c;
+                $rounded_total = angelleye_ppcp_round($rounded_total * $rate_c, $decimals);
+                foreach ($items as $key => $item) {
+                    $items[$key]['amount'] = angelleye_ppcp_round($item['amount'] * $rate_c, $decimals);
+                }
+            }
+            /**
+             * SCM Multicurrency plugin compatibility END
+             */
             $details = array(
-                'total_item_amount' => angelleye_ppcp_round(WC()->cart->cart_contents_total + $discounts, $decimals),
-                'order_tax' => angelleye_ppcp_round(WC()->cart->tax_total + WC()->cart->shipping_tax_total, $decimals),
-                'shipping' => angelleye_ppcp_round(WC()->cart->shipping_total, $decimals),
-                'items' => $this->angelleye_ppcp_get_paypal_line_items_from_cart(),
+                'total_item_amount' => angelleye_ppcp_round($cart_contents_total, $decimals),
+                'order_tax' => angelleye_ppcp_round($order_tax, $decimals),
+                'shipping' => angelleye_ppcp_round($shipping_total, $decimals),
+                'items' => $items,
                 'shipping_address' => $this->angelleye_ppcp_get_address_from_customer(),
                 'email' => $old_wc ? WC()->customer->billing_email : WC()->customer->get_billing_email(),
             );
-            return $this->angelleye_ppcp_get_details($details, $discounts, $rounded_total, WC()->cart->total);
+            return $this->angelleye_ppcp_get_details($details, $discounts, $rounded_total, $cart_total);
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
