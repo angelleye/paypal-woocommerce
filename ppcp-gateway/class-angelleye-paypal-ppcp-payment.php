@@ -143,8 +143,8 @@ class AngellEYE_PayPal_PPCP_Payment {
         if (!empty($woo_order_id)) {
             $order = wc_get_order($woo_order_id);
             $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id');
-
-            if (!empty($existing_paypal_order_id)) {
+            $existing_reference_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_reference_id');
+            if (!empty($existing_paypal_order_id) && !empty($existing_reference_id)) {
                 // Get the order detail using API to see if the order id is still valid or its expired
                 // if its expired then trigger the Create order request again.
                 // ------------------------------------------------------------------
@@ -157,10 +157,18 @@ class AngellEYE_PayPal_PPCP_Payment {
                 //        }
                 //    ],
                 // ------------------------------------------------------------------
+                //   [
+                //        {
+                //            "issue": "ORDER_ALREADY_CAPTURED",
+                //            "description": "Order already captured.If 'intent=CAPTURE' only one capture per order is allowed."
+                //        }
+                //    ]
                 $paypal_order = $this->angelleye_ppcp_get_paypal_order($existing_paypal_order_id);
-                if ($paypal_order) {
+                if ($paypal_order && !$this->is_paypal_order_capture_triggered($paypal_order)) {
                     // set the order id in session so that update_order can update the order details
                     angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', $existing_paypal_order_id);
+                    angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $existing_reference_id);
+
                     $this->angelleye_ppcp_update_order($order);
                     $return_response['currencyCode'] = $order->get_currency('');
                     $return_response['totalAmount'] = $order->get_total('');
@@ -295,6 +303,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             if ($woo_order_id != null) {
+                update_post_meta($woo_order_id, '_paypal_reference_id', $reference_id);
                 $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
                 if (!empty($angelleye_ppcp_payment_method_title)) {
                     update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
@@ -985,6 +994,22 @@ class AngellEYE_PayPal_PPCP_Payment {
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
+        }
+        return false;
+    }
+
+    /**
+     * Validates PayPal order response to see if order capture API call was triggered for the order
+     * @param $order_details
+     * @return bool
+     */
+    public function is_paypal_order_capture_triggered($order_details): bool
+    {
+        $purchase_units = $order_details['purchase_units'] ?? [];
+        foreach ($purchase_units as $purchase_unit) {
+            if (isset($purchase_unit['payments']['captures'])) {
+                return true;
+            }
         }
         return false;
     }
