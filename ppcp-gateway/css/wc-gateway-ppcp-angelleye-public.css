@@ -335,10 +335,14 @@
 }
 .payment_method_angelleye_ppcp_cc .ae-cc-icons-list {
     display: flex;
-    justify-content: right;
-    float: right;
+    justify-content: left;
+    margin-left: 0.5em;
     flex-wrap: wrap;
     flex: 1;
+}
+.payment_method_angelleye_ppcp_cc .ae-cc-icons-list img {
+    margin: 0 !important;
+    padding: 2px !important;
 }
 .clearfix {
     clear: both;

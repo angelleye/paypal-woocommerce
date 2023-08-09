@@ -1,13 +1,35 @@
-let loadedScripts = []
+window.loadedScripts = []
+
+function finalLoaded(scriptUrl, event) {
+    loadedScripts[scriptUrl].status = 'loaded';
+    let scheduledCallbacks = loadedScripts[scriptUrl].queue;
+
+    if (scheduledCallbacks.length) {
+        for(let i = 0; i < scheduledCallbacks.length; i++) {
+            if (typeof scheduledCallbacks[i] === 'function') {
+                scheduledCallbacks[i]();
+                delete loadedScripts[scriptUrl].queue[i];
+            }
+        }
+    }
+}
+
 function angelleyeLoadPayPalScript(config, onLoaded) {
-    if (loadedScripts.indexOf(config.url) > -1) {
-        onLoaded();
+    if (typeof loadedScripts[config.url] !== 'undefined') {
+        if (loadedScripts[config.url]['status'] === 'loaded') {
+            onLoaded();
+        } else {
+            loadedScripts[config.url].queue.push(onLoaded);
+        }
         return;
     }
 
+    loadedScripts[config.url] = {'status': 'pending', 'queue': []};
+    loadedScripts[config.url].queue.push(onLoaded);
     let script = document.createElement('script');
+    let scriptUrl = config.url;
     // delay the onload event to let the PayPal lib initialized in the env
-    script.addEventListener('load', onLoaded);
+    script.addEventListener('load', finalLoaded.bind(null, scriptUrl));
     script.setAttribute('src', config.url);
     if (config.script_attributes) {
         Object.entries(config.script_attributes).forEach((keyValue) => {
