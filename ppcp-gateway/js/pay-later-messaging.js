@@ -1,4 +1,3 @@
-
 const payLaterMessaging = {
 	init: () => {
 		if (typeof angelleye_pay_later_messaging === 'undefined') {
