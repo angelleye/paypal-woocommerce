@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.1.15 - 08.03.2023 =
+= 4.1.15 - 08.09.2023 =
 * Tweak - Updated the Credit card icons and layout on checkout page ([PFW-1500](https://github.com/angelleye/paypal-woocommerce/pull/1867))
 * Fix - Resolves issue on Order pay page with orders having expired PayPal order id ([PFW-1534](https://github.com/angelleye/paypal-woocommerce/pull/1875))
 
