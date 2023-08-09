@@ -101,3 +101,20 @@ function initSmartButtons() {
 		}
 	})
 })(jQuery);
+
+jQuery(function($) {
+    $(document.body).on("angelleye_paypal_oncancel", function() {
+        $.ajax({
+            type: "post",
+            url: angelleye_ppcp_manager.ajax_url,
+            data: {
+                action: "angelleye_update_checkout_nonce"
+            },
+            success: function(data) {
+                if($("#woocommerce-process-checkout-nonce").val() !== data.nonce) {
+                    $("#woocommerce-process-checkout-nonce").val(data.nonce);
+                }
+            }
+        });
+    });
+});

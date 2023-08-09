@@ -292,6 +292,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
 
         add_filter('wfocu_wc_get_supported_gateways', array($this, 'wfocu_upsell_supported_gateways'), 99, 1);
+
+        add_action('wp_ajax_angelleye_update_checkout_nonce', array($this, "angelleye_update_checkout_nonce"));
+        add_action('wp_ajax_nopriv_angelleye_update_checkout_nonce', array($this, "angelleye_update_checkout_nonce"));
+
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
             add_filter('wfocu_subscriptions_get_supported_gateways', array($this, 'wfocu_subscription_supported_gateways'), 99, 1);
         }
@@ -555,7 +559,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'last_name' => $last_name,
             'button_selector' => $button_selector,
             'advanced_card_payments_title' => $this->advanced_card_payments_title,
-            'product_cart_details' => $product_cart_amounts
+            'product_cart_details' => $product_cart_amounts,
+            'ajax_url' => admin_url("admin-ajax.php")
+            
         ));
     }
 
@@ -1689,5 +1695,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } catch (Exception $ex) {
             return $gateways;
         }
+    }
+
+    /**
+     * Update the checkout nonce
+     */
+    public function angelleye_update_checkout_nonce() {
+        $nonce = wp_create_nonce('woocommerce-process_checkout');
+        wp_send_json(array("nonce" => $nonce));
+        die();
     }
 }
