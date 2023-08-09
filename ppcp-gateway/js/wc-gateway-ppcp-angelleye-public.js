@@ -94,6 +94,7 @@ function initSmartButtons() {
 			angelleyeLoadPayPalScript({
 				url: angelleye_ppcp_manager.apple_sdk_url
 			}, function () {
+				console.log('apple pay lib loaded');
 				initSmartButtons();
 			});
 		} else {
