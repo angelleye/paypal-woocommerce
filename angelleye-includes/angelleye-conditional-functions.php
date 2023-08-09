@@ -38,3 +38,19 @@ if (!function_exists('angelleye_is_us_based_store')) {
     }
 
 }
+
+if (!function_exists('angelleye_parse_array')) {
+
+    function angelleye_parse_array($post_data) {
+        if (is_string($post_data)) {
+            parse_str($post_data, $post_data_parse);
+            $final_post_data = wc_clean(wp_unslash($post_data_parse));
+            return $final_post_data;
+        } elseif (is_array($post_data)) {
+            $final_post_data = wc_clean(wp_unslash($post_data));
+            return $final_post_data;
+        }
+        return $post_data;
+    }
+
+}
