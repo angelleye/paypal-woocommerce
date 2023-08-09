@@ -357,18 +357,18 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $finalParams = [
             'placement' => $atts['placement'],
             'layout_type' => $atts['style'],
-            'text_layout_logo_type' => $atts['logotype'],
-            'text_layout_logo_position' => $atts['logoposition'],
-            'text_layout_text_size' => $atts['textsize'],
-            'text_layout_text_color' => $atts['textcolor'],
-            'flex_layout_color' => $atts['color'],
-            'flex_layout_ratio' => $atts['ratio'],
+            'text_layout_logo_type' => $atts['logotype'] ?? '',
+            'text_layout_logo_position' => $atts['logoposition'] ?? '',
+            'text_layout_text_size' => $atts['textsize'] ?? '',
+            'text_layout_text_color' => $atts['textcolor'] ?? '',
+            'flex_layout_color' => $atts['color'] ?? '',
+            'flex_layout_ratio' => $atts['ratio'] ?? '',
             'css_selector' => '.angelleye_ppcp_message_shortcode'
         ];
 
         $uniqueShortcodeKey = wp_unique_id('angelleye_pay_later_messaging_');
         $this->add_pay_later_script_in_frontend();
-        wp_localize_script('angelleye-pay-later-messaging', "window." + $uniqueShortcodeKey, $finalParams);
+        wp_localize_script('angelleye-pay-later-messaging', $uniqueShortcodeKey, $finalParams);
         return '<div class="angelleye_ppcp_message_shortcode" data-key="' . $uniqueShortcodeKey . '"></div>';
     }
 
