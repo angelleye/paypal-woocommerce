@@ -318,10 +318,14 @@
     flex-flow: row wrap;
 }
 .payment_method_angelleye_ppcp_cc>label {
-    display: block !important;
+    display: flex !important;
     flex: 1;
     align-items: center;
     margin-left: 4px;
+    gap: 0.3em;
+}
+.payment_method_angelleye_ppcp_cc>label .clearfix {
+    margin-right: -0.3em;
 }
 .payment_method_angelleye_ppcp_cc .payment_method_angelleye_ppcp_cc {
     flex-basis: 100%;
