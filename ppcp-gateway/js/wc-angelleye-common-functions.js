@@ -65,8 +65,14 @@ const angelleyeOrder = {
 			}, 1000);
 		}
 	},
+	updateWooCheckoutFormNonce: (nonce) => {
+		jQuery("#woocommerce-process-checkout-nonce").val(nonce);
+	},
 	createSmartButtonOrder: ({angelleye_ppcp_button_selector}) => {
 		return angelleyeOrder.createOrder({angelleye_ppcp_button_selector}).then((data) => {
+			if (angelleyeOrder.isCheckoutPage() && typeof data.nonce !== 'undefined') {
+				angelleyeOrder.updateWooCheckoutFormNonce(data.nonce);
+			}
 			return data.orderID;
 		})
 	},
