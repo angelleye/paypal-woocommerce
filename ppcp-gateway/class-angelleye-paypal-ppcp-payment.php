@@ -145,14 +145,29 @@ class AngellEYE_PayPal_PPCP_Payment {
             $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id');
 
             if (!empty($existing_paypal_order_id)) {
-                // set the order id in session so that update_order can update the order details
-                angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', $existing_paypal_order_id);
-                $this->angelleye_ppcp_update_order($order);
-                $return_response['currencyCode'] = $order->get_currency('');
-                $return_response['totalAmount'] = $order->get_total('');
-                $return_response['orderID'] = $existing_paypal_order_id;
-                wp_send_json($return_response, 200);
-                die;
+                // Get the order detail using API to see if the order id is still valid or its expired
+                // if its expired then trigger the Create order request again.
+                // ------------------------------------------------------------------
+                // Fixes PFW-1534 - Resource not found error
+                //    "name": "RESOURCE_NOT_FOUND",
+                //    "details": [
+                //        {
+                //            "issue": "INVALID_RESOURCE_ID",
+                //            "description": "Specified resource ID does not exist. Please check the resource ID and try again."
+                //        }
+                //    ],
+                // ------------------------------------------------------------------
+                $paypal_order = $this->angelleye_ppcp_get_paypal_order($existing_paypal_order_id);
+                if ($paypal_order) {
+                    // set the order id in session so that update_order can update the order details
+                    angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', $existing_paypal_order_id);
+                    $this->angelleye_ppcp_update_order($order);
+                    $return_response['currencyCode'] = $order->get_currency('');
+                    $return_response['totalAmount'] = $order->get_total('');
+                    $return_response['orderID'] = $existing_paypal_order_id;
+                    wp_send_json($return_response, 200);
+                    die;
+                }
             }
         }
         try {
@@ -939,6 +954,39 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->angelleye_ppcp_error_email_notification($error_email_notification_param, $message);
         }
         return $message;
+    }
+
+    /**
+     * Get the Order detail using PayPal API
+     *
+     * We already have another method angelleye_ppcp_get_checkout_details but the response returned by that is not proper
+     * due to decoding the object and other places its being used
+     * @param $paypal_order_id
+     * @return false|mixed
+     */
+    public function angelleye_ppcp_get_paypal_order($paypal_order_id) {
+        try {
+            $args = array(
+                'timeout' => 60,
+                'redirection' => 5,
+                'httpversion' => '1.1',
+                'blocking' => true,
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                //'body' => array(),
+                'cookies' => array()
+            );
+            $api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id, $args, 'get_order');
+            $api_response = json_decode(json_encode($api_response), true);
+            if (isset($api_response['id'])) {
+                return $api_response;
+            }
+            $this->api_log->log("Unable to find the PayPal order: " . $paypal_order_id, 'error');
+            $this->api_log->log(print_r($api_response, true), 'error');
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
+        }
+        return false;
     }
 
     public function angelleye_ppcp_get_checkout_details($paypal_order_id) {
