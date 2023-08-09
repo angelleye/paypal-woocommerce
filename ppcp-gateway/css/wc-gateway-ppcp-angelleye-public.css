@@ -313,8 +313,25 @@
 .woocommerce-terms-and-conditions-wrapper {
   margin-bottom: 10px;
 }
+.payment_method_angelleye_ppcp_cc {
+    display: flex;
+    flex-flow: row wrap;
+}
 .payment_method_angelleye_ppcp_cc>label {
     display: flex !important;
+    flex: 1;
+    align-items: center;
+    margin-left: 4px;
+    gap: 0.3em;
+}
+.payment_method_angelleye_ppcp_cc>label .clearfix {
+    margin-right: -0.3em;
+}
+.payment_method_angelleye_ppcp_cc .payment_method_angelleye_ppcp_cc {
+    flex-basis: 100%;
+}
+.payment_box.payment_method_angelleye_ppcp_cc {
+    display: initial;
 }
 .payment_method_angelleye_ppcp_cc .ae-cc-icons-list {
     display: flex;
