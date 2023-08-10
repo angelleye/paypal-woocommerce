@@ -66,6 +66,7 @@ const angelleyeOrder = {
 		}
 	},
 	updateWooCheckoutFormNonce: (nonce) => {
+		angelleye_ppcp_manager.woocommerce_process_checkout = nonce;
 		jQuery("#woocommerce-process-checkout-nonce").val(nonce);
 	},
 	createSmartButtonOrder: ({angelleye_ppcp_button_selector}) => {
