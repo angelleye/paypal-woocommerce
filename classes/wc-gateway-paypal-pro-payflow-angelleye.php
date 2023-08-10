@@ -225,20 +225,13 @@ class WC_Gateway_PayPal_Pro_PayFlow_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function add_log($message, $level = 'info') {
         if ($this->debug) {
-            if (version_compare(WC_VERSION, '3.0', '<')) {
-                if (empty($this->add_log)) {
-                    $this->log = new WC_Logger();
-                }
-                $this->log->add('paypal_pro_payflow', $message);
-            } else {
-                if (empty($this->log)) {
-                    $this->log = wc_get_logger();
-                }
-                $this->log->log($level, sprintf(__('PayPal for WooCommerce Version: %s', 'paypal-for-woocommerce'), VERSION_PFW), array('source' => 'paypal_pro_payflow'));
-                $this->log->log($level, sprintf(__('WooCommerce Version: %s', 'paypal-for-woocommerce'), WC_VERSION), array('source' => 'paypal_pro_payflow'));
-                $this->log->log($level, 'Test Mode: ' . $this->testmode, array('source' => 'paypal_pro_payflow'));
-                $this->log->log($level, $message, array('source' => 'paypal_pro_payflow'));
+            if (empty($this->log)) {
+                $this->log = wc_get_logger();
             }
+            $this->log->log($level, sprintf(__('PayPal for WooCommerce Version: %s', 'paypal-for-woocommerce'), VERSION_PFW), array('source' => 'paypal_pro_payflow'));
+            $this->log->log($level, sprintf(__('WooCommerce Version: %s', 'paypal-for-woocommerce'), WC_VERSION), array('source' => 'paypal_pro_payflow'));
+            $this->log->log($level, 'Test Mode: ' . $this->testmode, array('source' => 'paypal_pro_payflow'));
+            $this->log->log($level, $message, array('source' => 'paypal_pro_payflow'));
         }
     }
 
@@ -648,7 +641,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         if (!empty($this->is_multi_account_active == 'yes')) {
             ?> jQuery('#woocommerce_paypal_pro_payflow_enable_tokenized_payments').prop("disabled", true);
                 jQuery('#woocommerce_paypal_pro_payflow_enable_tokenized_payments').prop('checked', false);
-            <?php }
+        <?php }
         ?>
             jQuery('#woocommerce_paypal_pro_payflow_payment_action').change(function () {
                 if (this.value === 'Authorization') {
@@ -783,42 +776,30 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 angelleye_set_session('CardExpYear', $card_exp_year_full);
                 $this->centinel_client->add('CardCode', $card->cvc);
                 angelleye_set_session('CardCode', $card->cvc);
-
                 if (!empty($card->firstname) && !empty($card->lastname)) {
                     $billing_first_name = $card->firstname;
                     $billing_last_name = $card->lastname;
                 } else {
                     $billing_first_name = $order->get_billing_first_name();
-                    $billing_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
+                    $billing_last_name = $order->get_billing_last_name();
                 }
-
-                $billing_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_address_1 : $order->get_billing_address_1();
-                $billing_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_address_2 : $order->get_billing_address_2();
-                $billing_city = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_city : $order->get_billing_city();
-                $billing_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_postcode : $order->get_billing_postcode();
-                $billing_country = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_country : $order->get_billing_country();
-                $billing_state = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_state : $order->get_billing_state();
-                $billing_phone = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_phone : $order->get_billing_phone();
-
                 $this->centinel_client->add('BillingFirstName', $billing_first_name);
                 $this->centinel_client->add('BillingLastName', $billing_last_name);
-                $this->centinel_client->add('BillingAddress1', $billing_address_1);
-                $this->centinel_client->add('BillingAddress2', $billing_address_2);
-                $this->centinel_client->add('BillingCity', $billing_city);
-                $this->centinel_client->add('BillingState', $billing_state);
-                $this->centinel_client->add('BillingPostalCode', $billing_postcode);
-                $this->centinel_client->add('BillingCountryCode', $billing_country);
-                $this->centinel_client->add('BillingPhone', $billing_phone);
-                $this->centinel_client->add('ShippingFirstName', version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name());
-                $this->centinel_client->add('ShippingLastName', version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name());
-                $this->centinel_client->add('ShippingAddress1', version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_1 : $order->get_shipping_address_1());
-                $this->centinel_client->add('ShippingAddress2', version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_2 : $order->get_shipping_address_2());
-                $this->centinel_client->add('ShippingCity', version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_city : $order->get_shipping_city());
-                $this->centinel_client->add('ShippingState', version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state());
-                $this->centinel_client->add('ShippingPostalCode', version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode());
-                $this->centinel_client->add('ShippingCountryCode', version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country());
-
-                // Items
+                $this->centinel_client->add('BillingAddress1', $order->get_billing_address_1());
+                $this->centinel_client->add('BillingAddress2', $order->get_billing_address_2());
+                $this->centinel_client->add('BillingCity', $order->get_billing_city());
+                $this->centinel_client->add('BillingState', $order->get_billing_state());
+                $this->centinel_client->add('BillingPostalCode', $order->get_billing_postcode());
+                $this->centinel_client->add('BillingCountryCode', $order->get_billing_country());
+                $this->centinel_client->add('BillingPhone', $order->get_billing_phone());
+                $this->centinel_client->add('ShippingFirstName', $order->get_shipping_first_name());
+                $this->centinel_client->add('ShippingLastName', $order->get_shipping_last_name());
+                $this->centinel_client->add('ShippingAddress1', $order->get_shipping_address_1());
+                $this->centinel_client->add('ShippingAddress2', $order->get_shipping_address_2());
+                $this->centinel_client->add('ShippingCity', $order->get_shipping_city());
+                $this->centinel_client->add('ShippingState', $order->get_shipping_state());
+                $this->centinel_client->add('ShippingPostalCode', $order->get_shipping_postcode());
+                $this->centinel_client->add('ShippingCountryCode', $order->get_shipping_country());
                 $item_loop = 0;
                 if (sizeof($order->get_items()) > 0) {
                     foreach ($order->get_items() as $item) {
@@ -829,14 +810,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $this->centinel_client->add('Item_Desc_' . $item_loop, $item['name']);
                     }
                 }
-
-                // Send request
                 $this->centinel_client->sendHttp($this->centinel_url, "5000", "15000");
-
                 $this->add_log('Centinal client request: ' . print_r($this->centinel_client->request, true));
                 $this->add_log('Centinal client response: ' . print_r($this->centinel_client->response, true));
-
-                // Save response in session
                 angelleye_set_session('Centinel_ErrorNo', $this->get_centinel_value("ErrorNo"));
                 angelleye_set_session('Centinel_ErrorDesc', $this->get_centinel_value("ErrorDesc"));
                 angelleye_set_session('Centinel_TransactionId', $this->get_centinel_value("TransactionId"));
@@ -847,17 +823,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 angelleye_set_session('Centinel_EciFlag', $this->get_centinel_value("EciFlag"));
                 angelleye_set_session('Centinel_card_start_month', $card->start_month);
                 angelleye_set_session('Centinel_card_start_year', $card->start_year);
-
                 if ($this->get_centinel_value("ErrorNo")) {
                     wc_add_notice(apply_filters('angelleye_pc_process_payment_authentication', __('Error in 3D secure authentication: ', 'paypal-for-woocommerce') . $this->get_centinel_value("ErrorDesc")), 'error');
                     return;
                 }
-
                 if ('Y' === $this->get_centinel_value("Enrolled")) {
                     $this->add_log('Doing 3dsecure payment authorization');
                     $this->add_log('ASCUrl: ' . $this->get_centinel_value("ACSUrl"));
                     $this->add_log('PaReq: ' . $this->get_centinel_value("Payload"));
-
                     return array(
                         'result' => 'success',
                         'redirect' => add_query_arg(array('acs' => $order_id), untrailingslashit(WC()->api_request_url('WC_Gateway_PayPal_Pro_PayFlow_AngellEYE', is_ssl())))
@@ -867,7 +840,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     return;
                 }
             } else {
-
                 $order_id = $order->get_id();
                 $order_amt = AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order);
                 if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
@@ -878,7 +850,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 angelleye_set_session('exp_month', $card->exp_month);
                 angelleye_set_session('exp_year', $card->exp_year);
                 angelleye_set_session('cvv2', $card->cvc);
-
                 $PayPalRequestData = array(
                     'trxtype' => 'E',
                     'acct' => $card->number,
@@ -887,20 +858,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'currency' => $this->iso4217[$order->get_currency()],
                     'cvv2' => $card->cvc,
                 );
-
                 $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
-
                 $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData));
-
                 AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'do_payment', $gateway = 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
-
                 $this->add_log('PayFlow Endpoint: ' . $this->PayPal->APIEndPoint);
-
                 if (empty($PayPalResult['RAWRESPONSE'])) {
                     $fc_empty_response = apply_filters('ae_pppf_paypal_response_empty_message', __('Empty PayPal response.', 'paypal-for-woocommerce'), $PayPalResult);
                     throw new Exception($fc_empty_response);
                 }
-
                 $new_PayPalResult = array();
                 if (!empty($PayPalResult['RESULT']) && is_array($PayPalResult['RESULT'])) {
                     foreach ($PayPalResult as $key_first => $value_first) {
@@ -924,7 +889,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $PayPalResult = $new_PayPalResult;
                     $this->add_log('PayFlow Response: ' . print_r($PayPalResult, true));
                 }
-
                 if (isset($PayPalResult['AUTHENTICATION_ID']) && $PayPalResult['RESULT'] == 0) {
                     if (!empty($PayPalResult['AUTHENTICATION_ID'])) {
                         angelleye_set_session('AUTHENTICATION_ID', $PayPalResult['AUTHENTICATION_ID']);
@@ -1206,21 +1170,15 @@ of the user authorized to process transactions. Otherwise, leave this field blan
      * @return void
      */
     function do_payment($order, $card_number, $card_exp, $card_csc, $centinel = null) {
-
         $order_id = $order->get_id();
         $card = $this->get_posted_card();
-
         try {
-
             $billing_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_address_1 : $order->get_billing_address_1();
             $billing_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_address_2 : $order->get_billing_address_2();
             $billtostreet = $billing_address_1 . ' ' . $billing_address_2;
-            $billing_city = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_city : $order->get_billing_city();
-            $billing_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_postcode : $order->get_billing_postcode();
             $billing_country = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_country : $order->get_billing_country();
             $billing_state = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_state : $order->get_billing_state();
             $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_email : $order->get_billing_email();
-
             if (!empty($card->firstname) && !empty($card->lastname)) {
                 $firstname = $card->firstname;
                 $lastname = $card->lastname;
@@ -1228,12 +1186,10 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $firstname = $order->get_billing_first_name();
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
-
             $order_amt = AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order);
             if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
                 $order_amt = '0.00';
             }
-
             $PayPalRequestData = array(
                 'tender' => 'C', // Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
                 'trxtype' => ($this->payment_action == 'Authorization' || $order->get_total() == 0 ) ? 'A' : 'S', // Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
@@ -1255,9 +1211,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'billtomiddlename' => '', // Account holder's middle name.
                 'billtolastname' => $lastname, // Account holder's last name.
                 'billtostreet' => $billtostreet, // The cardholder's street address (number and street name).  150 char max
-                'billtocity' => $billing_city, // Bill to city.  45 char max
+                'billtocity' => $order->get_billing_city(), // Bill to city.  45 char max
                 'billtostate' => $billing_state, // Bill to state.
-                'billtozip' => $billing_postcode, // Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
+                'billtozip' => $order->get_billing_postcode(), // Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
                 'billtocountry' => $billing_country, // Bill to Country.  3 letter country code.
                 'origid' => '', // Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.
                 'custref' => '', //
@@ -2431,7 +2387,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'billtofirstname' => $first_name,
                 'billtomiddlename' => '',
                 'billtolastname' => $last_name,
-                'billtostreet' => $address_1 .' '. $address_2,
+                'billtostreet' => $address_1 . ' ' . $address_2,
                 'billtocity' => $city,
                 'billtostate' => $state,
                 'billtozip' => $postcode,
@@ -2583,7 +2539,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 if (isset($_POST['pfw_payflow_google']) && !empty($_POST['pfw_payflow_google'])) {
                     $response_data = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
                         'body' => array('secret' => $this->recaptcha_secret_key, 'response' => $_POST['pfw_payflow_google'])
-                            ));
+                    ));
                     if (is_wp_error($response_data)) {
                         throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
                     }
@@ -2608,5 +2564,4 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             return false;
         }
     }
-
 }

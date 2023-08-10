@@ -2698,7 +2698,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $order_id = $order->get_id();
             if ($this->is_subscription($order_id)) {
                 foreach ($order->get_items() as $cart_item_key => $values) {
-                    $product = version_compare(WC_VERSION, '3.0', '<') ? $order->get_product_from_item($values) : $values->get_product();
+                    $product = $values->get_product();
                     $product_id = $product->get_id();
                     if (!empty($product_id)) {
                         $product_type = get_post_type($product_id);

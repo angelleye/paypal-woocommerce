@@ -647,17 +647,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
      */
     public function log($message, $level = 'info') {
         if ($this->debug) {
-            if (version_compare(WC_VERSION, '3.0', '<')) {
-                if (empty($this->log)) {
-                    $this->log = new WC_Logger();
-                }
-                $this->log->add('paypal-pro', $message);
-            } else {
-                if (empty($this->log)) {
-                    $this->log = wc_get_logger();
-                }
-                $this->log->log($level, $message, array('source' => 'paypal-pro'));
+            if (empty($this->log)) {
+                $this->log = wc_get_logger();
             }
+            $this->log->log($level, $message, array('source' => 'paypal-pro'));
         }
     }
 
@@ -1353,15 +1346,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $avs_response_order_note .= $avs_response_message != '' ? ' - ' . $avs_response_message : '';
             $order->add_order_note($avs_response_order_note);
             $order_id = $order->get_id();
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            if ($old_wc) {
-                update_post_meta($order_id, '_AVSCODE', $avs_response_code);
-            } else {
-                update_post_meta($order->get_id(), '_AVSCODE', $avs_response_code);
-            }
-            /**
-             * Add order notes for CVV2 result
-             */
+            update_post_meta($order->get_id(), '_AVSCODE', $avs_response_code);
             $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
             $cvv2_response_message = $this->PayPal->GetCVV2CodeMessage($cvv2_response_code);
             $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
@@ -1369,13 +1354,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $cvv2_response_order_note .= $cvv2_response_code;
             $cvv2_response_order_note .= $cvv2_response_message != '' ? ' - ' . $cvv2_response_message : '';
             $order->add_order_note($cvv2_response_order_note);
-            if ($old_wc) {
-                update_post_meta($order_id, '_CVV2MATCH', $cvv2_response_code);
-                update_post_meta($order_id, 'is_sandbox', $this->testmode);
-            } else {
-                update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
-                update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
-            }
+            update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
+            update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
             do_action('ae_add_custom_order_note', $order, $card, $token, $PayPalResult);
             do_action('before_save_payment_token', $order_id);
             if(AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
@@ -1423,14 +1403,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 if($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && $PayPalResult['L_ERRORCODE0'] == '11610') {
                     $error = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : $PayPalResult['L_SHORTMESSAGE0'];
                     $order->update_status('on-hold', $error);
-                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                    if ( $old_wc ) {
-                        if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
-                            $order->reduce_order_stock();
-                        }
-                    } else {
-                        wc_maybe_reduce_stock_levels( $order_id );
-                    }
+                    wc_maybe_reduce_stock_levels( $order_id );
                 } elseif ($PayPalResult['L_ERRORCODE0'] == '10574') {
                     $long_message = !empty($PayPalResult['L_LONGMESSAGE0']) ? $PayPalResult['L_LONGMESSAGE0'] : '';
                     $short_message = !empty($PayPalResult['L_SHORTMESSAGE0']) ? $PayPalResult['L_SHORTMESSAGE0'] : '';
@@ -1449,12 +1422,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
 
             if ($this->payment_action == "Authorization") {
-                if ($old_wc) {
-                    update_post_meta($order_id, '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
-                } else {
-                    update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
-                }
-                
+                update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
                 $payment_order_meta = array('_payment_action' => $this->payment_action);
                 AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
@@ -2039,14 +2007,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $angelleye_utility = new AngellEYE_Utility(null, null);
                 $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['TRANSACTIONID']);
                 $order->update_status('on-hold');
-                $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                if ( $old_wc ) {
-                    if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
-                        $order->reduce_order_stock();
-                    }
-                } else {
-                    wc_maybe_reduce_stock_levels( $order_id );
-                }
+                wc_maybe_reduce_stock_levels( $order_id );
                 $order->add_order_note('Payment Action: ' . $this->payment_action);
             }
             return true;
@@ -2115,18 +2076,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $order->payment_complete($transaction_id);
         } else {
             if ( $this->payment_action  == 'Authorization') {
-                $order_id = $order->get_id();
-                $this->angelleye_get_transaction_details($order_id, $transaction_id);
+                $this->angelleye_get_transaction_details($order->get_id(), $transaction_id);
             } else {
-                $order_id = $order->get_id();
-                $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                if ( $old_wc ) {
-                    if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
-                        $order->reduce_order_stock();
-                    }
-                } else {
-                    wc_maybe_reduce_stock_levels( $order_id );
-                }
+                wc_maybe_reduce_stock_levels( $order->get_id() );
                 $order->update_status('on-hold');
             }
         }
@@ -2388,15 +2340,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
             $order->save();
             $order->update_status('on-hold');
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $order_id = $order->get_id();
-            if ( $old_wc ) {
-                if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
-                    $order->reduce_order_stock();
-                }
-            } else {
-                wc_maybe_reduce_stock_levels( $order_id );
-            }
+            wc_maybe_reduce_stock_levels( $order->get_id() );
         }
     }
     
