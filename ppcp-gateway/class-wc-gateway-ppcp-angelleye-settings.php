@@ -1659,7 +1659,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'disable_cards' => array(
                     'title' => __('Disable specific credit cards', 'paypal-for-woocommerce'),
                     'type' => 'multiselect',
-                    'class' => 'wc-enhanced-select pay_later_messaging_field',
+                    'class' => 'wc-enhanced-select',
                     'default' => array(),
                     'desc_tip' => true,
                     'description' => __(
