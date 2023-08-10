@@ -3003,9 +3003,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         
                     } else {
                         if ($order_id > 0 && ( $order = wc_get_order($order_id) ) && $order->has_status(array('pending', 'failed'))) {
-                            $_POST = angelleye_get_session('post_data');
-                            $_POST['post_data'] = angelleye_get_session('post_data');
-                            $this->posted = angelleye_get_session('post_data');
+                            $_POST = angelleye_parse_array(angelleye_get_session('post_data'));
+                            $_POST['post_data'] = angelleye_parse_array(angelleye_get_session('post_data'));
+                            $this->posted = angelleye_parse_array(angelleye_get_session('post_data'));
                             $chosen_shipping_methods = angelleye_get_session('chosen_shipping_methods');
                             if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
                                 foreach ($_POST['shipping_method'] as $i => $value) {
@@ -3060,14 +3060,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             }
                             
                         } else {
-                            $_POST = angelleye_get_session('post_data');
-                            $_POST['post_data'] = angelleye_get_session('post_data');
-                            $this->posted = angelleye_get_session('post_data');
+                            $_POST = angelleye_parse_array(angelleye_get_session('post_data'));
+                            $_POST['post_data'] = angelleye_parse_array(angelleye_get_session('post_data'));
+                            $this->posted = angelleye_parse_array(angelleye_get_session('post_data'));
                         }
                         if ($order_id == 0) {
-                            $_POST = angelleye_get_session('post_data');
-                            $_POST['post_data'] = angelleye_get_session('post_data');
-                            $this->posted = angelleye_get_session('post_data');
+                            $_POST = angelleye_parse_array(angelleye_get_session('post_data'));
+                            $_POST['post_data'] = angelleye_parse_array(angelleye_get_session('post_data'));
+                            $this->posted = angelleye_parse_array(angelleye_get_session('post_data'));
                             $chosen_shipping_methods = angelleye_get_session('chosen_shipping_methods');
                             if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
                                 foreach ($_POST['shipping_method'] as $i => $value)
