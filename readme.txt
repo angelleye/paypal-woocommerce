@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.2.2
-Stable tag: 4.1.17
+Stable tag: 4.1.18
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.1.18 - 08.10.2023 =
+* Fix - Fixed Disable CC option display issue on PPCP settings page ([PFW-1522](https://github.com/angelleye/paypal-woocommerce/pull/1882))
+* Fix - Resolves postdata parsing issue ([PFW-1449](https://github.com/angelleye/paypal-woocommerce/pull/1884))
+* Fix - Resolves default radio select issue with CC payment method on checkout page ([PFW-1530](https://github.com/angelleye/paypal-woocommerce/pull/1884))
 
 = 4.1.17 - 08.09.2023 =
 * Fix - Resolves the PayLaterMessaging Shortcode error and warnings due to undefined variables ([PFW-1524](https://github.com/angelleye/paypal-woocommerce/pull/1879))
