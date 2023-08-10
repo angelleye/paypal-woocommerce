@@ -418,11 +418,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } elseif ($this->response_helper->ec_is_response_successwithwarning($this->paypal_response)) {
                 $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 $order->save();
-                if ($old_wc) {
-                    update_post_meta($order_id, 'is_sandbox', $this->testmode);
-                } else {
                     update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
-                }
                 do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
                 do_action('woocommerce_before_pay_action', $order);
                 $this->angelleye_ec_get_customer_email_address($this->confirm_order_id);
