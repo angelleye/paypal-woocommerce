@@ -85,6 +85,16 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         if ($returnRawResponse) {
             return $jsonResponse;
         }
+
+        /**
+         * Add the file in physical path so that If due to some reasons server handles the path request then that should
+         * find the file in path
+         */
+        try {
+            $this->addDomainValidationFiles();
+        } catch (Exception $exception) {
+            echo '<div class="error">' . $exception->getMessage() . '</div>';
+        }
         require_once (PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/admin/templates/apple-pay-domain-list.php');
         die;
     }
@@ -238,5 +248,24 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $result = $this->removeDomain($domainNameToRemove);
         wp_send_json($result);
         die;
+    }
+
+    private function addDomainValidationFiles()
+    {
+        $fileDir = ABSPATH.'.well-known';
+        if (!is_dir($fileDir)) {
+            mkdir($fileDir);
+        }
+        $localFileLoc = $this->apple_pay_domain_validation->getDomainAssociationLibFilePath();
+        $domainValidationFile = $this->apple_pay_domain_validation->getDomainAssociationFilePath();
+        $targetLocation = ABSPATH . $domainValidationFile;
+        if (!file_exists($targetLocation)) {
+            if (!copy($localFileLoc, $targetLocation)) {
+                throw new Exception(sprintf('Unable to copy the files from %s to location %s', $localFileLoc, $targetLocation));
+            }
+            // Add the .txt version to make sure it works.
+            copy($localFileLoc, $targetLocation . '.txt');
+        }
+        return true;
     }
 }
