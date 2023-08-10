@@ -124,6 +124,14 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         if (!self::isApplePayDomainAdded()) {
             $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
             try {
+                /**
+                 * Add the file in physical path so that If due to some reasons server handles the path request then that should
+                 * find the file in path
+                 */
+                try {
+                    $instance->addDomainValidationFiles();
+                } catch (Exception $exception) {}
+
                 $domainNameToRegister = parse_url( get_site_url(), PHP_URL_HOST );
                 $result = $instance->registerDomain($domainNameToRegister);
                 return $result['status'];
