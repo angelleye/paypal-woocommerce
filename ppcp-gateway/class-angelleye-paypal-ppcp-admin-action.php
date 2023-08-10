@@ -187,7 +187,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 return false;
             }
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
             $payment_action = angelleye_ppcp_get_post_meta($order, '_payment_action', true);
             if (isset($payment_method) && !empty($payment_method) && isset($payment_action) && !empty($payment_action)) {
@@ -220,7 +220,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $this->ae_refund_amount = 0;
             $this->ae_auth_amount = 0;
             $html_table_row = array();
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $paypal_order_id = angelleye_ppcp_get_post_meta($order, '_paypal_order_id');
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
             if (isset($this->payment_response) && !empty($this->payment_response) && isset($this->payment_response['intent']) && $this->payment_response['intent'] === 'AUTHORIZE') {

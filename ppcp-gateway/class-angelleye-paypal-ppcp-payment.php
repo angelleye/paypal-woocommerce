@@ -1229,7 +1229,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $patch_request = array();
             $reference_id = angelleye_ppcp_get_session('angelleye_ppcp_reference_id');
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);
             $purchase_units = array(
                 'reference_id' => $reference_id,
@@ -2411,7 +2411,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_void_authorized_payment_admin($order, $order_data) {
         try {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $note_to_payer = $order_data['angelleye_ppcp_note_to_buyer_void'] ?? '';
             if (strlen($note_to_payer) > 255) {
                 $note_to_payer = substr($note_to_payer, 0, 252) . '...';
@@ -2457,7 +2457,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (isset($order_data['additionalCapture']) && 'no' === $order_data['additionalCapture']) {
                 $final_capture = true;
             }
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $angelleye_ppcp_payment_method_title = $this->get_payment_method_title_for_order($order_id);
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $amount_value = isset($order_data['_angelleye_ppcp_regular_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_regular_price'], $decimals) : '';
@@ -2583,7 +2583,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (strlen($note_to_payer) > 255) {
                 $note_to_payer = substr($note_to_payer, 0, 252) . '...';
             }
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
@@ -3054,7 +3054,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     }
 
     public function save_payment_token($order, $payment_tokens_id) {
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
             $subscriptions = wcs_get_subscriptions_for_order($order_id);
         } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order_id)) {

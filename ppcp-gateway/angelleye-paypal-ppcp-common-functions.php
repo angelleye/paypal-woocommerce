@@ -464,7 +464,7 @@ if (!function_exists('angelleye_ppcp_get_currency')) {
 
         if ($woo_order_id != null) {
             $order = wc_get_order($woo_order_id);
-            $currency_code = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+            $currency_code = $order->get_currency();
         } else {
             $currency_code = get_woocommerce_currency();
         }

@@ -315,7 +315,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function process_subscription_payment($order, $amount_to_charge) {
         try {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
 

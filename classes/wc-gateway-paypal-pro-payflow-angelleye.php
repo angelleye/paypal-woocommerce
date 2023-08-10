@@ -767,7 +767,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $this->centinel_client->add("TransactionType", 'CC');
                 $this->centinel_client->add('OrderNumber', $order_id);
                 $this->centinel_client->add('Amount', $order->get_total() * 100);
-                $this->centinel_client->add('CurrencyCode', $this->iso4217[version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()]);
+                $this->centinel_client->add('CurrencyCode', $this->iso4217[$order->get_currency()]);
                 $this->centinel_client->add('TransactionMode', 'S');
                 $this->centinel_client->add('ProductCode', 'PHY');
                 $this->centinel_client->add('CardNumber', $card->number);
@@ -788,7 +788,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $billing_first_name = $card->firstname;
                     $billing_last_name = $card->lastname;
                 } else {
-                    $billing_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
+                    $billing_first_name = $order->get_billing_first_name();
                     $billing_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
                 }
 
@@ -868,7 +868,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 }
             } else {
 
-                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                $order_id = $order->get_id();
                 $order_amt = AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order);
                 if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
                     $order_amt = '0.00';
@@ -884,7 +884,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     'acct' => $card->number,
                     'expdate' => $card->exp_month . $card->exp_year,
                     'amt' => $order_amt,
-                    'currency' => $this->iso4217[version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()],
+                    'currency' => $this->iso4217[$order->get_currency()],
                     'cvv2' => $card->cvc,
                 );
 
@@ -1207,7 +1207,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
      */
     function do_payment($order, $card_number, $card_exp, $card_csc, $centinel = null) {
 
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         $card = $this->get_posted_card();
 
         try {
@@ -1225,7 +1225,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $firstname = $card->firstname;
                 $lastname = $card->lastname;
             } else {
-                $firstname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
+                $firstname = $order->get_billing_first_name();
                 $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
             }
 
@@ -1240,8 +1240,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'acct' => $card_number, // Required for credit card transaction.  Credit card or purchase card number.
                 'expdate' => $card_exp, // Required for credit card transaction.  Expiration date of the credit card.  Format:  MMYY
                 'amt' => $order_amt, // Required.  Amount of the transaction.  Must have 2 decimal places.
-                'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), //
-                'custom' => apply_filters('ae_pppf_custom_parameter', json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key())), $order), // Free-form field for your own use.
+                'currency' => $order->get_currency(), //
+                'custom' => apply_filters('ae_pppf_custom_parameter', json_encode(array('order_id' => $order->get_id(), 'order_key' => $order->get_order_key())), $order), // Free-form field for your own use.
                 'comment1' => apply_filters('ae_pppf_comment1_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'comment2' => apply_filters('ae_pppf_comment2_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'cvv2' => $card_csc, // A code printed on the back of the card (or front for Amex)
@@ -1461,7 +1461,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_warning_codes)) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                     $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                    $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                    $order_id = $order->get_id();
                     if ($old_wc) {
                         if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
                             $order->reduce_order_stock();
@@ -1481,7 +1481,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     } else {
                         $order->update_status('on-hold');
                         $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                        $order_id = $order->get_id();
                         if ($old_wc) {
                             if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
                                 $order->reduce_order_stock();
@@ -1668,7 +1668,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'TRXTYPE' => 'C', //  S=Sale, A= Auth, C=Credit, D=Delayed Capture, V=Void
             'ORIGID' => $order->get_transaction_id(),
             'AMT' => $amount,
-            'CURRENCY' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()
+            'CURRENCY' => $order->get_currency()
         );
         $PayPalResult = $this->PayPal->ProcessTransaction(apply_filters('angelleye_woocommerce_paypal_pro_payflow_process_transaction_request_args', $PayPalRequestData, $order_id));
 
@@ -1924,7 +1924,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
 
     public function process_subscription_payment($order, $amount, $payment_token = null) {
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $card = $this->get_posted_card();
 
@@ -1933,7 +1933,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             if (!empty($card->firstname)) {
                 $firstname = $card->firstname;
             } else {
-                $firstname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name();
+                $firstname = $order->get_billing_first_name();
             }
 
             if (!empty($card->lastname)) {
@@ -1949,13 +1949,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $billing_country = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_country : $order->get_billing_country();
             $billing_state = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_state : $order->get_billing_state();
             $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $billing_email : $order->get_billing_email();
-            $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
+            $customer_note_value = wptexturize($order->get_customer_note());
             $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
             $PayPalRequestData = array(
                 'tender' => 'C', // Required.  The method of payment.  Values are: A = ACH, C = Credit Card, D = Pinless Debit, K = Telecheck, P = PayPal
                 'trxtype' => ($this->payment_action == 'Authorization' || $order->get_total() == 0 ) ? 'A' : 'S', // Required.  Indicates the type of transaction to perform.  Values are:  A = Authorization, B = Balance Inquiry, C = Credit, D = Delayed Capture, F = Voice Authorization, I = Inquiry, L = Data Upload, N = Duplicate Transaction, S = Sale, V = Void
                 'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order), // Required.  Amount of the transaction.  Must have 2 decimal places.
-                'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), //
+                'currency' => $order->get_currency(), //
                 'comment1' => apply_filters('ae_pppf_custom_parameter', $customer_note, $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'comment2' => apply_filters('ae_pppf_comment2_parameter', '', $order), // Merchant-defined value for reporting and auditing purposes.  128 char max
                 'recurring' => '', // Identifies the transaction as recurring.  One of the following values:  Y = transaction is recurring, N = transaction is not recurring.
@@ -2094,7 +2094,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_warning_codes)) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                     $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                    $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                    $order_id = $order->get_id();
                     if ($old_wc) {
                         if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
                             $order->reduce_order_stock();
@@ -2113,7 +2113,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     } else {
                         $order->update_status('on-hold');
                         $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                        $order_id = $order->get_id();
                         if ($old_wc) {
                             if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
                                 $order->reduce_order_stock();
@@ -2250,7 +2250,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
         if (!empty($payment_tokens_id)) {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
         }
     }
@@ -2277,13 +2277,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
 
     public function angelleye_paypal_pro_payflow_email_instructions($order, $sent_to_admin, $plain_text = false) {
-        $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
+        $payment_method = $order->get_payment_method();
         if ($sent_to_admin && 'paypal_pro_payflow' === $payment_method) {
             // Store source in the order
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $avscode = $old_wc ? get_post_meta($order->id, '_AVSADDR', true) : get_post_meta($order->get_id(), '_AVSADDR', true);
             if (!empty($avscode)) {
                 $avs_response_message = $this->PayPal->GetAVSCodeMessage($avscode);
@@ -2422,7 +2422,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'acct' => $card->number,
                 'expdate' => $card->exp_month . $card->exp_year,
                 'amt' => '0.00',
-                'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
+                'currency' => $order->get_currency(),
                 'cvv2' => $card->cvc,
                 'orderid' => '',
                 'orderdesc' => '',

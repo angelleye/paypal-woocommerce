@@ -284,11 +284,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
             return;
         } else {
-            if (version_compare(WC_VERSION, '3.0', '<')) {
-                add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 1);
-            } else {
-                add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 2);
-            }
+           add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 2);
         }
     }
 
@@ -1479,7 +1475,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             'debug' => array(
                 'title' => __('Debug', 'paypal-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => sprintf(__('Enable logging<code>%s</code>', 'paypal-for-woocommerce'), version_compare(WC_VERSION, '3.0', '<') ? wc_get_log_file_path('paypal_express') : WC_Log_Handler_File::get_log_file_path('paypal_express')),
+                'label' => sprintf(__('Enable logging<code>%s</code>', 'paypal-for-woocommerce'), WC_Log_Handler_File::get_log_file_path('paypal_express')),
                 'default' => 'no'
             ),
             'is_encrypt' => array(
@@ -2081,7 +2077,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
         try {
             if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
                 $result = $this->angelleye_ex_doreference_transaction($order_id);
@@ -2215,7 +2210,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if (isset($_POST['from_checkout']) && 'yes' === $_POST['from_checkout']) {
                 WC()->checkout->process_checkout();
             }
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
             $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
             if (wc_notice_count('error') > 0) {
@@ -2232,12 +2226,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 define('WOOCOMMERCE_CART', true);
             }
             WC()->cart->calculate_shipping();
-            if (version_compare(WC_VERSION, '3.0', '<')) {
-                WC()->customer->calculated_shipping(true);
-            } else {
-                WC()->customer->set_calculated_shipping(true);
-            }
-
+            WC()->customer->set_calculated_shipping(true);
             if (WC()->cart->cart_contents_total <= 0 && WC()->cart->total <= 0 && AngellEYE_Utility::is_cart_contains_subscription() == false) {
                 if (empty($_GET['pay_for_order'])) {
                     if (AngellEYE_Utility::is_cart_contains_subscription() == false) {
@@ -2311,16 +2300,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             if (is_wp_error($order_id)) {
                                 throw new Exception($order_id->get_error_message());
                             }
-
-                            /** Creating Order Object for fresh created order */
                             $order = wc_get_order($order_id);
-
-                            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                            if ($old_wc) {
-                                $is_registration_required = get_option('woocommerce_enable_guest_checkout') !== 'yes' ? true : false;
-                            } else {
-                                $is_registration_required = WC()->checkout()->is_registration_required();
-                            }
+                            $is_registration_required = WC()->checkout()->is_registration_required();
 
                             if (!is_user_logged_in() && $is_registration_required) {
                                 $paypal_express_request->angelleye_process_customer($order_id);
@@ -2378,17 +2359,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             if (is_wp_error($order_id)) {
                                 throw new Exception($order_id->get_error_message());
                             }
-
-                            /** Creating Order Object for fresh created order */
                             $order = wc_get_order($order_id);
-
-                            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                            if ($old_wc) {
-                                $is_registration_required = get_option('woocommerce_enable_guest_checkout') !== 'yes' ? true : false;
-                            } else {
-                                $is_registration_required = WC()->checkout()->is_registration_required();
-                            }
-
+                            $is_registration_required = WC()->checkout()->is_registration_required();
                             if (!is_user_logged_in() && $is_registration_required) {
                                 $paypal_express_request->angelleye_process_customer($order_id);
                             }
@@ -2415,7 +2387,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $paypal_express_checkout = angelleye_get_session('paypal_express_checkout');
                         $shipping_details = isset($paypal_express_checkout['shipping_details']) ? wp_unslash($paypal_express_checkout['shipping_details']) : array();
                         AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
-                        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                        $order_id = $order->get_id();
                         if ($old_wc) {
                             update_post_meta($order_id, '_payment_method', $this->id);
                             update_post_meta($order_id, '_payment_method_title', $this->title);
@@ -2462,8 +2434,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!$this->supports('tokenization')) {
             $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
             $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $is_sandbox = $old_wc ? get_post_meta($order->id, 'is_sandbox', true) : get_post_meta($order->get_id(), 'is_sandbox', true);
+            $is_sandbox = get_post_meta($order->get_id(), 'is_sandbox', true);
             if ($is_sandbox == true) {
                 $this->view_transaction_url = $sandbox_transaction_url;
             } else {
@@ -2639,17 +2610,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             $source = 'paypal_express';
         }
         if (self::$log_enabled) {
-            if (version_compare(WC_VERSION, '3.0', '<')) {
-                if (empty(self::$log)) {
-                    self::$log = new WC_Logger();
-                }
-                self::$log->add('paypal_express', $message);
-            } else {
-                if (empty(self::$log)) {
-                    self::$log = wc_get_logger();
-                }
-                self::$log->log($level, $message, array('source' => $source));
+            if (empty(self::$log)) {
+                self::$log = wc_get_logger();
             }
+            self::$log->log($level, $message, array('source' => $source));
         }
     }
 
@@ -2731,7 +2695,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
         if ($this->testmode == false) {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             if ($this->is_subscription($order_id)) {
                 foreach ($order->get_items() as $cart_item_key => $values) {
                     $product = version_compare(WC_VERSION, '3.0', '<') ? $order->get_product_from_item($values) : $values->get_product();
@@ -2812,7 +2776,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (isset($_POST['wc-paypal_express-payment-token']) && 'new' !== $_POST['wc-paypal_express-payment-token']) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
             $order = wc_get_order($order_id);
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $token_id = wc_clean($_POST['wc-paypal_express-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
             do_action('angelleye_set_multi_account', $token_id, $order_id);

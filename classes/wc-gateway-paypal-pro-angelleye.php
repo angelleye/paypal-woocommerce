@@ -881,7 +881,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $this->centinel_client->add("TransactionType", 'CC');
             $this->centinel_client->add('OrderNumber', $order_id);
             $this->centinel_client->add('Amount', $order->get_total() * 100);
-            $this->centinel_client->add('CurrencyCode', $this->iso4217[version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()]);
+            $this->centinel_client->add('CurrencyCode', $this->iso4217[$order->get_currency()]);
             $this->centinel_client->add('TransactionMode', 'S');
             $this->centinel_client->add('ProductCode', 'PHY');
             $this->centinel_client->add('CardNumber', $card->number);
@@ -1131,7 +1131,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             wc_add_notice($pc_session_expired_error, "error");
         }
         $card = $this->get_posted_card();
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
 
         if (empty($GLOBALS['wp_rewrite'])) {
@@ -1208,14 +1208,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'shiptophonenum' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone()                    // Phone number for shipping address.  20 char max.
         );
 
-        $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
+        $customer_note_value = wptexturize($order->get_customer_note());
         $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
 
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order),                            // Required.  Total amount of order, including shipping, handling, and tax.
-            'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),                    // Required.  Three-letter currency code.  Default is USD.
+            'currencycode' => $order->get_currency(),                    // Required.  Three-letter currency code.  Default is USD.
             'desc' => '',                            // Description of the order the customer is purchasing.  127 char max.
-            'custom' => apply_filters( 'ae_ppddp_custom_parameter', json_encode( array( 'order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->order_key : $order->get_order_key() ) ) , $order ),                        // Free-form field for your own use.  256 char max.
+            'custom' => apply_filters( 'ae_ppddp_custom_parameter', json_encode( array( 'order_id' => $order->get_id(), 'order_key' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->order_key : $order->get_order_key() ) ) , $order ),                        // Free-form field for your own use.  256 char max.
             'invnum' => $this->invoice_id_prefix . str_replace("#","",$order->get_order_number()), // Your own invoice or tracking number
             'recurring' => ''                        // Flag to indicate a recurring transaction.  Value should be Y for recurring, or anything other than Y if it's not recurring.  To pass Y here, you must have an established billing agreement with the buyer.
         );
@@ -1352,7 +1352,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $avs_response_order_note .= $avs_response_code;
             $avs_response_order_note .= $avs_response_message != '' ? ' - ' . $avs_response_message : '';
             $order->add_order_note($avs_response_order_note);
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             if ($old_wc) {
                 update_post_meta($order_id, '_AVSCODE', $avs_response_code);
@@ -1568,7 +1568,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'invoiceid' => '', // Your own invoice tracking number.
             'refundtype' => $order->get_total() == $amount ? 'Full' : 'Partial', // Required.  Type of refund.  Must be Full, Partial, or Other.
             'amt' => AngellEYE_Gateway_Paypal::number_format($amount, $order), // Refund Amt.  Required if refund type is Partial.
-            'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),                            // Three-letter currency code.  Required for Partial Refunds.  Do not use for full refunds.
+            'currencycode' => $order->get_currency(),                            // Three-letter currency code.  Required for Partial Refunds.  Do not use for full refunds.
             'note' => $reason, // Custom memo about the refund.  255 char max.
             'retryuntil' => '', // Maximum time until you must retry the refund.  Note:  this field does not apply to point-of-sale transactions.
             'refundsource' => '', // Type of PayPal funding source (balance or eCheck) that can be used for auto refund.  Values are:  any, default, instant, eCheck
@@ -1886,7 +1886,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function process_subscription_payment($order) {
        $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
-       $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+       $order_id = $order->get_id();
        $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
        $card = $this->get_posted_card();
         if (!class_exists('WC_Gateway_Calculation_AngellEYE')) {
@@ -1939,11 +1939,11 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'shiptophonenum' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone()                    // Phone number for shipping address.  20 char max.
         );
 
-        $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
+        $customer_note_value = wptexturize($order->get_customer_note());
         $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
         $PaymentDetails = array(
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order), // Required.  Total amount of order, including shipping, handling, and tax.
-            'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(), // Required.  Three-letter currency code.  Default is USD.
+            'currencycode' => $order->get_currency(), // Required.  Three-letter currency code.  Default is USD.
             'desc' => '', // Description of the order the customer is purchasing.  127 char max.
             'custom' => apply_filters('ae_ppddp_custom_parameter', $customer_note, $order), // Free-form field for your own use.  256 char max.
             'invnum' => $this->invoice_id_prefix . str_replace("#","",$order->get_order_number()), // Your own invoice or tracking number
@@ -2115,10 +2115,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $order->payment_complete($transaction_id);
         } else {
             if ( $this->payment_action  == 'Authorization') {
-                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                $order_id = $order->get_id();
                 $this->angelleye_get_transaction_details($order_id, $transaction_id);
             } else {
-                $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                $order_id = $order->get_id();
                 $old_wc = version_compare(WC_VERSION, '3.0', '<');
                 if ( $old_wc ) {
                     if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
@@ -2134,7 +2134,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
         if( $this->testmode == false ) {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             if( $this->is_subscription($order_id) ) {
                 foreach ($order->get_items() as $cart_item_key => $values) {
                     $product = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_product_from_item( $values ) : $values->get_product();
@@ -2194,7 +2194,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
             switch (strtolower($payment_status)) :
                 case 'completed' :
-                    $order_status = version_compare(WC_VERSION, '3.0', '<') ? $order->status : $order->get_status();
+                    $order_status = $order->get_status();
                     if ($order_status == 'completed') {
                         break;
                     }
@@ -2335,7 +2335,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             );
             $PaymentDetails = array(
                 'amt' => 0,
-                'currencycode' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
+                'currencycode' => $order->get_currency(),
             );
             $PayPalRequestData = array(
                 'DPFields' => $DPFields,
@@ -2389,7 +2389,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $order->save();
             $order->update_status('on-hold');
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             if ( $old_wc ) {
                 if ( ! get_post_meta( $order_id, '_order_stock_reduced', true ) ) {
                     $order->reduce_order_stock();

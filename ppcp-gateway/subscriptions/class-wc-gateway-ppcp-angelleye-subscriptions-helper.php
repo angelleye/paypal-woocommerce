@@ -39,7 +39,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
     }
 
     public function save_payment_token($order, $payment_tokens_id) {
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         $angelleye_ppcp_used_payment_method = $order->get_meta('_angelleye_ppcp_used_payment_method', true);
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
             $subscriptions = wcs_get_subscriptions_for_order($order_id);

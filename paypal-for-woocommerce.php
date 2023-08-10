@@ -1048,7 +1048,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 	public static function round( $price, $order = null ) {
 		$precision = 2;
                 if (is_object($order)) {
-                    $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+                    $woocommerce_currency = $order->get_currency();
                 } else {
                     $woocommerce_currency = get_woocommerce_currency();
                 }
@@ -1069,7 +1069,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 	public static function number_format( $price, $order = null ) {
 		$decimals = 2;
                 if (is_object($order)) {
-                    $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+                    $woocommerce_currency = $order->get_currency();
                 } else {
                     $woocommerce_currency = get_woocommerce_currency();
                 }
@@ -1247,7 +1247,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         public function angelleye_woocommerce_get_checkout_order_received_url($order_received_url, $order) {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $lang_code = get_post_meta( $order_id, 'wpml_language', true );
             if( empty($lang_code) ) {
                 $lang_code = get_post_meta( $order_id, '_wpml_language', true );

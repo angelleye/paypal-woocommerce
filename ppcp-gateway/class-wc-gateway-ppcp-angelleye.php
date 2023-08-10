@@ -495,7 +495,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public static function angelleye_ppcp_display_order_fee($order_id) {
         $order = wc_get_order($order_id);
-        $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
+        $payment_method = $order->get_payment_method();
         if ('angelleye_ppcp' !== $payment_method) {
             return false;
         }
@@ -582,7 +582,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_subscription_payment($order, $amount_to_charge) {
         try {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
 

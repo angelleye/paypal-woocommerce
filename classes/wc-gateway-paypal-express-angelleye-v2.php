@@ -3148,7 +3148,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $paypal_express_checkout = angelleye_get_session('paypal_express_checkout');
                         $shipping_details = isset($paypal_express_checkout['shipping_details']) ? wp_unslash($paypal_express_checkout['shipping_details']) : array();
                         AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
-                        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+                        $order_id = $order->get_id();
                         if ($old_wc) {
                             update_post_meta($order_id, '_payment_method', $this->id);
                             update_post_meta($order_id, '_payment_method_title', $this->title);
@@ -3464,7 +3464,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
         if ($this->testmode == false) {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             if ($this->is_subscription($order_id)) {
                 foreach ($order->get_items() as $cart_item_key => $values) {
                     $product = version_compare(WC_VERSION, '3.0', '<') ? $order->get_product_from_item($values) : $values->get_product();
@@ -3545,7 +3545,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (isset($_POST['wc-paypal_express-payment-token']) && 'new' !== $_POST['wc-paypal_express-payment-token']) {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
             $order = wc_get_order($order_id);
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $token_id = wc_clean($_POST['wc-paypal_express-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);
             do_action('angelleye_set_multi_account', $token_id, $order_id);

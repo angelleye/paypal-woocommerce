@@ -377,7 +377,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
 
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         if (!empty($payment_tokens_id)) {
             update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
         }
@@ -397,7 +397,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
 
     public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
         if( $this->testmode == false ) {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             if( $this->is_subscription($order_id) ) {
                 foreach ($order->get_items() as $cart_item_key => $values) {
                     $product = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_product_from_item( $values ) : $values->get_product();
