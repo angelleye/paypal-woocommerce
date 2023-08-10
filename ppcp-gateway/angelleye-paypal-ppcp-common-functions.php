@@ -79,13 +79,8 @@ if (!function_exists('angelleye_ppcp_update_post_meta')) {
         if (!is_a($order, 'WC_Order')) {
             return;
         }
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        if ($old_wc) {
-            update_post_meta($order->id, $key, $value);
-        } else {
-            $order->update_meta_data($key, $value);
-            $order->save();
-        }
+        $order->update_meta_data($key, $value);
+        $order->save();
     }
 
 }
@@ -97,34 +92,17 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        if ($old_wc) {
-            $order_meta_value = get_post_meta($order->id, $key, $bool);
+        if ('_payment_method_title' === $key) {
+            $order_meta_value = $order->get_payment_method_title();
         } else {
-            if ('_payment_method_title' === $key) {
-                $order_meta_value = $order->get_payment_method_title();
-            } else {
-                $order_meta_value = $order->get_meta($key, $bool);
-            }
+            $order_meta_value = $order->get_meta($key, $bool);
         }
         if (empty($order_meta_value) && $key === '_paymentaction') {
-            if ($old_wc) {
-                $order_meta_value = get_post_meta($order->id, '_payment_action', $bool);
-            } else {
-                $order_meta_value = $order->get_meta('_payment_action', $bool);
-            }
+            $order_meta_value = $order->get_meta('_payment_action', $bool);
         } elseif (empty($order_meta_value) && $key === '_payment_action') {
-            if ($old_wc) {
-                $order_meta_value = get_post_meta($order->id, '_paymentaction', $bool);
-            } else {
-                $order_meta_value = $order->get_meta('_paymentaction', $bool);
-            }
+            $order_meta_value = $order->get_meta('_paymentaction', $bool);
         } elseif ($key === '_payment_method_title') {
-            if ($old_wc) {
-                $angelleye_ppcp_used_payment_method = get_post_meta($order->id, '_angelleye_ppcp_used_payment_method', $bool);
-            } else {
-                $angelleye_ppcp_used_payment_method = $order->get_meta('_angelleye_ppcp_used_payment_method', $bool);
-            }
+            $angelleye_ppcp_used_payment_method = $order->get_meta('_angelleye_ppcp_used_payment_method', $bool);
             if (!empty($angelleye_ppcp_used_payment_method)) {
                 return angelleye_ppcp_get_payment_method_title($angelleye_ppcp_used_payment_method);
             }
@@ -1005,7 +983,7 @@ if (!empty($change_proceed_checkout_button_text)) {
             global $change_proceed_checkout_button_text;
             ?>
             <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button alt wc-forward<?php echo esc_attr(wc_wp_theme_get_element_class_name('button') ? ' ' . wc_wp_theme_get_element_class_name('button') : '' ); ?>">
-            <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'woocommerce'); ?>
+                <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'woocommerce'); ?>
             </a>
             <?php
         }

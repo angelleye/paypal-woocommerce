@@ -946,7 +946,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                         $message .= __('Order ID: ') . $order_id . "\n";
                         $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
-                        $message .= __('Customer Email: ') . $billing_email . "\n";
+                        $message .= __('Customer Email: ') . $order->get_billing_email() . "\n";
                         $message = apply_filters('ae_pppf_error_email_message', $message);
                         $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Pro Payflow Error Notification");
                         wp_mail($admin_email, $subject, $message);
@@ -1752,17 +1752,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
         $this->validate_fields();
         $card = $this->get_posted_card();
         $customer = WC()->customer;
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        $first_name = $old_wc ? $customer->billing_first_name : $customer->get_billing_first_name();
-        $last_name = $old_wc ? $customer->billing_last_name : $customer->get_billing_last_name();
-        $address_1 = $old_wc ? $customer->get_address() : $customer->get_billing_address_1();
-        $address_2 = $old_wc ? $customer->get_address_2() : $customer->get_billing_address_2();
-        $city = $old_wc ? $customer->get_city() : $customer->get_billing_city();
-        $state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
-        $postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
-        $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
-        $email_address = $old_wc ? WC()->customer->billing_email : WC()->customer->get_billing_email();
-        $billing_phone = $old_wc ? $customer->billing_phone : $customer->get_billing_phone();
         $PayPalRequestData = array(
             'tender' => 'C',
             'trxtype' => 'A',
@@ -1773,16 +1762,16 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'cvv2' => $card->cvc,
             'orderid' => '',
             'orderdesc' => '',
-            'billtoemail' => $email_address,
-            'billtophonenum' => $billing_phone,
-            'billtofirstname' => $first_name,
+            'billtoemail' => WC()->customer->get_billing_email(),
+            'billtophonenum' => $customer->get_billing_phone(),
+            'billtofirstname' => $customer->get_billing_first_name(),
             'billtomiddlename' => '',
-            'billtolastname' => $last_name,
-            'billtostreet' => $address_1 . ' ' . $address_2,
-            'billtocity' => $city,
-            'billtostate' => $state,
-            'billtozip' => $postcode,
-            'billtocountry' => $country,
+            'billtolastname' => $customer->get_billing_last_name(),
+            'billtostreet' => $customer->get_billing_address_1() . ' ' . $customer->get_billing_address_2(),
+            'billtocity' => $customer->get_billing_city(),
+            'billtostate' => $customer->get_billing_state(),
+            'billtozip' => $customer->get_billing_postcode(),
+            'billtocountry' => $customer->get_billing_country(),
             'origid' => '',
             'custref' => '',
             'custcode' => '',
@@ -1838,30 +1827,19 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
     public function process_subscription_payment($order, $amount, $payment_token = null) {
         $order_id = $order->get_id();
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
         $card = $this->get_posted_card();
-
         try {
-
             if (!empty($card->firstname)) {
                 $firstname = $card->firstname;
             } else {
                 $firstname = $order->get_billing_first_name();
             }
-
             if (!empty($card->lastname)) {
                 $lastname = $card->lastname;
             } else {
-                $lastname = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name();
+                $lastname = $order->get_billing_last_name();
             }
-
-            $billing_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_address_1 : $order->get_billing_address_1();
-            $billing_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_address_2 : $order->get_billing_address_2();
-            $billing_city = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_city : $order->get_billing_city();
-            $billing_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_postcode : $order->get_billing_postcode();
-            $billing_country = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_country : $order->get_billing_country();
-            $billing_state = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_state : $order->get_billing_state();
-            $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $billing_email : $order->get_billing_email();
+            $billing_email = $order->get_billing_email();
             $customer_note_value = wptexturize($order->get_customer_note());
             $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
             $PayPalRequestData = array(
@@ -1875,13 +1853,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'swipe' => '', // Required for card-present transactions.  Used to pass either Track 1 or Track 2, but not both.
                 'orderid' => $this->invoice_id_prefix . $order->get_order_number(), // Checks for duplicate order.  If you pass orderid in a request and pass it again in the future the response returns DUPLICATE=2 along with the orderid
                 'orderdesc' => $this->get_order_item_names($order), //
-                'billtoemail' => $billing_email, // Account holder's email address.
+                'billtoemail' => $order->get_billing_email(), // Account holder's email address.
                 'billtophonenum' => '', // Account holder's phone number.
-                'billtostreet' => $billing_address_1 . ' ' . $billing_address_2, // The cardholder's street address (number and street name).  150 char max
-                'billtocity' => $billing_city, // Bill to city.  45 char max
-                'billtostate' => $billing_state, // Bill to state.
-                'billtozip' => $billing_postcode, // Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
-                'billtocountry' => $billing_country, // Bill to Country.  3 letter country code.
+                'billtostreet' => $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(), // The cardholder's street address (number and street name).  150 char max
+                'billtocity' => $order->get_billing_city(), // Bill to city.  45 char max
+                'billtostate' => $order->get_billing_state(), // Bill to state.
+                'billtozip' => $order->get_billing_postcode(), // Account holder's 5 to 9 digit postal code.  9 char max.  No dashes, spaces, or non-numeric characters
+                'billtocountry' => $order->get_billing_country(), // Bill to Country.  3 letter country code.
                 'origid' => '', // Required by some transaction types.  ID of the original transaction referenced.  The PNREF parameter returns this ID, and it appears as the Transaction ID in PayPal Manager reports.
                 'custref' => '', //
                 'custcode' => '', //
@@ -1894,26 +1872,14 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'partialauth' => '', // Required for partial authorizations.  Set to Y to submit a partial auth.
                 'authcode' => ''    // Rrequired for voice authorizations.  Returned only for approved voice authorization transactions.  AUTHCODE is the approval code received over the phone from the processing network.  6 char max
             );
-            /**
-             * Shipping info
-             */
-            $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
-            $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
-            $shipping_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_1 : $order->get_shipping_address_1();
-            $shipping_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_2 : $order->get_shipping_address_2();
-            $shipping_city = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_city : $order->get_shipping_city();
-            $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
-            $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
-            $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
-
-            if ($shipping_address_1) {
-                $PayPalRequestData['SHIPTOFIRSTNAME'] = $shipping_first_name;
-                $PayPalRequestData['SHIPTOLASTNAME'] = $shipping_last_name;
-                $PayPalRequestData['SHIPTOSTREET'] = $shipping_address_1 . ' ' . $shipping_address_2;
-                $PayPalRequestData['SHIPTOCITY'] = $shipping_city;
-                $PayPalRequestData['SHIPTOSTATE'] = $shipping_state;
-                $PayPalRequestData['SHIPTOCOUNTRY'] = $shipping_country;
-                $PayPalRequestData['SHIPTOZIP'] = $shipping_postcode;
+            if ($order->get_shipping_address_1()) {
+                $PayPalRequestData['SHIPTOFIRSTNAME'] = $order->get_shipping_first_name();
+                $PayPalRequestData['SHIPTOLASTNAME'] = $order->get_shipping_last_name();
+                $PayPalRequestData['SHIPTOSTREET'] = $order->get_shipping_address_1() . ' ' . $order->get_shipping_address_2();
+                $PayPalRequestData['SHIPTOCITY'] = $order->get_shipping_city();
+                $PayPalRequestData['SHIPTOSTATE'] = $order->get_shipping_state();
+                $PayPalRequestData['SHIPTOCOUNTRY'] = $order->get_shipping_country();
+                $PayPalRequestData['SHIPTOZIP'] = $order->get_shipping_postcode();
             }
             if ($this->send_items) {
                 $PaymentData = $this->calculation_angelleye->order_calculation($order_id);
@@ -1987,16 +1953,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $avs_response_order_note .= '<li>' . sprintf(__('Postal Match: %s', 'paypal-for-woocommerce'), $avs_zip_response_code) . '</li>';
                 $avs_response_order_note .= "<ul>";
                 $avs_response_order_note .= '</ul>';
-                $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                if ($old_wc) {
-                    update_post_meta($order_id, '_AVSADDR', $avs_address_response_code);
-                    update_post_meta($order_id, '_AVSZIP', $avs_zip_response_code);
-                    update_post_meta($order_id, '_PROCAVS', $avs_zip_response_code);
-                } else {
-                    update_post_meta($order->get_id(), '_AVSADDR', $avs_address_response_code);
-                    update_post_meta($order->get_id(), '_AVSZIP', $avs_zip_response_code);
-                    update_post_meta($order->get_id(), '_PROCAVS', $avs_zip_response_code);
-                }
+                update_post_meta($order->get_id(), '_AVSADDR', $avs_address_response_code);
+                update_post_meta($order->get_id(), '_AVSZIP', $avs_zip_response_code);
+                update_post_meta($order->get_id(), '_PROCAVS', $avs_zip_response_code);
                 $order->add_order_note($avs_response_order_note);
                 $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
                 $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
@@ -2006,15 +1965,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 do_action('ae_add_custom_order_note', $order, $card, $token, $PayPalResult);
                 if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_warning_codes)) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
-                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                    $order_id = $order->get_id();
-                    if ($old_wc) {
-                        if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
-                            $order->reduce_order_stock();
-                        }
-                    } else {
-                        wc_maybe_reduce_stock_levels($order_id);
-                    }
+                    wc_maybe_reduce_stock_levels($order->get_id());
                 } elseif ($this->payment_action == "Authorization") {
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
                         $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
@@ -2025,21 +1976,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $order->payment_complete($PayPalResult['PNREF']);
                     } else {
                         $order->update_status('on-hold');
-                        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                        $order_id = $order->get_id();
-                        if ($old_wc) {
-                            if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
-                                $order->reduce_order_stock();
-                            }
-                        } else {
-                            wc_maybe_reduce_stock_levels($order_id);
-                        }
+                        wc_maybe_reduce_stock_levels($order->get_id());
                     }
-                    if ($old_wc) {
-                        update_post_meta($order_id, '_first_transaction_id', $PayPalResult['PNREF']);
-                    } else {
-                        update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['PNREF']);
-                    }
+                    update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['PNREF']);
                     $payment_order_meta = array('_payment_action' => $this->payment_action);
                     AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                     AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
@@ -2073,7 +2012,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                     $message .= __('Order ID: ') . $order_id . "\n";
                     $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
-                    $message .= __('Customer Email: ') . $billing_email . "\n";
+                    $message .= __('Customer Email: ') . $order->get_billing_email() . "\n";
                     $message = apply_filters('ae_pppf_error_email_message', $message);
                     $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Pro Payflow Error Notification");
                     wp_mail($admin_email, $subject, $message);
@@ -2195,9 +2134,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             // Store source in the order
             $order_id = $order->get_id();
             $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $order_id = $order->get_id();
-            $avscode = $old_wc ? get_post_meta($order->id, '_AVSADDR', true) : get_post_meta($order->get_id(), '_AVSADDR', true);
+            $avscode = get_post_meta($order->get_id(), '_AVSADDR', true);
             if (!empty($avscode)) {
                 $avs_response_message = $this->PayPal->GetAVSCodeMessage($avscode);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-avs-details-heading">' . __('Address Verification Details', 'paypal-for-woocommerce') . '</h3>' . PHP_EOL;
@@ -2318,17 +2255,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             $this->validate_fields();
             $card = $this->get_posted_card();
             $customer = WC()->customer;
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $first_name = $old_wc ? $customer->billing_first_name : $customer->get_billing_first_name();
-            $last_name = $old_wc ? $customer->billing_last_name : $customer->get_billing_last_name();
-            $address_1 = $old_wc ? $customer->get_address() : $customer->get_billing_address_1();
-            $address_2 = $old_wc ? $customer->get_address_2() : $customer->get_billing_address_2();
-            $city = $old_wc ? $customer->get_city() : $customer->get_billing_city();
-            $state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
-            $postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
-            $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
-            $email_address = $old_wc ? WC()->customer->billing_email : WC()->customer->get_billing_email();
-            $billing_phone = $old_wc ? $customer->billing_phone : $customer->get_billing_phone();
             $PayPalRequestData = array(
                 'tender' => 'C',
                 'trxtype' => 'A',
@@ -2339,16 +2265,16 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'cvv2' => $card->cvc,
                 'orderid' => '',
                 'orderdesc' => '',
-                'billtoemail' => $email_address,
-                'billtophonenum' => $billing_phone,
-                'billtofirstname' => $first_name,
+                'billtoemail' => $customer->get_billing_email(),
+                'billtophonenum' => $customer->get_billing_phone(),
+                'billtofirstname' => $customer->get_billing_first_name(),
                 'billtomiddlename' => '',
-                'billtolastname' => $last_name,
-                'billtostreet' => $address_1 . ' ' . $address_2,
-                'billtocity' => $city,
-                'billtostate' => $state,
-                'billtozip' => $postcode,
-                'billtocountry' => $country,
+                'billtolastname' => $customer->get_billing_last_name(),
+                'billtostreet' => $customer->get_billing_address_1() . ' ' . $customer->get_billing_address_2(),
+                'billtocity' => $customer->get_billing_city(),
+                'billtostate' => $customer->get_billing_state(),
+                'billtozip' => $customer->get_billing_postcode(),
+                'billtocountry' => $customer->get_billing_country(),
                 'origid' => '',
                 'custref' => '',
                 'custcode' => '',

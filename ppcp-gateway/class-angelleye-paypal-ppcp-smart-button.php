@@ -519,9 +519,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $order_id = $wp->query_vars['order-pay'];
                     $order_id = absint($order_id);
                     $order = wc_get_order($order_id);
-                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                    $first_name = $old_wc ? $order->billing_first_name : $order->get_billing_first_name();
-                    $last_name = $old_wc ? $order->billing_last_name : $order->get_billing_last_name();
+                    $first_name = $order->get_billing_first_name();
+                    $last_name = $order->get_billing_last_name();
                 }
             }
             if (angelleye_ppcp_is_vault_required($this->enable_tokenized_payments)) {
@@ -1403,7 +1402,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if ($order_id !== null) {
                 $order = wc_get_order($order_id);
                 if ($order) {
-                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
                     $paymentaction_val = angelleye_ppcp_get_post_meta($order, '_paymentaction');
                     if (!empty($paymentaction_val)) {
                         return $paymentaction_val;

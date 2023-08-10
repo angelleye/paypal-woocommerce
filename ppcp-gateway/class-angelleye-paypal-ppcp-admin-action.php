@@ -126,8 +126,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         if (!$order) {
             return;
         }
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
+        $payment_method = $order->get_payment_method();
         $paymentaction = angelleye_ppcp_get_post_meta($order, '_paymentaction');
         $auth_transaction_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
         if ('angelleye_ppcp' === $payment_method && $paymentaction === 'authorize' && !empty($auth_transaction_id)) {
@@ -143,8 +142,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         if (!$order) {
             return;
         }
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
+        $payment_method = $order->get_payment_method();
         $transaction_id = $order->get_transaction_id();
         $paymentaction = angelleye_ppcp_get_post_meta($order, '_paymentaction');
         if ('angelleye_ppcp' === $payment_method && $transaction_id && $paymentaction === 'authorize') {
@@ -186,9 +184,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             if (empty($order)) {
                 return false;
             }
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $order_id = $order->get_id();
-            $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
+            $payment_method = $order->get_payment_method();
             $payment_action = angelleye_ppcp_get_post_meta($order, '_payment_action', true);
             if (isset($payment_method) && !empty($payment_method) && isset($payment_action) && !empty($payment_action)) {
                 if (($payment_method == 'angelleye_ppcp_cc' || $payment_method == 'angelleye_ppcp') && ($payment_action === "authorize" && $order->get_total() > 0)) {
