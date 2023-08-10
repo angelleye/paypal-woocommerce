@@ -343,6 +343,38 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-capture', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-capture.js', array('jquery'), $this->version, false);
         }
 
+        if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
+            return false;
+        }
+
+        /***Compatibility with Multicurrency start***/
+        $smart_js_arg = array();
+        $enable_funding = array();
+        $active_currency = get_woocommerce_currency();
+        
+        if(function_exists("scd_get_bool_option")) {
+            $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
+        } else {
+            $scd_option = get_option('scd_general_options');
+            $multicurrency_payment = ( isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true ) ? true : false;
+        }
+        if(function_exists("scd_get_target_currency") && $multicurrency_payment) {
+            $active_currency = scd_get_target_currency();
+        }
+        
+        $smart_js_arg['currency'] = in_array($active_currency, $this->angelleye_ppcp_currency_list) ? $active_currency : 'USD';
+        /***Compatibility with Multicurrency end***/
+        
+        if (!isset($this->disable_funding['venmo'])) {
+            array_push($enable_funding, 'venmo');
+        }
+        if (!isset($this->disable_funding['paylater'])) {
+            array_push($enable_funding, 'paylater');
+        }
+        if (isset($default_country['country']) && $default_country['country'] == 'NL') {
+            array_push($enable_funding, 'ideal');
+        }
+
         $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
         wp_register_script($this->angelleye_ppcp_plugin_name . '-common-functions', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-common-functions' . $this->minified_version . '.js', array('jquery',), $script_versions, false);
         // wp_register_script('angelleye-paypal-checkout-sdk', $js_url, array(), null, false);
@@ -1176,6 +1208,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 } else {
                     $new_method [$key] = $method;
                 }
+            }
+
+            if (!isset($new_method['angelleye_ppcp_cc']) && isset($angelleye_ppcp_cc) && !empty($angelleye_ppcp_cc)) {
+                $new_method['angelleye_ppcp_cc'] = $angelleye_ppcp_cc;
             }
         }
         if (is_add_payment_method_page()) {
