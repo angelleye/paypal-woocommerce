@@ -277,37 +277,24 @@ class AngellEYE_Admin_Order_Payment_Process {
         );
         $new_order = wc_create_order($args);
         $old_get_items = $order->get_items();
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        if ($old_wc) {
-            foreach ($order->get_items() as $cart_item_key => $values) {
-                wc_add_order_item_meta($values, $cart_item_key, $values);
-            }
-        } else {
-            $new_order->add_item($old_get_items);
-        }
+        $new_order->add_item($old_get_items);
         $new_order_id = version_compare(WC_VERSION, '3.0', '<') ? $new_order->id : $new_order->get_id();
         AngellEYE_Utility::angelleye_set_address($new_order_id, $shipping_details, 'shipping');
         AngellEYE_Utility::angelleye_set_address($new_order_id, $billing_details, 'billing');
         $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
-        if ($old_wc) {
-            update_post_meta($new_order_id, '_payment_method', $this->payment_method);
-        } else {
-            $new_order->set_payment_method($this->payment_method);
-        }
+        $new_order->set_payment_method($this->payment_method);
         $payment_method_title = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method_title : $order->get_payment_method_title();
-        update_post_meta($new_order_id, '_payment_method_title', $payment_method_title);
-        update_post_meta($new_order_id, '_created_via', 'create_new_reference_order');
+        $new_order->update_meta_data('_payment_method_title', $payment_method_title);
+        $new_order->update_meta_data('_created_via', 'create_new_reference_order');
         $token_id = $this->get_usable_reference_transaction($order);
         if (!empty($token_id)) {
-            update_post_meta($new_order_id, '_first_transaction_id', $token_id);
+            $new_order->update_meta_data('_first_transaction_id', $token_id);
         }
         if (!empty($_POST['copy_items_to_new_invoice']) && $_POST['copy_items_to_new_invoice'] == 'on') {
             $this->angelleye_update_order_meta($order, $new_order);
         }
         $order->add_order_note('Order Created: Create Reference Transaction Order', 0, false);
-        if (!$old_wc) {
-            $new_order->save();
-        }
+        $new_order->save();
         $new_order->calculate_totals();
         wp_redirect(get_edit_post_link($new_order_id, 'url'));
         exit();
@@ -315,14 +302,8 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_update_order_meta($order, $new_order) {
         foreach ($order->get_items() as $item_id => $item) {
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            if ($old_wc) {
-                $product = $order->get_product_from_item($item);
-                $new_order->add_product($product, $item['qty']);
-            } else {
-                $product = $item->get_product();
-                $new_order->add_product($product, $item['qty']);
-            }
+            $product = $item->get_product();
+            $new_order->add_product($product, $item['qty']);
         }
     }
 
@@ -561,7 +542,8 @@ class AngellEYE_Admin_Order_Payment_Process {
                 }
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($result, $order, $this->gateway_settings['payment_action']);
                 $order->payment_complete($result['TRANSACTIONID']);
-                update_post_meta($order_id, '_first_transaction_id', $result['TRANSACTIONID']);
+                $order->update_meta_data('_first_transaction_id', $result['TRANSACTIONID']);
+                $order->save();
                 $order->add_order_note(sprintf(__('%s payment Transaction ID: %s', 'paypal-for-woocommerce'), $this->payment_method, $result['TRANSACTIONID']));
             } else {
                 if (!empty($result['L_ERRORCODE0'])) {
@@ -663,5 +645,4 @@ class AngellEYE_Admin_Order_Payment_Process {
         $subtotal_mismatch_behavior = ( isset($this->gateway_settings['subtotal_mismatch_behavior']) && ( $this->gateway_settings['subtotal_mismatch_behavior'] == 'drop') ) ? 'drop' : 'add';
         $this->gateway_calculation = new WC_Gateway_Calculation_AngellEYE(null, $subtotal_mismatch_behavior);
     }
-
 }
