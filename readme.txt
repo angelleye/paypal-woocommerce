@@ -130,7 +130,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 = 4.1.18 - 08.10.2023 =
 * Fix - Fixed Disable CC option display issue on PPCP settings page ([PFW-1522](https://github.com/angelleye/paypal-woocommerce/pull/1882))
 * Fix - Resolves postdata parsing issue ([PFW-1449](https://github.com/angelleye/paypal-woocommerce/pull/1884))
-* Fix - Resolves default radio select issue with CC payment method on checkout page ([PFW-1530](https://github.com/angelleye/paypal-woocommerce/pull/1884))
+* Fix - Resolves default radio select issue with CC payment method on checkout page ([PFW-1530](https://github.com/angelleye/paypal-woocommerce/pull/1883))
 
 = 4.1.17 - 08.09.2023 =
 * Fix - Resolves the PayLaterMessaging Shortcode error and warnings due to undefined variables ([PFW-1524](https://github.com/angelleye/paypal-woocommerce/pull/1879))
