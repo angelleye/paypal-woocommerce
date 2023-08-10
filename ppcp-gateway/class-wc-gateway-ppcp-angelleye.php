@@ -7,6 +7,24 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public $checkout_disable_smart_button;
     public $minified_version;
     public bool $enable_tokenized_payments;
+    public $sandbox;
+    public $sandbox_merchant_id;
+    public $live_merchant_id;
+    public $sandbox_client_id;
+    public $sandbox_secret_id;
+    public $live_client_id;
+    public $live_secret_id;
+    public $soft_descriptor;
+    public $is_sandbox_third_party_used;
+    public $is_sandbox_first_party_used;
+    public $is_live_third_party_used;
+    public $is_live_first_party_used;
+    public $merchant_id;
+    public $client_id;
+    public $secret_id;
+    public $paymentaction;
+    public $three_d_secure_contingency;
+    public $is_enabled;
 
     public function __construct() {
         try {
@@ -95,7 +113,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function angelleye_defind_hooks() {
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-        add_action('woocommerce_admin_order_totals_after_total', array($this, 'angelleye_ppcp_display_order_fee'));
+        if (!has_action('woocommerce_admin_order_totals_after_total', array('WC_Gateway_PPCP_AngellEYE', 'angelleye_ppcp_display_order_fee'))) {
+            add_action('woocommerce_admin_order_totals_after_total', array('WC_Gateway_PPCP_AngellEYE', 'angelleye_ppcp_display_order_fee'));
+        }
         if (apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
             add_action('woocommerce_review_order_before_submit', array($this, 'ppcp_payment_fields'));
         }
@@ -473,7 +493,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         return $bool;
     }
 
-    public function angelleye_ppcp_display_order_fee($order_id) {
+    public static function angelleye_ppcp_display_order_fee($order_id) {
         $order = wc_get_order($order_id);
         $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         if ('angelleye_ppcp' !== $payment_method) {

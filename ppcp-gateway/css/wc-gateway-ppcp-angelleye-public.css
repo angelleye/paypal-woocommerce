@@ -313,6 +313,44 @@
 .woocommerce-terms-and-conditions-wrapper {
   margin-bottom: 10px;
 }
+.payment_method_angelleye_ppcp_cc {
+    display: flex;
+    flex-flow: row wrap;
+}
+.payment_method_angelleye_ppcp_cc>label {
+    display: flex !important;
+    flex: 1;
+    align-items: center;
+    margin-left: 4px;
+    gap: 0.3em;
+}
+.payment_method_angelleye_ppcp_cc>label .clearfix {
+    margin-right: -0.3em;
+}
+.payment_method_angelleye_ppcp_cc .payment_method_angelleye_ppcp_cc {
+    flex-basis: 100%;
+}
+.payment_box.payment_method_angelleye_ppcp_cc {
+    display: initial;
+}
+.payment_method_angelleye_ppcp_cc .ae-cc-icons-list {
+    display: flex;
+    justify-content: left;
+    margin-left: 0.5em;
+    flex-wrap: wrap;
+    flex: 1;
+}
+.payment_method_angelleye_ppcp_cc .ae-cc-icons-list img {
+    margin: 0 !important;
+    padding: 2px !important;
+}
+.clearfix {
+    clear: both;
+}
+.flex-break {
+    flex-basis: 100%;
+    width: 0;
+}
 @media screen and (max-width: 400px) {
     .angelleye_ppcp_vertical_small, .angelleye_ppcp_vertical_medium, .angelleye_ppcp_vertical_large,  .angelleye_ppcp_vertical_responsive, .angelleye_ppcp_horizontal_small, .angelleye_ppcp_horizontal_medium, .angelleye_ppcp_horizontal_large, .angelleye_ppcp_horizontal_responsive {
         width: 100%;

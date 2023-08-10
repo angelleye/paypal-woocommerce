@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.2.2
-Stable tag: 4.1.11
+Stable tag: 4.1.17
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,33 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.1.17 - 08.09.2023 =
+* Fix - Resolves the PayLaterMessaging Shortcode error and warnings due to undefined variables ([PFW-1524](https://github.com/angelleye/paypal-woocommerce/pull/1879))
+
+= 4.1.16 - 08.09.2023 =
+* Fix - Resolves the nonce issue on checkout when an account is created during checkout process ([PFW-1514](https://github.com/angelleye/paypal-woocommerce/pull/1878))
+* Fix - Resolves the PayLaterMessaging render issue due to missing PayPal lib ([PFW-1524](https://github.com/angelleye/paypal-woocommerce/pull/1874))
+
+= 4.1.15 - 08.09.2023 =
+* Tweak - Updated the Credit card icons and layout on checkout page ([PFW-1500](https://github.com/angelleye/paypal-woocommerce/pull/1867))
+* Fix - Resolves issue on Order pay page with orders having expired PayPal order id ([PFW-1534](https://github.com/angelleye/paypal-woocommerce/pull/1875))
+
+= 4.1.14 - 08.03.2023 =
+* Fix - Resolves the multiple PayPal Fees display issue on order detail page in admin panel. ([PFW-1515](https://github.com/angelleye/paypal-woocommerce/pull/1869))
+
+= 4.1.13 - 08.03.2023 =
+* Fix - Resolves the fatal error on order detail page due to PayPal Fees meta box in admin panel. ([PFW-1503](https://github.com/angelleye/paypal-woocommerce/pull/1868))
+
+= 4.1.12 - 08.03.2023 =
+* Fix - Fixed the order pay page issue when customer tries to pay on second attempt. ([PFW-1513](https://github.com/angelleye/paypal-woocommerce/pull/1866))
+* Tweak - Adds PHP 8.2 compatibility. ([PFW-1474](https://github.com/angelleye/paypal-woocommerce/pull/1865))
+* Tweak - Added the Cartflows compatibility with PPCP. ([PFW-1298](https://github.com/angelleye/paypal-woocommerce/pull/1864))
+* Fix - Fixed the PayPal Transaction Activity table fatal error due to order detection issues. ([PFW-1512](https://github.com/angelleye/paypal-woocommerce/pull/1863))
+* Tweak - Added the SiteGround plugin compatibility with Express Checkout. ([PFW-1507](https://github.com/angelleye/paypal-woocommerce/pull/1862))
+* Fix - Resolved the issue with Authorize and Capture issue with PPCP. ([PFW-1508](https://github.com/angelleye/paypal-woocommerce/pull/1860))
+* Tweak - Updated the migration wizard UI. ([PFW-1509](https://github.com/angelleye/paypal-woocommerce/pull/1859))
+* Fix - Resolves the multiple PayPal Fees display issue on order detail page in admin panel. ([PFW-1503](https://github.com/angelleye/paypal-woocommerce/pull/1856))
 
 = 4.1.11 - 08.03.2023 =
 * Fix - Resolves JS angelleyeOrder is not defined issue. ([PFW-1510](https://github.com/angelleye/paypal-woocommerce/pull/1861))

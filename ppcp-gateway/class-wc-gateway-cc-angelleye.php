@@ -5,6 +5,21 @@ if (!defined('ABSPATH')) {
 
 class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     use WC_Gateway_Base_AngellEYE;
+    public $enable_paypal_checkout_page;
+    public $checkout_page_display_option;
+    public $sandbox;
+    public $sandbox_merchant_id;
+    public $live_merchant_id;
+    public $sandbox_client_id;
+    public $sandbox_secret_id;
+    public $live_client_id;
+    public $live_secret_id;
+    public $advanced_card_payments;
+    public $merchant_id;
+    public $client_id;
+    public $secret_id;
+    public $enable_tokenized_payments;
+
     public function __construct() {
         try {
             $this->id = 'angelleye_ppcp_cc';
@@ -25,6 +40,9 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->live_client_id = $this->setting_obj->get('api_client_id', '');
             $this->live_secret_id = $this->setting_obj->get('api_secret', '');
             $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
+            if ($this->dcc_applies->for_country_currency() === false) {
+                $this->advanced_card_payments = false;
+            }
             if ($this->sandbox) {
                 $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
                 $this->client_id = $this->sandbox_client_id;
@@ -40,24 +58,24 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function get_icon() {
-        $icon = parent::get_icon();
         $icons = $this->setting_obj->get('disable_cards', array());
-        if (empty($icons)) {
-            return $icon;
-        }
         $title_options = $this->card_labels();
+        $images = [];
+        $totalIcons = 0;
         foreach ($title_options as $icon_key => $icon_value) {
             if (!in_array($icon_key, $icons)) {
                 if ($this->dcc_applies->can_process_card($icon_key)) {
-                    $images[] = '<img
-                 title="' . esc_attr($title_options[$icon_key]) . '"
-                 src="' . esc_url(PAYPAL_FOR_WOOCOMMERCE_ASSET_URL) . 'ppcp-gateway/images/' . esc_attr($icon_key) . '.svg"
-                 class="ppcp-card-icon"
-                > ';
+                    if ($totalIcons> 0 && $totalIcons % 4 === 0) {
+                        $images[] = '<div class="flex-break"></div>';
+                    }
+                    $iconUrl = esc_url(PAYPAL_FOR_WOOCOMMERCE_ASSET_URL) . 'ppcp-gateway/images/' . esc_attr($icon_key) . '.svg';
+                    $iconTitle = esc_attr($icon_value);
+                    $images[] = sprintf('<img title="%s" src="%s" class="ppcp-card-icon ae-icon-%s" />', $iconTitle, $iconUrl, $iconTitle);
+                    $totalIcons++;
                 }
             }
         }
-        return implode('', $images);
+        return '<div class="ae-cc-icons-list">' . implode('', $images) . '</div><div class="clearfix"></div>';
     }
 
     private function card_labels(): array {
@@ -71,6 +89,11 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     'Mastercard',
                     'Name of credit card',
                     'paypal-for-woocommerce'
+            ),
+            'maestro' => _x(
+                'Maestro',
+                'Name of credit card',
+                'paypal-for-woocommerce'
             ),
             'amex' => _x(
                     'American Express',

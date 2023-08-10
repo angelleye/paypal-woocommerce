@@ -11,6 +11,84 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public $checkout_fields;
     public $posted;
     public $is_multi_account_active;
+    public $home_url;
+    public $is_paypal_credit_enable;
+    public $disallowed_funding_methods_array;
+    public $button_label_array;
+    public $send_items_value;
+    public $send_items;
+    public $enable_tokenized_payments;
+    public $testmode11;
+    public $prevent_to_add_additional_item;
+    public $debug;
+    public $error_email_notify;
+    public $show_on_checkout;
+    public $paypal_account_optional;
+    public $error_display_type;
+    public $landing_page;
+    public $checkout_logo1;
+    public $checkout_logo_hdrimg1;
+    public $show_paypal_credit1;
+    public $brand_name1;
+    public $customer_service_number1;
+    public $use_wp_locale_code1;
+    public $angelleye_skip_text1;
+    public $skip_final_review1;
+    public $disable_term1;
+    public $payment_action1;
+    public $billing_address1;
+    public $subtotal_mismatch_behavior1;
+    public $order_cancellations1;
+    public $email_notify_order_cancellations1;
+    public $customer_id1;
+    public $enable_notifyurl1;
+    public $notifyurl1;
+    public $is_encrypt1;
+    public $cancel_page_id1;
+    public $fraud_management_filters1;
+    public $invoice_id_prefix1;
+    public $show_on_minicart;
+    public $pending_authorization_order_status;
+    public $enable_in_context_checkout_flow;
+    public $API_Endpoint;
+    public $PAYPAL_URL;
+    public $api_username;
+    public $api_password;
+    public $api_signature;
+    public $button_position;
+    public $show_on_cart;
+    public $checkout_with_pp_button_type;
+    public $pp_button_type_text_button;
+    public $pp_button_type_my_custom;
+    public $softdescriptor;
+    public $version;
+    public $Force_tls_one_point_two;
+    public $page_style;
+    public $review_button_label;
+    public $checkout_button_label;
+    public $testmode;
+    public $checkout_logo;
+    public $checkout_logo_hdrimg;
+    public $show_paypal_credit;
+    public $brand_name;
+    public $customer_service_number;
+    public $use_wp_locale_code;
+    public $angelleye_skip_text;
+    public $skip_final_review;
+    public $disable_term;
+    public $payment_action;
+    public $billing_address;
+    public $subtotal_mismatch_behavior;
+    public $order_cancellations;
+    public $email_notify_order_cancellations;
+    public $customer_id;
+    public $enable_notifyurl;
+    public $notifyurl;
+    public $is_encrypt;
+    public $cancel_page_id;
+    public $fraud_management_filters;
+    public $invoice_id_prefix;
+    public $checkout_page_disallowed_funding_methods;
 
     public function __construct() {
         $this->id = 'paypal_express';
@@ -2194,8 +2272,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                     } else {
                         if ($order_id > 0 && ( $order = wc_get_order($order_id) ) && $order->has_status(array('pending', 'failed'))) {
                             $_POST = angelleye_get_session('post_data');
-                            $_POST['post_data'] = angelleye_get_session('post_data');
-                            $this->posted = angelleye_get_session('post_data');
+                            $_POST['post_data'] = angelleye_parse_array(angelleye_get_session('post_data'));
+                            $this->posted = angelleye_parse_array(angelleye_get_session('post_data'));
                             $chosen_shipping_methods = angelleye_get_session('chosen_shipping_methods');
                             if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))
                                 foreach ($_POST['shipping_method'] as $i => $value) {
@@ -2249,13 +2327,13 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             }
                             
                         } else {
-                            $_POST = angelleye_get_session('post_data');
-                            $_POST['post_data'] = angelleye_get_session('post_data');
-                            $this->posted = angelleye_get_session('post_data');
+                            $_POST = angelleye_parse_array(angelleye_get_session('post_data'));
+                            $_POST['post_data'] = angelleye_parse_array(angelleye_get_session('post_data'));
+                            $this->posted = angelleye_parse_array(angelleye_get_session('post_data'));
                         }
                         if ($order_id == 0) {
-                            $_POST = angelleye_get_session('post_data');
-                            $_POST['post_data'] = angelleye_get_session('post_data');
+                            $_POST = angelleye_parse_array(angelleye_get_session('post_data'));
+                            $_POST['post_data'] = angelleye_parse_array(angelleye_get_session('post_data'));
                             $this->posted = angelleye_get_session('post_data');
                             $chosen_shipping_methods = angelleye_get_session('chosen_shipping_methods');
                             if (isset($_POST['shipping_method']) && is_array($_POST['shipping_method']))

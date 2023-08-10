@@ -10,6 +10,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public $posted;
     public $version;
     public $is_fraudnet_ready = false;
+    public $enabled;
 
     /**
      * The single instance of the class

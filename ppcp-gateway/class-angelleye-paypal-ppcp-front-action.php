@@ -4,6 +4,7 @@ defined('ABSPATH') || exit;
 
 class AngellEYE_PayPal_PPCP_Front_Action {
 
+    public static bool $is_user_logged_in_before_checkout;
     private $angelleye_ppcp_plugin_name;
     public $api_log;
     public AngellEYE_PayPal_PPCP_Payment $payment_request;
@@ -13,6 +14,14 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     public $procceed = 1;
     public $reject = 2;
     public $retry = 3;
+    public $is_sandbox;
+    public $merchant_id;
+    public $dcc_applies;
+    public $paymentaction;
+    public $title;
+    public $advanced_card_payments;
+    public $three_d_secure_contingency;
+    public $product;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -22,6 +31,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     }
 
     public function __construct() {
+        self::$is_user_logged_in_before_checkout = function_exists('is_user_logged_in') && is_user_logged_in();
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
         $this->angelleye_ppcp_load_class();
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
@@ -35,6 +45,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
+        add_action('set_logged_in_cookie', [$this, 'handle_logged_in_cookie_nonce_on_checkout'], 1000, 6);
     }
 
     public function angelleye_ppcp_load_class() {
@@ -63,6 +74,20 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
+    }
+
+    /**
+     * This hook adds the logged in user data in cookie so that any function that creates the nonce will get latest
+     * nonce data without needing to trigger another api call to get valid nonce.
+     * @param $logged_in_cookie
+     * @param $expire
+     * @param $expiration
+     * @param $user_id
+     * @param $scheme
+     * @param $token
+     */
+    function handle_logged_in_cookie_nonce_on_checkout($logged_in_cookie, $expire, $expiration, $user_id, $scheme, $token) {
+        $_COOKIE[LOGGED_IN_COOKIE] = $logged_in_cookie;
     }
 
     public function handle_wc_api() {
@@ -110,7 +135,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         if (isset(WC()->session) && !WC()->session->has_session()) {
                             WC()->session->set_customer_session_cookie(true);
                         }
-                        WC()->session->set( 'order_awaiting_payment', $woo_order_id );
+                        WC()->session->set('order_awaiting_payment', $woo_order_id);
                         $order = wc_get_order($woo_order_id);
                         do_action('woocommerce_before_pay_action', $order);
                         $error_messages = wc_get_notices('error');
@@ -128,6 +153,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         exit();
                     } elseif (isset($_GET['from']) && 'checkout' === $_GET['from']) {
                         if (isset($_POST) && !empty($_POST)) {
+                            self::$is_user_logged_in_before_checkout = is_user_logged_in();
                             add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), 10, 2);
                             WC()->checkout->process_checkout();
                             if (wc_notice_count('error') > 0) {
@@ -156,13 +182,13 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 $this->product = AngellEYE_PayPal_PPCP_Product::instance();
                                 $this->product::angelleye_ppcp_add_to_cart_action();
                             }
-                             if (angelleye_ppcp_get_order_total() === 0) {
+                            if (angelleye_ppcp_get_order_total() === 0) {
                                 $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
                                 wc_add_notice($wc_notice);
                                 wp_send_json_error($wc_notice);
-                             } else {
+                            } else {
                                 $this->payment_request->angelleye_ppcp_create_order_request();
-                             }
+                            }
                             exit();
                         } catch (Exception $ex) {
                             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
@@ -253,7 +279,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "paypal_create_payment_token_sub_change_payment":
                     $this->payment_request->angelleye_ppcp_paypal_create_payment_token_sub_change_payment();
                     exit();
-
             }
         }
     }
@@ -564,5 +589,4 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     private function no_liability_shift(AuthResult $result): int {
 
     }
-
 }

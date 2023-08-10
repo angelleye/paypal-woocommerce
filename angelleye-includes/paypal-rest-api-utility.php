@@ -33,6 +33,13 @@ class PayPal_Rest_API_Utility {
     public $gateway;
     public $CreditCardToken;
     public $payment_action;
+    public $testmode;
+    public $softdescriptor;
+    public $mode;
+    public $debug;
+    public $rest_client_id;
+    public $rest_secret_id;
+    public $calculation_angelleye;
 
     public function __construct($gateway) {
         $this->gateway = $gateway;
