@@ -284,7 +284,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!empty($_POST['wc-paypal_express-payment-token']) && $_POST['wc-paypal_express-payment-token'] != 'new') {
             return;
         } else {
-           add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 2);
+            add_action('woocommerce_after_checkout_validation', array($this, 'angelleye_paypal_express_checkout_redirect_to_paypal'), 99, 2);
         }
     }
 
@@ -844,7 +844,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 jQuery('#woocommerce_paypal_express_enable_tokenized_payments').prop('checked', false);
                 jQuery('#woocommerce_paypal_express_enabled_credit_messaging').prop("disabled", true);
                 jQuery('#woocommerce_paypal_express_enabled_credit_messaging').prop('checked', false);
-            <?php }
+        <?php }
         ?>
         </script>
         <?php
@@ -2022,8 +2022,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function payment_fields() {
         $description = $this->get_description();
-        if ( $description ) {
-            echo wpautop( wp_kses_post( $description ) );
+        if ($description) {
+            echo wpautop(wp_kses_post($description));
         }
         if ($this->function_helper->ec_is_express_checkout() == false) {
             if ($this->supports('tokenization') && is_checkout()) {
@@ -2306,7 +2306,6 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             if (!is_user_logged_in() && $is_registration_required) {
                                 $paypal_express_request->angelleye_process_customer($order_id);
                             }
-                            
                         } else {
                             $_POST = angelleye_parse_array(angelleye_get_session('post_data'));
                             $_POST['post_data'] = angelleye_parse_array(angelleye_get_session('post_data'));
@@ -2388,28 +2387,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $shipping_details = isset($paypal_express_checkout['shipping_details']) ? wp_unslash($paypal_express_checkout['shipping_details']) : array();
                         AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
                         $order_id = $order->get_id();
-                        if ($old_wc) {
-                            update_post_meta($order_id, '_payment_method', $this->id);
-                            update_post_meta($order_id, '_payment_method_title', $this->title);
-                            update_post_meta($order_id, '_customer_user', get_current_user_id());
-                        } else {
-                            $order->set_payment_method($this);
-                            update_post_meta($order->get_id(), '_customer_user', get_current_user_id());
-                        }
+                        $order->set_payment_method($this);
+                        update_post_meta($order->get_id(), '_customer_user', get_current_user_id());
                         $post_data = angelleye_get_session('post_data');
                         if (!empty($post_data['billing_phone'])) {
-                            if ($old_wc) {
-                                update_post_meta($order_id, '_billing_phone', $post_data['billing_phone']);
-                            } else {
-                                update_post_meta($order->get_id(), '_billing_phone', $post_data['billing_phone']);
-                            }
+                            update_post_meta($order->get_id(), '_billing_phone', $post_data['billing_phone']);
                         }
                         if (!empty($post_data['order_comments'])) {
-                            if ($old_wc) {
-                                update_post_meta($order_id, 'order_comments', $post_data['order_comments']);
-                            } else {
-                                update_post_meta($order->get_id(), 'order_comments', $post_data['order_comments']);
-                            }
+                            update_post_meta($order->get_id(), 'order_comments', $post_data['order_comments']);
                             $my_post = array(
                                 'ID' => $order_id,
                                 'post_excerpt' => $post_data['order_comments'],
@@ -2928,5 +2913,4 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             
         }
     }
-
 }

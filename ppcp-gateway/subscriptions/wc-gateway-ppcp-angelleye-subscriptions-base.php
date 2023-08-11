@@ -2,8 +2,6 @@
 
 trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
 
-    public $wc_pre_30;
-
     public function __construct() {
         parent::__construct();
         if (class_exists('WC_Subscriptions_Order')) {
@@ -13,7 +11,6 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
             add_action('wcs_resubscribe_order_created', array($this, 'delete_resubscribe_meta'), 10);
             add_action('woocommerce_subscription_failing_payment_method_updated_' . $this->id, array($this, 'update_failing_payment_method'), 10, 2);
         }
-        $this->wc_pre_30 = version_compare(WC_VERSION, '3.0.0', '<');
     }
 
     public function is_subscription($order_id) {
@@ -44,22 +41,20 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
-        $renewal_order_id = $this->wc_pre_30 ? $renewal_order->id : $renewal_order->get_id();
-        $payment_tokens_id = get_post_meta($renewal_order_id, '_payment_tokens_id', true);
+        $payment_tokens_id = get_post_meta($renewal_order->get_id(), '_payment_tokens_id', true);
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);
         }
-        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($renewal_order_id)) {
-            $subscriptions = wcs_get_subscriptions_for_order($renewal_order_id);
-        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($renewal_order_id)) {
-            $subscriptions = wcs_get_subscriptions_for_renewal_order($renewal_order_id);
+        if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($renewal_order->get_id())) {
+            $subscriptions = wcs_get_subscriptions_for_order($renewal_order->get_id());
+        } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($renewal_order->get_id())) {
+            $subscriptions = wcs_get_subscriptions_for_renewal_order($renewal_order->get_id());
         } else {
             $subscriptions = array();
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
-                $angelleye_ppcp_used_payment_method = get_post_meta($subscription_parent_id, '_angelleye_ppcp_used_payment_method', true);
+                $angelleye_ppcp_used_payment_method = get_post_meta($subscription->get_parent_id(), '_angelleye_ppcp_used_payment_method', true);
                 if (!empty($angelleye_ppcp_used_payment_method)) {
                     $renewal_order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
                     $renewal_order->save();
@@ -70,11 +65,10 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     }
 
     public function add_subscription_payment_meta($payment_meta, $subscription) {
-        $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
         $payment_meta[$this->id] = array(
             'post_meta' => array(
                 '_payment_tokens_id' => array(
-                    'value' => get_post_meta($subscription_id, '_payment_tokens_id', true),
+                    'value' => get_post_meta($subscription->get_id(), '_payment_tokens_id', true),
                     'label' => 'Payment Tokens ID',
                 )
             )
@@ -85,8 +79,7 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     public function validate_subscription_payment_meta($payment_method_id, $payment_meta, $subscription) {
         if ($this->id === $payment_method_id) {
             if (empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
-                $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
-                $payment_tokens_id = get_post_meta($subscription_parent_id, '_payment_tokens_id', true);
+                $payment_tokens_id = get_post_meta($subscription->get_parent_id(), '_payment_tokens_id', true);
                 if (!empty($payment_tokens_id)) {
                     $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                 } else {
@@ -97,8 +90,7 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     }
 
     public function delete_resubscribe_meta($resubscribe_order) {
-        $subscription_id = $this->wc_pre_30 ? $resubscribe_order->id : $resubscribe_order->get_id();
-        delete_post_meta($subscription_id, '_payment_tokens_id');
+        delete_post_meta($resubscribe_order->get_id(), '_payment_tokens_id');
     }
 
     public function update_failing_payment_method($subscription, $renewal_order) {
@@ -117,20 +109,18 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     }
 
     public function angelleye_scheduled_subscription_payment_retry_compability($renewal_order) {
-        $renewal_order_id = $this->wc_pre_30 ? $renewal_order->id : $renewal_order->get_id();
-        $payment_tokens_id = $renewal_order->get_meta($renewal_order_id, '_payment_tokens_id', true);
+        $payment_tokens_id = $renewal_order->get_meta($renewal_order->get_id(), '_payment_tokens_id', true);
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
-            if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($renewal_order_id)) {
-                $subscriptions = wcs_get_subscriptions_for_order($renewal_order_id);
-            } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($renewal_order_id)) {
-                $subscriptions = wcs_get_subscriptions_for_renewal_order($renewal_order_id);
+            if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($renewal_order->get_id())) {
+                $subscriptions = wcs_get_subscriptions_for_order($renewal_order->get_id());
+            } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($renewal_order->get_id())) {
+                $subscriptions = wcs_get_subscriptions_for_renewal_order($renewal_order->get_id());
             } else {
                 $subscriptions = array();
             }
             if (!empty($subscriptions)) {
                 foreach ($subscriptions as $subscription) {
-                    $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
-                    $payment_tokens_id = get_post_meta($subscription_parent_id, '_payment_tokens_id', true);
+                    $payment_tokens_id = get_post_meta($subscription->get_parent_id(), '_payment_tokens_id', true);
                     if (!empty($payment_tokens_id)) {
                         $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                         $subscription->save();

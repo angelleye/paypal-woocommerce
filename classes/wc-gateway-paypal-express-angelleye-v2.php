@@ -3115,28 +3115,14 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $shipping_details = isset($paypal_express_checkout['shipping_details']) ? wp_unslash($paypal_express_checkout['shipping_details']) : array();
                         AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
                         $order_id = $order->get_id();
-                        if ($old_wc) {
-                            update_post_meta($order_id, '_payment_method', $this->id);
-                            update_post_meta($order_id, '_payment_method_title', $this->title);
-                            update_post_meta($order_id, '_customer_user', get_current_user_id());
-                        } else {
-                            $order->set_payment_method($this);
-                            update_post_meta($order->get_id(), '_customer_user', get_current_user_id());
-                        }
+                        $order->set_payment_method($this);
+                        update_post_meta($order->get_id(), '_customer_user', get_current_user_id());
                         $post_data = angelleye_get_session('post_data');
                         if (!empty($post_data['billing_phone'])) {
-                            if ($old_wc) {
-                                update_post_meta($order_id, '_billing_phone', $post_data['billing_phone']);
-                            } else {
-                                update_post_meta($order->get_id(), '_billing_phone', $post_data['billing_phone']);
-                            }
+                            update_post_meta($order->get_id(), '_billing_phone', $post_data['billing_phone']);
                         }
                         if (!empty($post_data['order_comments'])) {
-                            if ($old_wc) {
-                                update_post_meta($order_id, 'order_comments', $post_data['order_comments']);
-                            } else {
-                                update_post_meta($order->get_id(), 'order_comments', $post_data['order_comments']);
-                            }
+                            update_post_meta($order->get_id(), 'order_comments', $post_data['order_comments']);
                             $my_post = array(
                                 'ID' => $order_id,
                                 'post_excerpt' => $post_data['order_comments'],

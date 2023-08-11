@@ -331,30 +331,29 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
                 }
                 $order->save();
-                if (( $old_wc && ( $order->shipping_address_1 || $order->shipping_address_2 ) ) || (!$old_wc && $order->has_shipping_address() )) {
-                    $shipping_first_name = $old_wc ? $order->shipping_first_name : $order->get_shipping_first_name();
-                    $shipping_last_name = $old_wc ? $order->shipping_last_name : $order->get_shipping_last_name();
-                    $shipping_address_1 = $old_wc ? $order->shipping_address_1 : $order->get_shipping_address_1();
-                    $shipping_address_2 = $old_wc ? $order->shipping_address_2 : $order->get_shipping_address_2();
-                    $shipping_city = $old_wc ? $order->shipping_city : $order->get_shipping_city();
-                    $shipping_state = $old_wc ? $order->shipping_state : $order->get_shipping_state();
-                    $shipping_postcode = $old_wc ? $order->shipping_postcode : $order->get_shipping_postcode();
-                    $shipping_country = $old_wc ? $order->shipping_country : $order->get_shipping_country();
+                if ($order->has_shipping_address()) {
+                    $shipping_first_name = $order->get_shipping_first_name();
+                    $shipping_last_name = $order->get_shipping_last_name();
+                    $shipping_address_1 = $order->get_shipping_address_1();
+                    $shipping_address_2 = $order->get_shipping_address_2();
+                    $shipping_city = $order->get_shipping_city();
+                    $shipping_state = $order->get_shipping_state();
+                    $shipping_postcode = $order->get_shipping_postcode();
+                    $shipping_country = $order->get_shipping_country();
                 } else {
-                    $shipping_first_name = $old_wc ? $order->billing_first_name : $order->get_billing_first_name();
-                    $shipping_last_name = $old_wc ? $order->billing_last_name : $order->get_billing_last_name();
-                    $shipping_address_1 = $old_wc ? $order->billing_address_1 : $order->get_billing_address_1();
-                    $shipping_address_2 = $old_wc ? $order->billing_address_2 : $order->get_billing_address_2();
-                    $shipping_city = $old_wc ? $order->billing_city : $order->get_billing_city();
-                    $shipping_state = $old_wc ? $order->billing_state : $order->get_billing_state();
-                    $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
-                    $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
+                    $shipping_first_name = $order->get_billing_first_name();
+                    $shipping_last_name = $order->get_billing_last_name();
+                    $shipping_address_1 = $order->get_billing_address_1();
+                    $shipping_address_2 = $order->get_billing_address_2();
+                    $shipping_city = $order->get_billing_city();
+                    $shipping_state = $order->get_billing_state();
+                    $shipping_postcode = $order->get_billing_postcode();
+                    $shipping_country = $order->get_billing_country();
                 }
                 if ($order->needs_shipping_address() || WC()->cart->needs_shipping()) {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
-                    // TODO Confirm about this fix
                     if (!empty($shipping_address_1) && !empty($shipping_country)) {
                         angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
                         $body_request['purchase_units'][0]['shipping']['address'] = array(
@@ -498,7 +497,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'shipping' => angelleye_ppcp_round($shipping_total, $decimals),
                 'items' => $items,
                 'shipping_address' => $this->angelleye_ppcp_get_address_from_customer(),
-                'email' => $old_wc ? WC()->customer->billing_email : WC()->customer->get_billing_email(),
+                'email' => WC()->customer->get_billing_email(),
             );
             return $this->angelleye_ppcp_get_details($details, $discounts, $rounded_total, $cart_total);
         } catch (Exception $ex) {
@@ -2780,24 +2779,24 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             if ($order->needs_shipping_address()) {
-                if (( $old_wc && ( $order->shipping_address_1 || $order->shipping_address_2 ) ) || (!$old_wc && $order->has_shipping_address() )) {
-                    $shipping_first_name = $old_wc ? $order->shipping_first_name : $order->get_shipping_first_name();
-                    $shipping_last_name = $old_wc ? $order->shipping_last_name : $order->get_shipping_last_name();
-                    $shipping_address_1 = $old_wc ? $order->shipping_address_1 : $order->get_shipping_address_1();
-                    $shipping_address_2 = $old_wc ? $order->shipping_address_2 : $order->get_shipping_address_2();
-                    $shipping_city = $old_wc ? $order->shipping_city : $order->get_shipping_city();
-                    $shipping_state = $old_wc ? $order->shipping_state : $order->get_shipping_state();
-                    $shipping_postcode = $old_wc ? $order->shipping_postcode : $order->get_shipping_postcode();
-                    $shipping_country = $old_wc ? $order->shipping_country : $order->get_shipping_country();
+                if ($order->has_shipping_address()) {
+                    $shipping_first_name = $order->get_shipping_first_name();
+                    $shipping_last_name = $order->get_shipping_last_name();
+                    $shipping_address_1 = $order->get_shipping_address_1();
+                    $shipping_address_2 = $order->get_shipping_address_2();
+                    $shipping_city = $order->get_shipping_city();
+                    $shipping_state = $order->get_shipping_state();
+                    $shipping_postcode = $order->get_shipping_postcode();
+                    $shipping_country = $order->get_shipping_country();
                 } else {
-                    $shipping_first_name = $old_wc ? $order->billing_first_name : $order->get_billing_first_name();
-                    $shipping_last_name = $old_wc ? $order->billing_last_name : $order->get_billing_last_name();
-                    $shipping_address_1 = $old_wc ? $order->billing_address_1 : $order->get_billing_address_1();
-                    $shipping_address_2 = $old_wc ? $order->billing_address_2 : $order->get_billing_address_2();
-                    $shipping_city = $old_wc ? $order->billing_city : $order->get_billing_city();
-                    $shipping_state = $old_wc ? $order->billing_state : $order->get_billing_state();
-                    $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
-                    $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
+                    $shipping_first_name = $order->get_billing_first_name();
+                    $shipping_last_name = $order->get_billing_last_name();
+                    $shipping_address_1 = $order->get_billing_address_1();
+                    $shipping_address_2 = $order->get_billing_address_2();
+                    $shipping_city = $order->get_billing_city();
+                    $shipping_state = $order->get_billing_state();
+                    $shipping_postcode = $order->get_billing_postcode();
+                    $shipping_country = $order->get_billing_country();
                 }
                 if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                     $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;

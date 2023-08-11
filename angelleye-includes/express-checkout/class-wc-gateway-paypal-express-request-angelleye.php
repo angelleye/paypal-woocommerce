@@ -447,11 +447,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     }
                     WC()->cart->empty_cart();
                 }
-                if ($old_wc) {
-                    update_post_meta($order_id, '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
-                } else {
-                    update_post_meta($order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
-                }
+                update_post_meta($order->get_id(), '_express_chekout_transactionid', isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '' );
                 if (!empty($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'])) {
                     $order->add_order_note(sprintf(__('%s payment Transaction ID: %s', 'paypal-for-woocommerce'), $this->gateway->title, $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']));
                 }
@@ -462,13 +458,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             } elseif ($this->response_helper->ec_is_response_partialsuccess($this->paypal_response)) {
                 $order->set_transaction_id(isset($this->paypal_response['PAYMENTINFO_0_TRANSACTIONID']) ? $this->paypal_response['PAYMENTINFO_0_TRANSACTIONID'] : '');
                 $order->save();
-                if ($old_wc) {
-                    if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
-                        $order->reduce_order_stock();
-                    }
-                } else {
-                    wc_maybe_reduce_stock_levels($order_id);
-                }
+                wc_maybe_reduce_stock_levels($order_id);
                 update_post_meta($order_id, 'is_sandbox', $this->testmode);
                 do_action('angelleye_express_checkout_order_data', $this->paypal_response, $order_id);
                 do_action('woocommerce_before_pay_action', $order);
@@ -1004,13 +994,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                         $order->payment_complete($transaction_id);
                     } else {
                         $order->update_status('on-hold');
-                        if ($old_wc) {
-                            if (!get_post_meta($orderid, '_order_stock_reduced', true)) {
-                                $order->reduce_order_stock();
-                            }
-                        } else {
-                            wc_maybe_reduce_stock_levels($orderid);
-                        }
+                        wc_maybe_reduce_stock_levels($orderid);
                     }
                     break;
                 case 'denied' :

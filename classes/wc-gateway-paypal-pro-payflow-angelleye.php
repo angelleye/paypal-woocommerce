@@ -2156,7 +2156,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 }
                 echo '</ul></section>';
             }
-            $cvvmatch = $old_wc ? get_post_meta($order->id, '_CVV2MATCH', true) : get_post_meta($order->get_id(), '_CVV2MATCH', true);
+            $cvvmatch = get_post_meta($order->get_id(), '_CVV2MATCH', true);
             if (!empty($cvvmatch)) {
                 $cvv2_response_message = $this->PayPal->GetCVV2CodeMessage($cvvmatch);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-cvv2-details-heading">' . __('Card Security Code Details', 'paypal-for-woocommerce') . '</h3>' . PHP_EOL;

@@ -1657,8 +1657,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     public function get_transaction_url($order) {
         $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
         $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
-        $old_wc = version_compare( WC_VERSION, '3.0', '<' );
-        $is_sandbox = $old_wc ? get_post_meta( $order->id, 'is_sandbox', true ) : get_post_meta($order->get_id(), 'is_sandbox', true);
+        $is_sandbox = get_post_meta($order->get_id(), 'is_sandbox', true);
         if ($is_sandbox == true) {
             $this->view_transaction_url = $sandbox_transaction_url;
         } else {
@@ -1801,10 +1800,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     public function angelleye_paypal_pro_email_instructions($order, $sent_to_admin, $plain_text = false) {
         $payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
         if ( $sent_to_admin && 'paypal_pro' === $payment_method ) {
-            $old_wc = version_compare( WC_VERSION, '3.0', '<' );
-            $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
-            $avscode = $old_wc ? get_post_meta( $order->id, '_AVSCODE', true ) : get_post_meta($order->get_id(), '_AVSCODE', true);
+            $avscode = get_post_meta($order->get_id(), '_AVSCODE', true);
             if ( ! empty( $avscode ) ) {
                 $avs_response_message = $this->PayPal->GetAVSCodeMessage($avscode);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'paypal-for-woocommerce' ) . '</h3>' . PHP_EOL;
@@ -1826,8 +1824,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 }
                 echo '</ul></section>';
             }
-            $old_wc = version_compare( WC_VERSION, '3.0', '<' );
-            $cvvmatch = $old_wc ? get_post_meta( $order->id, '_CVV2MATCH', true ) : get_post_meta($order->get_id(), '_CVV2MATCH', true);
+            $cvvmatch = get_post_meta($order->get_id(), '_CVV2MATCH', true);
             if ( ! empty( $cvvmatch ) ) {
                 $cvv2_response_message = $this->PayPal->GetCVV2CodeMessage($cvvmatch);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'paypal-for-woocommerce' ) . '</h3>' . PHP_EOL;
@@ -2123,7 +2120,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     public function update_payment_status_by_paypal_responce($orderid, $result, $transaction_id) {
         try {
             $order = wc_get_order($orderid);
-            $old_wc = version_compare( WC_VERSION, '3.0', '<' );
             if(!empty($result['PAYMENTINFO_0_PAYMENTSTATUS'])) {
                 $payment_status = $result['PAYMENTINFO_0_PAYMENTSTATUS'];
             } elseif ( !empty ($result['PAYMENTSTATUS'])) {
@@ -2202,13 +2198,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                         $order->payment_complete($transaction_id);
                     } else {
                         $order->update_status('on-hold');
-                        if ( $old_wc ) {
-                            if ( ! get_post_meta( $orderid, '_order_stock_reduced', true ) ) {
-                                $order->reduce_order_stock();
-                            }
-                        } else {
-                            wc_maybe_reduce_stock_levels( $orderid );
-                        }
+                        wc_maybe_reduce_stock_levels( $orderid );
                     }
                     break;
                 case 'denied' :

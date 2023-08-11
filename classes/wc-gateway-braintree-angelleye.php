@@ -1971,7 +1971,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (empty($transaction_id)) {
             return false;
         }
-        $is_sandbox = $old_wc ? get_post_meta($order->id, 'is_sandbox', true) : get_post_meta($order->get_id(), 'is_sandbox', true);
+        $is_sandbox = get_post_meta($order->get_id(), 'is_sandbox', true);
         if ($is_sandbox == true) {
             $server = "sandbox.braintreegateway.com";
         } else {
