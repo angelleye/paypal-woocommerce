@@ -629,9 +629,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (strlen($desc) > 127) {
                     $desc = substr($desc, 0, 124) . '...';
                 }
-
                 $desc = strip_shortcodes($desc);
-
+                $desc = str_replace("\n", " ", $desc);
+                $desc = preg_replace('/\s+/', ' ', $desc);
                 $item = array(
                     'name' => $product_name,
                     'description' => apply_filters('angelleye_ppcp_product_description', $desc),
@@ -1465,6 +1465,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $desc = substr($desc, 0, 124) . '...';
                 }
                 $desc = strip_shortcodes($desc);
+                $desc = str_replace("\n", " ", $desc);
+                $desc = preg_replace('/\s+/', ' ', $desc);
                 $item = array(
                     'name' => $product_name,
                     'description' => apply_filters('angelleye_ppcp_product_description', $desc),
