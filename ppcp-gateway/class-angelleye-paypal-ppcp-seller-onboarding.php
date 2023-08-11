@@ -45,7 +45,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             add_action('wp_ajax_angelleye_ppcp_onboard_email_sendy_subscription', array($this, 'angelleye_ppcp_onboard_email_sendy_subscription'));
             $this->ppcp_paypal_country = $this->dcc_applies->country();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -77,7 +77,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -233,7 +233,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $data = json_decode($posted_raw, true);
             $this->angelleye_ppcp_get_credentials($data);
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -256,7 +256,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -434,7 +434,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             wp_safe_redirect($redirect_url, 302);
             exit();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -500,7 +500,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 }
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
             return false;
         }
@@ -535,7 +535,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->result = $this->api_request->request($url, $args, 'seller_onboarding_status');
                 $seller_onboarding_status_transient = $this->result;
             } catch (Exception $ex) {
-                $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+                $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
                 $this->api_log->log($ex->getMessage(), 'error');
                 $seller_onboarding_status_transient = [];
             }

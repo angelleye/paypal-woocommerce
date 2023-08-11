@@ -57,7 +57,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 $this->subscription_support_enabled = false;
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -77,7 +77,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->seller_onboarding = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }

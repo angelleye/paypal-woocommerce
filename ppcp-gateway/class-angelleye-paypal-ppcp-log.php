@@ -44,7 +44,7 @@ class AngellEYE_PayPal_PPCP_Log {
             }
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
         } catch (Exception $ex) {
-            $this->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->log($ex->getMessage(), 'error');
         }
     }
