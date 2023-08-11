@@ -885,40 +885,30 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             angelleye_set_session('CardExpYear', $card->exp_year);
             $this->centinel_client->add('CardCode', $card->cvc);
             angelleye_set_session('CardCode', $card->cvc);
-
             if(!empty($card->firstname) && !empty($card->lastname)) {
                 $billing_first_name = $card->firstname;
                 $billing_last_name = $card->lastname;
             } else {
-                $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
-                $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
+                $billing_first_name = $order->get_billing_first_name();
+                $billing_last_name = $order->get_billing_last_name();
             }
-        
-            $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
-            $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
-            $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
-            $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
-            $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
-            $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
-            $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
-
             $this->centinel_client->add('BillingFirstName', $billing_first_name);
             $this->centinel_client->add('BillingLastName', $billing_last_name);
-            $this->centinel_client->add('BillingAddress1', $billing_address_1);
-            $this->centinel_client->add('BillingAddress2', $billing_address_2);
-            $this->centinel_client->add('BillingCity', $billing_city);
-            $this->centinel_client->add('BillingState', $billing_state);
-            $this->centinel_client->add('BillingPostalCode', $billing_postcode);
-            $this->centinel_client->add('BillingCountryCode', $billing_country);
-            $this->centinel_client->add('BillingPhone', $billing_phone);
-            $this->centinel_client->add('ShippingFirstName', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name());
-            $this->centinel_client->add('ShippingLastName', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name());
-            $this->centinel_client->add('ShippingAddress1', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1());
-            $this->centinel_client->add('ShippingAddress2', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2());
-            $this->centinel_client->add('ShippingCity', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city());
-            $this->centinel_client->add('ShippingState', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state());
-            $this->centinel_client->add('ShippingPostalCode', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode());
-            $this->centinel_client->add('ShippingCountryCode', version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country());
+            $this->centinel_client->add('BillingAddress1', $order->get_billing_address_1());
+            $this->centinel_client->add('BillingAddress2', $order->get_billing_address_2());
+            $this->centinel_client->add('BillingCity', $order->get_billing_city());
+            $this->centinel_client->add('BillingState', $order->get_billing_state());
+            $this->centinel_client->add('BillingPostalCode', $order->get_billing_postcode());
+            $this->centinel_client->add('BillingCountryCode', $order->get_billing_country());
+            $this->centinel_client->add('BillingPhone', $order->get_billing_phone());
+            $this->centinel_client->add('ShippingFirstName', $order->get_shipping_first_name());
+            $this->centinel_client->add('ShippingLastName', $order->get_shipping_last_name());
+            $this->centinel_client->add('ShippingAddress1', $order->get_shipping_address_1());
+            $this->centinel_client->add('ShippingAddress2', $order->get_shipping_address_2());
+            $this->centinel_client->add('ShippingCity', $order->get_shipping_city());
+            $this->centinel_client->add('ShippingState', $order->get_shipping_state());
+            $this->centinel_client->add('ShippingPostalCode', $order->get_shipping_postcode());
+            $this->centinel_client->add('ShippingCountryCode', $order->get_shipping_country());
 
             // Items
             $item_loop = 0;
@@ -1135,8 +1125,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $firstname = $card->firstname;
             $lastname = $card->lastname;
         } else {
-            $firstname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
-            $lastname = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
+            $firstname = $order->get_billing_first_name();
+            $lastname = $order->get_billing_last_name();
         }
 
         $card_exp = $card_exp_month . $card_exp_year;
@@ -1161,44 +1151,33 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'issuenumber' => ''                            // Issue number of Maestro or Solo card.  Two numeric digits max.
         );
 
-
-        $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
-        $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
-        $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
-        $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
-        $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
-        $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
-        $billing_email = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email();
-        $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
-
-
         $PayerInfo = array(
-            'email' => $billing_email,                                // Email address of payer.
+            'email' => $order->get_billing_email(),                                // Email address of payer.
             'firstname' => $firstname, // Required.  Payer's first name.
             'lastname' => $lastname                            // Required.  Payer's last name.
         );
 
         $BillingAddress = array(
-            'street' => $billing_address_1,                        // Required.  First street address.
-            'street2' => $billing_address_2,                        // Second street address.
-            'city' => $billing_city,                            // Required.  Name of City.
-            'state' => $billing_state,                            // Required. Name of State or Province.
-            'countrycode' => $billing_country,                    // Required.  Country code.
-            'zip' => $billing_postcode,                            // Required.  Postal code of payer.
-            'phonenum' => $billing_phone                        // Phone Number of payer.  20 char max.
+            'street' => $order->get_billing_address_1(),                        // Required.  First street address.
+            'street2' => $order->get_billing_address_2(),                        // Second street address.
+            'city' => $order->get_billing_city(),                            // Required.  Name of City.
+            'state' => $order->get_billing_state(),                            // Required. Name of State or Province.
+            'countrycode' => $order->get_billing_country(),                    // Required.  Country code.
+            'zip' => $order->get_billing_postcode(),                            // Required.  Postal code of payer.
+            'phonenum' => $order->get_billing_phone()                        // Phone Number of payer.  20 char max.
         );
 
-        $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
-        $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
+        $shipping_first_name = $order->get_shipping_first_name();
+        $shipping_last_name = $order->get_shipping_last_name();
         $ShippingAddress = array(
             'shiptoname' => $shipping_first_name . ' ' . $shipping_last_name,                    // Required if shipping is included.  Person's name associated with this address.  32 char max.
-            'shiptostreet' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1(),                    // Required if shipping is included.  First street address.  100 char max.
-            'shiptostreet2' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2(),                    // Second street address.  100 char max.
-            'shiptocity' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city(),                    // Required if shipping is included.  Name of city.  40 char max.
-            'shiptostate' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state(),                    // Required if shipping is included.  Name of state or province.  40 char max.
-            'shiptozip' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode(),                        // Required if shipping is included.  Postal code of shipping address.  20 char max.
-            'shiptocountry' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country(),                    // Required if shipping is included.  Country code of shipping address.  2 char max.
-            'shiptophonenum' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone()                    // Phone number for shipping address.  20 char max.
+            'shiptostreet' => $order->get_shipping_address_1(),                    // Required if shipping is included.  First street address.  100 char max.
+            'shiptostreet2' => $order->get_shipping_address_2(),                    // Second street address.  100 char max.
+            'shiptocity' => $order->get_shipping_city(),                    // Required if shipping is included.  Name of city.  40 char max.
+            'shiptostate' => $order->get_shipping_state(),                    // Required if shipping is included.  Name of state or province.  40 char max.
+            'shiptozip' => $order->get_shipping_postcode(),                        // Required if shipping is included.  Postal code of shipping address.  20 char max.
+            'shiptocountry' => $order->get_shipping_country(),                    // Required if shipping is included.  Country code of shipping address.  2 char max.
+            'shiptophonenum' => $order->get_billing_phone()                    // Phone number for shipping address.  20 char max.
         );
 
         $customer_note_value = wptexturize($order->get_customer_note());
@@ -1208,7 +1187,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'amt' => AngellEYE_Gateway_Paypal::number_format($order->get_total(), $order),                            // Required.  Total amount of order, including shipping, handling, and tax.
             'currencycode' => $order->get_currency(),                    // Required.  Three-letter currency code.  Default is USD.
             'desc' => '',                            // Description of the order the customer is purchasing.  127 char max.
-            'custom' => apply_filters( 'ae_ppddp_custom_parameter', json_encode( array( 'order_id' => $order->get_id(), 'order_key' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->order_key : $order->get_order_key() ) ) , $order ),                        // Free-form field for your own use.  256 char max.
+            'custom' => apply_filters( 'ae_ppddp_custom_parameter', json_encode( array( 'order_id' => $order->get_id(), 'order_key' => $order->get_order_key() ) ) , $order ),                        // Free-form field for your own use.  256 char max.
             'invnum' => $this->invoice_id_prefix . str_replace("#","",$order->get_order_number()), // Your own invoice or tracking number
             'recurring' => ''                        // Flag to indicate a recurring transaction.  Value should be Y for recurring, or anything other than Y if it's not recurring.  To pass Y here, you must have an established billing agreement with the buyer.
         );
@@ -1326,10 +1305,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
             /* Checkout Note */
             if (isset($_POST) && !empty($_POST['order_comments'])) {
-                // Update post 37
-                $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
                 $checkout_note = array(
-                    'ID' => $order_id,
+                    'ID' => $order->get_id(),
                     'post_excerpt' => wc_clean($_POST['order_comments']),
                 );
                 wp_update_post($checkout_note);
@@ -1454,7 +1431,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                 $message .= __('Order ID: ') . $order_id . "\n";
                 $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
-                $message .= __('Customer Email: ') . $billing_email . "\n";
+                $message .= __('Customer Email: ') . $order->get_billing_email() . "\n";
 
                 $pc_error_email_message = apply_filters('ae_ppddp_error_email_message', $message, $error_code, $long_message);
                 $pc_error_email_subject = apply_filters('ae_ppddp_error_email_subject', "PayPal Pro Error Notification", $error_code, $long_message);
@@ -1798,7 +1775,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function angelleye_paypal_pro_email_instructions($order, $sent_to_admin, $plain_text = false) {
-        $payment_method = version_compare( WC_VERSION, '3.0', '<' ) ? $order->payment_method : $order->get_payment_method();
+        $payment_method = $order->get_payment_method();
         if ( $sent_to_admin && 'paypal_pro' === $payment_method ) {
             $order_id = $order->get_id();
             $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
@@ -1864,44 +1841,34 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'returnfmfdetails' => '1',                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
             'softdescriptor' => $this->softdescriptor
         );
-        $billing_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_first_name : $order->get_billing_first_name();
-        $billing_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_last_name : $order->get_billing_last_name();
-        $billing_address_1 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_1 : $order->get_billing_address_1();
-        $billing_address_2 = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_address_2 : $order->get_billing_address_2();
-        $billing_city = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_city : $order->get_billing_city();
-        $billing_postcode = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_postcode : $order->get_billing_postcode();
-        $billing_country = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_country : $order->get_billing_country();
-        $billing_state = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_state : $order->get_billing_state();
-        $billing_email = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_email : $order->get_billing_email();
-        $billing_phone = version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone();
-
+        
         $PayerInfo = array(
-            'email' => $billing_email, // Email address of payer.
-            'firstname' => $billing_first_name, // Required.  Payer's first name.
-            'lastname' => $billing_last_name                            // Required.  Payer's last name.
+            'email' => $order->get_billing_email(), // Email address of payer.
+            'firstname' => $order->get_billing_first_name(), // Required.  Payer's first name.
+            'lastname' => $order->get_billing_last_name()                            // Required.  Payer's last name.
         );
         $BillingAddress = array(
-            'street' => $billing_address_1, // Required.  First street address.
-            'street2' => $billing_address_2, // Second street address.
-            'city' => $billing_city, // Required.  Name of City.
-            'state' => $billing_state, // Required. Name of State or Province.
-            'countrycode' => $billing_country, // Required.  Country code.
-            'zip' => $billing_postcode, // Required.  Postal code of payer.
-            'phonenum' => $billing_phone                        // Phone Number of payer.  20 char max.
+            'street' => $order->get_billing_address_1(), // Required.  First street address.
+            'street2' => $order->get_billing_address_2(), // Second street address.
+            'city' => $order->get_billing_city(), // Required.  Name of City.
+            'state' => $order->get_billing_state(), // Required. Name of State or Province.
+            'countrycode' => $order->get_billing_country(), // Required.  Country code.
+            'zip' => $order->get_billing_postcode(), // Required.  Postal code of payer.
+            'phonenum' => $order->get_billing_phone()                        // Phone Number of payer.  20 char max.
         );
 
-        $shipping_first_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_first_name : $order->get_shipping_first_name();
-        $shipping_last_name = version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_last_name : $order->get_shipping_last_name();
+        $shipping_first_name = $order->get_shipping_first_name();
+        $shipping_last_name = $order->get_shipping_last_name();
 
         $ShippingAddress = array(
             'shiptoname' => $shipping_first_name . ' ' . $shipping_last_name,                    // Required if shipping is included.  Person's name associated with this address.  32 char max.
-            'shiptostreet' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_1 : $order->get_shipping_address_1(),                    // Required if shipping is included.  First street address.  100 char max.
-            'shiptostreet2' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_address_2 : $order->get_shipping_address_2(),                    // Second street address.  100 char max.
-            'shiptocity' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_city : $order->get_shipping_city(),                    // Required if shipping is included.  Name of city.  40 char max.
-            'shiptostate' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_state : $order->get_shipping_state(),                    // Required if shipping is included.  Name of state or province.  40 char max.
-            'shiptozip' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_postcode : $order->get_shipping_postcode(),                        // Required if shipping is included.  Postal code of shipping address.  20 char max.
-            'shiptocountry' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->shipping_country : $order->get_shipping_country(),                    // Required if shipping is included.  Country code of shipping address.  2 char max.
-            'shiptophonenum' => version_compare( WC_VERSION, '3.0', '<' ) ? $order->billing_phone : $order->get_billing_phone()                    // Phone number for shipping address.  20 char max.
+            'shiptostreet' => $order->get_shipping_address_1(),                    // Required if shipping is included.  First street address.  100 char max.
+            'shiptostreet2' => $order->get_shipping_address_2(),                    // Second street address.  100 char max.
+            'shiptocity' => $order->get_shipping_city(),                    // Required if shipping is included.  Name of city.  40 char max.
+            'shiptostate' => $order->get_shipping_state(),                    // Required if shipping is included.  Name of state or province.  40 char max.
+            'shiptozip' => $order->get_shipping_postcode(),                        // Required if shipping is included.  Postal code of shipping address.  20 char max.
+            'shiptocountry' => $order->get_shipping_country(),                    // Required if shipping is included.  Country code of shipping address.  2 char max.
+            'shiptophonenum' => $order->get_billing_phone()                    // Phone number for shipping address.  20 char max.
         );
 
         $customer_note_value = wptexturize($order->get_customer_note());
@@ -2019,8 +1986,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $long_message . "\n";
                 $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                 $message .= __('Order ID: ') . $order_id . "\n";
-                $message .= __('Customer Name: ') . $billing_first_name . ' ' . $billing_last_name . "\n";
-                $message .= __('Customer Email: ') . $billing_email . "\n";
+                $message .= __('Customer Name: ') . $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() . "\n";
+                $message .= __('Customer Email: ') . $order->get_billing_email() . "\n";
                 $pc_error_email_message = apply_filters('ae_ppddp_error_email_message', $message, $error_code, $long_message);
                 $pc_error_email_subject = apply_filters('ae_ppddp_error_email_subject', "PayPal Pro Error Notification", $error_code, $long_message);
                 wp_mail($admin_email, $pc_error_email_subject, $pc_error_email_message);
@@ -2039,10 +2006,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
 
     public function save_payment_token($order, $payment_tokens_id) {
-        // Store source in the order
-        $order_id = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+            update_post_meta($order->get_id(), '_payment_tokens_id', $payment_tokens_id);
         }
     }
 
@@ -2086,7 +2051,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $order_id = $order->get_id();
             if( $this->is_subscription($order_id) ) {
                 foreach ($order->get_items() as $cart_item_key => $values) {
-                    $product = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_product_from_item( $values ) : $values->get_product();
+                    $product = $values->get_product();
                     $product_id = $product->get_id();
                     if( !empty($product_id) ) {
                         $product_type = get_post_type($product_id);

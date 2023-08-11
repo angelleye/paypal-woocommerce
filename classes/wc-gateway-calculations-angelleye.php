@@ -190,7 +190,7 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
             }
             $desc = '';
             foreach ($order->get_items() as $cart_item_key => $values) {
-                $product = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_product_from_item( $values ) : $values->get_product();
+                $product = $values->get_product();
                 $product_sku = null;
                 if (is_object($product)) {
                     $product_sku = $product->get_sku();
