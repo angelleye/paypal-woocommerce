@@ -1238,12 +1238,18 @@ class AngellEYE_PayPal_PPCP_Payment {
             $old_wc = version_compare(WC_VERSION, '3.0', '<');
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $patch_request = array();
-            $reference_id = angelleye_ppcp_get_session('angelleye_ppcp_reference_id');
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $reference_id = angelleye_ppcp_get_session('angelleye_ppcp_reference_id');
             $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
             if (empty($paypal_order_id)) {
                 $paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id');
                 if(empty($paypal_order_id)) {
+                    angelleye_session_expired_exception();
+                }
+            }
+            if (empty($reference_id)) {
+                $reference_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_reference_id');
+                if(empty($reference_id)) {
                     angelleye_session_expired_exception();
                 }
             }
