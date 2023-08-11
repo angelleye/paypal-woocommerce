@@ -321,7 +321,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             if ($woo_order_id != null) {
                 $order = wc_get_order($woo_order_id);
-                update_post_meta($woo_order_id, '_paypal_reference_id', $reference_id);
+                update_post_meta($order->get_id(), '_paypal_reference_id', $reference_id);
                 $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
                 if (!empty($angelleye_ppcp_payment_method_title)) {
                     $order->update_meta_data('_payment_method_title', $angelleye_ppcp_payment_method_title);

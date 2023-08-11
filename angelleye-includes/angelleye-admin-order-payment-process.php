@@ -258,9 +258,8 @@ class AngellEYE_Admin_Order_Payment_Process {
         $new_order = wc_create_order($args);
         $old_get_items = $order->get_items();
         $new_order->add_item($old_get_items);
-        $new_order_id = $new_order->get_id();
-        AngellEYE_Utility::angelleye_set_address($new_order_id, $shipping_details, 'shipping');
-        AngellEYE_Utility::angelleye_set_address($new_order_id, $billing_details, 'billing');
+        AngellEYE_Utility::angelleye_set_address($new_order->get_id(), $shipping_details, 'shipping');
+        AngellEYE_Utility::angelleye_set_address($new_order->get_id(), $billing_details, 'billing');
         $this->payment_method = $order->get_payment_method();
         $new_order->set_payment_method($this->payment_method);
         $payment_method_title = $order->get_payment_method_title();
@@ -276,7 +275,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         $order->add_order_note('Order Created: Create Reference Transaction Order', 0, false);
         $new_order->save();
         $new_order->calculate_totals();
-        wp_redirect(get_edit_post_link($new_order_id, 'url'));
+        wp_redirect(get_edit_post_link($new_order->get_id(), 'url'));
         exit();
     }
 

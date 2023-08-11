@@ -2100,10 +2100,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
     }
 
     public function save_payment_token($order, $payment_tokens_id) {
-        // Store source in the order
         if (!empty($payment_tokens_id)) {
-            $order_id = $order->get_id();
-            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+            update_post_meta($order->get_id(), '_payment_tokens_id', $payment_tokens_id);
         }
     }
 
