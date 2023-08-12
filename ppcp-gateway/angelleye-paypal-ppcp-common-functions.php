@@ -310,6 +310,9 @@ if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
                 }
             }
         }
+        if(empty($billing_address['phone'])) {
+            $billing_address['phone'] = $woocommerce->customer->get_billing_phone();
+        }
         return $billing_address;
     }
 
