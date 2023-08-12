@@ -71,7 +71,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -191,7 +191,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             }
                             exit();
                         } catch (Exception $ex) {
-                            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+                            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
                             $this->api_log->log($ex->getMessage(), 'error');
                         }
                     } else {
@@ -225,7 +225,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             $this->product = AngellEYE_PayPal_PPCP_Product::instance();
                             $this->product::angelleye_ppcp_add_to_cart_action();
                         } catch (Exception $ex) {
-                            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+                            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
                             $this->api_log->log($ex->getMessage(), 'error');
                         }
                     }
@@ -401,7 +401,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 }
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -420,7 +420,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             wp_safe_redirect(apply_filters('woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order));
             exit();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -441,7 +441,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 exit;
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -512,7 +512,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 $customer->set_billing_email($billing_email);
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
