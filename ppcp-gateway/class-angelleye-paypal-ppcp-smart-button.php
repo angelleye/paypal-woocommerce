@@ -807,7 +807,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             return $gateways;
         }
         foreach ($gateways as $id => $gateway) {
-            if ('angelleye_ppcp' !== $id && 'angelleye_ppcp_apple_pay' !== $id) {
+            if ('angelleye_ppcp' !== $id && 'angelleye_ppcp_apple_pay' !== $id && 'angelleye_ppcp_cc' !== $id) {
                 unset($gateways[$id]);
             }
         }
@@ -816,6 +816,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (WC()->cart->total <= 0) {
                 unset($gateways['angelleye_ppcp']);
                 unset($gateways['angelleye_ppcp_apple_pay']);
+                unset($gateways['angelleye_ppcp_cc']);
             }
         }
         return $gateways;
@@ -1149,38 +1150,20 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
             return $methods;
         }
-        $new_method = array();
-        $angelleye_ppcp_cc = array();
         if ($this->enable_paypal_checkout_page === false || $this->checkout_page_display_option === 'top') {
             if (isset($methods['angelleye_ppcp'])) {
                 unset($methods['angelleye_ppcp']);
             }
+        } else {
+            
         }
-        if (isset($methods['angelleye_ppcp_cc'])) {
-            $angelleye_ppcp_cc = $methods['angelleye_ppcp_cc'];
-            if (count($methods) > 1) {
-                unset($methods['angelleye_ppcp_cc']);
-            }
-        }
-        if (!empty($methods)) {
-            foreach ($methods as $key => $method) {
-                if ($key === 'angelleye_ppcp') {
-                    if ($this->advanced_card_payments_display_position === 'after') {
-                        $new_method ['angelleye_ppcp'] = $methods['angelleye_ppcp'];
-                        $new_method ['angelleye_ppcp_cc'] = $angelleye_ppcp_cc;
-                    } else {
-                        $new_method ['angelleye_ppcp_cc'] = $angelleye_ppcp_cc;
-                        $new_method ['angelleye_ppcp'] = $methods['angelleye_ppcp'];
-                    }
-                } else {
-                    $new_method [$key] = $method;
-                }
-            }
+        if (!empty($methods['angelleye_ppcp'])) {
+            $methods = angelleye_ppcp_short_payment_method($methods, 'angelleye_ppcp', 'angelleye_ppcp_cc', $this->advanced_card_payments_display_position);
         }
         if (is_add_payment_method_page()) {
-            unset($new_method['angelleye_ppcp_cc']);
+            unset($methods['angelleye_ppcp_cc']);
         }
-        return $new_method;
+        return $methods;
     }
 
     public function angelleye_ppcp_woocommerce_checkout_fields($fields) {
