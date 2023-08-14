@@ -290,6 +290,9 @@ if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
                 }
             }
         }
+        if (empty($billing_address['phone'])) {
+            $billing_address['phone'] = $woocommerce->customer->get_billing_phone();
+        }
         return $billing_address;
     }
 
@@ -1107,6 +1110,32 @@ if (!function_exists('angelleye_session_expired_exception')) {
      */
     function angelleye_session_expired_exception() {
         throw new Exception(__('Sorry, your session has expired.', 'woocommerce'), 302);
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_short_payment_method')) {
+
+    function angelleye_ppcp_short_payment_method(&$array, $keyX, $keyY, $position = 'before') {
+        if (array_key_exists($keyX, $array) && array_key_exists($keyY, $array)) {
+            $valueY = $array[$keyY];
+            unset($array[$keyY]);
+
+            $keys = array_keys($array);
+            $indexX = array_search($keyX, $keys, true);
+
+            if ($position === 'before') {
+                $array = array_slice($array, 0, $indexX, true) +
+                        array($keyY => $valueY) +
+                        $array;
+            } elseif ($position === 'after') {
+                $array = array_slice($array, 0, $indexX + 1, true) +
+                        array($keyY => $valueY) +
+                        $array;
+            }
+            
+            return $array;
+        }
     }
 
 }

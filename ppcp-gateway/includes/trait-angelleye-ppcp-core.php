@@ -43,7 +43,7 @@ trait AngellEye_PPCP_Core
                 $this->setting_obj_fields = $this->setting_obj->angelleye_ppcp_setting_fields();
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }

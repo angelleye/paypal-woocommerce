@@ -212,6 +212,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             if ($this->supports('tokenization')) {
                 $this->tokenization_script();
             }
+            angelleye_ppcp_add_css_js();
             if (angelleye_ppcp_is_subs_change_payment() === true) {
                 if (count($this->get_tokens()) > 0) {
                     $this->saved_payment_methods();
