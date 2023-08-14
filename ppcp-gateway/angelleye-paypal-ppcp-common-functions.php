@@ -218,7 +218,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -309,6 +309,9 @@ if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
                     $billing_address['phone'] = $phone;
                 }
             }
+        }
+        if (empty($billing_address['phone'])) {
+            $billing_address['phone'] = $woocommerce->customer->get_billing_phone();
         }
         return $billing_address;
     }
@@ -423,7 +426,7 @@ if (!function_exists('angelleye_ppcp_round')) {
             $round_price = round($price, $precision);
             return number_format($round_price, $precision, '.', '');
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -826,7 +829,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -851,7 +854,7 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -1054,7 +1057,7 @@ if (!function_exists('angelleye_ppcp_get_paypal_details')) {
             }
             return '';
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -1094,7 +1097,7 @@ if (!function_exists('angelleye_ppcp_get_classic_paypal_details')) {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -1120,6 +1123,7 @@ if (!function_exists('angelleye_is_apple_pay_enable')) {
 }
 
 if (!function_exists('angelleye_session_expired_exception')) {
+
     /**
      * Throws session not found exception message
      * @throws Exception
@@ -1127,4 +1131,31 @@ if (!function_exists('angelleye_session_expired_exception')) {
     function angelleye_session_expired_exception() {
         throw new Exception(__('Sorry, your session has expired.', 'woocommerce'), 302);
     }
+
+}
+
+if (!function_exists('angelleye_ppcp_short_payment_method')) {
+
+    function angelleye_ppcp_short_payment_method(&$array, $keyX, $keyY, $position = 'before') {
+        if (array_key_exists($keyX, $array) && array_key_exists($keyY, $array)) {
+            $valueY = $array[$keyY];
+            unset($array[$keyY]);
+
+            $keys = array_keys($array);
+            $indexX = array_search($keyX, $keys, true);
+
+            if ($position === 'before') {
+                $array = array_slice($array, 0, $indexX, true) +
+                        array($keyY => $valueY) +
+                        $array;
+            } elseif ($position === 'after') {
+                $array = array_slice($array, 0, $indexX + 1, true) +
+                        array($keyY => $valueY) +
+                        $array;
+            }
+            
+            return $array;
+        }
+    }
+
 }

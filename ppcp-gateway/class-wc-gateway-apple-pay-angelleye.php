@@ -89,6 +89,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             if ($this->supports('tokenization')) {
                 $this->tokenization_script();
             }
+            angelleye_ppcp_add_css_js();
             if (angelleye_ppcp_is_subs_change_payment() === true) {
                 $this->form();
             } elseif (is_checkout() || is_checkout_pay_page()) {
