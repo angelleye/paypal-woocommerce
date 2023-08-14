@@ -157,6 +157,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if ($this->supports('tokenization')) {
             $this->tokenization_script();
         }
+        angelleye_ppcp_add_css_js();
         $description = $this->get_description();
         if ($description) {
             echo wpautop(wp_kses_post($description));
