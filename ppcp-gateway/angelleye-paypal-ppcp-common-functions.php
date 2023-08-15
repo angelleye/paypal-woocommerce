@@ -423,11 +423,12 @@ if (!function_exists('angelleye_ppcp_round')) {
 
     function angelleye_ppcp_round($price, $precision) {
         try {
+            $price = (float) $price;
             $round_price = round($price, $precision);
-            return number_format($round_price, $precision, '.', '');
-        } catch (Exception $ex) {
+            $price = number_format($round_price, $precision, '.', '');
+        } catch (Exception $ex) {}
 
-        }
+        return $price;
     }
 
 }
