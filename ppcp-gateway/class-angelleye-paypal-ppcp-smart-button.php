@@ -362,6 +362,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $first_name = '';
         $last_name = '';
         $button_selector = array();
+        $apple_pay_btn_selector = [];
         $product_cart_amounts = [];
         $pre_checkout_offer = "no";
 
@@ -403,7 +404,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
             if (is_product()) {
                 $page = 'product';
-                $button_selector['angelleye_ppcp_product'] = '#angelleye_ppcp_product';
                 $product_id = $post->ID;
                 $product = wc_get_product($product_id);
                 if (class_exists('WC_Subscriptions_Product') && WC_Subscriptions_Product::is_subscription($product)) {
@@ -426,30 +426,38 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                         'amount' => 0
                     ]];
                 }
+                $button_selector['angelleye_ppcp_product'] = '#angelleye_ppcp_product';
                 $button_selector['angelleye_ppcp_product_shortcode'] = '#angelleye_ppcp_product_shortcode';
+                $apple_pay_btn_selector['angelleye_ppcp_product_shortcode_apple_pay'] = '#angelleye_ppcp_product_shortcode_apple_pay';
+                $apple_pay_btn_selector['angelleye_ppcp_product_apple_pay'] = '#angelleye_ppcp_product_apple_pay';
             } elseif (is_cart() && !WC()->cart->is_empty()) {
                 $page = 'cart';
-                if ($this->cart_button_position === 'both') {
-                    $button_selector['angelleye_ppcp_cart'] = '#angelleye_ppcp_cart';
+                if ($this->cart_button_position === 'top') {
                     $button_selector['angelleye_ppcp_cart_top'] = '#angelleye_ppcp_cart_top';
-                } elseif ($this->cart_button_position === 'top') {
-                    $button_selector['angelleye_ppcp_cart_top'] = '#angelleye_ppcp_cart_top';
+                    $apple_pay_btn_selector['angelleye_ppcp_cart_top_apple_pay'] = '#angelleye_ppcp_cart_top_apple_pay';
                 } else {
                     $button_selector['angelleye_ppcp_cart'] = '#angelleye_ppcp_cart';
+                    $apple_pay_btn_selector['angelleye_ppcp_cart_apple_pay'] = '#angelleye_ppcp_cart_apple_pay';
+                    if ($this->cart_button_position === 'both') {
+                        $button_selector['angelleye_ppcp_cart_top'] = '#angelleye_ppcp_cart_top';
+                        $apple_pay_btn_selector['angelleye_ppcp_cart_top_apple_pay'] = '#angelleye_ppcp_cart_top_apple_pay';
+                    }
                 }
                 $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
                 $button_selector['angelleye_ppcp_cart_shortcode'] = '#angelleye_ppcp_cart_shortcode';
             } elseif (is_checkout_pay_page()) {
                 $page = 'checkout';
-                if ($this->checkout_page_display_option === 'top') {
-                    $button_selector['angelleye_ppcp_checkout_top'] = '#angelleye_ppcp_checkout_top';
-                } elseif ($this->checkout_page_display_option === 'regular') {
+                if ($this->checkout_page_display_option === 'regular') {
                     $button_selector['angelleye_ppcp_checkout'] = '#angelleye_ppcp_checkout';
-                } elseif ($this->checkout_page_display_option === 'both') {
+                } else {
                     $button_selector['angelleye_ppcp_checkout_top'] = '#angelleye_ppcp_checkout_top';
-                    $button_selector['angelleye_ppcp_checkout'] = '#angelleye_ppcp_checkout';
+                    if ($this->checkout_page_display_option === 'both') {
+                        $button_selector['angelleye_ppcp_checkout'] = '#angelleye_ppcp_checkout';
+                    }
                 }
                 $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
+                $apple_pay_btn_selector['angelleye_ppcp_checkout_shortcode_apple_pay'] = '#angelleye_ppcp_checkout_shortcode_apple_pay';
+                $apple_pay_btn_selector['angelleye_ppcp_checkout_apple_pay'] = '#angelleye_ppcp_checkout_apple_pay';
 
                 // get order details
                 global $wp;
@@ -466,6 +474,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $is_pay_page = 'yes';
             } elseif (is_checkout()) {
                 $page = 'checkout';
+                $apple_pay_btn_selector['angelleye_ppcp_checkout_shortcode_apple_pay'] = '#angelleye_ppcp_checkout_shortcode_apple_pay';
+                $apple_pay_btn_selector['angelleye_ppcp_checkout_apple_pay'] = '#angelleye_ppcp_checkout_apple_pay';
                 if ($this->checkout_page_display_option === 'top') {
                     $button_selector['angelleye_ppcp_checkout_top'] = '#angelleye_ppcp_checkout_top';
                 } elseif ($this->checkout_page_display_option === 'regular') {
@@ -573,6 +583,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'first_name' => $first_name,
             'last_name' => $last_name,
             'button_selector' => $button_selector,
+            'apple_pay_btn_selector' => $apple_pay_btn_selector ?? [],
             'advanced_card_payments_title' => $this->advanced_card_payments_title,
             'product_cart_details' => $product_cart_amounts
         ));
@@ -620,9 +631,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 wp_add_inline_style('angelleye_ppcp', $custom_css);
             }
             if ($is_shortcode === 'yes') {
-                echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_cart_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart_shortcode"></div><div id="angelleye_ppcp_cart_shortcode_apple_pay"></div></div></div>';
+                echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_cart_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart_shortcode"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_cart_shortcode_apple_pay"></div>' : '') . '</div></div>';
             } else {
-                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart"></div><div id="angelleye_ppcp_cart_apple_pay"></div>' . $separator_html . '</div>';
+                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_cart_apple_pay"></div>' : '') . $separator_html . '</div>';
             }
         }
     }
@@ -637,7 +648,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->angelleye_ppcp_smart_button_style_properties();
         if (WC()->cart->needs_payment()) {
             angelleye_ppcp_add_css_js();
-            echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart_top"></div><div id="angelleye_ppcp_cart_top_apple_pay"></div></div>';
+            echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart_top"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_cart_top_apple_pay"></div>' : '') . '</div>';
         }
     }
 
@@ -652,7 +663,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->angelleye_ppcp_smart_button_style_properties();
             if (WC()->cart->needs_payment()) {
                 angelleye_ppcp_add_css_js();
-                echo apply_filters('angelleye_ppcp_checkout_top_html', '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout_top"></div><div id="angelleye_ppcp_checkout_top_apple_pay"></div></div>');
+                echo apply_filters('angelleye_ppcp_checkout_top_html', '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout_top"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_checkout_top_apple_pay"></div>' : '') . '</div>');
             }
         }
     }
@@ -683,9 +694,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (angelleye_ppcp_is_product_purchasable($product, $this->enable_tokenized_payments) === true) {
                 angelleye_ppcp_add_css_js();
                 if ($is_shortcode === 'yes') {
-                    echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_product_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_product_shortcode"></div><div id="angelleye_ppcp_product_shortcode_apple_pay"></div></div></div>';
+                    echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_product_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_product_shortcode"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_product_shortcode_apple_pay"></div>' : '') . '</div></div>';
                 } else {
-                    echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_product"></div><div id="angelleye_ppcp_product_apple_pay"></div></div>';
+                    echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_product"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_product_apple_pay"></div>' : '') . '</div>';
                 }
             }
         } catch (Exception $ex) {
@@ -701,9 +712,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->angelleye_ppcp_smart_button_style_properties();
             angelleye_ppcp_add_css_js();
             if ($is_shortcode === 'yes') {
-                echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_checkout_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout"></div><div id="angelleye_ppcp_checkout_apple_pay"></div></div></div>';
+                echo '<div class="angelleye_ppcp_smart_button_shortcode angelleye_ppcp_checkout_page"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout"></div></div></div>';
             } else {
-                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout" ></div><div id="angelleye_ppcp_checkout_apple_pay"></div></div>';
+                echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout" ></div></div>';
+            }
+            if ($this->enable_apple_pay) {
+                echo '<div id="angelleye_ppcp_checkout_apple_pay" style=""></div>';
             }
         }
     }

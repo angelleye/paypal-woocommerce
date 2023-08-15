@@ -350,10 +350,12 @@ const angelleyeOrder = {
 					angelleyeOrder.handleCreateOrderError(err);
 				}
 			}).render(angelleye_ppcp_button_selector);
-			if (angelleyeOrder.isApplePayEnabled()) {
-				(new ApplePayCheckoutButton()).render(angelleye_ppcp_button_selector);
-			}
 		});
+		if (angelleyeOrder.isApplePayEnabled()) {
+			jQuery.each(angelleye_ppcp_manager.apple_pay_btn_selector, function (key, angelleye_ppcp_apple_button_selector) {
+				(new ApplePayCheckoutButton()).render(angelleye_ppcp_apple_button_selector);
+			});
+		}
 	},
 	renderHostedButtons: () => {
 		let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();

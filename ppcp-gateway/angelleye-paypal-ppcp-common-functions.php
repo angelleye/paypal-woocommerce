@@ -427,6 +427,7 @@ if (!function_exists('angelleye_ppcp_round')) {
             $round_price = round($price, $precision);
             $price = number_format($round_price, $precision, '.', '');
         } catch (Exception $ex) {}
+
         return $price;
     }
 
@@ -1153,7 +1154,6 @@ if (!function_exists('angelleye_ppcp_short_payment_method')) {
                         array($keyY => $valueY) +
                         $array;
             }
-
         }
         return $array;
     }
