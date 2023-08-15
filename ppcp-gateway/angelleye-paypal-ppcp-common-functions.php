@@ -218,7 +218,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -423,11 +423,11 @@ if (!function_exists('angelleye_ppcp_round')) {
 
     function angelleye_ppcp_round($price, $precision) {
         try {
+            $price = (float) $price;
             $round_price = round($price, $precision);
-            return number_format($round_price, $precision, '.', '');
-        } catch (Exception $ex) {
-            
-        }
+            $price = number_format($round_price, $precision, '.', '');
+        } catch (Exception $ex) {}
+        return $price;
     }
 
 }
@@ -829,7 +829,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -854,7 +854,7 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1057,7 +1057,7 @@ if (!function_exists('angelleye_ppcp_get_paypal_details')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1097,7 +1097,7 @@ if (!function_exists('angelleye_ppcp_get_classic_paypal_details')) {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 

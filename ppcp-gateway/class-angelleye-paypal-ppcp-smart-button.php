@@ -509,7 +509,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $smart_js_arg['enable-funding'] = implode(',', $this->vault_supported_payment_method);
                 }
                 if (!empty($this->vault_not_supported_payment_method) && count($this->vault_not_supported_payment_method) > 0) {
-                    // $smart_js_arg['disable-funding'] = implode(',', $this->vault_not_supported_payment_method);
+                    $smart_js_arg['disable-funding'] = implode(',', $this->vault_not_supported_payment_method);
                 }
             } else {
                 if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
@@ -1155,7 +1155,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 unset($methods['angelleye_ppcp']);
             }
         } else {
-            
+
         }
         if (!empty($methods['angelleye_ppcp'])) {
             $methods = angelleye_ppcp_short_payment_method($methods, 'angelleye_ppcp', 'angelleye_ppcp_cc', $this->advanced_card_payments_display_position);
