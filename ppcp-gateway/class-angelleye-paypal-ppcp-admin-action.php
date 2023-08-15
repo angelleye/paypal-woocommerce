@@ -537,7 +537,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
                 return;
             }
-            $notice_data['classic_upgrade'] = array(
+            /* $notice_data['classic_upgrade'] = array(
                 'id' => 'ppcp_notice_classic_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'Important PayPal Update Required',
@@ -548,7 +548,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'is_button_secondary' => true,
                 'ans_secondary_button_label' => "Learn More",
                 'ans_secondary_button_url' => 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/'
-            );
+            ); */
             $notice_data['vault_upgrade'] = array(
                 'id' => 'ppcp_notice_vault_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
