@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.2.2
-Stable tag: 4.1.20
+Stable tag: 4.1.21
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,6 +127,8 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 4.1.21 - 08.15.2023 =
+* Fix - Resolves Payment method sorting/display issue. ([PFW-1545](https://github.com/angelleye/paypal-woocommerce/pull/1889))
 = 4.1.20 - 08.14.2023 =
 * Fix - Remove Top of the smart button when FunnelKit enable. ([PFW-1542](https://github.com/angelleye/paypal-woocommerce/pull/1887))
 

@@ -1153,9 +1153,8 @@ if (!function_exists('angelleye_ppcp_short_payment_method')) {
                         array($keyY => $valueY) +
                         $array;
             }
-
-            return $array;
         }
+        return $array;
     }
 
 }
