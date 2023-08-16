@@ -7,6 +7,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
     private ?AngellEYE_PayPal_PPCP_Payment $payment_request;
     private string $host;
     private AngellEye_PayPal_PPCP_Apple_Domain_Validation $apple_pay_domain_validation;
+    private string $payPalDomainValidationFile = 'https://www.paypalobjects.com/.well-known/apple-developer-domain-association';
 
     public static function instance()
     {
@@ -267,13 +268,42 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $localFileLoc = $this->apple_pay_domain_validation->getDomainAssociationLibFilePath();
         $domainValidationFile = $this->apple_pay_domain_validation->getDomainAssociationFilePath();
         $targetLocation = ABSPATH . $domainValidationFile;
-        if (!file_exists($targetLocation)) {
-            if (!copy($localFileLoc, $targetLocation)) {
-                throw new Exception(sprintf('Unable to copy the files from %s to location %s', $localFileLoc, $targetLocation));
+
+        // PFW-1554 - Handles the INCORRECT_DOMAIN_VERIFICATION_FILE error
+        try {
+            if (!$this->apple_pay_domain_validation->isSandbox()) {
+                $this->updateDomainVerificationFileContent($localFileLoc);
             }
-            // Add the .txt version to make sure it works.
-            copy($localFileLoc, $targetLocation . '.txt');
+        } catch (Exception $exception) {
+            throw new Exception("Unable to update the verification file content. Error: " . $exception->getMessage());
         }
+        if (file_exists($targetLocation)) {
+            @unlink($targetLocation);
+            @unlink($targetLocation . '.txt');
+        }
+        if (!copy($localFileLoc, $targetLocation)) {
+            throw new Exception(sprintf('Unable to copy the files from %s to location %s', $localFileLoc, $targetLocation));
+        }
+        // Add the .txt version to make sure it works.
+        copy($localFileLoc, $targetLocation . '.txt');
         return true;
+    }
+
+    private function updateDomainVerificationFileContent($localFileLocation)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->payPalDomainValidationFile);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($ch);
+        $resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if (in_array($resultStatus, [200, 304])) {
+            $fp = fopen($localFileLocation, "w");
+            fwrite($fp, $response);
+            fclose($fp);
+        }
     }
 }
