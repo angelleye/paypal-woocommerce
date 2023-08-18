@@ -80,7 +80,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                 WFACP_Core()->public->billing_details = $billing_details;
                 WFACP_Core()->public->paypal_billing_address = true;
             }
-            $template = PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-funnelkit-order-review.php';
+            $template = PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/ppcp-funnelkit-order-review.php';
             return $template;
         }
         return $template;
