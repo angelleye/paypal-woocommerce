@@ -361,6 +361,9 @@
 .wc_payment_method.payment_method_angelleye_ppcp_apple_pay, .payment_box.payment_method_angelleye_ppcp_apple_pay {
     display: none;
 }
+.angelleye_ppcp-order-review .woocommerce-checkout .wfacp-comm-title {
+	display: none !important;
+}
 
 @media (min-width: 768px) {
     #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .angelleye_ppcp iframe {
