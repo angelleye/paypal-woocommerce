@@ -112,18 +112,7 @@ $permalink = get_the_permalink();
         .wfacp_shipping_options {
             padding: 0 0px;
         }
-        body .wfacp_main_form.woocommerce .woocommerce-checkout #payment a.button.alt.angelleye_ppcp_cancel {
-            float: left !important;
-        }
-        .angelleye_ppcp-order-review .woocommerce-checkout .wfacp-comm-title {
-            display: none !important;
-        }
-        @media (min-width: 768px) {
-            #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .angelleye_ppcp iframe {
-                max-height: 100% !important;
-                height: 100% !important;
-            }
-        }
+
         @media (max-width: 599px) {
             .wfacp_express_formatted_billing_address, .wfacp_express_formatted_shipping_address {
                 width: 100%;
