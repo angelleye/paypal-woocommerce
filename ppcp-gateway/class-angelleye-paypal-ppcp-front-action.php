@@ -129,7 +129,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             $woocommerce->customer->set_shipping_state($shipping_address['administrativeArea']);
                         }
                     }
-
                     if (isset($_GET['from']) && 'pay_page' === $_GET['from']) {
                         $woo_order_id = $_POST['woo_order_id'];
                         if (isset(WC()->session) && !WC()->session->has_session()) {
@@ -244,7 +243,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     break;
                 case "cc_capture":
                     wc_clear_notices();
-                    // Required for order pay form, as there will be no data in session
                     angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', wc_clean($_GET['paypal_order_id']));
                     $form = angelleye_ppcp_get_session('from');
                     if(!empty($form) && 'checkout_top' === $form) {
@@ -255,10 +253,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         WC()->session->set( 'reload_checkout', true );
                         wp_send_json_success(array(
                             'result' => 'success',
-                            'redirect' => add_query_arg(array('paypal_order_id' => wc_clean($_GET['paypal_order_id']), 'utm_nooverride' => '1'), untrailingslashit(wc_get_checkout_url())),
+                            'redirect' => add_query_arg(array('paypal_order_id' => wc_clean($_GET['paypal_order_id']), 'utm_nooverride' => '1', 'wfacp_is_checkout_override' => 'no'), untrailingslashit(wc_get_checkout_url())),
                         ));
                         exit();
-                                
                     } else {
                         $this->angelleye_ppcp_cc_capture();
                     }
@@ -299,7 +296,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             }
         }
     }
-
+    
     public function angelleye_ppcp_regular_capture() {
         if (isset($_GET['token']) && !empty($_GET['token'])) {
             angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', wc_clean($_GET['token']));

@@ -44,6 +44,8 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
         }
         add_action('wc_ajax_wfocu_front_handle_angelleye_ppcp_payments', array($this, 'process_client_order'));
         add_action('woocommerce_api_wfocu_angelleye_ppcp_payments', array($this, 'handle_api_calls'));
+        add_filter('wfacp_form_template', [$this, 'replace_form_template']);
+        
     }
 
     public static function get_instance() {
@@ -55,6 +57,28 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
         } catch (Exception $ex) {
             
         }
+    }
+
+    
+
+    public function replace_form_template($template) {
+        if (isset($_GET['paypal_order_id'])) {
+            WFACP_Core()->public->is_paypal_express_active_session = true;
+            $checkout_details = $this->payment_request->angelleye_ppcp_get_checkout_details($_GET['paypal_order_id']);
+            $shipping_details = angelleye_ppcp_get_mapped_shipping_address($checkout_details);
+            if(!empty($shipping_details)) {
+                WFACP_Core()->public->shipping_details = $shipping_details;
+                WFACP_Core()->public->paypal_shipping_address = true;
+            }
+            $billing_details = angelleye_ppcp_get_mapped_billing_address($checkout_details, ($this->set_billing_address) ? false : true);
+            if(!empty($billing_details)) {
+                WFACP_Core()->public->billing_details = $billing_details;
+                WFACP_Core()->public->paypal_billing_address = true;
+            }
+            $template = PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-funnelkit-order-review.php';
+            return $template;
+        }
+        return $template;
     }
 
     public function angelleye_ppcp_load_class() {
@@ -77,7 +101,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
