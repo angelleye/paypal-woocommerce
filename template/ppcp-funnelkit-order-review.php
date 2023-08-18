@@ -109,6 +109,9 @@ $permalink = get_the_permalink();
         #wfacp-e-form .wfacp_main_form.woocommerce #shipping_calculator_field.wfacp-form-control-wrapper {
             padding: 0;
         }
+        .wfacp_shipping_options {
+            padding: 0 0px;
+        }
         @media (max-width: 599px) {
             .wfacp_express_formatted_billing_address, .wfacp_express_formatted_shipping_address {
                 width: 100%;
@@ -144,16 +147,16 @@ $permalink = get_the_permalink();
                                 $formatted_address = '';
                                 ?>
                             </address>
+                            <?php
+                            echo!empty(WFACP_Core()->public->billing_details['email']) ? '<p class="angelleye-woocommerce-customer-details-email">' . WFACP_Core()->public->billing_details['email'] . '</p>' : '';
+                            echo!empty(WFACP_Core()->public->billing_details['phone']) ? '<p class="angelleye-woocommerce-customer-details-phone">' . WFACP_Core()->public->billing_details['phone'] . '</p>' : '';
+                            ?>
                         </div>
                         <?php
                     } else {
                         do_action('wfacp_express_checkout_paypal_billing_address_not_present');
                     }
                     ?>
-                    <?php if (!empty(WFACP_Core()->public->billing_details['email'])) : ?>
-                        <p style="margin-bottom: 0px;"><strong><?php _e('Email', 'woocommerce'); ?></strong></p>
-                        <address><?php echo esc_html(WFACP_Core()->public->billing_details['email']); ?></address>
-                    <?php endif; ?>
                     <?php
                     if ($instance->have_billing_address()) {
                         ?>
@@ -175,6 +178,8 @@ $permalink = get_the_permalink();
                             ?>
                         </address>
                         <?php
+                        echo!empty(WFACP_Core()->public->shipping_details['email']) ? '<p class="angelleye-woocommerce-customer-details-email">' . WFACP_Core()->public->shipping_details['email'] . '</p>' : '';
+                        echo!empty(WFACP_Core()->public->shipping_details['phone']) ? '<p class="angelleye-woocommerce-customer-details-phone">' . WFACP_Core()->public->shipping_details['phone'] . '</p>' : '';
                         if ($instance->have_shipping_address()) {
                             ?>
                             <a href="#" class="wfacp_edit_address" data-type="shipping"><?php _e('Edit', 'woocommerce'); ?></a>
@@ -256,7 +261,7 @@ $permalink = get_the_permalink();
                                 $checkout_fields['advanced'] = [];
                             }
                             $phone_number_present['is_wfacp_field'] = true;
-                            $checkout_fields['advanced'] = array_merge(['billing_phone' => $phone_number_present], $checkout_fields['advanced']);
+                            $checkout_fields['advanced'] = $checkout_fields['advanced'];
                         }
                         if (isset($checkout_fields['advanced'])) {
                             $fields = $checkout_fields['advanced'];

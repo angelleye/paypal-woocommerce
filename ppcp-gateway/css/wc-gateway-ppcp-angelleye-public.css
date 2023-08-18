@@ -331,7 +331,7 @@
     margin-left: 4px;
     gap: 0.3em;
 }
-.payment_method_angelleye_ppcp_cc>label .clearfix {
+.payment_method_angelleye_ppcp_cc>label .ppcp-clearfix {
     margin-right: -0.3em;
 }
 .payment_method_angelleye_ppcp_cc .payment_method_angelleye_ppcp_cc {
@@ -351,7 +351,7 @@
     margin: 0 !important;
     padding: 2px !important;
 }
-.clearfix {
+.ppcp-clearfix {
     clear: both;
 }
 .flex-break {
@@ -361,6 +361,7 @@
 .wc_payment_method.payment_method_angelleye_ppcp_apple_pay, .payment_box.payment_method_angelleye_ppcp_apple_pay {
     display: none;
 }
+
 @media (min-width: 768px) {
     #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .angelleye_ppcp iframe {
         max-height: 100% !important;

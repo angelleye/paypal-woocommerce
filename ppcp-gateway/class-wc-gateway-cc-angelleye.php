@@ -75,7 +75,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             }
         }
-        return '<div class="ae-cc-icons-list">' . implode('', $images) . '</div><div class="clearfix"></div>';
+        return '<div class="ae-cc-icons-list">' . implode('', $images) . '</div><div class="ppcp-clearfix"></div>';
     }
 
     private function card_labels(): array {

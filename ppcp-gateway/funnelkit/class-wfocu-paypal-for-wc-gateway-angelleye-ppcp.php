@@ -50,7 +50,6 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
         add_action('wc_ajax_wfocu_front_handle_angelleye_ppcp_payments', array($this, 'process_client_order'));
         add_action('woocommerce_api_wfocu_angelleye_ppcp_payments', array($this, 'handle_api_calls'));
         add_filter('wfacp_form_template', [$this, 'replace_form_template']);
-        
     }
 
     public static function get_instance() {
@@ -64,20 +63,57 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
         }
     }
 
-    
-
     public function replace_form_template($template) {
         if (isset($_GET['paypal_order_id'])) {
             WFACP_Core()->public->is_paypal_express_active_session = true;
             $checkout_details = $this->payment_request->angelleye_ppcp_get_checkout_details($_GET['paypal_order_id']);
-            $shipping_details = angelleye_ppcp_get_mapped_shipping_address($checkout_details);
-            if(!empty($shipping_details)) {
-                WFACP_Core()->public->shipping_details = $shipping_details;
+            $shipping_address = angelleye_ppcp_get_mapped_shipping_address($checkout_details);
+            $states_list = WC()->countries->get_states();
+            if (!empty($shipping_address)) {
+                foreach ($shipping_address as $field => $value) {
+                    if (!empty($value)) {
+                        if ('state' == $field) {
+                            if (angelleye_ppcp_validate_checkout($shipping_address['country'], $value, 'shipping')) {
+                                $_POST['shipping_' . $field] = angelleye_ppcp_validate_checkout($shipping_address['country'], $value, 'shipping');
+                            } else {
+                                if (isset($shipping_address['country']) && isset($states_list[$shipping_address['country']])) {
+                                    $state_key = array_search($value, $states_list[$shipping_address['country']]);
+                                    $_POST['shipping_' . $field] = $state_key;
+                                } else {
+                                    $_POST['shipping_' . $field] = '';
+                                }
+                            }
+                        } else {
+                            $_POST['shipping_' . $field] = wc_clean(stripslashes($value));
+                        }
+                    }
+                }
+                WFACP_Core()->public->shipping_details = $shipping_address;
                 WFACP_Core()->public->paypal_shipping_address = true;
             }
-            $billing_details = angelleye_ppcp_get_mapped_billing_address($checkout_details, ($this->set_billing_address) ? false : true);
-            if(!empty($billing_details)) {
-                WFACP_Core()->public->billing_details = $billing_details;
+            $billing_address = angelleye_ppcp_get_mapped_billing_address($checkout_details, ($this->set_billing_address) ? false : true);
+            if (!empty($billing_address)) {
+                foreach ($billing_address as $field => $value) {
+                    if (!empty($value)) {
+                        if ('state' == $field) {
+                            if (!empty($shipping_address['country'])) {
+                                if (angelleye_ppcp_validate_checkout($shipping_address['country'], $value, 'shipping')) {
+                                    $_POST['billing_' . $field] = angelleye_ppcp_validate_checkout($shipping_address['country'], $value, 'shipping');
+                                } else {
+                                    if (isset($shipping_address['country']) && isset($states_list[$shipping_address['country']])) {
+                                        $state_key = array_search($value, $states_list[$shipping_address['country']]);
+                                        $_POST['billing_' . $field] = $state_key;
+                                    } else {
+                                        $_POST['billing_' . $field] = '';
+                                    }
+                                }
+                            }
+                        } else {
+                            $_POST['billing_' . $field] = wc_clean(stripslashes($value));
+                        }
+                    }
+                }
+                WFACP_Core()->public->billing_details = $billing_address;
                 WFACP_Core()->public->paypal_billing_address = true;
             }
             $template = PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/ppcp-funnelkit-order-review.php';
