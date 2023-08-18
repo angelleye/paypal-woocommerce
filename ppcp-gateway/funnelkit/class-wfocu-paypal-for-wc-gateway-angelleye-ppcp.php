@@ -36,6 +36,11 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
         $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
         $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->setting_obj->get('payee_preferred', 'no');
+        if (wc_ship_to_billing_address_only()) {
+            $this->set_billing_address = true;
+        } else {
+            $this->set_billing_address = 'yes' === $this->setting_obj->get('set_billing_address', 'yes');
+        }
         if ($this->enable_tokenized_payments === false) {
             add_action('wfocu_footer_before_print_scripts', array($this, 'maybe_render_in_offer_transaction_scripts'), 999);
             add_filter('wfocu_allow_ajax_actions_for_charge_setup', array($this, 'allow_action'));
