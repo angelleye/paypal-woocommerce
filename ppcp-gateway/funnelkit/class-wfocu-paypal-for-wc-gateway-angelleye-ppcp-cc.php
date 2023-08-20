@@ -707,5 +707,12 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
             
         }
     }
+    
+    public function add_order_id_as_meta($event) {
+        if (!empty($this->payal_order_id)) {
+            WFOCU_Core()->track->add_meta($event, '_paypal_order_id', $this->payal_order_id);
+        }
+    }
+
 }
 
