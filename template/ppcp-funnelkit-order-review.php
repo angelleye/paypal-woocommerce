@@ -46,6 +46,7 @@ $permalink = get_the_permalink();
     }
     include_once WFACP_TEMPLATE_COMMON . '/form_internal_css.php';
     add_filter('wfacp_print_shipping_hidden_fields', '__return_false');
+    do_action('woocommerce_before_checkout_form', $checkout);
     ?>
     <style>
         .wfacp_shipping_fields {
@@ -123,6 +124,17 @@ $permalink = get_the_permalink();
     </style>
     <form name="checkout" method="post" class="checkout woocommerce-checkout wfacp_paypal_express" action="<?php echo esc_url(get_the_permalink()); ?>" enctype="multipart/form-data" id="wfacp_checkout_form">
         <input type="hidden" name="_wfacp_post_id" class="_wfacp_post_id" value="<?php echo WFACP_Common::get_id(); ?>">
+        <input type="hidden" name="wfacp_cart_hash" value="<?php esc_html_e(WC()->session->get('wfacp_cart_hash', '')); ?>">
+        <input type="hidden" name="wfacp_has_active_multi_checkout" id="wfacp_has_active_multi_checkout" value="">
+        <input type="hidden" id="product_switcher_need_refresh" name="product_switcher_need_refresh" value="0">
+        <input type="hidden" id="wfacp_exchange_keys" name="wfacp_exchange_keys" class="wfacp_exchange_keys" value="">
+        <input type="hidden" id="wfacp_input_hidden_data" name="wfacp_input_hidden_data" class="wfacp_input_hidden_data" value="{}">
+        <input type="hidden" id="wfacp_input_phone_field" name="wfacp_input_phone_field" class="wfacp_input_phone_field" value="{}">
+        <input type="hidden" id="wfacp_timezone" name="wfacp_timezone" value="">
+        <?php do_action('wfacp_before_checkout_form_fields', $checkout); 
+        do_action( 'woocommerce_checkout_before_customer_details' );
+        ?>
+        
         <div class="wfacp-section  wfacp-hg-by-box">
             <div class="wfacp-comm-title">
                 <h2 class="wfacp_section_heading wfacp_section_title">
@@ -325,6 +337,7 @@ $permalink = get_the_permalink();
         <input type="hidden" id="wfacp_exchange_keys" name="wfacp_exchange_keys" class="wfacp_exchange_keys" value="">
         <input type="hidden" id="wfacp_input_hidden_data" name="wfacp_input_hidden_data" class="wfacp_input_hidden_data" value="{}">
     </form>
+    <?php do_action('woocommerce_after_checkout_form', $checkout); ?>
 </div>
 <?php
 do_action('wfacp_checkout_preview_form_end', $checkout);
