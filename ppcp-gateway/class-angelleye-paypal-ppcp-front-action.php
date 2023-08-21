@@ -253,7 +253,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         WC()->session->set( 'reload_checkout', true );
                         wp_send_json_success(array(
                             'result' => 'success',
-                            'redirect' => add_query_arg(array('paypal_order_id' => wc_clean($_GET['paypal_order_id']), 'utm_nooverride' => '1', 'wfacp_is_checkout_override' => 'no'), untrailingslashit(wc_get_checkout_url())),
+                            'redirect' => add_query_arg(array('paypal_order_id' => wc_clean($_GET['paypal_order_id']), 'utm_nooverride' => '1', 'wfacp_is_checkout_override' => 'yes'), untrailingslashit(wc_get_checkout_url())),
                         ));
                         exit();
                     } else {
