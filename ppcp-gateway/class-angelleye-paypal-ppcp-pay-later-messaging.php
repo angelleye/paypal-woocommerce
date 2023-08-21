@@ -221,6 +221,11 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (WC()->cart->is_empty() || angelleye_ppcp_has_active_session() || angelleye_ppcp_is_cart_contains_subscription() === true) {
             return false;
         }
+
+        if(did_action('angelleye_ppcp_display_paypal_button_checkout_page') > 2) {
+            return;
+        }
+
         $this->add_pay_later_script_in_frontend();
         echo '<div class="angelleye_ppcp_message_payment"></div>';
     }
