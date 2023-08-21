@@ -974,6 +974,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
             if (angelleye_ppcp_has_active_session()) {
                 $classes[] = 'angelleye_ppcp-order-review';
+            } elseif(isset($_GET['paypal_order_id'])) {
+                $classes[] = 'angelleye_ppcp-order-review';
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
