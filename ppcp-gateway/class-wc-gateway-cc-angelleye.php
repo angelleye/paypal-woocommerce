@@ -138,7 +138,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $is_success = $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($woo_order_id);
                 if ($is_success) {
                     WC()->cart->empty_cart();
-                    unset(WC()->session->angelleye_ppcp_session);
+                    AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
@@ -147,7 +147,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                         'redirect' => $this->get_return_url($order),
                     );
                 } else {
-                    unset(WC()->session->angelleye_ppcp_session);
+                    AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
@@ -157,10 +157,10 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     );
                 }
             }
-            $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
+            $angelleye_ppcp_paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
             $is_success = false;
             if (isset($_GET['from']) && 'checkout' === $_GET['from']) {
-                angelleye_ppcp_set_session('angelleye_ppcp_checkout_post', isset($_POST) ? wc_clean($_POST) : false);
+                AngellEye_Session_Manager::set('checkout_post', isset($_POST) ? wc_clean($_POST) : false);
                 $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
                 exit();
             } elseif (!empty($angelleye_ppcp_paypal_order_id)) {
@@ -174,7 +174,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
                 if ($is_success) {
                     WC()->cart->empty_cart();
-                    unset(WC()->session->angelleye_ppcp_session);
+                    AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
@@ -183,7 +183,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                         'redirect' => $this->get_return_url($order),
                     );
                 } else {
-                    unset(WC()->session->angelleye_ppcp_session);
+                    AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
@@ -193,9 +193,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     );
                 }
             } elseif ($this->checkout_disable_smart_button === true && $this->advanced_card_payments === false) {
-                $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
-                return $result;
-                exit();
+                return $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
             }
         } catch (Exception $ex) {
 
