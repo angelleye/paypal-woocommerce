@@ -48,7 +48,6 @@ class AngellEYE_PayPal_PPCP_Request {
     public $api_password;
     public $api_signature;
     public $Force_tls_one_point_two;
-    
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -158,7 +157,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public function request($url, $args, $action_name = 'default') {
         try {
             $this->angelleye_get_settings();
-            if (strpos($url, 'paypal.com') === false) {
+            if (!str_contains($url, 'paypal.com')) {
                 $args['timeout'] = '60';
                 $args['user-agent'] = 'PFW_PPCP';
                 $this->result = wp_remote_get($url, $args);
