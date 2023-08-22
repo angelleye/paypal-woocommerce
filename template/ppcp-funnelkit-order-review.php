@@ -161,8 +161,8 @@ $permalink = get_the_permalink();
                                 ?>
                             </address>
                             <?php
-                            echo!empty(WFACP_Core()->public->billing_details['email']) ? '<p class="angelleye-woocommerce-customer-details-email">' . WFACP_Core()->public->billing_details['email'] . '</p>' : '';
-                            echo!empty(WFACP_Core()->public->billing_details['phone']) ? '<p class="angelleye-woocommerce-customer-details-phone">' . WFACP_Core()->public->billing_details['phone'] . '</p>' : '';
+                            echo!empty(WFACP_Core()->public->billing_details['email']) ? '<p>' . WFACP_Core()->public->billing_details['email'] . '</p>' : '';
+                            echo!empty(WFACP_Core()->public->billing_details['phone']) ? '<p>' . WFACP_Core()->public->billing_details['phone'] . '</p>' : '';
                             ?>
                         </div>
                         <?php
