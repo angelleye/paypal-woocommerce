@@ -435,11 +435,15 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                     $token_id = angelleye_ppcp_get_token_id_by_token($payment_token);
                     $data_store = WC_Data_Store::load('payment-token');
                     $token_metadata = $data_store->get_metadata($token_id);
-                    $data['payment_source'] = array(
-                        $token_metadata['_angelleye_ppcp_used_payment_method'][0] => array(
-                            'vault_id' => $payment_token,
-                        )
-                    );
+                    if ($token_metadata) {
+                        $data['payment_source'] = array(
+                            $token_metadata['_angelleye_ppcp_used_payment_method'][0] => array(
+                                'vault_id' => $payment_token,
+                            )
+                        );
+                    } else {
+                        $data = apply_filters('angelleye_ppcp_add_payment_source', $data, $get_order->get_id());
+                    }
                     if ($token_metadata['_angelleye_ppcp_used_payment_method'][0] === 'card') {
                         $data['payment_source'][$token_metadata['_angelleye_ppcp_used_payment_method'][0]]['stored_credential'] = array(
                             'payment_initiator' => 'MERCHANT',

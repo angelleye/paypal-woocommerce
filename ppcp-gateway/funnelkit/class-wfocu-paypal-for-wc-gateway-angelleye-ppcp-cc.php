@@ -78,7 +78,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -371,11 +371,15 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
                     $token_id = angelleye_ppcp_get_token_id_by_token($payment_token);
                     $data_store = WC_Data_Store::load('payment-token');
                     $token_metadata = $data_store->get_metadata($token_id);
-                    $data['payment_source'] = array(
-                        $token_metadata['_angelleye_ppcp_used_payment_method'][0] => array(
-                            'vault_id' => $payment_token,
-                        )
-                    );
+                    if ($token_metadata) {
+                        $data['payment_source'] = array(
+                            $token_metadata['_angelleye_ppcp_used_payment_method'][0] => array(
+                                'vault_id' => $payment_token,
+                            )
+                        );
+                    } else {
+                        $data = apply_filters('angelleye_ppcp_add_payment_source', $data, $get_order->get_id());
+                    }
                     if ($token_metadata['_angelleye_ppcp_used_payment_method'][0] === 'card') {
                         $data['payment_source'][$token_metadata['_angelleye_ppcp_used_payment_method'][0]]['stored_credential'] = array(
                             'payment_initiator' => 'MERCHANT',
@@ -707,12 +711,10 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
             
         }
     }
-    
+
     public function add_order_id_as_meta($event) {
         if (!empty($this->payal_order_id)) {
             WFOCU_Core()->track->add_meta($event, '_paypal_order_id', $this->payal_order_id);
         }
     }
-
 }
-
