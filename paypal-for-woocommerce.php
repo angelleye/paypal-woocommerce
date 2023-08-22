@@ -379,6 +379,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php';
             }
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/includes/trait-angelleye-ppcp-core.php');
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/includes/class-angelleye-session-manager.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-base-angelleye.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/angelleye-paypal-ppcp-common-functions.php');
@@ -408,6 +409,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             AngellEYE_PayPal_PPCP_Admin_Action::instance();
             AngellEYE_PayPal_PPCP_Front_Action::instance();
             AngellEye_PayPal_PPCP_Apple_Domain_Validation::instance();
+            AngellEye_Session_Manager::instance();
             add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
         }
 
