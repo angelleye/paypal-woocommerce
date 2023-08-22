@@ -475,8 +475,11 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                             $get_order->update_meta_data('wfocu_ppcp_order_current', $ppcp_resp['id']);
                             $get_order->save();
                             WFOCU_Core()->log->log('Order #' . WFOCU_WC_Compatibility::get_order_id($get_order) . ': PayPal Order successfully created');
-                            $transaction_id = $ppcp_resp['purchase_units'][0]['payments']['captures']['id'];
+                            $transaction_id = $ppcp_resp['purchase_units'][0]['payments']['captures'][0]['id'];
                             WFOCU_Core()->data->set('_transaction_id', $transaction_id);
+                            add_action('wfocu_db_event_row_created_' . WFOCU_DB_Track::OFFER_ACCEPTED_ACTION_ID, array($this, 'add_order_id_as_meta'));
+                            add_action('wfocu_offer_new_order_created_' . $this->get_key(), array($this, 'add_paypal_meta_in_new_order'), 10, 2);
+                            $this->payal_order_id = $ppcp_resp['id'];
                             $is_successful = true;
                         } else {
                             $is_successful = false;
@@ -513,7 +516,8 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
     public function add_paypal_meta_in_new_order($get_order) {
         try {
             if (!empty($this->payal_order_id)) {
-                $get_order->update_meta_data('_transaction_id', $this->payal_order_id);
+                $get_order->update_meta_data('_ppcp_paypal_order_id', $this->payal_order_id);
+                $get_order->update_meta_data('_ppcp_paypal_intent', 'CAPTURE');
                 $get_order->save();
             }
         } catch (Exception $ex) {
@@ -777,5 +781,4 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
             WFOCU_Core()->track->add_meta($event, '_paypal_order_id', $this->payal_order_id);
         }
     }
-
 }
