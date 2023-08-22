@@ -1003,8 +1003,8 @@ if (!function_exists('angelleye_session_expired_exception')) {
      * Throws session not found exception message
      * @throws Exception
      */
-    function angelleye_session_expired_exception() {
-        throw new Exception(__('Sorry, your session has expired.', 'woocommerce'), 302);
+    function angelleye_session_expired_exception($error = '') {
+        throw new Exception($error, 302);
     }
 }
 

@@ -1244,13 +1244,14 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (empty($paypal_order_id)) {
                 $paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id');
                 if(empty($paypal_order_id)) {
-                    angelleye_session_expired_exception();
+                    angelleye_session_expired_exception('_paypal_order_id missing in the update_order call.');
                 }
             }
+            // Note: This could create issue with old orders where we don't have reference_id
             if (empty($reference_id)) {
                 $reference_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_reference_id');
-                if(empty($reference_id)) {
-                    angelleye_session_expired_exception();
+                if (empty($reference_id)) {
+                    angelleye_session_expired_exception('_paypal_reference_id is missing in the update_order call.');
                 }
             }
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);
@@ -1378,9 +1379,9 @@ class AngellEYE_PayPal_PPCP_Payment {
 
             // Redirect the user to the checkout page in case order update fails
             if ($ex->getCode() == 302) {
-                $this->api_log->log('Request URL: ' . $this->paypal_order_api . $paypal_order_id);
-                $this->api_log->log('Request Body: ' . wc_print_r($args, true));
-                wc_add_notice($ex->getMessage());
+                $this->api_log->log('UpdateOrder Request URL: ' . $this->paypal_order_api . $paypal_order_id);
+                $this->api_log->log('UpdateOrder Request Body: ' . wc_print_r($args, true));
+                wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
                 wp_redirect(wc_get_checkout_url());
             }
         }
