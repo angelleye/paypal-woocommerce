@@ -357,6 +357,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function process_payment($woo_order_id) {
         try {
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
+            $order = wc_get_order($woo_order_id);
             $angelleye_ppcp_paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
             $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title');
             $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
@@ -375,7 +376,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             }
 
             if (!empty($token_id)) {
-                $order = wc_get_order($woo_order_id);
                 $token = WC_Payment_Tokens::get($token_id);
                 $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
                 update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);

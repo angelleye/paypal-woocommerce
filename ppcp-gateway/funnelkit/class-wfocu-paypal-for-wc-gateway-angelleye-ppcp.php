@@ -36,6 +36,11 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
         $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
         $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->setting_obj->get('payee_preferred', 'no');
+        if (wc_ship_to_billing_address_only()) {
+            $this->set_billing_address = true;
+        } else {
+            $this->set_billing_address = 'yes' === $this->setting_obj->get('set_billing_address', 'yes');
+        }
         if ($this->enable_tokenized_payments === false) {
             add_action('wfocu_footer_before_print_scripts', array($this, 'maybe_render_in_offer_transaction_scripts'), 999);
             add_filter('wfocu_allow_ajax_actions_for_charge_setup', array($this, 'allow_action'));
@@ -44,6 +49,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
         }
         add_action('wc_ajax_wfocu_front_handle_angelleye_ppcp_payments', array($this, 'process_client_order'));
         add_action('woocommerce_api_wfocu_angelleye_ppcp_payments', array($this, 'handle_api_calls'));
+        add_filter('wfacp_form_template', [$this, 'replace_form_template']);
     }
 
     public static function get_instance() {
@@ -55,6 +61,65 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
         } catch (Exception $ex) {
             
         }
+    }
+
+    public function replace_form_template($template) {
+        if (isset($_GET['paypal_order_id'])) {
+            WFACP_Core()->public->is_paypal_express_active_session = true;
+            $checkout_details = $this->payment_request->angelleye_ppcp_get_checkout_details($_GET['paypal_order_id']);
+            $shipping_address = angelleye_ppcp_get_mapped_shipping_address($checkout_details);
+            $states_list = WC()->countries->get_states();
+            if (!empty($shipping_address)) {
+                foreach ($shipping_address as $field => $value) {
+                    if (!empty($value)) {
+                        if ('state' == $field) {
+                            if (angelleye_ppcp_validate_checkout($shipping_address['country'], $value, 'shipping')) {
+                                $_POST['shipping_' . $field] = angelleye_ppcp_validate_checkout($shipping_address['country'], $value, 'shipping');
+                            } else {
+                                if (isset($shipping_address['country']) && isset($states_list[$shipping_address['country']])) {
+                                    $state_key = array_search($value, $states_list[$shipping_address['country']]);
+                                    $_POST['shipping_' . $field] = $state_key;
+                                } else {
+                                    $_POST['shipping_' . $field] = '';
+                                }
+                            }
+                        } else {
+                            $_POST['shipping_' . $field] = wc_clean(stripslashes($value));
+                        }
+                    }
+                }
+                WFACP_Core()->public->shipping_details = $shipping_address;
+                WFACP_Core()->public->paypal_shipping_address = true;
+            }
+            $billing_address = angelleye_ppcp_get_mapped_billing_address($checkout_details, ($this->set_billing_address) ? false : true);
+            if (!empty($billing_address)) {
+                foreach ($billing_address as $field => $value) {
+                    if (!empty($value)) {
+                        if ('state' == $field) {
+                            if (!empty($shipping_address['country'])) {
+                                if (angelleye_ppcp_validate_checkout($shipping_address['country'], $value, 'shipping')) {
+                                    $_POST['billing_' . $field] = angelleye_ppcp_validate_checkout($shipping_address['country'], $value, 'shipping');
+                                } else {
+                                    if (isset($shipping_address['country']) && isset($states_list[$shipping_address['country']])) {
+                                        $state_key = array_search($value, $states_list[$shipping_address['country']]);
+                                        $_POST['billing_' . $field] = $state_key;
+                                    } else {
+                                        $_POST['billing_' . $field] = '';
+                                    }
+                                }
+                            }
+                        } else {
+                            $_POST['billing_' . $field] = wc_clean(stripslashes($value));
+                        }
+                    }
+                }
+                WFACP_Core()->public->billing_details = $billing_address;
+                WFACP_Core()->public->paypal_billing_address = true;
+            }
+            $template = PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/ppcp-funnelkit-order-review.php';
+            return $template;
+        }
+        return $template;
     }
 
     public function angelleye_ppcp_load_class() {
@@ -77,7 +142,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -370,11 +435,15 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                     $token_id = angelleye_ppcp_get_token_id_by_token($payment_token);
                     $data_store = WC_Data_Store::load('payment-token');
                     $token_metadata = $data_store->get_metadata($token_id);
-                    $data['payment_source'] = array(
-                        $token_metadata['_angelleye_ppcp_used_payment_method'][0] => array(
-                            'vault_id' => $payment_token,
-                        )
-                    );
+                    if ($token_metadata) {
+                        $data['payment_source'] = array(
+                            $token_metadata['_angelleye_ppcp_used_payment_method'][0] => array(
+                                'vault_id' => $payment_token,
+                            )
+                        );
+                    } else {
+                        $data = apply_filters('angelleye_ppcp_add_payment_source', $data, $get_order->get_id());
+                    }
                     if ($token_metadata['_angelleye_ppcp_used_payment_method'][0] === 'card') {
                         $data['payment_source'][$token_metadata['_angelleye_ppcp_used_payment_method'][0]]['stored_credential'] = array(
                             'payment_initiator' => 'MERCHANT',
@@ -410,8 +479,11 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                             $get_order->update_meta_data('wfocu_ppcp_order_current', $ppcp_resp['id']);
                             $get_order->save();
                             WFOCU_Core()->log->log('Order #' . WFOCU_WC_Compatibility::get_order_id($get_order) . ': PayPal Order successfully created');
-                            $transaction_id = $ppcp_resp['purchase_units'][0]['payments']['captures']['id'];
+                            $transaction_id = $ppcp_resp['purchase_units'][0]['payments']['captures'][0]['id'];
                             WFOCU_Core()->data->set('_transaction_id', $transaction_id);
+                            add_action('wfocu_db_event_row_created_' . WFOCU_DB_Track::OFFER_ACCEPTED_ACTION_ID, array($this, 'add_order_id_as_meta'));
+                            add_action('wfocu_offer_new_order_created_' . $this->get_key(), array($this, 'add_paypal_meta_in_new_order'), 10, 2);
+                            $this->payal_order_id = $ppcp_resp['id'];
                             $is_successful = true;
                         } else {
                             $is_successful = false;
@@ -448,7 +520,8 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
     public function add_paypal_meta_in_new_order($get_order) {
         try {
             if (!empty($this->payal_order_id)) {
-                $get_order->update_meta_data('_transaction_id', $this->payal_order_id);
+                $get_order->update_meta_data('_ppcp_paypal_order_id', $this->payal_order_id);
+                $get_order->update_meta_data('_ppcp_paypal_intent', 'CAPTURE');
                 $get_order->save();
             }
         } catch (Exception $ex) {
@@ -704,6 +777,12 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
             return $is_enabled;
         } catch (Exception $ex) {
             
+        }
+    }
+
+    public function add_order_id_as_meta($event) {
+        if (!empty($this->payal_order_id)) {
+            WFOCU_Core()->track->add_meta($event, '_paypal_order_id', $this->payal_order_id);
         }
     }
 }

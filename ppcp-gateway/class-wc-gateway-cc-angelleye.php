@@ -19,6 +19,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     public $client_id;
     public $secret_id;
     public $enable_tokenized_payments;
+    public $paymentaction;
+    public $checkout_disable_smart_button;
 
     public function __construct() {
         try {
@@ -39,7 +41,9 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->sandbox_secret_id = $this->setting_obj->get('sandbox_api_secret', '');
             $this->live_client_id = $this->setting_obj->get('api_client_id', '');
             $this->live_secret_id = $this->setting_obj->get('api_secret', '');
+            $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
             $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
+             $this->enabled = $this->setting_obj->get('enabled', 'no');
             if ($this->dcc_applies->for_country_currency() === false) {
                 $this->advanced_card_payments = false;
             }
@@ -75,7 +79,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             }
         }
-        return '<div class="ae-cc-icons-list">' . implode('', $images) . '</div><div class="clearfix"></div>';
+        return '<div class="ae-cc-icons-list">' . implode('', $images) . '</div><div class="ppcp-clearfix"></div>';
     }
 
     private function card_labels(): array {

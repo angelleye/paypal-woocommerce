@@ -248,9 +248,22 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     wc_clear_notices();
                     // Required for order pay form, as there will be no data in session
                     AngellEye_Session_Manager::set('paypal_order_id', wc_clean($_GET['paypal_order_id']));
-                    $this->angelleye_ppcp_cc_capture();
-                    break;
 
+                    $from = AngellEye_Session_Manager::get('from', '');
+                    if ('checkout_top' === $from) {
+                        if (ob_get_length()) {
+                            ob_end_clean();
+                        }
+                        WC()->session->set( 'reload_checkout', true );
+                        wp_send_json_success(array(
+                            'result' => 'success',
+                            'redirect' => add_query_arg(array('paypal_order_id' => wc_clean($_GET['paypal_order_id']), 'utm_nooverride' => '1', 'wfacp_is_checkout_override' => 'yes'), untrailingslashit(wc_get_checkout_url())),
+                        ));
+                        exit();
+                    } else {
+                        $this->angelleye_ppcp_cc_capture();
+                    }
+                    break;
                 case "direct_capture":
                     AngellEye_Session_Manager::set('paypal_order_id', wc_clean($_GET['paypal_order_id']));
                     AngellEye_Session_Manager::set('paypal_payer_id', wc_clean($_GET['paypal_payer_id']));
