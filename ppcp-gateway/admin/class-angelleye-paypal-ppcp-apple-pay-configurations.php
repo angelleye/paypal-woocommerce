@@ -267,7 +267,8 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         }
         $localFileLoc = $this->apple_pay_domain_validation->getDomainAssociationLibFilePath();
         $domainValidationFile = $this->apple_pay_domain_validation->getDomainAssociationFilePath();
-        $targetLocation = ABSPATH . $domainValidationFile;
+
+        $targetLocation = get_home_path() . $domainValidationFile;
 
         // PFW-1554 - Handles the INCORRECT_DOMAIN_VERIFICATION_FILE error
         try {
