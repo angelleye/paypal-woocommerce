@@ -1207,8 +1207,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if (!$this->response->success) {
                 if ($this->has_risk_data()) {
                     $order->add_order_note(sprintf(__('Risk decision for this transaction %s, Risk ID for this transaction: %s', 'paypal-for-woocommerce'), $this->get_risk_decision(), $this->get_risk_id()));
-                    update_post_meta($order_id, 'risk_id', $this->get_risk_id());
-                    update_post_meta($order_id, 'risk_decision', $this->get_risk_decision());
+                    $order->update_meta_data('risk_id', $this->get_risk_id());
+                    $order->update_meta_data('risk_decision', $this->get_risk_decision());
+                    $order->save();
                 }
                 $notice = $this->get_message();
                 if (empty($notice)) {
@@ -1229,11 +1230,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'submitted_for_settlement',
             );
             if (in_array($this->response->transaction->status, $maybe_settled_later)) {
-                update_post_meta($order->get_id(), 'is_sandbox', $this->sandbox);
+                $order->update_meta_data('is_sandbox', $this->sandbox);
+                $order->save();
                 if ($this->has_risk_data()) {
                     $order->add_order_note(sprintf(__('Risk decision for this transaction %s, Risk ID for this transaction: %s', 'paypal-for-woocommerce'), $this->get_risk_decision(), $this->get_risk_id()));
-                    update_post_meta($order_id, 'risk_id', $this->get_risk_id());
-                    update_post_meta($order_id, 'risk_decision', $this->get_risk_decision());
+                    $order->update_meta_data('risk_id', $this->get_risk_id());
+                    $order->update_meta_data('risk_decision', $this->get_risk_decision());
+                    $order->save();
                 }
                 $order->payment_complete($this->response->transaction->id);
                 $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $this->response->transaction->id));
@@ -1457,8 +1460,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if (!$this->response->success) {
                 if ($this->has_risk_data()) {
                     $order->add_order_note(sprintf(__('Risk decision for this transaction %s, Risk ID for this transaction: %s', 'paypal-for-woocommerce'), $this->get_risk_decision(), $this->get_risk_id()));
-                    update_post_meta($order_id, 'risk_id', $this->get_risk_id());
-                    update_post_meta($order_id, 'risk_decision', $this->get_risk_decision());
+                    $order->update_meta_data('risk_id', $this->get_risk_id());
+                    $order->update_meta_data('risk_decision', $this->get_risk_decision());
+                    $order->save();
                 }
                 $notice = $this->get_message();
                 if (empty($notice)) {
@@ -1479,12 +1483,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 'submitted_for_settlement',
             );
             if (in_array($this->response->transaction->status, $maybe_settled_later)) {
-                update_post_meta($order->get_id(), 'is_sandbox', $this->sandbox);
+                $order->update_meta_data('is_sandbox', $this->sandbox);
                 if ($this->has_risk_data()) {
                     $order->add_order_note(sprintf(__('Risk decision for this transaction %s, Risk ID for this transaction: %s', 'paypal-for-woocommerce'), $this->get_risk_decision(), $this->get_risk_id()));
-                    update_post_meta($order_id, 'risk_id', $this->get_risk_id());
-                    update_post_meta($order_id, 'risk_decision', $this->get_risk_decision());
+                    $order->update_meta_data('risk_id', $this->get_risk_id());
+                    $order->update_meta_data('risk_decision', $this->get_risk_decision());
                 }
+                $order->save();
                 $transaction = $this->braintree_gateway->transaction()->find($this->response->transaction->id);
                 $this->save_payment_token($order, $transaction->creditCard['token']);
                 if (!empty($transaction->creditCard['cardType']) && !empty($transaction->creditCard['last4'])) {
@@ -1623,8 +1628,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         $braintree_refunded_id = array();
                         $braintree_refunded_id[$result->transaction->id] = $result->transaction->id;
                         $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
-                        update_post_meta($order_id, 'Refund Transaction ID', $result->transaction->id);
-                        update_post_meta($order_id, 'braintree_refunded_id', $braintree_refunded_id);
+                        $order->update_meta_data('Refund Transaction ID', $result->transaction->id);
+                        $order->update_meta_data('braintree_refunded_id', $braintree_refunded_id);
+                        $order->save();
                         return true;
                     } else {
                         $error = '';
@@ -1648,7 +1654,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 if ($result->success) {
                     $braintree_refunded_id = array();
                     $braintree_refunded_id[$result->transaction->id] = $result->transaction->id;
-                    update_post_meta($order_id, 'braintree_refunded_id', $braintree_refunded_id);
+                    $order->update_meta_data('braintree_refunded_id', $braintree_refunded_id);
+                    $order->save();
                     $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
                     return true;
                 } else {
@@ -2254,7 +2261,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if ($token->get_user_id() !== get_current_user_id()) {
                 throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
             } else {
-                update_post_meta($order_id, 'is_sandbox', $this->sandbox);
+                $order->update_meta_data('is_sandbox', $this->sandbox);
+                $order->save();
                 $payment_tokens_id = $token->get_token();
                 $this->save_payment_token($order, $payment_tokens_id);
                 $order->payment_complete($payment_tokens_id);
@@ -2274,7 +2282,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $result = $this->add_payment_method($zero_amount_payment = true);
             if ($result['result'] == 'success') {
-                update_post_meta($order_id, 'is_sandbox', $this->sandbox);
+                $order->update_meta_data('is_sandbox', $this->sandbox);
+                $order->save();
                 $payment_tokens_id = (!empty($result['_payment_tokens_id'])) ? $result['_payment_tokens_id'] : '';
                 $this->save_payment_token($order, $payment_tokens_id);
                 $order->payment_complete($payment_tokens_id);
@@ -2313,7 +2322,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         // Store source in the order
         $order_id = $order->get_id();
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+            $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+            $order->save();
         }
     }
 
@@ -2415,7 +2425,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'submitted_for_settlement',
         );
         if (in_array($this->response->transaction->status, $maybe_settled_later)) {
-            update_post_meta($order_id, 'is_sandbox', $this->sandbox);
+            $order->update_meta_data('is_sandbox', $this->sandbox);
+            $order->save();
             $order->payment_complete($this->response->transaction->id);
             $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $this->response->transaction->id));
         } else {
@@ -2598,7 +2609,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                             wc_create_refund($default_args);
                             $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($refund_transaction->amount, 2, '.', '')), $value));
                             $braintree_refunded_id[$value] = $value;
-                            update_post_meta($order_id, 'braintree_refunded_id', $braintree_refunded_id);
+                            $order->update_meta_data('braintree_refunded_id', $braintree_refunded_id);
+                            $order->save();
                         }
                     }
                 }
@@ -2619,7 +2631,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         );
                         wc_create_refund($default_args);
                         $order->add_order_note(sprintf(__('Voided %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($transaction->amount, 2, '.', '')), $transaction->id));
-                        update_post_meta($order_id, 'braintree_refunded_id', $transaction->id);
+                        $order->update_meta_data('braintree_refunded_id', $transaction->id);
+                        $order->save();
                     }
                 }
             }
@@ -2799,7 +2812,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);
             $payment_method_nonce = $token->get_token();
             $order_id = $order->get_id();
-            update_post_meta($order_id, '_first_transaction_id', $payment_method_nonce);
+            $order->update_meta_data('_first_transaction_id', $payment_method_nonce);
             $order->set_transaction_id($payment_method_nonce);
             $order->save();
             $payment_order_meta = array('_payment_action' => $this->payment_action);
@@ -2948,7 +2961,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
         }
         if( !empty($payment_method_token) ) {
-            update_post_meta($order_id, '_first_transaction_id', $payment_method_token);
+            $order->update_meta_data('_first_transaction_id', $payment_method_token);
             $order->set_transaction_id($payment_method_token);
             $order->save();
             $payment_order_meta = array('_payment_action' => $this->payment_action);
@@ -2962,17 +2975,19 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     }
     
     public function angelleye_store_card_info($result, $order_id) {
+        $order = wc_get_order($order_id);
         $verification = $result->creditCardVerification;
         if( !empty($verification->status) ) {
-            update_post_meta($order_id, 'Card Verification Status', $verification->status);
+            $order->update_meta_data('Card Verification Status', $verification->status);
         }
         $verification->processorResponseCode;
         if( !empty($verification->processorResponseCode) ) {
-            update_post_meta($order_id, 'Processor ResponseCode', $verification->processorResponseCode);
+            $order->update_meta_data('Processor ResponseCode', $verification->processorResponseCode);
         }
         if( !empty($verification->processorResponseText) ) {
-            update_post_meta($order_id, 'Processor Response Text', $verification->processorResponseText);
+            $order->update_meta_data('Processor Response Text', $verification->processorResponseText);
         }
+        $order->save();
     }
     
     public function pfw_braintree_do_capture($order, $request_data = array()) {
@@ -3025,7 +3040,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if ($token->get_user_id() !== get_current_user_id()) {
                 throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
             } else {
-                update_post_meta($order_id, 'is_sandbox', $this->sandbox);
+                $order->update_meta_data('is_sandbox', $this->sandbox);
+                $order->save();
                 $payment_tokens_id = $token->get_token();
                 $this->save_payment_token($order, $payment_tokens_id);
                 return array(
@@ -3036,7 +3052,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $result = $this->add_payment_method($zero_amount_payment = true);
             if ($result['result'] == 'success') {
-                update_post_meta($order_id, 'is_sandbox', $this->sandbox);
+                $order->update_meta_data('is_sandbox', $this->sandbox);
+                $order->save();
                 $payment_tokens_id = (!empty($result['_payment_tokens_id'])) ? $result['_payment_tokens_id'] : '';
                 $this->save_payment_token($order, $payment_tokens_id);
                  return array(

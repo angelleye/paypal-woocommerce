@@ -676,7 +676,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
                         $order->set_payment_method('paypal');
 
                         // Store the billing agreement ID on the order and subscriptions.
-                        update_post_meta(wcf_pro()->wc_common->get_order_id($order), '_paypal_subscription_id', $this->get_value_from_response($billing_agreement_response, 'BILLINGAGREEMENTID'));
+                        $order->update_meta_data('_paypal_subscription_id', $this->get_value_from_response($billing_agreement_response, 'BILLINGAGREEMENTID'));
 
                         $order->payment_complete($billing_agreement_response['PAYMENTINFO_0_TRANSACTIONID']);
 

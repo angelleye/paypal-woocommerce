@@ -965,7 +965,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         $order = wc_get_order($order_id);
         $order_id = $order->get_id();
         if (!empty($_POST['wc-paypal_advanced-new-payment-method']) && $_POST['wc-paypal_advanced-new-payment-method'] == true) {
-            update_post_meta($order->get_id(), '_is_save_payment_method', 'yes');
+            $order->update_meta_data('_is_save_payment_method', 'yes');
+            $order->save();
         }
         if ((!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') || $this->is_renewal($order_id)) {
             if ($this->is_renewal($order_id)) {
@@ -1001,8 +1002,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         try {
             $this->securetoken = $this->get_secure_token($order);
             if ($this->securetoken != "") {
-                update_post_meta($order->get_id(), '_secure_token_id', $this->secure_token_id);
-                update_post_meta($order->get_id(), '_secure_token', $this->securetoken);
+                $order->update_meta_data('_secure_token_id', $this->secure_token_id);
+                $order->update_meta_data('_secure_token', $this->securetoken);
+                $order->save();
                 if ($this->debug == 'yes') {
                     $this->log->add('paypal_advanced', sprintf(__('Secured Token generated successfully for the order %s', 'paypal-for-woocommerce'), $order->get_order_number()));
                 }
@@ -1074,7 +1076,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         }
         if ($refund_result_arr['RESULT'] == 0) {
             $order->add_order_note(sprintf(__('Successfully Refunded - Refund Transaction ID: %s', 'paypal-for-woocommerce'), $refund_result_arr['PNREF']));
-            update_post_meta($order_id, 'Refund Transaction ID', $refund_result_arr['PNREF']);
+            $order->update_meta_data('Refund Transaction ID', $refund_result_arr['PNREF']);
+            $order->save();
         } else {
             $order->add_order_note(sprintf(__('Refund Failed - Refund Transaction ID: %s, Error Msg: %s', 'paypal-for-woocommerce'), $refund_result_arr['PNREF'], $refund_result_arr['RESPMSG']));
             throw new Exception(sprintf(__('Refund Failed - Refund Transaction ID: %s, Error Msg: %s', 'paypal-for-woocommerce'), $refund_result_arr['PNREF'], $refund_result_arr['RESPMSG']));
@@ -1405,7 +1408,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
 
     public function save_payment_token($order, $payment_tokens_id) {
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order->get_id(), '_payment_tokens_id', $payment_tokens_id);
+            $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+            $order->save();
         }
     }
 

@@ -207,9 +207,10 @@ class Cartflows_Pro_Gateway_Braintree_AngellEYE {
                 'submitted_for_settlement',
             );
             if (in_array($gateway->response->transaction->status, $maybe_settled_later)) {
-                update_post_meta($order_id, 'is_sandbox', $gateway->sandbox);
+                $order->update_meta_data('is_sandbox', $gateway->sandbox);
                 $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $gateway->title, $gateway->response->transaction->id));
                 $this->store_offer_transaction($order, $gateway->response->transaction->id, $product);
+                $order->save();
                 return true;
             } else {
                 $gateway->add_log(sprintf('Info: unhandled transaction id = %s, status = %s', $gateway->response->transaction->id, $gateway->response->transaction->status));
@@ -251,8 +252,9 @@ class Cartflows_Pro_Gateway_Braintree_AngellEYE {
                     $braintree_refunded_id = array();
                     $braintree_refunded_id[$result->transaction->id] = $result->transaction->id;
                     $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($refund_amount, 2, '.', '')), $result->transaction->id));
-                    update_post_meta($order_id, 'Refund Transaction ID', $result->transaction->id);
-                    update_post_meta($order_id, 'braintree_refunded_id', $braintree_refunded_id);
+                    $order->update_meta_data('Refund Transaction ID', $result->transaction->id);
+                    $order->update_meta_data('braintree_refunded_id', $braintree_refunded_id);
+                    $order->save();
                     $response_id = $result->transaction->id;
                 }
             } catch (Braintree\Exception\NotFound $e) {
@@ -266,7 +268,8 @@ class Cartflows_Pro_Gateway_Braintree_AngellEYE {
                 if ($result->success) {
                     $braintree_refunded_id = array();
                     $braintree_refunded_id[$result->transaction->id] = $result->transaction->id;
-                    update_post_meta($order_id, 'braintree_refunded_id', $braintree_refunded_id);
+                    $order->update_meta_data('braintree_refunded_id', $braintree_refunded_id);
+                    $order->save();
                     $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($refund_amount, 2, '.', '')), $result->transaction->id));
                     $response_id = $result->transaction->id;
                 }

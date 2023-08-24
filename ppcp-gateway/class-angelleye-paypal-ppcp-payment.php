@@ -1056,7 +1056,8 @@ class AngellEYE_PayPal_PPCP_Payment {
         $order = wc_get_order($woo_order_id);
         $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title');
         if (!empty($angelleye_ppcp_payment_method_title) && !empty($woo_order_id)) {
-            update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+            $order->update_meta_data('_payment_method_title', $angelleye_ppcp_payment_method_title);
+            $order->save();
         } else {
             $angelleye_ppcp_payment_method_title = $this->title;
         }

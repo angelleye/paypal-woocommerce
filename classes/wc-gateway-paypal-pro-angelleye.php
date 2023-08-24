@@ -1323,7 +1323,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $avs_response_order_note .= $avs_response_message != '' ? ' - ' . $avs_response_message : '';
             $order->add_order_note($avs_response_order_note);
             $order_id = $order->get_id();
-            update_post_meta($order->get_id(), '_AVSCODE', $avs_response_code);
+            $order->update_meta_data('_AVSCODE', $avs_response_code);
             $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
             $cvv2_response_message = $this->PayPal->GetCVV2CodeMessage($cvv2_response_code);
             $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
@@ -1331,8 +1331,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $cvv2_response_order_note .= $cvv2_response_code;
             $cvv2_response_order_note .= $cvv2_response_message != '' ? ' - ' . $cvv2_response_message : '';
             $order->add_order_note($cvv2_response_order_note);
-            update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
-            update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
+            $order->update_meta_data('_CVV2MATCH', $cvv2_response_code);
+            $order->update_meta_data('is_sandbox', $this->testmode);
+            $order->save();
             do_action('ae_add_custom_order_note', $order, $card, $token, $PayPalResult);
             do_action('before_save_payment_token', $order_id);
             if(AngellEYE_Utility::angelleye_is_save_payment_token($this, $order_id)) {
@@ -1399,7 +1400,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
 
             if ($this->payment_action == "Authorization") {
-                update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
+                $order->update_meta_data('_first_transaction_id', $PayPalResult['TRANSACTIONID']);
+                $order->save();
                 $payment_order_meta = array('_payment_action' => $this->payment_action);
                 AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
@@ -1544,7 +1546,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         $this->log('Refund Response: ' . print_r($this->PayPal->NVPToArray($this->PayPal->MaskAPIResult($PayPalResponse)), true));
 
         if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
-            update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['REFUNDTRANSACTIONID']);
+            $order->update_meta_data('Refund Transaction ID', $PayPalResult['REFUNDTRANSACTIONID']);
+            $order->save();
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
             if (ob_get_length()) ob_end_clean();
             return true;
@@ -1940,7 +1943,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         }
         if ($this->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
             $order->set_transaction_id($PayPalResult['TRANSACTIONID']);
-            $order->save();
             $order->add_order_note(sprintf(__('PayPal Pro payment completed (Transaction ID: %s, Correlation ID: %s)', 'paypal-for-woocommerce'), $PayPalResult['TRANSACTIONID'], $PayPalResult['CORRELATIONID']));
             $avs_response_code = isset($PayPalResult['AVSCODE']) ? $PayPalResult['AVSCODE'] : '';
             $avs_response_message = $this->PayPal->GetAVSCodeMessage($avs_response_code);
@@ -1958,13 +1960,15 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $order->add_order_note($cvv2_response_order_note);
             do_action('ae_add_custom_order_note', $order, $card, $token = null, $PayPalResult);
             $is_sandbox = $this->testmode;
-            update_post_meta($order_id, 'is_sandbox', $is_sandbox);
+            $order->update_meta_data('is_sandbox', $is_sandbox);
+            $order->save();
             if ($this->payment_action == "Sale") {
                 $this->save_payment_token($order, $PayPalResult['TRANSACTIONID']);
                 $order->payment_complete($PayPalResult['TRANSACTIONID']);
             } else {
                 $this->save_payment_token($order, $PayPalResult['TRANSACTIONID']);
-                update_post_meta($order_id, '_first_transaction_id', $PayPalResult['TRANSACTIONID']);
+                $order->update_meta_data('_first_transaction_id', $PayPalResult['TRANSACTIONID']);
+                $order->save();
                 $payment_order_meta = array('_payment_action' => $this->payment_action);
                 AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                 AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
@@ -2007,7 +2011,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function save_payment_token($order, $payment_tokens_id) {
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order->get_id(), '_payment_tokens_id', $payment_tokens_id);
+            $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+            $order->save();
         }
     }
 
@@ -2019,7 +2024,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             $token = WC_Payment_Tokens::get($token_id);
             $order->payment_complete($token->get_token());
             $this->save_payment_token($order, $token->get_token());
-            update_post_meta($order_id, '_first_transaction_id', $token->get_token());
+            $order->update_meta_data('_first_transaction_id', $token->get_token());
+            $order->save();
             $order->add_order_note('Payment Action: ' . $this->payment_action);
             WC()->cart->empty_cart();
             return array(

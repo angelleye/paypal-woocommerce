@@ -143,9 +143,10 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                 $avs_response_order_note .= '<li>' . sprintf(__('Postal Match: %s', 'paypal-for-woocommerce'), $avs_zip_response_code) . '</li>';
                 $avs_response_order_note .= "<ul>";
                 $avs_response_order_note .= '</ul>';
-                update_post_meta($order->get_id(), '_AVSADDR', $avs_address_response_code);
-                update_post_meta($order->get_id(), '_AVSZIP', $avs_zip_response_code);
-                update_post_meta($order->get_id(), '_PROCAVS', $avs_zip_response_code);
+                $order->update_meta_data('_AVSADDR', $avs_address_response_code);
+                $order->update_meta_data('_AVSZIP', $avs_zip_response_code);
+                $order->update_meta_data('_PROCAVS', $avs_zip_response_code);
+                $order->save();
                 $order->add_order_note($avs_response_order_note);
                 $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
                 $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
@@ -215,7 +216,8 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
         do_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
         if (isset($PayPalResult['RESULT']) && $PayPalResult['RESULT'] == 0) {
-            update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['PNREF']);
+            $order->update_meta_data('Refund Transaction ID', $PayPalResult['PNREF']);
+            $order->save();
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);
             $response_id = $PayPalResult['PNREF'];
         } else {

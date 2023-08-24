@@ -212,7 +212,8 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
         wcf()->logger->log('Refund Request: ' . print_r($gateway->PayPal->NVPToArray($gateway->PayPal->MaskAPIResult($PayPalRequest)), true));
         wcf()->logger->log('Refund Response: ' . print_r($gateway->PayPal->NVPToArray($gateway->PayPal->MaskAPIResult($PayPalResponse)), true));
         if ($gateway->PayPal->APICallSuccessful($PayPalResult['ACK'])) {
-            update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['REFUNDTRANSACTIONID']);
+            $order->update_meta_data('Refund Transaction ID', $PayPalResult['REFUNDTRANSACTIONID']);
+            $order->save();
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['REFUNDTRANSACTIONID']);
             $response_id = $PayPalResult['REFUNDTRANSACTIONID'];
         } else {

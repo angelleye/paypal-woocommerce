@@ -452,10 +452,10 @@ class AngellEYE_Utility {
                 }
             }
             if (isset($do_capture_result['FEEAMT'])) {
-                update_post_meta($order->get_id(), '_paypal_fee', $do_capture_result['FEEAMT']);
-                update_post_meta($order->get_id(), '_paypal_transaction_fee', $do_capture_result['FEEAMT']);
-                update_post_meta($order->get_id(), '_paypal_fee_currency_code', $do_capture_result['CURRENCYCODE']);
-                update_post_meta($order->get_id(), 'PayPal Transaction Fee', $do_capture_result['FEEAMT']);
+                $order->update_meta_data('_paypal_fee', $do_capture_result['FEEAMT']);
+                $order->update_meta_data('_paypal_transaction_fee', $do_capture_result['FEEAMT']);
+                $order->update_meta_data('_paypal_fee_currency_code', $do_capture_result['CURRENCYCODE']);
+                $order->update_meta_data('PayPal Transaction Fee', $do_capture_result['FEEAMT']);
             }
             $order->set_transaction_id($do_capture_result['TRANSACTIONID']);
             $order->save();
@@ -1675,10 +1675,15 @@ class AngellEYE_Utility {
     }
 
     public static function angelleye_set_address($order_id, $address, $type = 'billing') {
+        $order = wc_get_order($order_id);
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
         foreach ($address as $key => $value) {
             is_string($value) ? wc_clean(stripslashes($value)) : $value;
-            update_post_meta($order_id, "_{$type}_" . $key, $value);
+            $order->update_meta_data("_{$type}_" . $key, $value);
         }
+        $order->save();
     }
 
     public static function angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() {
@@ -1906,8 +1911,8 @@ class AngellEYE_Utility {
                         ' ( Response Code: ' . $do_authorization_result['RESULT'] . ", " .
                         ' AUTHORIZATIONID: ' . $do_authorization_result['PNREF'] . ' )'
                 );
-                update_post_meta($this->order_id, '_first_transaction_id', $do_authorization_result['PNREF']);
-                update_post_meta($this->order_id, '_trans_date', current_time('mysql'));
+                $order->update_meta_data('_first_transaction_id', $do_authorization_result['PNREF']);
+                $order->update_meta_data('_trans_date', current_time('mysql'));
                 $order->set_transaction_id($transaction_id);
                 $order->save();
                 self::angelleye_paypal_for_woocommerce_add_paypal_transaction($do_authorization_result, $order, 'DoAuthorization');
@@ -2140,7 +2145,7 @@ class AngellEYE_Utility {
                 'submitted_for_settlement',
             );
             if (in_array($result->transaction->status, $maybe_settled_later)) {
-                update_post_meta($order->get_id(), 'is_sandbox', $gateway_obj->sandbox);
+                $order->update_meta_data('is_sandbox', $gateway_obj->sandbox);
                 $order->payment_complete($result->transaction->id);
                 $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $gateway_obj->title, $result->transaction->id));
                 $order->set_transaction_id($result->transaction->id);
@@ -2171,9 +2176,14 @@ class AngellEYE_Utility {
     }
 
     public static function angelleye_add_paypal_payment_meta($order_id, $payment_meta) {
-        foreach ($payment_meta as $key => $value) {
-            update_post_meta($order_id, $key, wc_clean($value));
+        $order = wc_get_order($order_id);
+        if (!is_a($order, 'WC_Order')) {
+            return;
         }
+        foreach ($payment_meta as $key => $value) {
+            $order->update_meta_data($key, wc_clean($value));
+        }
+        $order->save();
     }
 
     public static function is_subs_change_payment() {

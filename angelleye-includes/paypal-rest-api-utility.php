@@ -177,7 +177,8 @@ class PayPal_Rest_API_Utility {
                 $order->payment_complete($transaction_id);
                 do_action('ae_add_custom_order_note', $order, $card, $token, $transactions);
                 $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-                update_post_meta($order->get_id(), 'is_sandbox', $is_sandbox);
+                $order->update_meta_data('is_sandbox', $is_sandbox);
+                $order->save();
                 if ($this->is_renewal($order_id)) {
                     return true;
                 }
@@ -581,7 +582,8 @@ class PayPal_Rest_API_Utility {
                 if ($refundedSale->state == 'completed') {
                     do_action('angelleye_paypal_response_data', $refundedSale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
                     $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
-                    update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
+                    $order->update_meta_data('Refund Transaction ID', $refundedSale->getId());
+                    $order->save();
                     if (isset($reason) && !empty($reason)) {
                         $order->add_order_note('Reason for Refund :' . $reason);
                     }
@@ -592,7 +594,8 @@ class PayPal_Rest_API_Utility {
                 if ($refundedSale->state == 'voided') {
                     do_action('angelleye_paypal_response_data', $refundedSale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
                     $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
-                    update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
+                    $order->update_meta_data('Refund Transaction ID', $refundedSale->getId());
+                    $order->save();
                     if (isset($reason) && !empty($reason)) {
                         $order->add_order_note('Reason for Refund :' . $reason);
                     }
@@ -721,7 +724,7 @@ class PayPal_Rest_API_Utility {
         // Store source in the order
         $order_id = $order->get_id();
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+            $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
         }
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
             $subscriptions = wcs_get_subscriptions_for_order($order_id);
@@ -735,6 +738,7 @@ class PayPal_Rest_API_Utility {
                 update_post_meta($subscription->get_id(), '_payment_tokens_id', $payment_tokens_id);
             }
         }
+        $order->save();
     }
 
     public function create_payment_with_zero_amount($order, $card_data) {
@@ -780,7 +784,8 @@ class PayPal_Rest_API_Utility {
             }
             $order->payment_complete($creditcard_id);
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-            update_post_meta($order_id, 'is_sandbox', $is_sandbox);
+            $order->update_meta_data('is_sandbox', $is_sandbox);
+            $order->save();
             if ($this->is_renewal($order_id)) {
                 return true;
             }
@@ -888,7 +893,7 @@ class PayPal_Rest_API_Utility {
             $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
             $order->payment_complete($transaction_id);
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-            update_post_meta($order->get_id(), 'is_sandbox', $is_sandbox);
+            $order->update_meta_data('is_sandbox', $is_sandbox);
         } else {
             $this->send_failed_order_email($order_id);
             $this->add_log(__('Error Payment state:' . $this->payment->state, 'paypal-for-woocommerce'));
@@ -951,7 +956,8 @@ class PayPal_Rest_API_Utility {
                 
             }
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-            update_post_meta($order_id, 'is_sandbox', $is_sandbox);
+            $order->update_meta_data('is_sandbox', $is_sandbox);
+            $order->save();
             if ($this->is_renewal($order_id)) {
                 return true;
             }

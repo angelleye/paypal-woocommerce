@@ -1336,17 +1336,18 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $avs_response_order_note .= '<li>' . sprintf(__('Postal Match: %s', 'paypal-for-woocommerce'), $avs_zip_response_code) . '</li>';
                 $avs_response_order_note .= "<ul>";
                 $avs_response_order_note .= '</ul>';
-                update_post_meta($order->get_id(), '_AVSADDR', $avs_address_response_code);
-                update_post_meta($order->get_id(), '_AVSZIP', $avs_zip_response_code);
-                update_post_meta($order->get_id(), '_PROCAVS', $avs_zip_response_code);
+                $order->update_meta_data('_AVSADDR', $avs_address_response_code);
+                $order->update_meta_data('_AVSZIP', $avs_zip_response_code);
+                $order->update_meta_data('_PROCAVS', $avs_zip_response_code);
                 $order->add_order_note($avs_response_order_note);
                 $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
                 $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
                 $cvv2_response_order_note .= "\n";
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
-                update_post_meta($order->get_id(), '_CVV2MATCH', $cvv2_response_code);
-                update_post_meta($order->get_id(), 'is_sandbox', $this->testmode);
+                $order->update_meta_data('_CVV2MATCH', $cvv2_response_code);
+                $order->update_meta_data('is_sandbox', $this->testmode);
                 $order->add_order_note($cvv2_response_order_note);
+                $order->save();
                 if (empty($token)) {
                     $token = '';
                 }
@@ -1408,7 +1409,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $order->update_status('on-hold');
                         wc_maybe_reduce_stock_levels($order->get_id());
                     }
-                    update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['PNREF']);
+                    $order->update_meta_data('_first_transaction_id', $PayPalResult['PNREF']);
+                    $order->save();
                     $payment_order_meta = array('_payment_action' => $this->payment_action);
                     AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                     AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
@@ -1599,7 +1601,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
         do_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
         if (isset($PayPalResult['RESULT']) && $PayPalResult['RESULT'] == 0) {
-            update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['PNREF']);
+            $order->update_meta_data('Refund Transaction ID', $PayPalResult['PNREF']);
+            $order->save();
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);
             if (ob_get_length())
                 ob_end_clean();
@@ -1953,9 +1956,9 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $avs_response_order_note .= '<li>' . sprintf(__('Postal Match: %s', 'paypal-for-woocommerce'), $avs_zip_response_code) . '</li>';
                 $avs_response_order_note .= "<ul>";
                 $avs_response_order_note .= '</ul>';
-                update_post_meta($order->get_id(), '_AVSADDR', $avs_address_response_code);
-                update_post_meta($order->get_id(), '_AVSZIP', $avs_zip_response_code);
-                update_post_meta($order->get_id(), '_PROCAVS', $avs_zip_response_code);
+                $order->update_meta_data('_AVSADDR', $avs_address_response_code);
+                $order->update_meta_data('_AVSZIP', $avs_zip_response_code);
+                $order->update_meta_data('_PROCAVS', $avs_zip_response_code);
                 $order->add_order_note($avs_response_order_note);
                 $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
                 $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
@@ -1963,6 +1966,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
                 do_action('ae_add_custom_order_note', $order, $card, $token, $PayPalResult);
+                $order->save();
                 if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_warning_codes)) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                     wc_maybe_reduce_stock_levels($order->get_id());
@@ -1978,7 +1982,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $order->update_status('on-hold');
                         wc_maybe_reduce_stock_levels($order->get_id());
                     }
-                    update_post_meta($order->get_id(), '_first_transaction_id', $PayPalResult['PNREF']);
+                    $order->update_meta_data('_first_transaction_id', $PayPalResult['PNREF']);
                     $payment_order_meta = array('_payment_action' => $this->payment_action);
                     AngellEYE_Utility::angelleye_add_order_meta($order_id, $payment_order_meta);
                     AngellEYE_Utility::angelleye_paypal_for_woocommerce_add_paypal_transaction($PayPalResult, $order, $this->payment_action);
@@ -2101,7 +2105,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
 
     public function save_payment_token($order, $payment_tokens_id) {
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order->get_id(), '_payment_tokens_id', $payment_tokens_id);
+            $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+            $order->save();
         }
     }
 

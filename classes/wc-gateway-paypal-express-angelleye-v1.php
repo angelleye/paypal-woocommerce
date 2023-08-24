@@ -2388,19 +2388,20 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
                         $order_id = $order->get_id();
                         $order->set_payment_method($this);
-                        update_post_meta($order->get_id(), '_customer_user', get_current_user_id());
+                        $order->update_meta_data('_customer_user', get_current_user_id());
                         $post_data = angelleye_get_session('post_data');
                         if (!empty($post_data['billing_phone'])) {
-                            update_post_meta($order->get_id(), '_billing_phone', $post_data['billing_phone']);
+                            $order->update_meta_data('_billing_phone', $post_data['billing_phone']);
                         }
                         if (!empty($post_data['order_comments'])) {
-                            update_post_meta($order->get_id(), 'order_comments', $post_data['order_comments']);
+                            $order->update_meta_data('order_comments', $post_data['order_comments']);
                             $my_post = array(
                                 'ID' => $order_id,
                                 'post_excerpt' => $post_data['order_comments'],
                             );
                             wp_update_post($my_post);
                         }
+                        $order->save();
                         $_GET['order_id'] = $order_id;
                     }
                     do_action('woocommerce_checkout_order_processed', $order_id, $this->posted, $order);
@@ -2626,7 +2627,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/express-checkout/class-wc-gateway-paypal-express-request-angelleye.php' );
             $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
             $paypal_express_request->save_payment_token($order, $payment_tokens_id);
-            update_post_meta($order_id, '_first_transaction_id', $token->get_token());
+            $order->update_meta_data('_first_transaction_id', $token->get_token());
+            $order->save();
             $order->add_order_note('Payment Action: ' . $this->payment_action);
             WC()->cart->empty_cart();
             return array(
@@ -2769,7 +2771,8 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             if ($token->get_user_id() !== get_current_user_id()) {
                 throw new Exception(__('Error processing checkout. Please try again.', 'paypal-for-woocommerce'));
             } else {
-                update_post_meta($order_id, 'is_sandbox', $this->sandbox);
+                $order->update_meta_data('is_sandbox', $this->sandbox);
+                $order->save();
                 $payment_tokens_id = $token->get_token();
                 $paypal_express_request = new WC_Gateway_PayPal_Express_Request_AngellEYE($this);
                 $paypal_express_request->save_payment_token($order, $payment_tokens_id);

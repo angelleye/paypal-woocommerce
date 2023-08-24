@@ -376,9 +376,9 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
 
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
-        $order_id = $order->get_id();
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+            $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+            $order->save();
         }
     }
 
