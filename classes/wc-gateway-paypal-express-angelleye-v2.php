@@ -3148,7 +3148,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         if (!$this->supports('tokenization')) {
             $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
             $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
-            $is_sandbox = get_post_meta($order->get_id(), 'is_sandbox', true);
+            $is_sandbox = $order->get_meta( 'is_sandbox', true);
             if ($is_sandbox == true) {
                 $this->view_transaction_url = $sandbox_transaction_url;
             } else {
@@ -3564,7 +3564,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             $paypal_express_request->save_payment_token($order, $billing_agreement_id);
                             if ($token->validate()) {
                                 $save_result = $token->save();
-                                $_multi_account_api_username = get_post_meta($order_id, '_multi_account_api_username', true);
+                                $_multi_account_api_username = $order->get_meta( '_multi_account_api_username', true);
                                 if (!empty($_multi_account_api_username)) {
                                     add_metadata('payment_token', $save_result, '_multi_account_api_username', $_multi_account_api_username);
                                 }

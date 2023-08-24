@@ -1978,7 +1978,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if (empty($transaction_id)) {
             return false;
         }
-        $is_sandbox = get_post_meta($order->get_id(), 'is_sandbox', true);
+        $is_sandbox = $order->get_meta( 'is_sandbox', true);
         if ($is_sandbox == true) {
             $server = "sandbox.braintreegateway.com";
         } else {
@@ -2359,7 +2359,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'countryCodeAlpha2' => $order->get_shipping_country(),
         );
         if ($this->is_subscription($order_id)) {
-            $request_data['paymentMethodToken'] = get_post_meta($order_id, '_payment_tokens_id', true);
+            $request_data['paymentMethodToken'] = $order->get_meta( '_payment_tokens_id', true);
         }
         if (!empty($payment_token)) {
             $request_data['paymentMethodToken'] = $payment_token;
@@ -2591,7 +2591,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 $transaction = $this->braintree_gateway->transaction()->find($transaction_id);
                 if (!empty($transaction->refundIds)) {
                     foreach ($transaction->refundIds as $key => $value) {
-                        $braintree_refunded_id = get_post_meta($order_id, 'braintree_refunded_id', true);
+                        $braintree_refunded_id = $order->get_meta( 'braintree_refunded_id', true);
                         if (empty($braintree_refunded_id)) {
                             $braintree_refunded_id = array();
                         }
@@ -2615,7 +2615,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     }
                 }
                 if (!empty($transaction->status) && $transaction->status == 'voided') {
-                    $braintree_refunded_id = get_post_meta($order_id, 'braintree_refunded_id', true);
+                    $braintree_refunded_id = $order->get_meta( 'braintree_refunded_id', true);
                     if (empty($braintree_refunded_id)) {
                         $braintree_refunded_id = array();
                     }

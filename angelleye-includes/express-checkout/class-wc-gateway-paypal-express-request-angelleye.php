@@ -1228,7 +1228,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     update_metadata('payment_token', $token->get_id(), 'angelleye_fraudnet_f', $angelleye_fraudnet_f);
                 }
                 if ($save_result) {
-                    $_multi_account_api_username = get_post_meta($order_id, '_multi_account_api_username', true);
+                    $_multi_account_api_username = $order->get_meta( '_multi_account_api_username', true);
                     if (!empty($_multi_account_api_username)) {
                         add_metadata('payment_token', $save_result, '_multi_account_api_username', $_multi_account_api_username);
                     }
@@ -1312,9 +1312,10 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
     }
 
     public function DoReferenceTransaction($order_id) {
+        $order = wc_get_order($order_id);
         $PayPalRequestData = array();
-        $referenceid = get_post_meta($order_id, '_payment_tokens_id', true);
-        $angelleye_fraudnet_f = get_post_meta($order_id, 'angelleye_fraudnet_f', true);
+        $referenceid = $order->get_meta( '_payment_tokens_id', true);
+        $angelleye_fraudnet_f = $order->get_meta( 'angelleye_fraudnet_f', true);
         if (!empty($_POST['wc-paypal_express-payment-token'])) {
             $token_id = wc_clean($_POST['wc-paypal_express-payment-token']);
             $token = WC_Payment_Tokens::get($token_id);

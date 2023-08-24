@@ -472,12 +472,11 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function angelleye_get_transaction_id_by_order_id($order) {
-        $order_id = $order->get_id();
         $transaction_id = $order->get_transaction_id();
         if (!empty($transaction_id)) {
             return $transaction_id;
         }
-        $first_transaction_id = get_post_meta($order_id, '_first_transaction_id', true);
+        $first_transaction_id = $order->get_meta('_first_transaction_id', true);
         if (!empty($first_transaction_id)) {
             return $first_transaction_id;
         }

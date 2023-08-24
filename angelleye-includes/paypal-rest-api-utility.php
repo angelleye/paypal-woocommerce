@@ -252,7 +252,7 @@ class PayPal_Rest_API_Utility {
             $this->fundingInstrument->setCreditCardToken($this->CreditCardToken);
             $this->save_payment_token($order, $token->get_token());
         } else if ($this->is_renewal($order_id)) {
-            $payment_tokens = get_post_meta($order_id, '_payment_tokens_id', true);
+            $payment_tokens = $order->get_meta( '_payment_tokens_id', true);
             $this->CreditCardToken = new CreditCardToken();
             $this->CreditCardToken->setCreditCardId($payment_tokens);
             $this->fundingInstrument = new FundingInstrument();

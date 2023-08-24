@@ -1283,8 +1283,8 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $log['origid'] = $token->get_token();
             } else {
                 if ($this->is_subscription($order_id)) {
-                    $PayPalRequestData['origid'] = get_post_meta($order_id, '_payment_tokens', true);
-                    $log['origid'] = get_post_meta($order_id, '_payment_tokens', true);
+                    $PayPalRequestData['origid'] = $order->get_meta( '_payment_tokens', true);
+                    $log['origid'] = $order->get_meta( '_payment_tokens', true);
                 } else {
                     $log['acct'] = '****';
                     $log['cvv2'] = '****';
@@ -1382,7 +1382,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         if ($token->validate()) {
                             $save_result = $token->save();
                             if ($save_result) {
-                                $_multi_account_api_username = get_post_meta($order_id, '_multi_account_api_username', true);
+                                $_multi_account_api_username = $order->get_meta( '_multi_account_api_username', true);
                                 if (!empty($_multi_account_api_username)) {
                                     add_metadata('payment_token', $save_result, '_multi_account_api_username', $_multi_account_api_username);
                                 }
@@ -1910,7 +1910,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
 
             if ($this->is_subscription($order_id)) {
-                $token_id = get_post_meta($order_id, '_payment_tokens_id', true);
+                $token_id = $order->get_meta( '_payment_tokens_id', true);
                 $PayPalRequestData['origid'] = $token_id;
                 $token = WC_Payment_Tokens::get($token_id);
                 $wc_existing_token = $this->get_token_by_token($token_id);
@@ -2137,7 +2137,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             // Store source in the order
             $order_id = $order->get_id();
             $this->angelleye_load_paypal_payflow_class($this->gateway, $this, $order_id);
-            $avscode = get_post_meta($order->get_id(), '_AVSADDR', true);
+            $avscode = $order->get_meta( '_AVSADDR', true);
             if (!empty($avscode)) {
                 $avs_response_message = $this->PayPal->GetAVSCodeMessage($avscode);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-avs-details-heading">' . __('Address Verification Details', 'paypal-for-woocommerce') . '</h3>' . PHP_EOL;
@@ -2159,7 +2159,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 }
                 echo '</ul></section>';
             }
-            $cvvmatch = get_post_meta($order->get_id(), '_CVV2MATCH', true);
+            $cvvmatch = $order->get_meta( '_CVV2MATCH', true);
             if (!empty($cvvmatch)) {
                 $cvv2_response_message = $this->PayPal->GetCVV2CodeMessage($cvvmatch);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-cvv2-details-heading">' . __('Card Security Code Details', 'paypal-for-woocommerce') . '</h3>' . PHP_EOL;
@@ -2320,7 +2320,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $this->save_payment_token($order, $TRANSACTIONID);
                         $save_result = $token->save();
                         if ($save_result) {
-                            $_multi_account_api_username = get_post_meta($order_id, '_multi_account_api_username', true);
+                            $_multi_account_api_username = $order->get_meta( '_multi_account_api_username', true);
                             if (!empty($_multi_account_api_username)) {
                                 add_metadata('payment_token', $save_result, '_multi_account_api_username', $_multi_account_api_username);
                             }

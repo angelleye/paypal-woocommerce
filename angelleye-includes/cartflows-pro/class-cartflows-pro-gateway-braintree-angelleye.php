@@ -91,10 +91,10 @@ class Cartflows_Pro_Gateway_Braintree_AngellEYE {
 
         $order_id = $order->get_id();
 
-        $token = get_post_meta($order_id, '_payment_tokens_id', true);
+        $token = $order->get_meta( '_payment_tokens_id', true);
 
         if (empty($token)) {
-            $token = get_post_meta($order_id, '_payment_tokens_id', true);
+            $token = $order->get_meta( '_payment_tokens_id', true);
         }
 
         if (!empty($token)) {
@@ -143,7 +143,7 @@ class Cartflows_Pro_Gateway_Braintree_AngellEYE {
                 'postalCode' => $order->get_shipping_postcode(),
                 'countryCodeAlpha2' => $order->get_shipping_country(),
             );
-            $request_data['paymentMethodToken'] = get_post_meta($order_id, '_payment_tokens_id', true);
+            $request_data['paymentMethodToken'] = $order->get_meta( '_payment_tokens_id', true);
             if (is_user_logged_in()) {
                 $customer_id = get_current_user_id();
                 $braintree_customer_id = get_user_meta($customer_id, 'braintree_customer_id', true);

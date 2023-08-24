@@ -355,13 +355,14 @@ if (!class_exists('WC_Gateway_Calculation_AngellEYE')) :
 
         public function get_giftcard_amount($order_id = null) {
             if (class_exists('WPR_Giftcard')) {
+                $order = wc_get_order($order_id);
                 if (!empty(WC()->session->giftcard_post)) {
                     $giftCards = WC()->session->giftcard_post;
                     $giftcard = new WPR_Giftcard();
                     $price = $giftcard->wpr_get_payment_amount();
                     return $price;
                 } else {
-                    $giftCardPayment = get_post_meta($order_id, 'rpgc_payment', true);
+                    $giftCardPayment = $order->get_meta( 'rpgc_payment', true);
                     if (!empty($giftCardPayment) && is_array($giftCardPayment)) {
                         return $giftCardPayment[count($giftCardPayment) - 1];
                     }

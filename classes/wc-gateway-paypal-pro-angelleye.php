@@ -1637,7 +1637,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
     public function get_transaction_url($order) {
         $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
         $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
-        $is_sandbox = get_post_meta($order->get_id(), 'is_sandbox', true);
+        $is_sandbox = $order->get_meta( 'is_sandbox', true);
         if ($is_sandbox == true) {
             $this->view_transaction_url = $sandbox_transaction_url;
         } else {
@@ -1782,7 +1782,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if ( $sent_to_admin && 'paypal_pro' === $payment_method ) {
             $order_id = $order->get_id();
             $this->angelleye_load_paypal_pro_class($this->gateway, $this, $order_id);
-            $avscode = get_post_meta($order->get_id(), '_AVSCODE', true);
+            $avscode = $order->get_meta( '_AVSCODE', true);
             if ( ! empty( $avscode ) ) {
                 $avs_response_message = $this->PayPal->GetAVSCodeMessage($avscode);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-avs-details-heading">' . __( 'Address Verification Details', 'paypal-for-woocommerce' ) . '</h3>' . PHP_EOL;
@@ -1804,7 +1804,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 }
                 echo '</ul></section>';
             }
-            $cvvmatch = get_post_meta($order->get_id(), '_CVV2MATCH', true);
+            $cvvmatch = $order->get_meta( '_CVV2MATCH', true);
             if ( ! empty( $cvvmatch ) ) {
                 $cvv2_response_message = $this->PayPal->GetCVV2CodeMessage($cvvmatch);
                 echo '<section class="woocommerce-bacs-bank-details"><h3 class="wc-cvv2-details-heading">' . __( 'Card Security Code Details', 'paypal-for-woocommerce' ) . '</h3>' . PHP_EOL;
@@ -1926,7 +1926,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'OrderItems' => $OrderItems
         );
         $PayPalRequestData['DRTFields'] = array(
-            'referenceid' => get_post_meta($order_id, '_payment_tokens_id', true),
+            'referenceid' => $order->get_meta( '_payment_tokens_id', true),
             'paymentaction' => !empty($this->payment_action) ? $this->payment_action : 'Sale',
             'returnfmfdetails' => '1',
             'softdescriptor' => $this->softdescriptor

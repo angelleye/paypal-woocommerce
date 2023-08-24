@@ -256,7 +256,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
      * @return
      */
     private function success_handler($order, $order_id, $silent_post) {
-        $_secure_token = get_post_meta($order->get_id(), '_secure_token', true);
+        $_secure_token = $order->get_meta( '_secure_token', true);
         if (!empty($_REQUEST['SECURETOKEN']) && $_secure_token == $_REQUEST['SECURETOKEN']) {
             if ($this->debug == 'yes') {
                 $this->log->add('paypal_advanced', __('Relay Response Tokens Match', 'paypal-for-woocommerce'));
@@ -275,7 +275,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if ($inq_result == 'Approved') {//if approved
             $this->save_payment_token($order, wc_clean($_POST['PNREF']));
             do_action('before_save_payment_token', $order_id);
-            $is_save_payment_method = get_post_meta($order->get_id(), '_is_save_payment_method', true);
+            $is_save_payment_method = $order->get_meta( '_is_save_payment_method', true);
             if ($is_save_payment_method == 'yes') {
                 if (0 != $order->get_user_id()) {
                     $customer_id = $order->get_user_id();
@@ -971,7 +971,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
         if ((!empty($_POST['wc-paypal_advanced-payment-token']) && $_POST['wc-paypal_advanced-payment-token'] != 'new') || $this->is_renewal($order_id)) {
             if ($this->is_renewal($order_id)) {
                 $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
-                $payment_tokens_id = get_post_meta($order_id, '_payment_tokens_id', true);
+                $payment_tokens_id = $order->get_meta( '_payment_tokens_id', true);
             } else {
                 $token_id = wc_clean($_POST['wc-paypal_advanced-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
@@ -1095,8 +1095,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
     public function receipt_page($order_id) {
         $PF_MODE = $this->testmode == true ? 'TEST' : 'LIVE';
         $order = wc_get_order($order_id);
-        $this->secure_token_id = get_post_meta($order->get_id(), '_secure_token_id', true);
-        $this->securetoken = get_post_meta($order->get_id(), '_secure_token', true);
+        $this->secure_token_id = $order->get_meta( '_secure_token_id', true);
+        $this->securetoken = $order->get_meta( '_secure_token', true);
         if ($this->debug == 'yes') {
             $this->log->add('paypal_advanced', sprintf(__('Browser Info: %s', 'paypal-for-woocommerce'), $_SERVER['HTTP_USER_AGENT']));
         }
@@ -1201,7 +1201,7 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'MERCHDESCR' => $this->softdescriptor
         );
         if ($this->is_subscription($order_id)) {
-            $paypal_args['origid'] = get_post_meta($order_id, '_payment_tokens_id', true);
+            $paypal_args['origid'] = $order->get_meta( '_payment_tokens_id', true);
         }
         if (empty($shipping_state)) {
             $paypal_args['SHIPTOSTATE[' . strlen($shipping_state) . ']'] = $shipping_state;
