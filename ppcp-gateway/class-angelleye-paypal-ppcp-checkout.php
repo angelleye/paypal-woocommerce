@@ -28,9 +28,8 @@ if (class_exists('WC_Checkout')) {
                 $posted_data = $smart_button->angelleye_ppcp_prepare_order_data();
                 $this->update_session($posted_data);
                 $this->validate_checkout($posted_data, $errors);
-
-                $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
-                $paypal_payer_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_payer_id');
+                $paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id', false);
+                $paypal_payer_id = AngellEye_Session_Manager::get('paypal_payer_id', false);
 
                 foreach ($errors->errors as $code => $messages) {
                     $data = $errors->get_error_data($code);
