@@ -43,6 +43,9 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
         if ('_payment_method_title' === $key) {
             $order_meta_value = $order->get_payment_method_title();
         } else {
