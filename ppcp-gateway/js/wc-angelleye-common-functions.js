@@ -29,6 +29,9 @@ const angelleyeOrder = {
 	isPpcpPaymentMethodSelected: () => {
 		return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp';
 	},
+	isCCPaymentMethodSelected: () => {
+		return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp_cc';
+	},
 	isAngelleyePpcpPaymentMethodSelected: () => {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
 		return paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay';
@@ -350,10 +353,12 @@ const angelleyeOrder = {
 					angelleyeOrder.handleCreateOrderError(err);
 				}
 			}).render(angelleye_ppcp_button_selector);
-			if (angelleyeOrder.isApplePayEnabled()) {
-				(new ApplePayCheckoutButton()).render(angelleye_ppcp_button_selector);
-			}
 		});
+		if (angelleyeOrder.isApplePayEnabled()) {
+			jQuery.each(angelleye_ppcp_manager.apple_pay_btn_selector, function (key, angelleye_ppcp_apple_button_selector) {
+				(new ApplePayCheckoutButton()).render(angelleye_ppcp_apple_button_selector);
+			});
+		}
 	},
 	renderHostedButtons: () => {
 		let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
@@ -461,7 +466,10 @@ const angelleyeOrder = {
 				}
 			});
 
+			// Unhook previous handlers so that we don't run the same handler(s) again to create the orders
+			jQuery(document.body).off('submit_paypal_cc_form');
 			jQuery(document.body).on('submit_paypal_cc_form', function (event) {
+				console.log('submit_paypal_cc_form called');
 				event.preventDefault();
 				let state = hf.getState();
 				if (typeof state.cards !== 'undefined') {

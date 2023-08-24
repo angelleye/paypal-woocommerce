@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.2.2
-Stable tag: 4.1.20
+Stable tag: 4.1.23
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,20 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.1.23 - 08.22.2023 =
+* Fix - Resolves the pending order issue with CC payment gateway on checkout page. ([PFW-1437](https://github.com/angelleye/paypal-woocommerce/pull/1896))
+* Fix - Resolves FunnelKit compatibility issue. ([PFW-1560](https://github.com/angelleye/paypal-woocommerce/pull/1895))
+* Tweak - Added the ApplePay domain validation file auto-update mechanism. ([PFW-1554](https://github.com/angelleye/paypal-woocommerce/pull/1894))
+
+= 4.1.22 - 08.15.2023 =
+* Fix - Resolves the disable funding methods display issue on checkout page. ([PFW-1549](https://github.com/angelleye/paypal-woocommerce/pull/1893))
+* Fix - Resolves the amount formatting issue on PHP 8.2 ([PFW-1547](https://github.com/angelleye/paypal-woocommerce/pull/1892))
+* Tweak - Tweaked the apple pay gateway display issue on non-safari browsers. ([PFW-1537](https://github.com/angelleye/paypal-woocommerce/pull/1890))
+* Tweak - Adds the ApplePay domain verification file to .well-known folder. ([PFW-1532](https://github.com/angelleye/paypal-woocommerce/pull/1885))
+
+= 4.1.21 - 08.15.2023 =
+* Fix - Resolves Payment method sorting/display issue. ([PFW-1545](https://github.com/angelleye/paypal-woocommerce/pull/1889))
 
 = 4.1.20 - 08.14.2023 =
 * Fix - Remove Top of the smart button when FunnelKit enable. ([PFW-1542](https://github.com/angelleye/paypal-woocommerce/pull/1887))

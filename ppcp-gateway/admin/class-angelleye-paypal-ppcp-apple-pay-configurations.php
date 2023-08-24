@@ -7,6 +7,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
     private ?AngellEYE_PayPal_PPCP_Payment $payment_request;
     private string $host;
     private AngellEye_PayPal_PPCP_Apple_Domain_Validation $apple_pay_domain_validation;
+    private string $payPalDomainValidationFile = 'https://www.paypalobjects.com/.well-known/apple-developer-domain-association';
 
     public static function instance()
     {
@@ -85,6 +86,16 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         if ($returnRawResponse) {
             return $jsonResponse;
         }
+
+        /**
+         * Add the file in physical path so that If due to some reasons server handles the path request then that should
+         * find the file in path
+         */
+        try {
+            $this->addDomainValidationFiles();
+        } catch (Exception $exception) {
+            echo '<div class="error">' . $exception->getMessage() . '</div>';
+        }
         require_once (PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/admin/templates/apple-pay-domain-list.php');
         die;
     }
@@ -114,6 +125,14 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         if (!self::isApplePayDomainAdded()) {
             $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
             try {
+                /**
+                 * Add the file in physical path so that If due to some reasons server handles the path request then that should
+                 * find the file in path
+                 */
+                try {
+                    $instance->addDomainValidationFiles();
+                } catch (Exception $exception) {}
+
                 $domainNameToRegister = parse_url( get_site_url(), PHP_URL_HOST );
                 $result = $instance->registerDomain($domainNameToRegister);
                 return $result['status'];
@@ -238,5 +257,54 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $result = $this->removeDomain($domainNameToRemove);
         wp_send_json($result);
         die;
+    }
+
+    private function addDomainValidationFiles()
+    {
+        $fileDir = ABSPATH.'.well-known';
+        if (!is_dir($fileDir)) {
+            mkdir($fileDir);
+        }
+        $localFileLoc = $this->apple_pay_domain_validation->getDomainAssociationLibFilePath();
+        $domainValidationFile = $this->apple_pay_domain_validation->getDomainAssociationFilePath();
+
+        $targetLocation = get_home_path() . $domainValidationFile;
+
+        // PFW-1554 - Handles the INCORRECT_DOMAIN_VERIFICATION_FILE error
+        try {
+            if (!$this->apple_pay_domain_validation->isSandbox()) {
+                $this->updateDomainVerificationFileContent($localFileLoc);
+            }
+        } catch (Exception $exception) {
+            throw new Exception("Unable to update the verification file content. Error: " . $exception->getMessage());
+        }
+        if (file_exists($targetLocation)) {
+            @unlink($targetLocation);
+            @unlink($targetLocation . '.txt');
+        }
+        if (!copy($localFileLoc, $targetLocation)) {
+            throw new Exception(sprintf('Unable to copy the files from %s to location %s', $localFileLoc, $targetLocation));
+        }
+        // Add the .txt version to make sure it works.
+        copy($localFileLoc, $targetLocation . '.txt');
+        return true;
+    }
+
+    private function updateDomainVerificationFileContent($localFileLocation)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->payPalDomainValidationFile);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($ch);
+        $resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if (in_array($resultStatus, [200, 304])) {
+            $fp = fopen($localFileLocation, "w");
+            fwrite($fp, $response);
+            fclose($fp);
+        }
     }
 }

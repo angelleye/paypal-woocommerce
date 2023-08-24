@@ -184,8 +184,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $paypal_order = $this->angelleye_ppcp_get_paypal_order($existing_paypal_order_id);
                 if ($paypal_order && !$this->is_paypal_order_capture_triggered($paypal_order)) {
                     // set the order id in session so that update_order can update the order details
-                    angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', $existing_paypal_order_id);
-                    angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $existing_reference_id);
+
+                    AngellEye_Session_Manager::set('paypal_order_id', $existing_paypal_order_id);
+                    AngellEye_Session_Manager::set('reference_id', $existing_reference_id);
+
                     $this->angelleye_ppcp_update_order($order);
                     $return_response['currencyCode'] = $order->get_currency('');
                     $return_response['totalAmount'] = $order->get_total('');
@@ -212,17 +214,17 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reference_id = wc_generate_order_key();
-            angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $reference_id);
+            AngellEye_Session_Manager::set('reference_id', $reference_id);
             $payment_method = wc_clean(!empty($_POST['angelleye_ppcp_payment_method_title']) ? $_POST['angelleye_ppcp_payment_method_title'] : '');
             if (!empty($payment_method)) {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method);
-                angelleye_ppcp_set_session('angelleye_ppcp_payment_method_title', $payment_method_title);
-                angelleye_ppcp_set_session('angelleye_ppcp_used_payment_method', $payment_method);
+                AngellEye_Session_Manager::set('payment_method_title', $payment_method_title);
+                AngellEye_Session_Manager::set('used_payment_method', $payment_method);
                 $this->angelleye_ppcp_used_payment_method = $payment_method;
             } elseif (!empty($_POST['angelleye_ppcp_cc_payment_method_title'])) {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title(wc_clean($_POST['angelleye_ppcp_cc_payment_method_title']));
-                angelleye_ppcp_set_session('angelleye_ppcp_payment_method_title', $payment_method_title);
-                angelleye_ppcp_set_session('angelleye_ppcp_used_payment_method', 'card');
+                AngellEye_Session_Manager::set('payment_method_title', $payment_method_title);
+                AngellEye_Session_Manager::set('used_payment_method', 'card');
                 $this->angelleye_ppcp_used_payment_method = 'card';
             }
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
@@ -320,13 +322,15 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             if ($woo_order_id != null) {
+
                 $order = wc_get_order($woo_order_id);
-                update_post_meta($order->get_id(), '_paypal_reference_id', $reference_id);
-                $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+                $order->update_meta_data('_paypal_reference_id', $reference_id);
+                $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title', false);
+
                 if (!empty($angelleye_ppcp_payment_method_title)) {
                     $order->update_meta_data('_payment_method_title', $angelleye_ppcp_payment_method_title);
                 }
-                $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+                $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method', false);
                 if (!empty($angelleye_ppcp_used_payment_method)) {
                     $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
                 }
@@ -354,8 +358,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
-                    if (!empty($shipping_address_1) && !empty($shipping_country)) {
-                        angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                    // TODO Confirm about this fix
+                    if(!empty($shipping_address_1) && !empty($shipping_country)) {
+                        AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                         $body_request['purchase_units'][0]['shipping']['address'] = array(
                             'address_line_1' => $shipping_address_1,
                             'address_line_2' => $shipping_address_2,
@@ -383,7 +388,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                                 'postal_code' => $cart['shipping_address']['postcode'],
                                 'country_code' => $cart['shipping_address']['country'],
                             );
-                            angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                            AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                         }
                     }
                 }
@@ -402,7 +407,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                             'postal_code' => $cart['shipping_address']['postcode'],
                             'country_code' => $cart['shipping_address']['country'],
                         );
-                        angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                        AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                     }
                 }
             }
@@ -1038,8 +1043,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id, $args, 'get_order');
             $this->api_response = json_decode(json_encode($this->api_response), FALSE);
-            angelleye_ppcp_set_session('angelleye_ppcp_paypal_order_id', $paypal_order_id);
-            angelleye_ppcp_set_session('angelleye_ppcp_paypal_transaction_details', $this->api_response);
+            AngellEye_Session_Manager::set('paypal_order_id', $paypal_order_id);
+            AngellEye_Session_Manager::set('paypal_transaction_details', $this->api_response);
             return $this->api_response;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
@@ -1047,8 +1052,20 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
+    public function get_set_payment_method_title_from_session($woo_order_id = null) {
+        $order = wc_get_order($woo_order_id);
+        $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title');
+        if (!empty($angelleye_ppcp_payment_method_title) && !empty($woo_order_id)) {
+            update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+        } else {
+            $angelleye_ppcp_payment_method_title = $this->title;
+        }
+        return $angelleye_ppcp_payment_method_title;
+    }
+
     public function get_payment_method_title_for_order($woo_order_id = null) {
-        return angelleye_ppcp_get_post_meta($woo_order_id, '_payment_method_title', $this->title);
+        $order = wc_get_order($woo_order_id);
+        return get_post_meta($woo_order_id, '_payment_method_title', $this->title);
     }
 
     public function angelleye_ppcp_order_capture_request($woo_order_id, $need_to_update_order = true) {
@@ -1057,7 +1074,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($need_to_update_order) {
                 $this->angelleye_ppcp_update_order($order);
             }
-            $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
+            $paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id', false);
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -1067,11 +1084,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/capture', $args, 'capture_order');
-            $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+            $angelleye_ppcp_payment_method_title = $this->get_set_payment_method_title_from_session($woo_order_id);
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 $order->update_meta_data('_payment_method_title', $angelleye_ppcp_payment_method_title);
             }
-            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+            $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
             if (!empty($angelleye_ppcp_used_payment_method)) {
                 $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
             }
@@ -1218,19 +1235,20 @@ class AngellEYE_PayPal_PPCP_Payment {
         try {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $patch_request = array();
-            $reference_id = angelleye_ppcp_get_session('angelleye_ppcp_reference_id');
+            $reference_id = AngellEye_Session_Manager::get('reference_id');
             $order_id = $order->get_id();
-            $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
+            $paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
             if (empty($paypal_order_id)) {
                 $paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id');
                 if(empty($paypal_order_id)) {
-                    angelleye_session_expired_exception();
+                    angelleye_session_expired_exception('_paypal_order_id missing in the update_order call.');
                 }
             }
+            // Note: This could create issue with old orders where we don't have reference_id
             if (empty($reference_id)) {
                 $reference_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_reference_id');
-                if(empty($reference_id)) {
-                    angelleye_session_expired_exception();
+                if (empty($reference_id)) {
+                    angelleye_session_expired_exception('_paypal_reference_id is missing in the update_order call.');
                 }
             }
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);
@@ -1321,7 +1339,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                     $purchase_units['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                 }
-                angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                 $purchase_units['shipping']['address'] = array(
                     'address_line_1' => $shipping_address_1,
                     'address_line_2' => $shipping_address_2,
@@ -1358,9 +1376,9 @@ class AngellEYE_PayPal_PPCP_Payment {
 
             // Redirect the user to the checkout page in case order update fails
             if ($ex->getCode() == 302) {
-                $this->api_log->log('Request URL: ' . $this->paypal_order_api . $paypal_order_id);
-                $this->api_log->log('Request Body: ' . wc_print_r($args, true));
-                wc_add_notice($ex->getMessage());
+                $this->api_log->log('UpdateOrder Request URL: ' . $this->paypal_order_api . $paypal_order_id);
+                $this->api_log->log('UpdateOrder Request Body: ' . wc_print_r($args, true));
+                wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
                 wp_redirect(wc_get_checkout_url());
             }
         }
@@ -1522,7 +1540,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             $order = wc_get_order($woo_order_id);
             $this->angelleye_ppcp_update_order($order);
-            $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
+            $paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -1532,11 +1550,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
             );
             $this->api_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id . '/authorize', $args, 'authorize_order');
-            $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+            $angelleye_ppcp_payment_method_title = $this->get_set_payment_method_title_from_session($woo_order_id);
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 $order->update_meta_data('_payment_method_title', $angelleye_ppcp_payment_method_title);
             }
-            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+            $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
             if (!empty($angelleye_ppcp_used_payment_method)) {
                 $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
             }
@@ -1699,7 +1717,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id, $args, 'get_authorized');
             $this->api_response = json_decode(json_encode($this->api_response), FALSE);
-            angelleye_ppcp_set_session('angelleye_ppcp_paypal_transaction_details', $this->api_response);
+            AngellEye_Session_Manager::set('paypal_transaction_details', $this->api_response);
             return $this->api_response;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
@@ -1757,11 +1775,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'cookies' => array()
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
-            $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
+            $angelleye_ppcp_payment_method_title = $this->get_set_payment_method_title_from_session($woo_order_id);
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 $order->update_meta_data('_payment_method_title', $angelleye_ppcp_payment_method_title);
             }
-            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+            $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
             if (!empty($angelleye_ppcp_used_payment_method)) {
                 $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
             }
@@ -1868,7 +1886,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_update_woo_order_data($paypal_order_id) {
         $this->checkout_details = $this->angelleye_ppcp_get_checkout_details($paypal_order_id);
-        angelleye_ppcp_set_session('angelleye_ppcp_paypal_transaction_details', $this->checkout_details);
+        AngellEye_Session_Manager::set('paypal_transaction_details', $this->checkout_details);
         if (empty($this->checkout_details)) {
             return false;
         }
@@ -2060,7 +2078,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reference_id = wc_generate_order_key();
-            angelleye_ppcp_set_session('angelleye_ppcp_reference_id', $reference_id);
+            AngellEye_Session_Manager::set('reference_id', $reference_id);
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
             $body_request = array(
                 'intent' => $intent,
@@ -2165,7 +2183,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
-                    angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                    AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                     $body_request['purchase_units'][0]['shipping']['address'] = array(
                         'address_line_1' => $shipping_address_1,
                         'address_line_2' => $shipping_address_2,
@@ -2190,7 +2208,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                                 'postal_code' => $cart['shipping_address']['postcode'],
                                 'country_code' => $cart['shipping_address']['country'],
                             );
-                            angelleye_ppcp_set_session('angelleye_ppcp_is_shipping_added', 'yes');
+                            AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                         }
                     }
                 }
@@ -2618,7 +2636,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_add_payment_source_parameter($request) {
         try {
             $payment_method_name = '';
-            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
+            $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
             if (!empty($angelleye_ppcp_used_payment_method)) {
                 $payment_method_name = '';
                 $billing_address = array();
