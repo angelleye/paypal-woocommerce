@@ -24,19 +24,6 @@ if (!function_exists('angelleye_ppcp_has_active_session')) {
     }
 }
 
-if (!function_exists('angelleye_ppcp_update_post_meta')) {
-    function angelleye_ppcp_update_post_meta($order, $key, $value) {
-        if (!is_object($order)) {
-            $order = wc_get_order($order);
-        }
-        if (!is_a($order, 'WC_Order')) {
-            return;
-        }
-        $order->update_meta_data($key, $value);
-        $order->save();
-    }
-}
-
 if (!function_exists('angelleye_ppcp_get_post_meta')) {
     function angelleye_ppcp_get_post_meta($order, $key, $bool = true) {
         $order_meta_value = false;

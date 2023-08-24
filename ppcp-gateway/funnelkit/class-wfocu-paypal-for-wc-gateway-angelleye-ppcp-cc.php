@@ -407,7 +407,8 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
                         $is_successful = false;
                         WFOCU_Core()->log->log('Order #' . WFOCU_WC_Compatibility::get_order_id($get_order) . ': Unable to create paypal Order refer error below' . print_r($ppcp_resp, true));
                     } else {
-                        angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $ppcp_resp['id']);
+                        $order->update_meta_data('_paypal_order_id', $ppcp_resp['id']);
+                        $order->save();
                         $this->payal_order_id = $ppcp_resp['id'];
                         if ('COMPLETED' == $ppcp_resp['status']) {
                             $get_order->update_meta_data('wfocu_ppcp_order_current', $ppcp_resp['id']);
