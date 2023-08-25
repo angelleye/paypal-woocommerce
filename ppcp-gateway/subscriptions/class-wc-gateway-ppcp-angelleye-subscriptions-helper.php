@@ -58,7 +58,6 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
             }
         } else {
             $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
-            $order->save();
         }
         $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
         $order->save();

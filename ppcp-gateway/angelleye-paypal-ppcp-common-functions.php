@@ -150,7 +150,9 @@ if (!function_exists('angelleye_ppcp_remove_empty_key')) {
 
 if (!function_exists('angelleye_ppcp_readable')) {
     function angelleye_ppcp_readable($tex) {
-        $tex = ucwords(strtolower(str_replace('_', ' ', $tex)));
+        if(!empty($tex)) {
+            $tex = ucwords(strtolower(str_replace('_', ' ', $tex)));
+        }
         return $tex;
     }
 }

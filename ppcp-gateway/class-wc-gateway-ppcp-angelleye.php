@@ -355,10 +355,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title');
             $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
             $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
-            $order->save();
             if (!empty($angelleye_ppcp_payment_method_title)) {
-                $order->update_meta_data('_payment_method_title', $angelleye_ppcp_payment_method_title);
+                $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
             }
+             $order->save();
             // When a user chooses existing saved card then detect it and process the order payment using that.
             $saved_tokens = ['wc-angelleye_ppcp_apple_pay-payment-token', 'wc-angelleye_ppcp-payment-token'];
             $token_id = null;

@@ -2320,7 +2320,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
-        $order_id = $order->get_id();
         if (!empty($payment_tokens_id)) {
             $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
             $order->save();
@@ -2426,9 +2425,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         );
         if (in_array($this->response->transaction->status, $maybe_settled_later)) {
             $order->update_meta_data('is_sandbox', $this->sandbox);
-            $order->save();
             $order->payment_complete($this->response->transaction->id);
             $order->add_order_note(sprintf(__('%s payment approved! Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $this->response->transaction->id));
+            $order->save();
         } else {
             $this->add_log(sprintf('Info: unhandled transaction id = %s, status = %s', $this->response->transaction->id, $this->response->transaction->status));
             $order->update_status('on-hold', sprintf(__('Transaction was submitted to PayPal Braintree but not handled by WooCommerce order, transaction_id: %s, status: %s. Order was put in-hold.', 'paypal-for-woocommerce'), $this->response->transaction->id, $this->response->transaction->status));

@@ -1966,7 +1966,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
                 do_action('ae_add_custom_order_note', $order, $card, $token, $PayPalResult);
-                $order->save();
+               
                 if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_warning_codes)) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                     wc_maybe_reduce_stock_levels($order->get_id());
@@ -2000,6 +2000,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                         $order->payment_complete($PayPalResult['PNREF']);
                     }
                 }
+                $order->save();
                 $this->save_payment_token($order, $PayPalResult['PNREF']);
                 $this->are_reference_transactions_enabled($PayPalResult['PNREF']);
                 if ($this->is_subscription($order_id)) {

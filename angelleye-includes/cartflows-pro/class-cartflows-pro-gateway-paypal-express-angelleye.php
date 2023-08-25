@@ -680,6 +680,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
 
                         $order->payment_complete($billing_agreement_response['PAYMENTINFO_0_TRANSACTIONID']);
 
+                        $order->save();
                         $redirect_url = add_query_arg('utm_nooverride', '1', $order->get_checkout_order_received_url());
 
                         // redirect customer to order received page.

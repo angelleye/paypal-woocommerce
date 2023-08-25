@@ -895,6 +895,7 @@ class PayPal_Rest_API_Utility {
             $order->payment_complete($transaction_id);
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
             $order->update_meta_data('is_sandbox', $is_sandbox);
+            $order->save();
         } else {
             $this->send_failed_order_email($order_id);
             $this->add_log(__('Error Payment state:' . $this->payment->state, 'paypal-for-woocommerce'));
