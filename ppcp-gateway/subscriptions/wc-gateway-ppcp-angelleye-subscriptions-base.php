@@ -90,7 +90,8 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     }
 
     public function delete_resubscribe_meta($resubscribe_order) {
-        delete_post_meta($resubscribe_order->get_id(), '_payment_tokens_id');
+        $resubscribe_order->delete_meta_data('_payment_tokens_id');
+        $resubscribe_order->save_meta_data();
     }
 
     public function update_failing_payment_method($subscription, $renewal_order) {

@@ -201,7 +201,8 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                 if (isset($resp_body->status) && 'COMPLETED' === $resp_body->status) {
                     if (isset($resp_body->payment_source->paypal->attributes->vault->id) && isset($resp_body->payment_source->paypal->attributes->vault->status) && 'CREATED' === $resp_body->payment_source->paypal->attributes->vault->status) {
                         $txn_id = $resp_body->payment_source->paypal->attributes->vault->id;
-                        update_post_meta(WFOCU_WC_Compatibility::get_order_id($get_order), 'wfocu_ppcp_renewal_payment_token', $txn_id);
+                        $get_order->update_meta_data('wfocu_ppcp_renewal_payment_token', $txn_id);
+                        $get_order->save();
                         WFOCU_Core()->log->log('Order #' . WFOCU_WC_Compatibility::get_order_id($get_order) . ': vault token created');
                     } else {
                         $txn_id = $resp_body->purchase_units[0]->payments->captures[0]->id;

@@ -735,9 +735,10 @@ class PayPal_Rest_API_Utility {
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                update_post_meta($subscription->get_id(), '_payment_tokens_id', $payment_tokens_id);
+                $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
             }
         }
+        $subscription->save();
         $order->save();
     }
 

@@ -58,7 +58,8 @@ class WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE extends WC_Gateway_P
             if (empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
                 $payment_tokens_id = get_post_meta($subscription->get_parent_id(), '_transaction_id', true);
                 if (!empty($payment_tokens_id)) {
-                    update_post_meta($subscription->get_id(), '_payment_tokens_id', $payment_tokens_id);
+                    $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                    $subscription->save();
                 } else {
                     throw new Exception('A "_payment_tokens_id" value is required.');
                 }
@@ -78,13 +79,15 @@ class WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE extends WC_Gateway_P
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                update_post_meta($subscription->get_id(), '_payment_tokens_id', $payment_tokens_id);
+                $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
             }
+            $subscription->save();
         }
     }
 
     public function delete_resubscribe_meta($resubscribe_order) {
-        delete_post_meta($resubscribe_order->get_id(), '_payment_tokens_id');
+        $resubscribe_order->delete_meta_data('_payment_tokens_id');
+        $resubscribe_order->save_meta_data();
     }
 
     public function update_failing_payment_method($subscription, $renewal_order) {
@@ -105,10 +108,12 @@ class WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE extends WC_Gateway_P
                 foreach ($subscriptions as $subscription) {
                     $payment_tokens_id = get_post_meta($subscription->get_parent_id(), '_transaction_id', true);
                     if (!empty($payment_tokens_id)) {
-                        update_post_meta($subscription->get_id(), '_payment_tokens_id', $payment_tokens_id);
-                        update_post_meta($renewal_order->get_id(), '_payment_tokens_id', $payment_tokens_id);
+                        $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                        $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                     }
                 }
+                $subscription->save();
+                $renewal_order->save();
             }
         }
     }

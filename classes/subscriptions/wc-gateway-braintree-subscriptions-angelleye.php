@@ -73,17 +73,19 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                update_post_meta($subscription->get_id(), '_payment_tokens_id', $payment_tokens_id);
+                $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
             }
         }
     }
 
     public function delete_resubscribe_meta($resubscribe_order) {
-        delete_post_meta($resubscribe_order->get_id(), '_payment_tokens_id');
+        $resubscribe_order->delete_meta_data('_payment_tokens_id');
+        $resubscribe_order->save_meta_data();
     }
 
     public function update_failing_payment_method($subscription, $renewal_order) {
-        update_post_meta($subscription->get_id(), '_payment_tokens_id', $renewal_order->payment_tokens_id);
+        $subscription->update_meta_data('_payment_tokens_id', $renewal_order->payment_tokens_id);
+        $subscription->save();
     }
 
 }

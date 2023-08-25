@@ -1260,7 +1260,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
                 $subscription_id = $subscription->get_id();
-                update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
+                $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                 do_action('angelleye_save_angelleye_fraudnet', $subscription_id);
             }
         } else {
