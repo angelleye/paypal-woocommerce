@@ -185,7 +185,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
                 if (isset($response['status']) && 'CREATED' === $response['status']) {
                     $approve_link = $response['links'][1]['href'];
                     $order->update_meta_data('cartflows_paypal_order_id_' . $order->get_id(), $response['id']);
-                    $order->save();
+                    $order->save_meta_data();
                     wcf()->logger->log(
                             "Order Created for WC-Order: {$order_id}"
                     );
@@ -240,7 +240,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
             if (isset($resp_body['status']) && 'COMPLETED' === $resp_body['status']) {
                 $txn_id = $resp_body['purchase_units']['0']['payments']['captures']['0']['id'];
                 $order->update_meta_data('cartflows_offer_paypal_txn_id_' . $order->get_id(), $txn_id);
-                $order->save();
+                $order->save_meta_data();
                 wcf()->logger->log(
                         "Order Created and captured. Order: {$order_id}"
                 );
@@ -337,7 +337,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
     public function store_offer_transaction($order, $response, $product) {
         wcf()->logger->log('PayPal Payments : Store Offer Transaction :: Transaction ID = ' . $response['id'] . ' Captured');
         $order->update_meta_data('cartflows_offer_txn_resp_' . $product['step_id'], $response['id']);
-        $order->save();
+        $order->save_meta_data();
     }
 
     public function angelleye_ppcp_offer_refund_request_data($request, $order, $amount, $reason) {
@@ -381,7 +381,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
             $paypal_order_id = $parent_order->get_meta('cartflows_paypal_order_id_' . $parent_order->get_id());
             $child_order->update_meta_data('_ppcp_paypal_order_id', $paypal_order_id);
             $child_order->update_meta_data('_ppcp_paypal_intent', 'CAPTURE');
-            $child_order->save();
+            $child_order->save_meta_data();
         }
     }
 

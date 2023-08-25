@@ -202,7 +202,7 @@ class AngellEYE_Admin_Order_Payment_Process {
                 break;
         }
         $order->update_meta_data('_created_via', 'admin_order_process_payment');
-        $order->save();
+        $order->save_meta_data();
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
     }
 

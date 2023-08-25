@@ -343,7 +343,7 @@ class AngellEYE_Utility {
             }
         }
         $order->update_meta_data('_trans_date', current_time('mysql'));
-        $order->save();
+        $order->save_meta_data();
     }
 
     /**
