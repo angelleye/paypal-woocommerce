@@ -2,6 +2,8 @@
 
 class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     use WC_Gateway_Base_AngellEYE;
+
+    public static $_instance;
     public $settings_fields;
     public $advanced_card_payments;
     public $checkout_disable_smart_button;
@@ -28,13 +30,14 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function __construct() {
         try {
+            self::$_instance = $this;
             $this->id = 'angelleye_ppcp';
             $this->setup_properties();
             $this->angelleye_ppcp_load_class(true);
             $this->init_form_fields();
             $this->init_settings();
             $this->angelleye_get_settings();
-            $this->angelleye_defind_hooks();
+            $this->angelleye_defined_hooks();
             if (angelleye_ppcp_has_active_session()) {
                 $this->order_button_text = apply_filters('angelleye_ppcp_order_review_page_place_order_button_text', __('Complete Order Payment', 'paypal-for-woocommerce'));
             }
@@ -110,14 +113,11 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         return $this->is_enabled == true && $this->is_credentials_set();
     }
 
-    public function angelleye_defind_hooks() {
+    public function angelleye_defined_hooks() {
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         if (!has_action('woocommerce_admin_order_totals_after_total', array('WC_Gateway_PPCP_AngellEYE', 'angelleye_ppcp_display_order_fee'))) {
             add_action('woocommerce_admin_order_totals_after_total', array('WC_Gateway_PPCP_AngellEYE', 'angelleye_ppcp_display_order_fee'));
-        }
-        if (apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
-            add_action('woocommerce_review_order_before_submit', array($this, 'ppcp_payment_fields'));
         }
         if ($this->enable_tokenized_payments === false) {
             add_filter('woocommerce_payment_gateways_renewal_support_status_html', array($this, 'payment_gateways_support_tooltip'), 10, 1);
@@ -185,14 +185,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         }
-    }
-
-    public function ppcp_payment_fields($bool = true) {
-        echo '<div id="ppcp_payment_field_bottom">';
-        if ($this->checkout_disable_smart_button === false) {
-            do_action('angelleye_ppcp_display_paypal_button_checkout_page');
-        }
-        echo '</div>';
     }
 
     public function form() {
