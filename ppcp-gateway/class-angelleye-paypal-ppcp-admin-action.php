@@ -408,11 +408,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             </td>
                         </tr>
                     </tbody>
-                </table>
-            </div>
-            <?php
-        }
-        ?>
+                </table><?php
+            }
+        ?></div>
+            
         <?php if (isset($this->angelleye_ppcp_order_status_data['void']) && isset($this->angelleye_ppcp_order_actions['void'])) { ?>
 
             <p style="font-size: 14px;" class="angelleye_ppcp_void_box" style="display: none;">
@@ -436,7 +435,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         ?>
         <input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited">
         <input type="submit" id="angelleye_ppcp_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
-        </div>
+        
         <table class="widefat  angelleye_ppcp_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;border: none;">
             <tbody>
                 <tr>
