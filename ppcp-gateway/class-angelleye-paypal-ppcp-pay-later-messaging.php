@@ -116,6 +116,18 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                 add_action('angelleye_ppcp_display_paypal_button_checkout_page', array($this, 'angelleye_ppcp_pay_later_messaging_payment_page'), 9);
             }
             add_shortcode('aepfw_bnpl_message', array($this, 'aepfw_bnpl_message_shortcode'), 10);
+            add_action('woocommerce_review_order_before_submit', array($this, 'ppcp_payment_fields'));
+        }
+    }
+
+    public function ppcp_payment_fields($bool = true) {
+        if (apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
+            echo '<div id="ppcp_payment_field_bottom">';
+            $gateway = WC_Gateway_PPCP_AngellEYE::$_instance;
+            if ($gateway->checkout_disable_smart_button === false) {
+                do_action('angelleye_ppcp_display_paypal_button_checkout_page');
+            }
+            echo '</div>';
         }
     }
 

@@ -533,18 +533,18 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
                 return;
             }
-            /* $notice_data['classic_upgrade'] = array(
+            $notice_data['classic_upgrade'] = array(
                 'id' => 'ppcp_notice_classic_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'Important PayPal Update Required',
-                'ans_message_description' => sprintf('Upgrade now to PayPal Commerce for better features, enhanced security, reduced fees, and future-proof integration. <a target="_blank" href="%s">Click to learn more about the upgrade process.</a> Don\'t miss out on the advantages of PayPal Commerce! <br><br>Please upgrade by September 30, 2023 to avoid potential interruptions.<br>', 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/'),
+                'ans_message_description' => sprintf('Upgrade now to PayPal Commerce for better features, enhanced security, <b>reduced fees</b>, and future-proof integration. <a target="_blank" href="%s">Click to learn more about the upgrade process.</a> Don\'t miss out on the advantages of PayPal Commerce! <br>', 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/'),
                 'ans_button_url' => admin_url('options-general.php?page=paypal-for-woocommerce'),
                 'ans_button_label' => 'Upgrade Now',
                 'is_dismiss' => false,
                 'is_button_secondary' => true,
                 'ans_secondary_button_label' => "Learn More",
                 'ans_secondary_button_url' => 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/'
-            ); */
+            );
             $notice_data['vault_upgrade'] = array(
                 'id' => 'ppcp_notice_vault_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
