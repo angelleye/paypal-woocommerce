@@ -40,11 +40,10 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
     }
 
     public function add_subscription_payment_meta($payment_meta, $subscription) {
-        $subscription_id = $subscription->get_id();
         $payment_meta[$this->id] = array(
             'post_meta' => array(
                 '_payment_tokens_id' => array(
-                    'value' => get_post_meta($subscription_id, '_payment_tokens_id', true),
+                    'value' => $subscription->get_meta('_payment_tokens_id'),
                     'label' => 'Payment Tokens ID',
                 )
             )

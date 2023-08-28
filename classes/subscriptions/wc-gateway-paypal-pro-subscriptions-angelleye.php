@@ -36,7 +36,7 @@ class WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE extends WC_Gateway_PayPal_Pr
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
-        $payment_tokens_id = get_post_meta($renewal_order->get_id(), '_payment_tokens_id', true);
+        $payment_tokens_id = $renewal_order->get_meta('_payment_tokens_id');
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);
         }
@@ -47,7 +47,7 @@ class WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE extends WC_Gateway_PayPal_Pr
         $payment_meta[$this->id] = array(
             'post_meta' => array(
                 '_payment_tokens_id' => array(
-                    'value' => get_post_meta($subscription->get_id(), '_payment_tokens_id', true),
+                    'value' => $subscription->get_meta('_payment_tokens_id'),
                     'label' => 'Payment Tokens ID',
                 )
             )
@@ -58,7 +58,8 @@ class WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE extends WC_Gateway_PayPal_Pr
     public function validate_subscription_payment_meta($payment_method_id, $payment_meta, $subscription) {
         if ($this->id === $payment_method_id) {
             if (empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
-                $payment_tokens_id = get_post_meta($subscription->get_parent_id(), '_transaction_id', true);
+                $subscriptions_parent = wcs_get_subscriptions_for_order($subscription->get_parent_id());
+                $payment_tokens_id = $subscriptions_parent->get_meta('_transaction_id');
                 if (!empty($payment_tokens_id)) {
                     $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                     $subscription->save();
@@ -108,7 +109,7 @@ class WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE extends WC_Gateway_PayPal_Pr
     }
 
     public function angelleye_scheduled_subscription_payment_retry_compability($renewal_order) {
-        $payment_tokens_id = get_post_meta($renewal_order->get_id(), '_payment_tokens_id', true);
+        $payment_tokens_id = $renewal_order->get_meta('_payment_tokens_id');
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($renewal_order->get_id())) {
                 $subscriptions = wcs_get_subscriptions_for_order($renewal_order->get_id());
@@ -119,7 +120,8 @@ class WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE extends WC_Gateway_PayPal_Pr
             }
             if (!empty($subscriptions)) {
                 foreach ($subscriptions as $subscription) {
-                    $payment_tokens_id = get_post_meta($subscription->get_parent_id(), '_transaction_id', true);
+                    $subscriptions_parent = wcs_get_subscriptions_for_order($subscription->get_parent_id());
+                    $payment_tokens_id = $subscriptions_parent->get_meta('_transaction_id');
                     if (!empty($payment_tokens_id)) {
                         $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                         $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);

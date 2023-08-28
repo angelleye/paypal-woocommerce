@@ -48,7 +48,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE extends WC_Gate
         $payment_meta[$this->id] = array(
             'post_meta' => array(
                 '_payment_tokens_id' => array(
-                    'value' => get_post_meta($subscription->get_id(), '_payment_tokens_id', true),
+                    'value' => $subscription->get_meta('_payment_tokens_id'),
                     'label' => 'Payment Tokens ID',
                 )
             )

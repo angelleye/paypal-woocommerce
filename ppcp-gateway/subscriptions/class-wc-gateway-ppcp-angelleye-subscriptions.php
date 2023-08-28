@@ -60,7 +60,8 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                $angelleye_ppcp_used_payment_method = get_post_meta($subscription->get_parent_id(), '_angelleye_ppcp_used_payment_method', true);
+                $subscriptions_parent = wcs_get_subscriptions_for_order($subscription->get_parent_id());
+                $angelleye_ppcp_used_payment_method = $subscriptions_parent->get_meta('_angelleye_ppcp_used_payment_method');
                 if (!empty($angelleye_ppcp_used_payment_method)) {
                     $renewal_order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
                     $renewal_order->save();

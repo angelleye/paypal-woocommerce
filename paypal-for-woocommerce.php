@@ -1249,10 +1249,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         public function angelleye_woocommerce_get_checkout_order_received_url($order_received_url, $order) {
-            $order_id = $order->get_id();
-            $lang_code = get_post_meta( $order_id, 'wpml_language', true );
+            $lang_code = $order->get_meta('wpml_language', true );
             if( empty($lang_code) ) {
-                $lang_code = get_post_meta( $order_id, '_wpml_language', true );
+                $lang_code = $order->get_meta('_wpml_language');
             }
             if( !empty($lang_code) ) {
                 $order_received_url = apply_filters( 'wpml_permalink', $order_received_url , $lang_code );

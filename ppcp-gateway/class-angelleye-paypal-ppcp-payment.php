@@ -1064,8 +1064,14 @@ class AngellEYE_PayPal_PPCP_Payment {
     }
 
     public function get_payment_method_title_for_order($woo_order_id = null) {
-        $order = wc_get_order($woo_order_id);
-        return get_post_meta($woo_order_id, '_payment_method_title', $this->title);
+        if (!is_object($woo_order_id)) {
+            $order = wc_get_order($woo_order_id);
+        }
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
+        return $order->get_payment_method_title();
+        
     }
 
     public function angelleye_ppcp_order_capture_request($woo_order_id, $need_to_update_order = true) {
