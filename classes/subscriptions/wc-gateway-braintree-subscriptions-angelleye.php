@@ -74,6 +74,7 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
             foreach ($subscriptions as $subscription) {
                 $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
             }
+            $subscription->save_meta_data();
         }
     }
 

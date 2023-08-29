@@ -96,6 +96,7 @@ class WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE extends WC_Gateway_PayPal_Pr
 
     public function update_failing_payment_method($subscription, $renewal_order) {
         $subscription->update_meta_data('_payment_tokens_id', $renewal_order->get_meta('_payment_tokens_id', true));
+        $subscription->save_meta_data();
     }
 
     public function free_signup_with_token_payment_tokenization($order_id) {

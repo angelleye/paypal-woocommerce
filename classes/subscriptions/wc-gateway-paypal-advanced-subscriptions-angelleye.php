@@ -55,6 +55,7 @@ class WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE extends WC_Gateway_PayP
                 $payment_tokens_id = $subscription->get_meta('_transaction_id');
                 if (!empty($payment_tokens_id)) {
                     $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                    $subscription->save_meta_data();
                 } else {
                     throw new Exception('A "_payment_tokens_id" value is required.');
                 }
@@ -88,6 +89,7 @@ class WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE extends WC_Gateway_PayP
 
     public function update_failing_payment_method($subscription, $renewal_order) {
         $subscription->update_meta_data('_payment_tokens_id', $renewal_order->get_meta('_payment_tokens_id', true));
+        $subscription->save_meta_data();
     }
 
     public function angelleye_scheduled_subscription_payment_retry_compability($renewal_order) {
@@ -108,6 +110,8 @@ class WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE extends WC_Gateway_PayP
                         $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                     }
                 }
+                $subscription->save_meta_data();
+                $renewal_order->save_meta_data();
             }
         }
     }

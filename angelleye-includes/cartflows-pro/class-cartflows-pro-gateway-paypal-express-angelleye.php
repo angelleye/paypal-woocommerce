@@ -1215,6 +1215,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
         if ('paypal_express' === $order->get_payment_method()) {
             $subscription->update_meta_data('_payment_tokens_id', $order->get_meta('BILLINGAGREEMENTID', true));
             $subscription->update_meta_data('BILLINGAGREEMENTID', $order->get_meta('BILLINGAGREEMENTID', true));
+            $subscription->save_meta_data();
         }
     }
 

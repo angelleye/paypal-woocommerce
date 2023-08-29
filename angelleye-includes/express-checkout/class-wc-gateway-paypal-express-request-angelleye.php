@@ -1261,6 +1261,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             foreach ($subscriptions as $subscription) {
                 $subscription_id = $subscription->get_id();
                 $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                $subscription->save_meta_data();
                 do_action('angelleye_save_angelleye_fraudnet', $subscription_id);
             }
         } else {
