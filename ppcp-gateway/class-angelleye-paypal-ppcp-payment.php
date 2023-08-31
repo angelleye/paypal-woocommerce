@@ -157,6 +157,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
         try {
+            $return_response = [];
             if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
                 $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
                 wc_add_notice($wc_notice);
@@ -2016,6 +2017,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_regular_create_order_request($woo_order_id = null) {
         try {
+            $return_response = [];
             if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
                 $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
                 wc_add_notice($wc_notice);
