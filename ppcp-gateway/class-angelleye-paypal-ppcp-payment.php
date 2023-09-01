@@ -4157,4 +4157,27 @@ class AngellEYE_PayPal_PPCP_Payment {
 
         }
     }
+    
+    public function angelleye_ppcp_get_all_payment_tokens_by_user_id($user_id) {
+        try {
+            $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id_by_user_id($this->is_sandbox, $user_id);
+            if ($paypal_generated_customer_id === false) {
+                return false;
+            }
+            $args = array(
+                'method' => 'GET',
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                'body' => array()
+            );
+            $payment_tokens_url = add_query_arg(array('customer_id' => $paypal_generated_customer_id), untrailingslashit($this->payment_tokens_url));
+            $api_response = $this->api_request->request($payment_tokens_url, $args, 'list_all_payment_tokens');
+            if (!empty($api_response['customer']['id']) && isset($api_response['payment_tokens'])) {
+                return $api_response['payment_tokens'];
+            } else {
+                return array();
+            }
+        } catch (Exception $ex) {
+            return array();
+        }
+    }
 }
