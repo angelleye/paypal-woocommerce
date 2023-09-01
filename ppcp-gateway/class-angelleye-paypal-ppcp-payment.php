@@ -1725,7 +1725,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id, $args, 'get_authorized');
             $this->api_response = json_decode(json_encode($this->api_response), FALSE);
-            AngellEye_Session_Manager::set('paypal_transaction_details', $this->api_response);
+            // AngellEye_Session_Manager::set('paypal_transaction_details', $this->api_response);
             return $this->api_response;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
