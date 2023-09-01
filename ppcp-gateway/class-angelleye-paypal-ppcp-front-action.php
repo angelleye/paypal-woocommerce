@@ -157,6 +157,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     } elseif ('checkout' === $request_from_page) {
                         if (isset($_POST) && !empty($_POST)) {
                             self::$is_user_logged_in_before_checkout = is_user_logged_in();
+                            AngellEye_Session_Manager::set('checkout_post', isset($_POST) ? wc_clean($_POST) : false);
                             add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), 10, 2);
                             WC()->checkout->process_checkout();
                             if (wc_notice_count('error') > 0) {
@@ -456,6 +457,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 wp_send_json_error(array('messages' => $error_messages));
                 exit;
             }
+            if(is_used_save_payment_token() === false) {
+                $this->payment_request->angelleye_ppcp_create_order_request();
+            }
+            exit();
+            
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');

@@ -20,6 +20,9 @@ class AngellEye_Session_Manager
 
     public function save()
     {
+        if (!class_exists('WooCommerce') || WC()->session == null) {
+            return false;
+        }
         WC()->session->set($this->sessionName, $this->_data);
     }
 
