@@ -107,6 +107,7 @@ if (class_exists('WC_Checkout')) {
                     if (!$order) {
                         throw new Exception(__('Unable to create order.', 'paypal-for-woocommerce'));
                     }
+                    do_action( 'woocommerce_checkout_order_processed', $order_id, $posted_data, $order );
                     return $order_id;
                 }
             } catch (Exception $ex) {
