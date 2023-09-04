@@ -170,7 +170,7 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_admin_create_reference_order_action($order) {
         $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
-        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc'))) {
+        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc', 'angelleye_ppcp_apple_pay'))) {
             $this->angelleye_admin_create_new_order($order);
         }
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
@@ -192,7 +192,7 @@ class AngellEYE_Admin_Order_Payment_Process {
                     $this->angelleye_paypal_pro_payflow_reference_transaction($order);
                 }
                 break;
-            case ($this->payment_method == "angelleye_ppcp" || $this->payment_method == "angelleye_ppcp_cc"): {
+            case ($this->payment_method == "angelleye_ppcp" || $this->payment_method == "angelleye_ppcp_cc" || $this->payment_method == 'angelleye_ppcp_apple_pay'): {
                     if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
                     }
@@ -218,9 +218,9 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_ppcp_capture_payment_using_vault($order) {
         try {
-            
+
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -274,6 +274,8 @@ class AngellEYE_Admin_Order_Payment_Process {
             'email' => $billing_email,
             'phone' => $billing_phone,
         );
+        $old_order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $environment = get_post_meta($old_order_id, '_enviorment', true);
         $new_order = wc_create_order($args);
         $old_get_items = $order->get_items();
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
@@ -296,6 +298,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         $payment_method_title = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method_title : $order->get_payment_method_title();
         update_post_meta($new_order_id, '_payment_method_title', $payment_method_title);
         update_post_meta($new_order_id, '_created_via', 'create_new_reference_order');
+        update_post_meta($new_order_id, '_enviorment', $environment);
         $token_id = $this->get_usable_reference_transaction($order);
         if (!empty($token_id)) {
             update_post_meta($new_order_id, '_first_transaction_id', $token_id);
@@ -368,7 +371,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         $reason_array = array();
         $token_list = $this->angelleye_is_usable_reference_transaction_avilable($order);
         if ($this->angelleye_is_order_user_selected($order) == false) {
-            $reason_array[] = __('Customer must be selected for order.', 'paypal-for-woocommerce');
+            $reason_array[] = __('This order is not associated with a registered user account, hence a reference transaction can not be done.', 'paypal-for-woocommerce');
         }
         if ($this->angelleye_is_order_payment_method_selected($order) == false) {
             $reason_array[] = __('Payment method is not available for payment process, Please select Payment method from Billing details section.', 'paypal-for-woocommerce');

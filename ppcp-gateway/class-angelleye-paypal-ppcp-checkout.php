@@ -83,6 +83,9 @@ if (class_exists('WC_Checkout')) {
                 }
                 do_action('woocommerce_checkout_process');
                 $errors = new WP_Error();
+                /**
+                 * @var AngellEYE_PayPal_PPCP_Smart_Button $smart_button
+                 */
                 $smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
                 $posted_data = $smart_button->angelleye_ppcp_prepare_order_data();
                 $this->update_session($posted_data);

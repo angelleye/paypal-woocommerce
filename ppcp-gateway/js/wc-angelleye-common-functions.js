@@ -525,8 +525,25 @@ const angelleyeOrder = {
 				}).then(
 					function (payload) {
 						if (payload.orderId) {
-							jQuery.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page, function (data) {
+							let captureUrl = angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page;
+							let data;
+							if (angelleyeOrder.isCheckoutPage()) {
+								data = jQuery(checkoutSelector).serialize();
+							}
+							fetch(captureUrl, {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/x-www-form-urlencoded'
+								},
+								body: data
+							}).then(function (res) {
+								return res.json();
+							}).then(function (data) {
 								window.location.href = data.data.redirect;
+							}).catch((error) => {
+								console.log('capture error', error);
+								jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
+								angelleyeOrder.showError(error.message);
 							});
 						}
 					}, function (error) {
