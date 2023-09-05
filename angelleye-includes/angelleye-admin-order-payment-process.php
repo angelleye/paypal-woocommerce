@@ -329,7 +329,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         $reason_array = array();
         $token_list = $this->angelleye_is_usable_reference_transaction_avilable($order);
         if ($this->angelleye_is_order_user_selected($order) == false) {
-            //$reason_array[] = __('Customer must be selected for order.', 'paypal-for-woocommerce');
+            $reason_array[] = __('Customer must be selected for order.', 'paypal-for-woocommerce');
         }
         if ($this->angelleye_is_order_payment_method_selected($order) == false) {
             $reason_array[] = __('Payment method is not available for payment process, Please select Payment method from Billing details section.', 'paypal-for-woocommerce');
@@ -389,7 +389,7 @@ class AngellEYE_Admin_Order_Payment_Process {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
             }
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
-            $payment_token = $this->payment_request->angelleye_ppcp_get_all_payment_tokens();
+            $payment_token = $this->payment_request->angelleye_ppcp_get_all_payment_tokens_by_user_id($user_id);
             if (!empty($payment_token)) {
                 return $payment_token;
             }

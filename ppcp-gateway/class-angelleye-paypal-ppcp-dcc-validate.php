@@ -312,5 +312,4 @@ class AngellEYE_PayPal_PPCP_DCC_Validate {
             
         }
     }
-
 }

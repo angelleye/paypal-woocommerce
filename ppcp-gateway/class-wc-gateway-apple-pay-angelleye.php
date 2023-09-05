@@ -70,7 +70,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             } else {
                 $this->supports = $baseSupports;
             }
-
+            $this->ppcp_enabled = 'yes' === $this->get_option('enabled', 'no');
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay'));
             $this->title = $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay');
             $this->enable_apple_pay = 'yes' === $this->setting_obj->get('enable_apple_pay', 'no');
@@ -81,7 +81,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     }
 
     public function is_available() {
-        return $this->enable_apple_pay == true && $this->is_credentials_set();
+        return $this->ppcp_enabled === true && $this->enable_apple_pay == true && $this->is_credentials_set();
     }
 
     public function payment_fields() {
