@@ -2456,7 +2456,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
             if (!empty($this->api_response['id'])) {
-                $order->update_meta_data('_paypal_order_id', $this->api_response['id']);
+                // DO not save the paypal order id in the table during auth capture because it will override the original
+                // transaction id created during the initial create_order process
+                // angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
                 $payment_source = $this->api_response['payment_source'] ?? '';
                 if (!empty($payment_source['card'])) {
                     $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
@@ -4172,7 +4174,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             
         }
     }
-    
+
     public function angelleye_ppcp_get_all_payment_tokens_by_user_id($user_id) {
         try {
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id_by_user_id($this->is_sandbox, $user_id);

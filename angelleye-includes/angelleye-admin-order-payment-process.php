@@ -192,7 +192,7 @@ class AngellEYE_Admin_Order_Payment_Process {
                     $this->angelleye_paypal_pro_payflow_reference_transaction($order);
                 }
                 break;
-            case ($this->payment_method == "angelleye_ppcp" || $this->payment_method == "angelleye_ppcp_cc"): {
+            case ($this->payment_method == "angelleye_ppcp" || $this->payment_method == "angelleye_ppcp_cc" || $this->payment_method == 'angelleye_ppcp_apple_pay'): {
                     if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
                     }
@@ -219,9 +219,9 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_ppcp_capture_payment_using_vault($order) {
         try {
-            
+
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -255,6 +255,8 @@ class AngellEYE_Admin_Order_Payment_Process {
             'email' => $order->get_billing_email(),
             'phone' => $order->get_billing_phone(),
         );
+        $old_order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $environment = get_post_meta($old_order_id, '_enviorment', true);
         $new_order = wc_create_order($args);
         $old_get_items = $order->get_items();
         $new_order->add_item($old_get_items);
@@ -262,9 +264,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         AngellEYE_Utility::angelleye_set_address($new_order->get_id(), $billing_details, 'billing');
         $this->payment_method = $order->get_payment_method();
         $new_order->set_payment_method($this->payment_method);
-        $payment_method_title = $order->get_payment_method_title();
-        $new_order->update_meta_data('_payment_method_title', $payment_method_title);
-        $new_order->update_meta_data('_created_via', 'create_new_reference_order');
+        $new_order->update_meta_data('_enviorment', $environment);
         $token_id = $this->get_usable_reference_transaction($order);
         if (!empty($token_id)) {
             $new_order->update_meta_data('_first_transaction_id', $token_id);
@@ -329,7 +329,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         $reason_array = array();
         $token_list = $this->angelleye_is_usable_reference_transaction_avilable($order);
         if ($this->angelleye_is_order_user_selected($order) == false) {
-            $reason_array[] = __('Customer must be selected for order.', 'paypal-for-woocommerce');
+            $reason_array[] = __('This order is not associated with a registered user account, hence a reference transaction can not be done.', 'paypal-for-woocommerce');
         }
         if ($this->angelleye_is_order_payment_method_selected($order) == false) {
             $reason_array[] = __('Payment method is not available for payment process, Please select Payment method from Billing details section.', 'paypal-for-woocommerce');

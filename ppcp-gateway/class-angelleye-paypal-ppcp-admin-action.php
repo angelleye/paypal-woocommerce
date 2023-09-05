@@ -5,7 +5,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
 
     private $angelleye_ppcp_plugin_name;
     public $api_log;
-    public $payment_request;
+    public ?AngellEYE_PayPal_PPCP_Payment $payment_request;
     public $payment_response;
     public $ae_capture_amount = 0;
     public $ae_refund_amount = 0;
