@@ -5,6 +5,7 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_DCC_Validate {
 
     protected static $_instance = null;
+    public $country;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
