@@ -157,7 +157,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     } elseif ('checkout' === $request_from_page) {
                         if (isset($_POST) && !empty($_POST)) {
                             self::$is_user_logged_in_before_checkout = is_user_logged_in();
-                            AngellEye_Session_Manager::set('checkout_post', isset($_POST) ? wc_clean($_POST) : false);
+                            AngellEye_Session_Manager::set('checkout_post', wc_clean($_POST));
                             add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), 10, 2);
                             WC()->checkout->process_checkout();
                             if (wc_notice_count('error') > 0) {
@@ -354,18 +354,21 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php';
                     }
                     $ppcp_checkout = AngellEYE_PayPal_PPCP_Checkout::instance();
-                    $order_id = $ppcp_checkout->angelleye_ppcp_create_order();
-                    $order = wc_get_order($order_id);
-                    if ($order === false) {
-                        AngellEye_Session_Manager::clear();
+                    try {
+                        $order_id = $ppcp_checkout->angelleye_ppcp_create_order();
+                        $order = wc_get_order($order_id);
+                    } catch (Exception $exception) {
+                        AngellEye_Session_Manager::unset('paypal_transaction_details');
+                        AngellEye_Session_Manager::unset('paypal_order_id');
+                        remove_filter('woocommerce_get_checkout_url', [$this->smart_button, 'angelleye_ppcp_woocommerce_get_checkout_url']);
+                        wc_add_notice($exception->getMessage(), 'error');
                         wp_send_json_success(array(
                             'result' => 'failure',
                             'redirect' => wc_get_checkout_url()
                         ));
                         exit();
-                    } else {
-                        $this->payment_request->angelleye_ppcp_update_order($order);
                     }
+                    $this->payment_request->angelleye_ppcp_update_order($order);
                 }
                 $liability_shift_result = 1;
                 if ($this->advanced_card_payments) {
@@ -457,11 +460,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 wp_send_json_error(array('messages' => $error_messages));
                 exit;
             }
-            if(is_used_save_payment_token() === false) {
+            if (is_used_save_payment_token() === false) {
                 $this->payment_request->angelleye_ppcp_create_order_request();
+                exit();
             }
-            exit();
-            
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
