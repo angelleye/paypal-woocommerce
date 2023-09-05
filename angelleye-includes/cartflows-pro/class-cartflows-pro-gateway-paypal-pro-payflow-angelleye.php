@@ -127,7 +127,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                     throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                 }
                 if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
-                    add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
+                    $order->update_meta_data('PPREF', $PayPalResult['PPREF']);
                     $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
                 } else {
                     $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));

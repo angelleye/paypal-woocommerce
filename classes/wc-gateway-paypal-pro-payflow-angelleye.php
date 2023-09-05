@@ -1318,7 +1318,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $order->save();
                 if ($this->payment_action == 'Authorization' && $this->payment_action_authorization == 'Card Verification') {
                     $order->add_order_note('Card : ' . $PayPalResult['RESPMSG']);
-                    add_post_meta($order_id, 'payment_action_authorization', $this->payment_action_authorization);
+                    $order->update_meta_data('payment_action_authorization', $this->payment_action_authorization);
                 }
                 if (isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
                     $order->update_status('failed', __('Payment failed due to a duplicate order ID.', 'paypal-for-woocommerce'));
@@ -1398,7 +1398,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     wc_maybe_reduce_stock_levels($order->get_id());
                 } elseif ($this->payment_action == "Authorization") {
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
-                        add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
+                        $order->update_meta_data('PPREF', $PayPalResult['PPREF']);
                         $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
                     } else {
                         $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
@@ -1418,7 +1418,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                     $angelleye_utility->angelleye_get_transactionDetails($PayPalResult['PNREF']);
                 } else {
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
-                        add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
+                        $order->update_meta_data('PPREF', $PayPalResult['PPREF']);
                         $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
                     } else {
                         $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
@@ -1934,13 +1934,13 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $this->fraud_warning_codes))) {
                 $order->set_transaction_id($PayPalResult['PNREF']);
-                $order->save();
                 if (isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
                     $order->update_status('failed', __('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
+                    $order->save();
                     throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                 }
                 if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
-                    add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
+                    $order->update_meta_data('PPREF', $PayPalResult['PPREF']);
                     $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
                 } else {
                     $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
@@ -1966,7 +1966,6 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
                 do_action('ae_add_custom_order_note', $order, $card, $token, $PayPalResult);
-               
                 if ($this->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $this->fraud_warning_codes)) {
                     $order->update_status('on-hold', $PayPalResult['RESPMSG']);
                     wc_maybe_reduce_stock_levels($order->get_id());
