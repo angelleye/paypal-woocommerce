@@ -282,7 +282,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         function admin_notices() {
-            global $current_user, $pp_settings ;
+            global $current_user, $pp_settings;
             $user_id = $current_user->ID;
             $pp_pro = get_option('woocommerce_paypal_pro_settings', array());
             $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings', array());
@@ -300,8 +300,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if(isset($_GET['page']) && $_GET['page'] == 'wc-settings' ) {
                 if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || ( !empty($pp_payflow['enabled']) && $pp_payflow['enabled']=='yes' )) {
                     // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
-                    if ( !is_ssl() && !get_user_meta($user_id, 'ignore_pp_ssl'))
-                        echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('WooCommerce PayPal Payments Pro requires that the %s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode.', 'paypal-for-woocommerce'), '<a href="'.admin_url('admin.php?page=wc-settings&tab=advanced#woocommerce_force_ssl_checkout').'">Force secure checkout</a>')  . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_pp_ssl">Dismiss</button></div></div>';
+                    if ( !is_ssl() && !get_user_meta($user_id, 'ignore_pp_ssl')) {
+                            echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('WooCommerce PayPal Payments Pro requires that the %s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode.', 'paypal-for-woocommerce'), '<a href="'.admin_url('admin.php?page=wc-settings&tab=advanced#woocommerce_force_ssl_checkout').'">Force secure checkout</a>')  . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_pp_ssl">Dismiss</button></div></div>';
+                    }
                     if (($pp_pro['testmode']=='yes' || $pp_payflow['testmode']=='yes' || $pp_settings['testmode']=='yes') && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
                         $testmodes = array();
                         if ($pp_pro['enabled']=='yes' && $pp_pro['testmode']=='yes') $testmodes[] = 'PayPal Pro';
@@ -1569,7 +1570,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         public function angelleye_wcv_save_product( $product_id ) {
             global $pp_settings;
-            $pp_settings = get_option( 'woocommerce_paypal_express_settings' );
+            $pp_settings = get_option( 'woocommerce_paypal_express_settings', array() );
             if(!empty($pp_settings['show_on_product_page']) && $pp_settings['show_on_product_page'] == 'yes' && !empty($pp_settings['enable_newly_products']) && $pp_settings['enable_newly_products'] == 'yes' ) {
                 update_post_meta( $product_id, '_enable_ec_button', 'yes');
             }
