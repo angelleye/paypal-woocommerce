@@ -156,50 +156,8 @@ class AngellEYE_PayPal_PPCP_Payment {
     }
 
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
-        // Handles the Duplicate_invoice_id error, usually this comes up when we already triggered order create
-        // api call for an order and initiate the order create again on button click
-        $return_response = [];
-        if (!empty($woo_order_id)) {
-            $order = wc_get_order($woo_order_id);
-            $existing_paypal_order_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_order_id');
-            $existing_reference_id = angelleye_ppcp_get_post_meta($woo_order_id, '_paypal_reference_id');
-            if (!empty($existing_paypal_order_id) && !empty($existing_reference_id)) {
-                // Get the order detail using API to see if the order id is still valid or its expired
-                // if its expired then trigger the Create order request again.
-                // ------------------------------------------------------------------
-                // Fixes PFW-1534 - Resource not found error
-                //    "name": "RESOURCE_NOT_FOUND",
-                //    "details": [
-                //        {
-                //            "issue": "INVALID_RESOURCE_ID",
-                //            "description": "Specified resource ID does not exist. Please check the resource ID and try again."
-                //        }
-                //    ],
-                // ------------------------------------------------------------------
-                //   [
-                //        {
-                //            "issue": "ORDER_ALREADY_CAPTURED",
-                //            "description": "Order already captured.If 'intent=CAPTURE' only one capture per order is allowed."
-                //        }
-                //    ]
-                $paypal_order = $this->angelleye_ppcp_get_paypal_order($existing_paypal_order_id);
-                if ($paypal_order && !$this->is_paypal_order_capture_triggered($paypal_order)) {
-                    // set the order id in session so that update_order can update the order details
-                    AngellEye_Session_Manager::set('paypal_order_id', $existing_paypal_order_id);
-                    AngellEye_Session_Manager::set('reference_id', $existing_reference_id);
-
-                    $this->angelleye_ppcp_update_order($order);
-                    $return_response['currencyCode'] = $order->get_currency('');
-                    $return_response['totalAmount'] = $order->get_total('');
-                    $return_response['orderID'] = $existing_paypal_order_id;
-                    $return_response = $this->add_nonce_in_response($return_response);
-
-                    wp_send_json($return_response, 200);
-                    die;
-                }
-            }
-        }
         try {
+            $return_response = [];
             if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
                 $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
                 wc_add_notice($wc_notice);
@@ -374,21 +332,19 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             } else {
                 if (true === WC()->cart->needs_shipping()) {
-                    if (is_user_logged_in()) {
-                        if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
-                            $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
-                        }
-                        if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
-                            $body_request['purchase_units'][0]['shipping']['address'] = array(
-                                'address_line_1' => $cart['shipping_address']['address_1'],
-                                'address_line_2' => $cart['shipping_address']['address_2'],
-                                'admin_area_2' => $cart['shipping_address']['city'],
-                                'admin_area_1' => $cart['shipping_address']['state'],
-                                'postal_code' => $cart['shipping_address']['postcode'],
-                                'country_code' => $cart['shipping_address']['country'],
-                            );
-                            AngellEye_Session_Manager::set('is_shipping_added', 'yes');
-                        }
+                    if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
+                        $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
+                    }
+                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
+                        $body_request['purchase_units'][0]['shipping']['address'] = array(
+                            'address_line_1' => $cart['shipping_address']['address_1'],
+                            'address_line_2' => $cart['shipping_address']['address_2'],
+                            'admin_area_2' => $cart['shipping_address']['city'],
+                            'admin_area_1' => $cart['shipping_address']['state'],
+                            'postal_code' => $cart['shipping_address']['postcode'],
+                            'country_code' => $cart['shipping_address']['country'],
+                        );
+                        AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                     }
                 }
             }
@@ -2061,6 +2017,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_regular_create_order_request($woo_order_id = null) {
         try {
+            $return_response = [];
             if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
                 $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
                 wc_add_notice($wc_notice);
@@ -2490,7 +2447,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
             if (!empty($this->api_response['id'])) {
-                angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
+                // DO not save the paypal order id in the table during auth capture because it will override the original
+                // transaction id created during the initial create_order process
+                // angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
                 $payment_source = $this->api_response['payment_source'] ?? '';
                 if (!empty($payment_source['card'])) {
                     $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
@@ -4198,6 +4157,29 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_request->request($this->payment_tokens_url . '/' . $payment_token, $args, 'delete_payment_token');
         } catch (Exception $ex) {
 
+        }
+    }
+
+    public function angelleye_ppcp_get_all_payment_tokens_by_user_id($user_id) {
+        try {
+            $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id_by_user_id($this->is_sandbox, $user_id);
+            if ($paypal_generated_customer_id === false) {
+                return false;
+            }
+            $args = array(
+                'method' => 'GET',
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                'body' => array()
+            );
+            $payment_tokens_url = add_query_arg(array('customer_id' => $paypal_generated_customer_id), untrailingslashit($this->payment_tokens_url));
+            $api_response = $this->api_request->request($payment_tokens_url, $args, 'list_all_payment_tokens');
+            if (!empty($api_response['customer']['id']) && isset($api_response['payment_tokens'])) {
+                return $api_response['payment_tokens'];
+            } else {
+                return array();
+            }
+        } catch (Exception $ex) {
+            return array();
         }
     }
 }

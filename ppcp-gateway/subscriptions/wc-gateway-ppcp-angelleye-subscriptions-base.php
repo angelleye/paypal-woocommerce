@@ -66,6 +66,8 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base
                 }
             }
         }
+
+        update_post_meta($renewal_order_id, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
         parent::process_subscription_payment($renewal_order, $amount_to_charge);
     }
 

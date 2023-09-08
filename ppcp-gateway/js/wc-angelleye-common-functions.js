@@ -173,9 +173,7 @@ const angelleyeOrder = {
 	},
 	approveOrder: ({orderID, payerID}) => {
 		if (angelleyeOrder.isCheckoutPage()) {
-			jQuery.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + orderID + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout, function (data) {
-				window.location.href = data.data.redirect;
-			});
+			angelleyeOrder.checkoutFormCapture({payPalOrderId: orderID})
 		} else {
 			if (angelleye_ppcp_manager.is_skip_final_review === 'yes') {
 				window.location.href = angelleye_ppcp_manager.direct_capture + '&paypal_order_id=' + orderID + '&paypal_payer_id=' + payerID + '&from=' + angelleye_ppcp_manager.page;
@@ -360,6 +358,31 @@ const angelleyeOrder = {
 			});
 		}
 	},
+	checkoutFormCapture: ({checkoutSelector, payPalOrderId}) => {
+		if (typeof checkoutSelector === 'undefined') {
+			checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
+		}
+		let captureUrl = angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payPalOrderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page;
+		let data;
+		if (angelleyeOrder.isCheckoutPage()) {
+			data = jQuery(checkoutSelector).serialize();
+		}
+		fetch(captureUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			body: data
+		}).then(function (res) {
+			return res.json();
+		}).then(function (data) {
+			window.location.href = data.data.redirect;
+		}).catch((error) => {
+			console.log('capture error', error);
+			jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
+			angelleyeOrder.showError(error.message);
+		});
+	},
 	renderHostedButtons: () => {
 		let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
 		if (jQuery(checkoutSelector).is('.HostedFields')) {
@@ -525,9 +548,7 @@ const angelleyeOrder = {
 				}).then(
 					function (payload) {
 						if (payload.orderId) {
-							jQuery.post(angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payload.orderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page, function (data) {
-								window.location.href = data.data.redirect;
-							});
+							angelleyeOrder.checkoutFormCapture({checkoutSelector, payPalOrderId: payload.orderId})
 						}
 					}, function (error) {
 						jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();

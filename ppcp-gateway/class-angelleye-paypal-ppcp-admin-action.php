@@ -5,7 +5,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
 
     private $angelleye_ppcp_plugin_name;
     public $api_log;
-    public $payment_request;
+    public ?AngellEYE_PayPal_PPCP_Payment $payment_request;
     public $payment_response;
     public $ae_capture_amount = 0;
     public $ae_refund_amount = 0;
@@ -18,7 +18,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     protected static $_instance = null;
     public $setting_obj;
     public $is_auto_capture_auth;
-    public $seller_onboarding;
+    public ?AngellEYE_PayPal_PPCP_Seller_Onboarding $seller_onboarding;
     public $is_sandbox;
     public $merchant_id;
 
@@ -191,7 +191,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
             $payment_action = angelleye_ppcp_get_post_meta($order, '_payment_action', true);
             if (isset($payment_method) && !empty($payment_method) && isset($payment_action) && !empty($payment_action)) {
-                if (($payment_method == 'angelleye_ppcp_cc' || $payment_method == 'angelleye_ppcp') && ($payment_action === "authorize" && $order->get_total() > 0)) {
+                if (in_array($payment_method, ['angelleye_ppcp_cc', 'angelleye_ppcp', 'angelleye_ppcp_apple_pay']) && ($payment_action === "authorize" && $order->get_total() > 0)) {
                     return true;
                 } else {
                     return false;
