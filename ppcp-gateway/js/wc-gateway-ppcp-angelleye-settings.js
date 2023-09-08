@@ -262,11 +262,11 @@ jQuery(function ($) {
             $('.angelleye_ppcp_checkout_button_settings').closest('tr').hide();
         }
     }).change();
-    $('#woocommerce_angelleye_ppcp_enable_mini_cart_button').change(function () {
+    $('#woocommerce_angelleye_ppcp_enable_woo_mini_cart_button').change(function () {
         if ($(this).is(':checked')) {
-            $('.angelleye_ppcp_mini_cart_button_settings').closest('tr').show();
+            $('.angelleye_ppcp_woo_mini_cart_button_settings').closest('tr').show();
         } else {
-            $('.angelleye_ppcp_mini_cart_button_settings').closest('tr').hide();
+            $('.angelleye_ppcp_woo_mini_cart_button_settings').closest('tr').hide();
         }
     }).change();
     var home_page_pay_later_messaging_preview = function () {

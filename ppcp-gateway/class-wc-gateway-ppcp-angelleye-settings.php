@@ -130,7 +130,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'checkout_button_label' => 'paypal',
                 'checkout_button_tagline' => 'yes',
                 'mini_cart_button_settings' => '',
-                'enable_mini_cart_button' => 'yes',
+                'enable_woo_mini_cart_button' => 'no',
                 'mini_cart_disallowed_funding_methods' => '',
                 'mini_cart_button_layout' => 'vertical',
                 'mini_cart_style_color' => 'gold',
@@ -881,19 +881,19 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'title',
                     'class' => 'ppcp_separator_heading',
                 ),
-                'enable_mini_cart_button' => array(
+                'enable_woo_mini_cart_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'class' => '',
                     'type' => 'checkbox',
                     'label' => __('Enable PayPal Smart Button on the Mini Cart page.', 'paypal-for-woocommerce'),
-                    'default' => 'yes',
+                    'default' => 'no',
                     'desc_tip' => true,
                     'description' => __('', 'paypal-for-woocommerce'),
                 ),
                 'mini_cart_disallowed_funding_methods' => array(
                     'title' => __('Hide Funding Method(s)', 'paypal-for-woocommerce'),
                     'type' => 'multiselect',
-                    'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_woo_mini_cart_button_settings',
                     'description' => __('Funding methods selected here will be hidden from buyers during checkout.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true,
@@ -917,7 +917,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'mini_cart_button_layout' => array(
                     'title' => __('Button Layout', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_woo_mini_cart_button_settings',
                     'description' => __('Select Vertical for stacked buttons, and Horizontal for side-by-side buttons.', 'paypal-for-woocommerce'),
                     'default' => 'vertical',
                     'desc_tip' => true,
@@ -929,7 +929,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'mini_cart_style_color' => array(
                     'title' => __('Button Color', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_woo_mini_cart_button_settings',
                     'description' => __('Set the color you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                     'default' => 'gold',
@@ -944,7 +944,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'mini_cart_style_shape' => array(
                     'title' => __('Button Shape', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_woo_mini_cart_button_settings',
                     'description' => __('Set the shape you would like to use for the buttons.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                     'default' => 'rect',
@@ -956,7 +956,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'mini_cart_button_size' => array(
                     'title' => __('Button Size', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_woo_mini_cart_button_settings',
                     'description' => __('Set the size of the buttons you would like displayed. Responsive will fit to the current element on the page.', 'paypal-for-woocommerce'),
                     'default' => 'responsive',
                     'desc_tip' => true,
@@ -970,7 +970,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'mini_cart_button_height' => array(
                     'title' => __('Button Height', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_woo_mini_cart_button_settings',
                     'description' => __('Set the height of the buttons you would like displayed.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true,
@@ -979,7 +979,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'mini_cart_button_label' => array(
                     'title' => __('Button Label', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select angelleye_ppcp_mini_cart_button_settings',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_woo_mini_cart_button_settings',
                     'description' => __('Set the label type you would like to use for the PayPal button.', 'paypal-for-woocommerce'),
                     'default' => 'mini_cart',
                     'desc_tip' => true,
@@ -993,7 +993,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'mini_cart_button_tagline' => array(
                     'title' => __('Tagline', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'class' => 'angelleye_ppcp_mini_cart_button_settings',
+                    'class' => 'angelleye_ppcp_woo_mini_cart_button_settings',
                     'default' => 'yes',
                     'label' => __('Enable tagline', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
