@@ -1,8 +1,10 @@
 <?php
 defined('ABSPATH') || exit;
 
-class AngellEYE_PayPal_PPCP_Admin_Action {
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 
+class AngellEYE_PayPal_PPCP_Admin_Action {
+    
     private $angelleye_ppcp_plugin_name;
     public $api_log;
     public ?AngellEYE_PayPal_PPCP_Payment $payment_request;
@@ -75,7 +77,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             add_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
         }
         if (is_admin() && !defined('DOING_AJAX')) {
-            add_action('add_meta_boxes', array($this, 'angelleye_ppcp_order_action_meta_box'), 10, 2);
+            add_action('add_meta_boxes', array($this, 'angelleye_ppcp_order_action_meta_box'), 0, 2);
             if (isset($_POST['is_ppcp_submited']) && 'yes' === $_POST['is_ppcp_submited']) {
                 add_action('woocommerce_order_action_angelleye_ppcp_void_admin', array($this, 'angelleye_ppcp_admin_void_action_handler'), 10, 2);
                 add_action('woocommerce_order_action_angelleye_ppcp_capture_admin', array($this, 'angelleye_ppcp_admin_capture_action_handler'), 10, 2);
@@ -166,12 +168,12 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         return false;
     }
 
-    public function angelleye_ppcp_order_action_meta_box($post_type, $post) {
+    public function angelleye_ppcp_order_action_meta_box($post_type, $post_or_order_object) {
         try {
-            if (isset($post->ID) && !empty($post->ID) && $post_type == 'shop_order') {
-                if ($this->angelleye_ppcp_is_display_paypal_transaction_details($post->ID)) {
-                    add_meta_box('angelleye-ppcp-order-action', __('PayPal Transaction Activity', 'paypal-for-woocommerce'), array($this, 'angelleye_ppcp_order_action_callback'), 'shop_order', 'normal', 'high', null);
-                }
+            $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+            $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+            if ($this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id())) {
+                add_meta_box('angelleye-ppcp-order-action', __('PayPal Transaction Activity', 'paypal-for-woocommerce'), array($this, 'angelleye_ppcp_order_action_callback'), $screen, 'normal', 'high');
             }
         } catch (Exception $ex) {
 
@@ -504,22 +506,21 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         }
     }
 
-    public function angelleye_ppcp_save($post_id, $post) {
+    public function angelleye_ppcp_save($post_id, $post_or_order_object) {
         if (!empty($_POST['save']) && $_POST['save'] == 'Submit') {
-            if (empty($post->ID)) {
-                return false;
+            $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+            $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+            if (!is_a($order, 'WC_Order')) {
+                return;
             }
-            if ($post->post_type != 'shop_order') {
-                return false;
-            }
-
-            $order = wc_get_order($post_id);
-            if (!empty($_POST['angelleye_ppcp_payment_action'])) {
-                $order_data = wc_clean($_POST);
-                $action = wc_clean($_POST['angelleye_ppcp_payment_action']);
-                $hook_name = 'angelleye_ppcp_' . strtolower($action) . '_admin';
-                if (!did_action('woocommerce_order_action_' . sanitize_title($hook_name))) {
-                    do_action('woocommerce_order_action_' . sanitize_title($hook_name), $order, $order_data);
+            if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+                if (!empty($_POST['angelleye_ppcp_payment_action'])) {
+                    $order_data = wc_clean($_POST);
+                    $action = wc_clean($_POST['angelleye_ppcp_payment_action']);
+                    $hook_name = 'angelleye_ppcp_' . strtolower($action) . '_admin';
+                    if (!did_action('woocommerce_order_action_' . sanitize_title($hook_name))) {
+                        do_action('woocommerce_order_action_' . sanitize_title($hook_name), $order, $order_data);
+                    }
                 }
             }
         }

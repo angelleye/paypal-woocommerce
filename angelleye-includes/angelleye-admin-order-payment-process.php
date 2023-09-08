@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+
 class AngellEYE_Admin_Order_Payment_Process {
 
     public $gateway;
@@ -14,7 +16,7 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function __construct() {
         if (is_admin() && !defined('DOING_AJAX')) {
-            add_action('add_meta_boxes', array($this, 'angelleye_add_meta_box'), 10);
+            add_action('add_meta_boxes', array($this, 'angelleye_add_meta_box'), 10, 2);
             add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_admin_create_reference_order'), 10, 2);
             add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_admin_order_process_payment'), 10, 2);
             add_action('angelleye_admin_create_reference_order_action_hook', array($this, 'angelleye_admin_create_reference_order_action'), 10, 1);
@@ -22,9 +24,10 @@ class AngellEYE_Admin_Order_Payment_Process {
         }
     }
 
-    public function angelleye_add_meta_box() {
-        add_meta_box('angelleye_admin_order_payment_process', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_payment_process'), 'shop_order', 'side', 'default');
-        add_meta_box('angelleye_admin_order_reference_order', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_reference_order'), 'shop_order', 'side', 'default');
+    public function angelleye_add_meta_box($post_type, $post_or_order_object) {
+        $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+        add_meta_box('angelleye_admin_order_payment_process', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_payment_process'), $screen, 'side', 'default');
+        add_meta_box('angelleye_admin_order_reference_order', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_reference_order'), $screen, 'side', 'default');
     }
 
     public function angelleye_hide_reference_order_metabox() {
@@ -138,32 +141,27 @@ class AngellEYE_Admin_Order_Payment_Process {
         return ($order->get_status() == 'pending') ? true : false;
     }
 
-    public function angelleye_admin_create_reference_order($post_id, $post) {
+    public function angelleye_admin_create_reference_order($post_id, $post_or_order_object) {
         if (!empty($_POST['angelleye_create_reference_order_submit_button']) && $_POST['angelleye_create_reference_order_submit_button'] == 'Create Reference Transaction Order') {
             if (wp_verify_nonce($_POST['angelleye_create_reference_order_sec'], 'angelleye_create_reference_order_sec')) {
-                if (empty($post_id)) {
-                    return false;
+                $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+                $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+                if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+                    do_action('angelleye_admin_create_reference_order_action_hook', $order);
                 }
-                if ($post->post_type != 'shop_order') {
-                    return false;
-                }
-                $order = wc_get_order($post_id);
-                do_action('angelleye_admin_create_reference_order_action_hook', $order);
+                
             }
         }
     }
 
-    public function angelleye_admin_order_process_payment($post_id, $post) {
+    public function angelleye_admin_order_process_payment($post_id, $post_or_order_object) {
         if (!empty($_POST['angelleye_admin_order_payment_process_submit_button']) && $_POST['angelleye_admin_order_payment_process_submit_button'] == 'Process Reference Transaction') {
             if (wp_verify_nonce($_POST['angelleye_admin_order_payment_process_sec'], 'angelleye_admin_order_payment_process_sec')) {
-                if (empty($post_id)) {
-                    return false;
+                $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+                $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+                if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+                    do_action('angelleye_admin_order_process_payment_action_hook', $order);
                 }
-                if ($post->post_type != 'shop_order') {
-                    return false;
-                }
-                $order = wc_get_order($post_id);
-                do_action('angelleye_admin_order_process_payment_action_hook', $order);
             }
         }
     }

@@ -7,6 +7,9 @@
  * @category	Class
  * @author      Angell EYE <service@angelleye.com>
  */
+
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+
 class AngellEYE_Utility {
 
     public $plugin_name;
@@ -773,20 +776,21 @@ class AngellEYE_Utility {
         if (empty($post->ID)) {
             return $boolean;
         }
-        if ($post->post_type != 'shop_order') {
+        $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
+        if (!is_a($order, 'WC_Order')) {
             return $boolean;
         }
-        $order_id = $post->ID;
-        if (!is_object($order_id)) {
-            $order = wc_get_order($order_id);
-        }
-        $payment_action = '';
-        if ($current->id == 'paypal_express' || $current->id == 'paypal_pro' || $current->id == 'paypal_pro_payflow' || $current->id == 'braintree') {
-            $payment_action = $order->get_meta( '_payment_action', true);
-            if ($payment_action == 'Sale' || $payment_action == 'DoCapture' || empty($payment_action)) {
+        $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+        if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+            $payment_action = '';
+            if ($current->id == 'paypal_express' || $current->id == 'paypal_pro' || $current->id == 'paypal_pro_payflow' || $current->id == 'braintree') {
+                $payment_action = $order->get_meta( '_payment_action', true);
+                if ($payment_action == 'Sale' || $payment_action == 'DoCapture' || empty($payment_action)) {
+                    return $boolean;
+                }
+            } else {
                 return $boolean;
             }
-        } else {
             return $boolean;
         }
         return $boolean;
@@ -988,22 +992,30 @@ class AngellEYE_Utility {
         )));
     }
 
-    public function angelleye_paypal_for_woocommerce_order_action_meta_box($post_type, $post) {
-        if (isset($post->ID) && !empty($post->ID) && $post_type == 'shop_order') {
-            if ($this->angelleye_is_display_paypal_transaction_details($post->ID)) {
-                add_meta_box('angelleye-pw-order-action', __('PayPal Transaction History', 'paypal-for-woocommerce'), array($this, 'angelleye_paypal_for_woocommerce_order_action_callback'), 'shop_order', 'normal', 'high', null);
+    public function angelleye_paypal_for_woocommerce_order_action_meta_box($post_type, $post_or_order_object) {
+        $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+        $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
+        if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+            if ($this->angelleye_is_display_paypal_transaction_details($order->get_id())) {
+                add_meta_box('angelleye-pw-order-action', __('PayPal Transaction History', 'paypal-for-woocommerce'), array($this, 'angelleye_paypal_for_woocommerce_order_action_callback'), $screen, 'normal', 'high', null);
             }
         }
     }
 
-    public function angelleye_get_order_transaction_id($post) {
-
-        if ($post->post_type != 'shop_order') {
-            return false;
+    public function angelleye_get_order_transaction_id($post_or_order_object) {
+        $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+        $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+        if (!is_a($order, 'WC_Order')) {
+            return;
         }
-        $order = wc_get_order($post->ID);
-        $transaction_id = $order->get_transaction_id();
-        return (!empty($transaction_id) ) ? $transaction_id : false;
+        if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+            $transaction_id = $order->get_transaction_id();
+            return (!empty($transaction_id) ) ? $transaction_id : false;
+        }
+        return false;
     }
 
     public function angelleye_paypal_for_woocommerce_order_action_callback($post) {
@@ -1249,24 +1261,23 @@ class AngellEYE_Utility {
         return $post_id_value;
     }
 
-    public function save($post_id, $post) {
+    public function save($post_id, $post_or_order_object) {
         if (!empty($_POST['save']) && $_POST['save'] == 'Submit') {
-            if (empty($post->ID)) {
-                return false;
+            $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+            $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+            if (!is_a($order, 'WC_Order')) {
+                return;
             }
-            if ($post->post_type != 'shop_order') {
-                return false;
-            }
-            $order = wc_get_order($post_id);
-            if (empty($this->payment_method)) {
-
-                $this->payment_method = $order->get_payment_method();
-            }
-            if (!empty($_POST['angelleye_payment_action'])) {
-                $action = wc_clean($_POST['angelleye_payment_action']);
-                $hook_name = 'wc_' . $this->payment_method . '_' . strtolower($action);
-                if (!did_action('woocommerce_order_action_' . sanitize_title($hook_name))) {
-                    do_action('woocommerce_order_action_' . sanitize_title($hook_name), $order);
+            if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+                if (empty($this->payment_method)) {
+                    $this->payment_method = $order->get_payment_method();
+                }
+                if (!empty($_POST['angelleye_payment_action'])) {
+                    $action = wc_clean($_POST['angelleye_payment_action']);
+                    $hook_name = 'wc_' . $this->payment_method . '_' . strtolower($action);
+                    if (!did_action('woocommerce_order_action_' . sanitize_title($hook_name))) {
+                        do_action('woocommerce_order_action_' . sanitize_title($hook_name), $order);
+                    }
                 }
             }
         }
@@ -1572,16 +1583,14 @@ class AngellEYE_Utility {
         public function angelleye_set_payment_method() {
             if (empty($this->payment_method) || $this->payment_method == false) {
                 global $post;
-                if (empty($post->ID)) {
-                    return false;
+                $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+                $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
+                if (!is_a($order, 'WC_Order')) {
+                    return;
                 }
-                if ($post->post_type != 'shop_order') {
-                    return false;
+                if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+                    $this->payment_method = $order->get_payment_method();
                 }
-
-                $order = wc_get_order($post->ID);
-
-                $this->payment_method = $order->get_payment_method();
             }
         }
 
@@ -1590,12 +1599,10 @@ class AngellEYE_Utility {
                 global $wpdb;
                 $results = $wpdb->get_results($wpdb->prepare("SELECT post_id FROM {$wpdb->prefix}postmeta WHERE meta_value = %s ORDER BY meta_id", $transaction));
                 if (!empty($results[0]->post_id)) {
-
                     $order = wc_get_order($results[0]->post_id);
                     if (empty($order)) {
                         return false;
                     }
-
                     $this->payment_method = $order->get_payment_method();
                 }
             }
