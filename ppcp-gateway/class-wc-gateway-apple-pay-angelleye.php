@@ -25,11 +25,12 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     public $paymentaction;
     public $three_d_secure_contingency;
     public $is_enabled;
-    
+
     /**
      * @var ?string
      */
     public ?string $apple_pay_payments_description;
+    private bool $ppcp_enabled;
 
     public function __construct() {
         parent::__construct();
@@ -62,7 +63,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             ];
 
             $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
-            
+
             if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
                 $this->supports = array_merge($baseSupports, $subscriptionSupports);
             } elseif ($this->enable_tokenized_payments || (isset($_GET['page']) && isset($_GET['tab']) && 'wc-settings' === $_GET['page'] && 'checkout' === $_GET['tab'])) {
@@ -70,13 +71,13 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             } else {
                 $this->supports = $baseSupports;
             }
-            $this->ppcp_enabled = 'yes' === $this->get_option('enabled', 'no');
+            $this->ppcp_enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay'));
             $this->title = $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay');
             $this->enable_apple_pay = 'yes' === $this->setting_obj->get('enable_apple_pay', 'no');
             $this->apple_pay_payments_description = $this->setting_obj->get('apple_pay_payments_description', 'Complete your purchase by selecting your saved payment methods or using Apple Pay.');
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -102,7 +103,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -117,7 +118,7 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             </fieldset>
             <?php
         } catch (Exception $ex) {
-            
+
         }
     }
 
