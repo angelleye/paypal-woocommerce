@@ -343,7 +343,7 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_is_admin_order_payment_method_available($order) {
         $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
-        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc'))) {
+        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc', 'angelleye_ppcp_apple_pay'))) {
             return true;
         } else {
             return false;
@@ -406,7 +406,7 @@ class AngellEYE_Admin_Order_Payment_Process {
     public function get_usable_reference_transaction($order) {
         $this->payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
         $user_id = $order->get_user_id();
-        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc'))) {
+        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc', 'angelleye_ppcp_apple_pay'))) {
             return $this->angelleye_get_payment_token($user_id, $order);
         }
     }
@@ -426,7 +426,7 @@ class AngellEYE_Admin_Order_Payment_Process {
                 return $customer_billing_agreement_id;
             }
             return $this->angelleye_get_customer_or_order_tokens($user_id, $order);
-        } elseif ($this->payment_method === 'angelleye_ppcp' || $this->payment_method === 'angelleye_ppcp_cc') {
+        } elseif (in_array($this->payment_method, ['angelleye_ppcp', 'angelleye_ppcp_cc', 'angelleye_ppcp_apple_pay'])) {
             if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
             }
