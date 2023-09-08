@@ -18,7 +18,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     protected static $_instance = null;
     public $setting_obj;
     public $is_auto_capture_auth;
-    public $seller_onboarding;
+    public ?AngellEYE_PayPal_PPCP_Seller_Onboarding $seller_onboarding;
     public $is_sandbox;
     public $merchant_id;
 
