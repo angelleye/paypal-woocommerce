@@ -228,7 +228,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             add_action('woocommerce_after_add_to_cart_form', array($this, 'display_paypal_button_product_page'), 10);
         }
         if ($this->enable_woo_mini_cart_button) {
-            add_action('woocommerce_widget_shopping_cart_after_buttons', [$this, 'render_mini_cart_smart_button_div']);
+            add_action('woocommerce_widget_shopping_cart_buttons', [$this, 'render_mini_cart_smart_button_div']);
         }
         if ($this->enable_cart_button) {
             if ($this->cart_button_position === 'both') {
