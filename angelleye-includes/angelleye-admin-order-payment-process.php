@@ -267,6 +267,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         AngellEYE_Utility::angelleye_set_address($new_order->get_id(), $billing_details, 'billing');
         $this->payment_method = $order->get_payment_method();
         $new_order->set_payment_method($this->payment_method);
+        $new_order->update_meta_data('_created_via', 'create_new_reference_order');
         $new_order->update_meta_data('_enviorment', $environment);
         $token_id = $this->get_usable_reference_transaction($order);
         if (!empty($token_id)) {
@@ -276,8 +277,8 @@ class AngellEYE_Admin_Order_Payment_Process {
             $this->angelleye_update_order_meta($order, $new_order);
         }
         $order->add_order_note('Order Created: Create Reference Transaction Order', 0, false);
-        $new_order->save();
         $new_order->calculate_totals();
+        $new_order->save();
         wp_redirect(get_edit_post_link($new_order->get_id(), 'url'));
         exit();
     }
