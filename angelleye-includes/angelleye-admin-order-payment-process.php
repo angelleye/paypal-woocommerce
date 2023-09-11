@@ -108,10 +108,9 @@ class AngellEYE_Admin_Order_Payment_Process {
         }
     }
 
-    public function admin_order_payment_process($post) {
+    public function admin_order_payment_process($post_or_order_object) {
         $is_disable_button = false;
-        $order_id = $post->ID;
-        $order = wc_get_order($order_id);
+        $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
         if ($this->angelleye_is_order_created_by_create_new_reference_order($order) && $this->angelleye_is_order_status_pending($order) == true) {
             $reason_array = $this->angelleye_get_reason_why_process_reference_transaction_button_not_available($order);
             if (count($reason_array) > 1) {
@@ -204,8 +203,8 @@ class AngellEYE_Admin_Order_Payment_Process {
                 }
                 break;
         }
-        $order->update_meta_data('_created_via', 'admin_order_process_payment');
-        $order->save_meta_data();
+        $order->set_created_via('admin_order_process_payment');
+        $order->save();
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
     }
 
@@ -258,16 +257,15 @@ class AngellEYE_Admin_Order_Payment_Process {
             'email' => $order->get_billing_email(),
             'phone' => $order->get_billing_phone(),
         );
-        $old_order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $environment = get_post_meta($old_order_id, '_enviorment', true);
+        $environment = $order->get_meta('_enviorment');
         $new_order = wc_create_order($args);
         $old_get_items = $order->get_items();
         $new_order->add_item($old_get_items);
-        AngellEYE_Utility::angelleye_set_address($new_order->get_id(), $shipping_details, 'shipping');
-        AngellEYE_Utility::angelleye_set_address($new_order->get_id(), $billing_details, 'billing');
+        AngellEYE_Utility::angelleye_set_address($new_order, $shipping_details, 'shipping');
+        AngellEYE_Utility::angelleye_set_address($new_order, $billing_details, 'billing');
         $this->payment_method = $order->get_payment_method();
         $new_order->set_payment_method($this->payment_method);
-        $new_order->update_meta_data('_created_via', 'create_new_reference_order');
+        $new_order->set_created_via('create_new_reference_order');
         $new_order->update_meta_data('_enviorment', $environment);
         $token_id = $this->get_usable_reference_transaction($order);
         if (!empty($token_id)) {
@@ -276,10 +274,10 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!empty($_POST['copy_items_to_new_invoice']) && $_POST['copy_items_to_new_invoice'] == 'on') {
             $this->angelleye_update_order_meta($order, $new_order);
         }
-        $order->add_order_note('Order Created: Create Reference Transaction Order', 0, false);
+        $new_order->add_order_note('Order Created: Create Reference Transaction Order', 0, false);
         $new_order->calculate_totals();
         $new_order->save();
-        wp_redirect(get_edit_post_link($new_order->get_id(), 'url'));
+        wp_redirect($new_order->get_edit_order_url());
         exit();
     }
 

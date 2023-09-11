@@ -1273,7 +1273,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
         $order_data['terms'] = 1;
         $order_data['createaccount'] = 0;
-        $order_data['ship_to_different_address'] = false;
+        
 
         // merge post data with the transaction details data during the cc_capture api call
         if (isset($_POST)) {
@@ -1331,6 +1331,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $order_data[$key] = $value;
                 }
             }
+        }
+        if(!isset($order_data['ship_to_different_address'])) {
+            $order_data['ship_to_different_address'] = false;
+        }
+        if(!isset($order_data['shipping_method'])) {
+            $order_data['shipping_method'] = '';
         }
         return $order_data;
     }

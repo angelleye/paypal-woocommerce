@@ -129,7 +129,7 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
             if (!empty($subscriptions)) {
                 foreach ($subscriptions as $subscription) {
                     $subscription_parent = wcs_get_subscriptions_for_order($subscription->get_parent_id());
-                    $payment_tokens_id = $subscription_parent->get_post_meta('_payment_tokens_id', true);
+                    $payment_tokens_id = $subscription_parent->get_meta('_payment_tokens_id', true);
                     if (!empty($payment_tokens_id)) {
                         $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                         $subscription->save();

@@ -1682,16 +1682,19 @@ class AngellEYE_Utility {
         return $is_sandbox_set;
     }
 
-    public static function angelleye_set_address($order_id, $address, $type = 'billing') {
-        $order = wc_get_order($order_id);
-        if (!is_a($order, 'WC_Order')) {
+    public static function angelleye_set_address($new_order, $address, $type = 'billing') {
+        if (!is_a($new_order, 'WC_Order')) {
             return;
         }
         foreach ($address as $key => $value) {
-            is_string($value) ? wc_clean(stripslashes($value)) : $value;
-            $order->update_meta_data("_{$type}_" . $key, $value);
+            if (is_callable(array($new_order, "set_{$type}_" . $key))) {
+                $new_order->{"set_{$type}_" . $key}($value);
+                $new_order->save();
+            } else {
+                $new_order->update_meta_data('_' . $key, $value);
+                $new_order->save_meta_data();
+            }
         }
-        $order->save();
     }
 
     public static function angelleye_paypal_for_woo_wc_autoship_cart_has_autoship_item() {
