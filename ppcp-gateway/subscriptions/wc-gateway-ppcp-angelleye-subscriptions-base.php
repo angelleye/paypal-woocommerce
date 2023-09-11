@@ -125,7 +125,7 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
             }
             if (!empty($subscriptions)) {
                 foreach ($subscriptions as $subscription) {
-                    $subscriptions_parent = wcs_get_subscriptions_for_order($subscription->get_parent_id());
+                    $subscriptions_parent = wcs_get_subscriptions($subscription->get_parent_id());
                     $payment_tokens_id = $subscriptions_parent->get_meta('_payment_tokens_id');
                     if (!empty($payment_tokens_id)) {
                         $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);

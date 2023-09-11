@@ -108,15 +108,15 @@ class WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE extends WC_Gateway_P
             }
             if (!empty($subscriptions)) {
                 foreach ($subscriptions as $subscription) {
-                    $subscriptions_parent = wcs_get_subscriptions_for_order($subscription->get_parent_id());
+                    $subscriptions_parent = wcs_get_subscriptions($subscription->get_parent_id());
                     $payment_tokens_id = $subscriptions_parent->get_meta('_transaction_id');
                     if (!empty($payment_tokens_id)) {
                         $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                         $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                        $subscription->save();
+                        $renewal_order->save();
                     }
                 }
-                $subscription->save();
-                $renewal_order->save();
             }
         }
     }
