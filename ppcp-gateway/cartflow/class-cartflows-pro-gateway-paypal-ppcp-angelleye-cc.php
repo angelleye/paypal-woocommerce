@@ -122,6 +122,14 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
             $input_qty = intval($_POST['input_qty']);
         }
         $offer_product = wcf_pro()->utils->get_offer_data($step_id, $variation_id, $input_qty, $order_id);
+        if (empty($offer_product)) {
+            wp_send_json(
+                array(
+                    'result' => 'fail',
+                    'message' => __('Cannot create orders with empty product.', 'paypal-for-woocommerce'),
+                )
+            );
+        }
         if (isset($offer_product['price']) && ( floatval(0) === floatval($offer_product['price']) || '' === trim($offer_product['price']) )) {
             wcf()->logger->log(
                     "Cannot create PayPal Payments Order. The selected product's price is zero. Order: {$order_id}"

@@ -540,7 +540,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $seller_onboarding_status_transient = [];
             }
         }
-        set_transient('ae_seller_onboarding_status', $seller_onboarding_status_transient, HOUR_IN_SECONDS);
+        set_transient('ae_seller_onboarding_status', $seller_onboarding_status_transient, DAY_IN_SECONDS);
         return $seller_onboarding_status_transient;
     }
 

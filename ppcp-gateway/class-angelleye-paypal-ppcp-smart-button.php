@@ -1268,6 +1268,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
             AngellEye_Session_Manager::set('paypal_transaction_details', $this->checkout_details);
         }
+        $angelleye_ppcp_checkout_post = AngellEye_Session_Manager::get('checkout_post');
         $shipping_address = angelleye_ppcp_get_mapped_shipping_address($this->checkout_details);
         $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
         $order_data['terms'] = 1;
@@ -1296,9 +1297,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             default:
                 $order_data['payment_method'] = 'angelleye_ppcp';
         }
-        $order_data['ship_to_different_address'] = false;
-        $order_data['order_comments'] = '';
-        $order_data['shipping_method'] = '';
         if (isset($shipping_address['email_address'])) {
             $order_data['billing_email'] = $shipping_address['email_address'];
         }
@@ -1325,6 +1323,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $order_data['shipping_city'] = $shipping_address['city'] ?? '';
             $order_data['shipping_state'] = $shipping_address['state'] ?? '';
             $order_data['shipping_postcode'] = $shipping_address['postcode'] ?? '';
+        }
+        if (isset($angelleye_ppcp_checkout_post)) {
+            foreach ($angelleye_ppcp_checkout_post as $key => $value) {
+                if (!isset($order_data[$key])) {
+                    $order_data[$key] = $value;
+                }
+            }
         }
         return $order_data;
     }

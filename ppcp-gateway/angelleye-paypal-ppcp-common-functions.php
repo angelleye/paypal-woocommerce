@@ -1016,3 +1016,13 @@ if (!function_exists('is_used_save_payment_token')) {
     }
 
 }
+
+if (!function_exists('ae_get_checkout_url')) {
+    function ae_get_checkout_url(): string {
+        $checkout_page_url = wc_get_checkout_url();
+        if (isset($_REQUEST['wfacp_id'])) {
+            $checkout_page_url = get_permalink($_REQUEST['wfacp_id']);
+        }
+        return $checkout_page_url;
+    }
+}

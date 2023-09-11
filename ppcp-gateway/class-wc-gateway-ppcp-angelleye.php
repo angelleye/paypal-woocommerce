@@ -129,6 +129,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if (!isset($_POST['woocommerce_angelleye_ppcp_enabled']) || $_POST['woocommerce_angelleye_ppcp_enabled'] == "0") {
             // run the automatic domain remove feature
             AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoUnRegisterDomain();
+            delete_option('ae_apple_pay_domain_reg_retries');
             delete_transient('ae_seller_onboarding_status');
         }
         parent::process_admin_options();

@@ -20,7 +20,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     protected static $_instance = null;
     public $setting_obj;
     public $is_auto_capture_auth;
-    public $seller_onboarding;
+    public ?AngellEYE_PayPal_PPCP_Seller_Onboarding $seller_onboarding;
     public $is_sandbox;
     public $merchant_id;
 
@@ -189,7 +189,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $payment_method = $order->get_payment_method();
             $payment_action = angelleye_ppcp_get_post_meta($order, '_payment_action', true);
             if (isset($payment_method) && !empty($payment_method) && isset($payment_action) && !empty($payment_action)) {
-                if (($payment_method == 'angelleye_ppcp_cc' || $payment_method == 'angelleye_ppcp') && ($payment_action === "authorize" && $order->get_total() > 0)) {
+                if (in_array($payment_method, ['angelleye_ppcp_cc', 'angelleye_ppcp', 'angelleye_ppcp_apple_pay']) && ($payment_action === "authorize" && $order->get_total() > 0)) {
                     return true;
                 } else {
                     return false;
@@ -406,11 +406,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             </td>
                         </tr>
                     </tbody>
-                </table>
-            </div>
-            <?php
-        }
-        ?>
+                </table><?php
+            }
+        ?></div>
+            
         <?php if (isset($this->angelleye_ppcp_order_status_data['void']) && isset($this->angelleye_ppcp_order_actions['void'])) { ?>
 
             <p style="font-size: 14px;" class="angelleye_ppcp_void_box" style="display: none;">
@@ -434,7 +433,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         ?>
         <input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited">
         <input type="submit" id="angelleye_ppcp_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
-        </div>
+        
         <table class="widefat  angelleye_ppcp_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;border: none;">
             <tbody>
                 <tr>

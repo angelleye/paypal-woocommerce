@@ -123,6 +123,15 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
     public static function autoRegisterDomain(): bool
     {
         if (!self::isApplePayDomainAdded()) {
+            /**
+             * Try to register the domain max 1 time, this reduces the register attempt in case add domain fails
+             * If domain registration fails its expected user will register manually.
+             */
+            $auto_register_status = get_option('ae_apple_pay_domain_reg_retries', 0);
+            if ($auto_register_status > 0) {
+                return false;
+            }
+            update_option('ae_apple_pay_domain_reg_retries', 1);
             $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
             try {
                 /**

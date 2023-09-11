@@ -370,7 +370,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         wc_add_notice($exception->getMessage(), 'error');
                         wp_send_json_success(array(
                             'result' => 'failure',
-                            'redirect' => wc_get_checkout_url()
+                            'redirect' => ae_get_checkout_url()
                         ));
                         exit();
                     }
@@ -593,7 +593,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php';
         }
         $ppcp_checkout = AngellEYE_PayPal_PPCP_Checkout::instance();
-        return $ppcp_checkout->process_checkout();
+        $ppcp_checkout->process_checkout();
     }
 
     public function angelleye_ppcp_direct_capture() {

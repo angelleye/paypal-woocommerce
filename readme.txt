@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.2.2
-Stable tag: 4.1.24
+Tested up to: 6.3.1
+Stable tag: 4.2.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.2.1 - 09.11.2023 =
+* Fix - Fixes Order notes are not getting added to the WooCommerce order. ([PFW-1581](https://github.com/angelleye/paypal-woocommerce/pull/1901))
+
+= 4.2.0 - 09.08.2023 =
+* Tweak - Resolves the pending order issue. ([PFW-1568](https://github.com/angelleye/paypal-woocommerce/pull/1898))
+* Fix - Fixes the PayPal transaction activity table structure. ([PFW-1566](https://github.com/angelleye/paypal-woocommerce/pull/1900))
 
 = 4.1.24 - 08.25.2023 =
 * Fix - Resolves the PayLaterMessaging duplicate display issue when terms and conditions is on during checkout. ([PFW-1527](https://github.com/angelleye/paypal-woocommerce/pull/1897))
