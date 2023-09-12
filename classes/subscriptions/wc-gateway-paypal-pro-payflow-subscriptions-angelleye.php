@@ -23,7 +23,7 @@ class WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE extends WC_Gateway_P
 
     public function process_payment($order_id) {
         if ($this->is_subscription($order_id)) {
-            if(AngellEYE_Utility::is_subs_change_payment()) {
+            if (AngellEYE_Utility::is_subs_change_payment()) {
                 return parent::subscription_change_payment($order_id);
             } else {
                 return parent::process_payment($order_id);
@@ -109,15 +109,14 @@ class WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE extends WC_Gateway_P
             if (!empty($subscriptions)) {
                 foreach ($subscriptions as $subscription) {
                     $subscription_parent = wcs_get_subscription($subscription->get_parent_id());
-                    if ( ! is_a( $subscription_parent, WC_Subscription::class ) ) {
-                        return;
-                    }
-                    $payment_tokens_id = $subscription_parent->get_meta('_transaction_id');
-                    if (!empty($payment_tokens_id)) {
-                        $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
-                        $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
-                        $subscription->save();
-                        $renewal_order->save();
+                    if (is_a($subscription_parent, WC_Subscription::class)) {
+                        $payment_tokens_id = $subscription_parent->get_meta('_transaction_id');
+                        if (!empty($payment_tokens_id)) {
+                            $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                            $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                            $subscription->save();
+                            $renewal_order->save();
+                        }
                     }
                 }
             }

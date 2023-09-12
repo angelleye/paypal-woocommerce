@@ -61,13 +61,12 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
                 $subscription_parent = wcs_get_subscription($subscription->get_parent_id());
-                if ( ! is_a( $subscription_parent, WC_Subscription::class ) ) {
-                    return;
-                }
-                $angelleye_ppcp_used_payment_method = $subscription_parent->get_meta('_angelleye_ppcp_used_payment_method');
-                if (!empty($angelleye_ppcp_used_payment_method)) {
-                    $renewal_order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
-                    $renewal_order->save();
+                if (is_a($subscription_parent, WC_Subscription::class)) {
+                    $angelleye_ppcp_used_payment_method = $subscription_parent->get_meta('_angelleye_ppcp_used_payment_method');
+                    if (!empty($angelleye_ppcp_used_payment_method)) {
+                        $renewal_order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                        $renewal_order->save();
+                    }
                 }
             }
         }
@@ -132,15 +131,14 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions extends WC_Gateway_PPCP_AngellEYE 
             if (!empty($subscriptions)) {
                 foreach ($subscriptions as $subscription) {
                     $subscription_parent = wcs_get_subscription($subscription->get_parent_id());
-                    if ( ! is_a( $subscription_parent, WC_Subscription::class ) ) {
-                        return;
-                    }
-                    $payment_tokens_id = $subscription_parent->get_meta('_payment_tokens_id', true);
-                    if (!empty($payment_tokens_id)) {
-                        $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
-                        $subscription->save();
-                        $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
-                        $renewal_order->save();
+                    if (is_a($subscription_parent, WC_Subscription::class)) {
+                        $payment_tokens_id = $subscription_parent->get_meta('_payment_tokens_id', true);
+                        if (!empty($payment_tokens_id)) {
+                            $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                            $subscription->save();
+                            $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                            $renewal_order->save();
+                        }
                     }
                 }
             }
