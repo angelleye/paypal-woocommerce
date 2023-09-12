@@ -26,8 +26,14 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_add_meta_box($post_type, $post_or_order_object) {
         $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
-        add_meta_box('angelleye_admin_order_payment_process', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_payment_process'), $screen, 'side', 'default');
-        add_meta_box('angelleye_admin_order_reference_order', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_reference_order'), $screen, 'side', 'default');
+        $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
+        if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+            add_meta_box('angelleye_admin_order_payment_process', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_payment_process'), $screen, 'side', 'default');
+            add_meta_box('angelleye_admin_order_reference_order', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_reference_order'), $screen, 'side', 'default');
+        }
     }
 
     public function angelleye_hide_reference_order_metabox() {
