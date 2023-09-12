@@ -1684,6 +1684,9 @@ class AngellEYE_Utility {
 
     public static function angelleye_set_address($new_order, $address, $type = 'billing') {
         if (!is_a($new_order, 'WC_Order')) {
+            $new_order = wc_get_order($new_order);
+        }
+        if (!is_a($new_order, 'WC_Order')) {
             return;
         }
         foreach ($address as $key => $value) {
