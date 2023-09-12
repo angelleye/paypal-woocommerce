@@ -77,9 +77,9 @@ class WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE extends WC_Gate
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
                 $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                $subscription->save();
             }
         }
-        $subscription->save();
     }
 
     public function delete_resubscribe_meta($resubscribe_order) {
