@@ -1179,6 +1179,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
         }
         WC()->customer->set_calculated_shipping(true);
+        WC()->customer->save();
     }
 
     public function get_state_code($cc, $state) {
@@ -1265,7 +1266,6 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 do_action('angelleye_save_angelleye_fraudnet', $subscription_id);
             }
         } else {
-            do_action('angelleye_save_angelleye_fraudnet', $subscription_id);
             $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
             $order->save();
         }
