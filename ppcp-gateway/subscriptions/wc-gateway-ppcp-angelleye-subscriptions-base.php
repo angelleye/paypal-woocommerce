@@ -54,8 +54,11 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                $subscriptions_parent = wcs_get_subscription($subscription->get_parent_id());
-                $angelleye_ppcp_used_payment_method = $subscriptions_parent->get_meta('_angelleye_ppcp_used_payment_method');
+                $subscription_parent = wcs_get_subscription($subscription->get_parent_id());
+                if ( ! is_a( $subscription_parent, WC_Subscription::class ) ) {
+                    return;
+                }
+                $angelleye_ppcp_used_payment_method = $subscription_parent->get_meta('_angelleye_ppcp_used_payment_method');
                 if (!empty($angelleye_ppcp_used_payment_method)) {
                     $renewal_order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
                     $renewal_order->save();
@@ -82,8 +85,11 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     public function validate_subscription_payment_meta($payment_method_id, $payment_meta, $subscription) {
         if ($this->id === $payment_method_id) {
             if (empty($payment_meta['post_meta']['_payment_tokens_id']['value'])) {
-                $subscriptions_parent = wcs_get_subscription($subscription->get_parent_id());
-                $payment_tokens_id = $subscriptions_parent->get_meta('_payment_tokens_id');
+                $subscription_parent = wcs_get_subscription($subscription->get_parent_id());
+                if ( ! is_a( $subscription_parent, WC_Subscription::class ) ) {
+                    return;
+                }
+                $payment_tokens_id = $subscription_parent->get_meta('_payment_tokens_id');
                 if (!empty($payment_tokens_id)) {
                     $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                 } else {
@@ -125,8 +131,11 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
             }
             if (!empty($subscriptions)) {
                 foreach ($subscriptions as $subscription) {
-                    $subscriptions_parent = wcs_get_subscription($subscription->get_parent_id());
-                    $payment_tokens_id = $subscriptions_parent->get_meta('_payment_tokens_id');
+                    $subscription_parent = wcs_get_subscription($subscription->get_parent_id());
+                    if ( ! is_a( $subscription_parent, WC_Subscription::class ) ) {
+                        return;
+                    }
+                    $payment_tokens_id = $subscription_parent->get_meta('_payment_tokens_id');
                     if (!empty($payment_tokens_id)) {
                         $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                         $subscription->save();

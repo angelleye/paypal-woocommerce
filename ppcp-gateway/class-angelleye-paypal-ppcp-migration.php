@@ -288,6 +288,9 @@ class AngellEYE_PayPal_PPCP_Migration {
             if (!empty($subscription_ids)) {
                 foreach ($subscription_ids as $subscription_id) {
                     $user_subscription = wcs_get_subscription($subscription_id);
+                    if ( ! is_a( $user_subscription, WC_Subscription::class ) ) {
+                        return;
+                    }
                     if ($user_subscription->get_time('next_payment') <= 0 || !$user_subscription->has_status(array('active', 'on-hold'))) {
                         continue;
                     }

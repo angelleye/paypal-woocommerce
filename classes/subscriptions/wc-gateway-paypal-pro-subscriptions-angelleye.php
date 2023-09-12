@@ -122,6 +122,9 @@ class WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE extends WC_Gateway_PayPal_Pr
             if (!empty($subscriptions)) {
                 foreach ($subscriptions as $subscription) {
                     $subscription_parent = wcs_get_subscription($subscription->get_parent_id());
+                    if ( ! is_a( $subscription_parent, WC_Subscription::class ) ) {
+                        return;
+                    }
                     $payment_tokens_id = $subscription_parent->get_meta('_transaction_id');
                     if (!empty($payment_tokens_id)) {
                         $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
