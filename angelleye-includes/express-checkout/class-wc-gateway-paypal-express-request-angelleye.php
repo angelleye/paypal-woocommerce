@@ -1277,7 +1277,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
         if (is_user_logged_in()) {
             $userLogined = wp_get_current_user();
             $this->user_email_address = $userLogined->user_email;
-            $order->update_meta_data('_customer_user', $userLogined->ID);
+            $order->set_customer_id(apply_filters('woocommerce_checkout_customer_id', $userLogined->ID));
             $order->save();
         }
     }
@@ -1556,7 +1556,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                     'last_name' => $last_name,
                     'display_name' => $first_name
                 );
-                $order->update_meta_data('_customer_user', $customer_id);
+                $order->set_customer_id(apply_filters('woocommerce_checkout_customer_id', $customer_id));
                 $order->save();
                 wp_update_user(apply_filters('woocommerce_checkout_customer_userdata', $userdata, WC()->customer));
                 wc_clear_notices();

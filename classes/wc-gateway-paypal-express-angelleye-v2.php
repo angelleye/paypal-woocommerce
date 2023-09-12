@@ -3119,7 +3119,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         AngellEYE_Utility::angelleye_set_address($order_id, $shipping_details, 'shipping');
                         $order_id = $order->get_id();
                         $order->set_payment_method($this);
-                        $order->update_meta_data('_customer_user', get_current_user_id());
+                        $order->set_customer_id(apply_filters('woocommerce_checkout_customer_id', get_current_user_id()));
                         $post_data = angelleye_get_session('post_data');
                         if (!empty($post_data['billing_phone'])) {
                             $order->set_billing_phone($post_data['billing_phone']);
