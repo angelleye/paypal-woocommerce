@@ -1340,7 +1340,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             // Redirect the user to the checkout page in case order update fails
             if ($ex->getCode() == 302) {
                 $this->api_log->log('UpdateOrder Request URL: ' . $this->paypal_order_api . $paypal_order_id);
-                $this->api_log->log('UpdateOrder Request Body: ' . wc_print_r($args, true));
                 wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
                 wp_redirect(wc_get_checkout_url());
             }

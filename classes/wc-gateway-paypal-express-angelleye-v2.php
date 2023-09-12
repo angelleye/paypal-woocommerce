@@ -2761,6 +2761,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                 $this->tokenization_script();
                 $this->saved_payment_methods();
                 if (AngellEYE_Utility::is_cart_contains_subscription() == false && AngellEYE_Utility::is_subs_change_payment() == false) {
+                    $html = '<ul class="woocommerce-SavedPaymentMethods wc-saved-payment-methods" data-count="">';
+                    $html .= '</ul>';
+                    echo $html;
                     $this->save_payment_method_checkbox();
                 }
                 do_action('payment_fields_saved_payment_methods', $this);
@@ -3119,15 +3122,10 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                         $order->update_meta_data('_customer_user', get_current_user_id());
                         $post_data = angelleye_get_session('post_data');
                         if (!empty($post_data['billing_phone'])) {
-                            $order->update_meta_data('_billing_phone', $post_data['billing_phone']);
+                            $order->set_billing_phone($post_data['billing_phone']);
                         }
                         if (!empty($post_data['order_comments'])) {
-                            $order->update_meta_data('order_comments', $post_data['order_comments']);
-                            $my_post = array(
-                                'ID' => $order_id,
-                                'post_excerpt' => $post_data['order_comments'],
-                            );
-                            wp_update_post($my_post);
+                            $order->set_customer_note($post_data['order_comments']);
                         }
                         $order->save();
                         $_GET['order_id'] = $order_id;
