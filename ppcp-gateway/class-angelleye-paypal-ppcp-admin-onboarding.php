@@ -4,7 +4,10 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
     public $setting_obj;
-    public ?AngellEYE_PayPal_PPCP_Seller_Onboarding $seller_onboarding;
+    /**
+     * @var AngellEYE_PayPal_PPCP_Seller_Onboarding|null $seller_onboarding
+     */
+    public $seller_onboarding;
     public $sandbox;
     public $settings_sandbox;
     public $sandbox_merchant_id;
@@ -214,7 +217,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -232,7 +235,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -260,7 +263,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -359,7 +362,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -375,7 +378,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             ");
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -415,7 +418,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -665,7 +668,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -677,7 +680,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -714,7 +717,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -759,7 +762,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 GROUP BY pm2.meta_value, pm.meta_value;", ARRAY_A);
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -796,7 +799,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     ) AS subquery
                 )");
         } catch (Exception $ex) {
-            
+
         }
     }
 }

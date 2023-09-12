@@ -8,9 +8,19 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     public static string $checkout_started_from;
     private $angelleye_ppcp_plugin_name;
     public $api_log;
-    public AngellEYE_PayPal_PPCP_Payment $payment_request;
+
+    /**
+     * @var AngellEYE_PayPal_PPCP_Payment $payment_request
+     */
+    public $payment_request;
+
     public $setting_obj;
-    public AngellEYE_PayPal_PPCP_Smart_Button $smart_button;
+
+    /**
+     * @var AngellEYE_PayPal_PPCP_Smart_Button $smart_button
+     */
+    public $smart_button;
+
     protected static $_instance = null;
     public $procceed = 1;
     public $reject = 2;

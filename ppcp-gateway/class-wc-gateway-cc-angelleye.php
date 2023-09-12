@@ -18,7 +18,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     public $merchant_id;
     public $client_id;
     public $secret_id;
-    public $enable_tokenized_payments;
+    public bool $enable_tokenized_payments;
     public $paymentaction;
     public $checkout_disable_smart_button;
 

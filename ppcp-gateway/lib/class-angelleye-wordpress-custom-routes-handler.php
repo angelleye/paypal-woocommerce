@@ -1,7 +1,11 @@
 <?php
 
 class AngellEye_WordPress_Custom_Route_Handler {
-    private static ?AngellEye_WordPress_Custom_Route_Handler $_instance = null;
+
+    /**
+     * @var AngellEye_WordPress_Custom_Route_Handler|null $_instance
+     */
+    private static $_instance = null;
     protected $routes = array();
 
     protected $force_flush = false;

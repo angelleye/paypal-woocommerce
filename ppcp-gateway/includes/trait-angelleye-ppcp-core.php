@@ -2,11 +2,31 @@
 
 trait AngellEye_PPCP_Core
 {
-    public ?WC_Gateway_PPCP_AngellEYE_Settings $setting_obj;
-    public ?AngellEYE_PayPal_PPCP_Log $api_log;
-    public ?AngellEYE_PayPal_PPCP_Request $api_request;
-    public ?AngellEYE_PayPal_PPCP_DCC_Validate $dcc_applies;
-    public ?AngellEYE_PayPal_PPCP_Payment $payment_request;
+    /**
+     * @var WC_Gateway_PPCP_AngellEYE_Settings|null $setting_obj
+     */
+    public $setting_obj;
+
+    /**
+     * @var AngellEYE_PayPal_PPCP_Log|null $api_log
+     */
+    public $api_log;
+
+    /**
+     * @var AngellEYE_PayPal_PPCP_Request|null $api_request
+     */
+    public $api_request;
+
+    /**
+     * @var AngellEYE_PayPal_PPCP_DCC_Validate|null $dcc_applies
+     */
+    public $dcc_applies;
+
+    /**
+     * @var AngellEYE_PayPal_PPCP_Payment|null $payment_request
+     */
+    public $payment_request;
+
     public $setting_obj_fields;
     public static $_instance;
 

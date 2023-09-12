@@ -6,9 +6,16 @@
  */
 class AngellEye_Session_Manager
 {
-    private static ?AngellEye_Session_Manager $instance = null;
+    /**
+     * @var AngellEye_Session_Manager|null $instance
+     */
+    private static $instance = null;
+
     private string $sessionName = 'angelleye_ppcp_session';
-    private ?array $_data = null;
+    /**
+     * @var array|null $_data
+     */
+    private $_data = null;
 
     public static function instance(): AngellEye_Session_Manager
     {

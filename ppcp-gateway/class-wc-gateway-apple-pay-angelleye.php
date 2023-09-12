@@ -27,9 +27,10 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     public $is_enabled;
 
     /**
-     * @var ?string
+     * @var ?string $apple_pay_payments_description
      */
-    public ?string $apple_pay_payments_description;
+    public $apple_pay_payments_description;
+
     private bool $ppcp_enabled;
 
     public function __construct() {

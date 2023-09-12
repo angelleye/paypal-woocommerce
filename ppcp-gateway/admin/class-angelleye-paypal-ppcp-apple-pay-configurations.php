@@ -3,10 +3,23 @@
 class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
 {
     public static $_instance;
-    private ?AngellEYE_PayPal_PPCP_Request $api_request;
-    private ?AngellEYE_PayPal_PPCP_Payment $payment_request;
+    /**
+     * @var AngellEYE_PayPal_PPCP_Request|null $api_request
+     */
+    private $api_request;
+
+    /**
+     * @var AngellEYE_PayPal_PPCP_Payment|null $payment_request
+     */
+    private $payment_request;
+
     private string $host;
+
+    /**
+     * @var AngellEye_PayPal_PPCP_Apple_Domain_Validation $apple_pay_domain_validation
+     */
     private AngellEye_PayPal_PPCP_Apple_Domain_Validation $apple_pay_domain_validation;
+
     private string $payPalDomainValidationFile = 'https://www.paypalobjects.com/.well-known/apple-developer-domain-association';
 
     public static function instance()

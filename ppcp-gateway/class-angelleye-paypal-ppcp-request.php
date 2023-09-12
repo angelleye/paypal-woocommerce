@@ -10,7 +10,12 @@ class AngellEYE_PayPal_PPCP_Request {
     public $generate_token_url;
     public $basicAuth;
     public $client_token;
-    public ?AngellEYE_PayPal_PPCP_Response $api_response;
+
+    /**
+     * @var AngellEYE_PayPal_PPCP_Response|null $api_response
+     */
+    public $api_response;
+
     public $result;
     public $setting_obj;
     public $api_request;

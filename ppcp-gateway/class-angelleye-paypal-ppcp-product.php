@@ -11,7 +11,11 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_Product extends WC_Form_Handler {
 
     protected static $_instance = null;
-    private static ?AngellEYE_PayPal_PPCP_Log $api_log;
+
+    /**
+     * @var AngellEYE_PayPal_PPCP_Log|null $api_log
+     */
+    private static $api_log;
 
     public static function instance() {
         if (is_null(self::$_instance)) {

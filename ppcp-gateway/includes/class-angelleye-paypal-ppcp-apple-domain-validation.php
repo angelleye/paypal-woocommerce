@@ -3,7 +3,10 @@
 class AngellEye_PayPal_PPCP_Apple_Domain_Validation {
     use AngellEye_PPCP_Core;
 
-    private AngellEye_WordPress_Custom_Route_Handler $route_handler;
+    /**
+     * @var AngellEye_WordPress_Custom_Route_Handler|null $route_handler
+     */
+    private $route_handler;
 
     public function __construct()
     {
