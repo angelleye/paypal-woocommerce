@@ -1019,24 +1019,22 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_paypal_for_woocommerce_order_action_callback($post) {
-        global $theorder;
+        $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
         $args = array(
             'post_type' => 'paypal_transaction',
             'posts_per_page' => -1,
             'meta_key' => 'order_id',
-            'meta_value' => $post->ID,
+            'meta_value' => $order->get_id(),
             'order' => 'ASC',
             'post_status' => 'any'
         );
-        if (!is_object($theorder)) {
-            $theorder = wc_get_order($post->ID);
-        }
-        $order = $theorder;
-
         $payment_method = $order->get_payment_method();
-        $payment_action = get_post_meta($post->ID, '_payment_action', true);
+        $payment_action = $order->get_meta( '_payment_action', true);
         $currency_code = $order->get_currency();
-        $transaction_id = $this->angelleye_get_order_transaction_id($post);
+        $transaction_id = $this->angelleye_get_order_transaction_id($order);
         $posts_array = get_posts($args);
         if (empty($this->angelleye_woocommerce_order_actions)) {
             $this->angelleye_woocommerce_order_actions = $this->angelleye_woocommerce_order_actions($order);
@@ -1098,7 +1096,7 @@ class AngellEYE_Utility {
             }
                     ?>class="short wc_input_price text-box" style="width: 220px">
                 </div>
-                <?php $this->angelleye_express_checkout_transaction_capture_dropdownbox($post->ID); ?>
+                <?php $this->angelleye_express_checkout_transaction_capture_dropdownbox($order->get_id()); ?>
                 <input type="hidden" value="no" name="is_submited" id="is_submited">
                 <input type="submit" id="angelleye_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
                 <br/><br/><br/>

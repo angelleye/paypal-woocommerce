@@ -504,6 +504,7 @@ class AngellEYE_Admin_Order_Payment_Process {
             case (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow'))): {
                     if (empty($this->utility)) {
                         $this->utility = new AngellEYE_Utility(null, null);
+                        $this->utility->payment_method = $this->payment_method;
                     }
                     $this->utility->add_ec_angelleye_paypal_php_library();
                     $this->paypal = $this->utility->paypal;
