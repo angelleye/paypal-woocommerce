@@ -1147,8 +1147,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                         $order->add_order_note($payment_advice_code);
                     }
-                    $currency_code = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
-                    $value = isset($this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value'] : '';
+                    $currency_code = $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] ?? '';
+                    $value = $this->api_response['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']['paypal_fee']['value'] ?? '';
                     angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
                     angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
                     angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
@@ -1618,8 +1618,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                         $order->add_order_note($payment_advice_code);
                     }
-                    $currency_code = isset($this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
-                    $value = isset($this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['value'] : '';
+                    $currency_code = $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['currency_code'] ?? '';
+                    $value = $this->api_response['purchase_units'][0]['payments']['authorizations'][0]['seller_receivable_breakdown']['paypal_fee']['value'] ?? '';
                     angelleye_ppcp_update_post_meta($order, '_paypal_fee', $value);
                     angelleye_ppcp_update_post_meta($order, '_paypal_transaction_fee', $value);
                     angelleye_ppcp_update_post_meta($order, '_paypal_fee_currency_code', $currency_code);
@@ -1649,6 +1649,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                     return true;
                 } else {
+                    $response_code = __('Processor authorization status: ', 'paypal-for-woocommerce');
+                    $response_code .= $payment_status;
+                    $order->add_order_note($response_code);
+                    $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title));
                     wc_add_notice(__('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.'), 'error');
                     return false;
                 }

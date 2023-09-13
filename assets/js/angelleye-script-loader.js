@@ -46,7 +46,7 @@ function canShowPlaceOrderBtn() {
     // that we need to fix by using a way to identify if its checkout or order review page
     let isOrderCompletePage = angelleyeOrder.isOrderCompletePage();
     // console.log('canShowPlaceOrderBtn', isOrderCompletePage, angelleyeOrder.isAngelleyePaymentMethodSelected());
-    if (!isOrderCompletePage && (angelleyeOrder.isAngelleyePaymentMethodSelected())) {
+    if (!isOrderCompletePage && angelleyeOrder.isAngelleyePaymentMethodSelected() && !angelleyeOrder.isSavedPaymentMethodSelected()) {
         return false;
     }
     return true;

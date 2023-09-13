@@ -222,6 +222,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $html_table_row = array();
             $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
             $paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id');
+            if (empty($paypal_order_id)) {
+                echo __('PayPal order id does not exist for this order.', 'paypal-for-woocommerce');
+                return;
+            }
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
             if (isset($this->payment_response) && !empty($this->payment_response) && isset($this->payment_response['intent']) && $this->payment_response['intent'] === 'AUTHORIZE') {
                 if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']) && !empty($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {
@@ -411,7 +415,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 </table><?php
             }
         ?></div>
-            
+
         <?php if (isset($this->angelleye_ppcp_order_status_data['void']) && isset($this->angelleye_ppcp_order_actions['void'])) { ?>
 
             <p style="font-size: 14px;" class="angelleye_ppcp_void_box" style="display: none;">
@@ -435,7 +439,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         ?>
         <input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited">
         <input type="submit" id="angelleye_ppcp_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
-        
+
         <table class="widefat  angelleye_ppcp_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;border: none;">
             <tbody>
                 <tr>

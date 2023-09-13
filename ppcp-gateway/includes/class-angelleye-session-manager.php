@@ -60,7 +60,8 @@ class AngellEye_Session_Manager
 
     public function clearSession()
     {
-        unset(WC()->session->{$this->sessionName});
+        $this->_data = null;
+        $this->save();
     }
 
     public static function get($key, $default = null)

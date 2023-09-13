@@ -40,6 +40,17 @@ const angelleyeOrder = {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
 		return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay';
 	},
+	isSavedPaymentMethodSelected: () => {
+		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
+		let paymentToken = jQuery('input[name="wc-' + paymentMethod + '-payment-token"]:checked');
+		if (paymentToken.length) {
+			let val = paymentToken.val();
+			if (typeof val !== 'undefined' && val !== 'new') {
+				return true;
+			}
+		}
+		return false;
+	},
 	isApplePayEnabled: () => {
 		return angelleye_ppcp_manager.apple_sdk_url !== "";
 	},
