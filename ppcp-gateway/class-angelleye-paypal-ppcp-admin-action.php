@@ -209,12 +209,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
 
     public function angelleye_ppcp_order_action_callback($post, $metabox) {
         try {
-            global $theorder;
-            if ( ! is_object( $theorder ) ) {
-                $theorder = wc_get_order( $post->ID );
-            }
-            $order = $theorder;
-            if (empty($order)) {
+            $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
+            if (!is_a($order, 'WC_Order')) {
                 echo __('Error: Unable to detect the order, please refresh again to retry or Contact PayPal For WooCommerce support.', 'paypal-for-woocommerce');
                 return;
             }

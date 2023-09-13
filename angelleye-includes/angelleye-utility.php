@@ -773,9 +773,6 @@ class AngellEYE_Utility {
 
     public function angelleye_woocommerce_payment_gateway_supports($boolean, $feature, $current) {
         global $post;
-        if (empty($post->ID)) {
-            return $boolean;
-        }
         $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
         if (!is_a($order, 'WC_Order')) {
             return $boolean;
