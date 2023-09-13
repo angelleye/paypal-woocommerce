@@ -109,6 +109,10 @@ if (class_exists('WC_Checkout')) {
                 if (!$order) {
                     throw new Exception(__('Unable to create order.', 'paypal-for-woocommerce'));
                 }
+                /**
+                 * Store the order id in session so that in case of transaction failure user can start with same order
+                 */
+                WC()->session->set('order_awaiting_payment', $order_id);
                 do_action( 'woocommerce_checkout_order_processed', $order_id, $posted_data, $order );
                 return $order_id;
             } else {

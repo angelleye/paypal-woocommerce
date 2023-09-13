@@ -399,7 +399,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         'result' => 'success',
                         'redirect' => apply_filters('woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order),
                     ));
-                    exit();
                 } else {
                     AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
@@ -410,15 +409,15 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             'result' => 'failure',
                             'redirect' => $order->get_checkout_payment_url()
                         ));
-                        exit();
                     } else {
+                        remove_filter('woocommerce_get_checkout_url', [$this->smart_button, 'angelleye_ppcp_woocommerce_get_checkout_url']);
                         wp_send_json_success(array(
                             'result' => 'failure',
-                            'redirect' => wc_get_checkout_url()
+                            'redirect' => ae_get_checkout_url()
                         ));
-                        exit();
                     }
                 }
+                exit();
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
