@@ -157,7 +157,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     } elseif ('checkout' === $request_from_page) {
                         if (isset($_POST) && !empty($_POST)) {
                             self::$is_user_logged_in_before_checkout = is_user_logged_in();
-                            AngellEye_Session_Manager::set('checkout_post', wc_clean($_POST));
+                            AngellEye_Session_Manager::set('checkout_post', $_POST);
                             add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), 10, 2);
                             WC()->checkout->process_checkout();
                             if (wc_notice_count('error') > 0) {
