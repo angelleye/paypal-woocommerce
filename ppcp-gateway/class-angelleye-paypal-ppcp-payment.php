@@ -3313,7 +3313,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_advanced_credit_card_setup_tokens($posted_card) {
+    public function angelleye_ppcp_advanced_credit_card_setup_tokens() {
         try {
             $body_request = array();
             $customer = WC()->customer;
@@ -3328,8 +3328,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
             $name = $first_name . ' ' . $last_name;
             $body_request['payment_source']['card'] = array(
-                'number' => $posted_card->number,
-                'expiry' => $posted_card->exp_year . '-' . $posted_card->exp_month,
                 'name' => $name
             );
             if (!empty($country) && !empty($postcode) && !empty($city)) {
@@ -3368,35 +3366,20 @@ class AngellEYE_PayPal_PPCP_Payment {
                 ob_end_clean();
             }
             if (!empty($this->api_response['id'])) {
-                if (isset($this->api_response['status']) && 'APPROVED' === $this->api_response['status']) {
-                    wp_redirect(add_query_arg(array('approval_token_id' => $this->api_response['id'], 'angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))));
-                    exit();
-                } elseif (isset($this->api_response['status']) && 'PAYER_ACTION_REQUIRED' === $this->api_response['status']) {
-                    if (!empty($this->api_response['links'])) {
-                        foreach ($this->api_response['links'] as $key => $link_result) {
-                            if ('approve' === $link_result['rel']) {
-                                return array(
-                                    'result' => '',
-                                    'redirect' => $link_result['href']
-                                );
-                            }
-                        }
-                    }
-                }
-                return array(
-                    'result' => 'failure',
-                    'redirect' => wc_get_account_endpoint_url('payment-methods')
-                );
+                $return_response['id'] = $this->api_response['id'];
+                wp_send_json($return_response, 200);
+                exit();
             } else {
                 $error_email_notification_param = array(
                     'request' => 'setup_tokens'
                 );
                 $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 wc_add_notice($error_message, 'error');
-                return array(
+                wp_send_json(array(
                     'result' => 'failure',
                     'redirect' => wc_get_account_endpoint_url('payment-methods')
-                );
+                ));
+                exit();
             }
         } catch (Exception $ex) {
 
@@ -3462,7 +3445,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                     } else {
                         wc_add_notice(__('Payment method already exist in your account.', 'woocommerce'), 'notice');
                     }
-                    wp_redirect(wc_get_account_endpoint_url('payment-methods'));
+                    wp_send_json(array(
+                        'result' => 'success',
+                        'redirect' => wc_get_account_endpoint_url('payment-methods'),
+                    ));
+                    
                     exit();
                 } else {
                     $error_email_notification_param = array(
@@ -3471,7 +3458,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                     wc_add_notice($error_message, 'error');
                     wc_add_notice(__('Unable to add payment method to your account.', 'woocommerce'), 'error');
-                    wp_redirect(wc_get_account_endpoint_url('payment-methods'));
+                    wp_send_json(array(
+                        'result' => 'failure',
+                        'redirect' => wc_get_account_endpoint_url('payment-methods'),
+                    ));
                     exit();
                 }
             }

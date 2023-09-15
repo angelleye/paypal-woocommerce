@@ -584,21 +584,63 @@ const angelleyeOrder = {
 		});
 	},
 	applePayDataInit: async () => {
-		if (angelleyeOrder.isApplePayEnabled()) {
-			// block the apple pay button UI to make sure nobody can click it while its updating.
-			angelleyeOrder.showProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
-			// trigger an ajax call to update the total amount, in case there is no shipping required object
-			let response = await angelleyeOrder.shippingAddressUpdate({});
-			angelleyeOrder.hideProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
-			if (typeof response.totalAmount !== 'undefined') {
-				// successful response
-				window.angelleye_cart_totals = response;
-			} else {
-				// in case of unsuccessful response, refresh the page.
-				window.location.reload();
-			}
-		}
+            if (angelleyeOrder.isApplePayEnabled()) {
+                    // block the apple pay button UI to make sure nobody can click it while its updating.
+                    angelleyeOrder.showProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
+                    // trigger an ajax call to update the total amount, in case there is no shipping required object
+                    let response = await angelleyeOrder.shippingAddressUpdate({});
+                    angelleyeOrder.hideProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
+                    if (typeof response.totalAmount !== 'undefined') {
+                            // successful response
+                            window.angelleye_cart_totals = response;
+                    } else {
+                            // in case of unsuccessful response, refresh the page.
+                            window.location.reload();
+                    }
+            }
 	},
+        CCAddPaymentMethod : async () => {
+            const cardFields = angelleye_paypal_sdk.CardFields({
+            createVaultSetupToken: async () => {
+                const result = await fetch(angelleye_ppcp_manager.angelleye_ppcp_cc_setup_tokens, {
+                    method: "POST"
+                });
+                const {id} = await result.json();
+                return id;
+            },
+            onApprove: async (data) => {
+                const endpoint = angelleye_ppcp_manager.advanced_credit_card_create_payment_token;
+                const url = `${endpoint}&approval_token_id=${data.vaultSetupToken}`;
+                fetch(url, { method: "POST" }).then(response => {
+                    return response.json();
+                }).then(data => {
+                    window.location.href = data.redirect;
+                }).catch(error => {
+                    console.error('An error occurred:', error);
+                });
+            },
+            onError: (error) => console.error('Something went wrong:', error)
+        });
+        if (cardFields.isEligible()) {
+
+            cardFields.NameField().render("#card-holder-name");
+            cardFields.NumberField().render("#card-number");
+            cardFields.ExpiryField().render("#expiration-date");
+            cardFields.CVVField().render("#cvv");
+        } else {
+            console.log('disable');
+        }
+        
+        const submitButton = document.getElementById("add_payment_method");
+        submitButton.addEventListener("submit", (evt) => {
+             evt.preventDefault();
+            cardFields.submit().then((hf) => {
+                console.log("submit was successful");
+            }).catch((error) => {
+                console.error("submit erred:", error);
+            });
+        });  
+        },
 	queuedEvents: {},
 	addEventsForCallback: (eventType, event, data) => {
 		angelleyeOrder.queuedEvents[eventType] = {event, data};

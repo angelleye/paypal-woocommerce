@@ -296,6 +296,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "paypal_create_payment_token_sub_change_payment":
                     $this->payment_request->angelleye_ppcp_paypal_create_payment_token_sub_change_payment();
                     exit();
+                case "angelleye_ppcp_cc_setup_tokens":
+                    $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens();
+                    exit();
             }
         }
     }

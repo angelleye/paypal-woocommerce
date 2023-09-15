@@ -236,6 +236,10 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 } elseif (angelleye_ppcp_get_order_total() === 0) {
                     $this->angelleye_ppcp_cc_form();
                 }
+            } elseif(is_add_payment_method_page()) {
+                wp_enqueue_script('angelleye_ppcp-add-payment-method');
+                $this->add_payment_method_form();
+                echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
         } catch (Exception $ex) {
 
@@ -282,6 +286,15 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         } catch (Exception $ex) {
 
         }
+    }
+    
+    public function add_payment_method_form() {
+        ?>
+        <div id='card-number'></div>
+        <div id='expiration-date'></div>
+        <div id='cvv'></div>
+        <div id='card-holder-name'></div>
+        <?php 
     }
 
     public function can_refund_order($order) {
@@ -387,8 +400,6 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function add_payment_method() {
         try {
-            $posted_card = $this->get_posted_card();
-            return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens($posted_card);
         } catch (Exception $ex) {
 
         }
