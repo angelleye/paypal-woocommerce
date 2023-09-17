@@ -15,7 +15,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $is_paypal_vault_enable = false;
         public $is_apple_pay_enable = false;
         public $is_apple_pay_approved = false;
+        public $is_google_pay_enable = false;
+        public $is_google_pay_approved = false;
         public $need_to_display_apple_pay_button = false;
+        private bool $need_to_display_google_pay_button = false;
         public $merchant_id;
         public bool $is_ppcp_connected;
         public $is_sandbox;
@@ -308,10 +311,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             $advanced_cc_text = '';
             $vaulting_advanced_text = '';
             $applePayText = '';
+            $googlePayText = '';
             $advanced_cc_custom_attributes = array();
             $vaulting_custom_attributes = array();
             $this->is_paypal_vault_enable = false;
             $this->is_apple_pay_enable = false;
+            $this->is_google_pay_enable = false;
             $this->is_ppcp_connected = !empty($this->merchant_id);
             $region = wc_get_base_location();
             $default_country = $region['country'];
@@ -349,6 +354,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $applePayText = __('Apple Pay feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
             }
             $apple_pay_custom_attributes = $this->is_apple_pay_approved ? [] : array('disabled' => 'disabled');
+
+            if ($available_endpoints === false) {
+                $googlePayText = __('Allow buyers to pay using Google Pay.', 'paypal-for-woocommerce');
+                $this->need_to_display_google_pay_button = false;
+                $this->is_google_pay_enable = false;
+            } elseif (!isset($available_endpoints['google_pay'])) {
+                $googlePayText = __('Google Pay is not enabled on your PayPal account.', 'paypal-for-woocommerce');
+                $this->need_to_display_google_pay_button = strtolower($default_country) === 'us';
+                $this->is_google_pay_enable = true;
+            } elseif (isset($available_endpoints['google_pay'])) {
+                $this->is_google_pay_enable = true;
+                $this->is_google_pay_approved = true; //$available_endpoints['apple_pay'] == 'APPROVED';
+                $googlePayText = __('Google Pay feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
+            }
+            $google_pay_custom_attributes = $this->is_google_pay_approved ? [] : array('disabled' => 'disabled');
 
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
@@ -1471,7 +1491,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'is_paypal_vault_enable' => $this->is_paypal_vault_enable,
                     'custom_attributes' => $vaulting_custom_attributes
                 ),
-                'additional_authorizations' => array(
+                'apple_pay_authorizations' => array(
                     'title' => __('Apple Pay', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'description' => '',
@@ -1517,6 +1537,40 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'text',
                     'description' => __('A localized billing agreement that the payment sheet displays to the user before the user authorizes the payment.', 'paypal-for-woocommerce'),
                     'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'google_pay_authorizations' => array(
+                    'title' => __('Google Pay', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'enable_google_pay' => array(
+                    'title' => __('Enable Google Pay', 'paypal-for-woocommerce'),
+                    'label' => __('Enable Google Pay', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox_enable_paypal_google_pay',
+                    'description' => $googlePayText,
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'class' => 'enable_google_pay',
+                    'need_to_display_google_pay_button' => $this->need_to_display_google_pay_button,
+                    'is_google_pay_enable' => $this->is_google_pay_enable,
+                    'is_google_pay_approved' => $this->is_google_pay_approved,
+                    'custom_attributes' => $google_pay_custom_attributes,
+                    'is_ppcp_connected' => $this->is_ppcp_connected
+                ),
+                'google_pay_payments_title' => array(
+                    'title' => __('Google Pay Title', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
+                    'default' => __('Google Pay', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                ),
+                'google_pay_payments_description' => array(
+                    'title' => __('Google Pay Payment Description', 'paypal-for-woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This controls the description which the user sees when they select Google Pay payment method during checkout.', 'paypal-for-woocommerce'),
+                    'default' => __('Accept payments using Google Pay.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
                 'advanced_settings' => array(

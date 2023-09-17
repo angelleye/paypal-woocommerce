@@ -534,6 +534,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             delete_transient('angelleye_ppcp_applepay_onboarding_done');
         }
 
+        if (false !== get_transient('angelleye_ppcp_googlepay_onboarding_done')) {
+            $is_saller_onboarding_done = true;
+            $onboarding_success_message = "Google Pay feature has been enabled successfully.";
+            delete_transient('angelleye_ppcp_applepay_onboarding_done');
+        }
+
         if ($is_saller_onboarding_done) {
             echo '<div class="notice notice-success angelleye-notice is-dismissible" id="ppcp_success_notice_onboarding" style="display:none;">'
             . '<div class="angelleye-notice-logo-original">'
@@ -852,6 +858,91 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
+    public function generate_checkbox_enable_paypal_google_pay_html($key, $data) {
+        if (isset($data['type']) && $data['type'] === 'checkbox_enable_paypal_google_pay') {
+            $testmode = $this->sandbox ? 'yes' : 'no';
+            $field_key = $this->get_field_key($key);
+            $defaults = array(
+                'title' => '',
+                'label' => '',
+                'disabled' => false,
+                'class' => '',
+                'css' => '',
+                'type' => 'text',
+                'desc_tip' => false,
+                'description' => '',
+                'custom_attributes' => array(),
+            );
+            $data = wp_parse_args($data, $defaults);
+            if (!$data['label']) {
+                $data['label'] = $data['title'];
+            }
+            $is_google_pay_approved = $data['is_google_pay_approved'] ?? false;
+            $is_google_pay_enabled = $data['is_google_pay_enable'] ?? false;
+            $is_ppcp_connected = $data['is_ppcp_connected'] ?? false;
+            $need_to_display_google_pay_button = $data['need_to_display_google_pay_button'] ?? false;
+            ob_start();
+            ?>
+            <tr valign="top">
+                <th scope="row" class="titledesc">
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
+                </th>
+                <td class="forminp">
+                    <fieldset>
+                        <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
+                        <label for="<?php echo esc_attr($field_key); ?>">
+                            <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
+                            <?php
+                            if ($is_google_pay_enabled && $is_google_pay_approved) {
+                                ?>
+                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
+                                <b><?php echo __('Google Pay is active in your account!', 'paypal-for-woocommerce'); ?></b>
+                            <?php } else if ($is_ppcp_connected && !$is_google_pay_approved && !$need_to_display_google_pay_button) {
+                                ?>
+                                <br><br><b style="color:red"><?php echo __('Google Pay is currently available in the United States only. PayPal is working to expand this to other countries as quickly as possible.', 'paypal-for-woocommerce'); ?></b>
+                                <?php
+                            }?>
+                        </label>
+                        <?php
+                        echo $this->get_description_html($data);
+                        ?>
+                        <?php
+                        if ($need_to_display_google_pay_button) {
+                            $signup_link = $this->angelleye_get_signup_link($testmode, 'google_pay');
+                            if ($signup_link) {
+                                $args = array(
+                                    'displayMode' => 'minibrowser',
+                                );
+                                $url = add_query_arg($args, $signup_link);
+                                ?>
+                                <br>
+                                <a target="_blank" class="wplk-button button-primary" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Activate Google Pay', 'paypal-for-woocommerce'); ?></a>
+                            <?php
+                            $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
+                            ?>
+                                <script type="text/javascript">
+									document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+										element.addEventListener('click', (e) => {
+											if ('undefined' === typeof PAYPAL) {
+												e.preventDefault();
+												alert('PayPal');
+											}
+										});
+									});</script>
+                                <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
+                            } else {
+                                echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                            }
+                        }
+                        ?>
+                    </fieldset>
+                </td>
+            </tr>
+            <?php
+            return ob_get_clean();
+        }
+    }
+
     public function angelleye_get_signup_link($testmode, $featureName = 'tokenized_payments') {
         try {
             if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
@@ -863,6 +954,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 case 'apple_pay':
                     $body = $seller_onboarding->ppcp_apple_pay_data();
                     break;
+                case 'google_pay':
+                    $body = $seller_onboarding->ppcp_google_pay_data();
+                    break;
                 default:
                     $body = $seller_onboarding->ppcp_vault_data();
                     break;
@@ -871,7 +965,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (isset($seller_onboarding_result['links'])) {
                 foreach ($seller_onboarding_result['links'] as $link) {
                     if (isset($link['rel']) && 'action_url' === $link['rel']) {
-                        return isset($link['href']) ? $link['href'] : false;
+                        return $link['href'] ?? false;
                     }
                 }
             } else {
