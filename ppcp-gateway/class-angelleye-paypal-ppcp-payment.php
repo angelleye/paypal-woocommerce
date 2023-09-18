@@ -3327,9 +3327,11 @@ class AngellEYE_PayPal_PPCP_Payment {
             $postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
             $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
             $name = $first_name . ' ' . $last_name;
-            $body_request['payment_source']['card'] = array(
-                'name' => $name
-            );
+            if(!empty($name)) {
+                $body_request['payment_source']['card'] = array(
+                    'name' => $name
+                );
+            }
             if (!empty($country) && !empty($postcode) && !empty($city)) {
                 $body_request['payment_source']['card']['billing_address'] = array(
                     'address_line_1' => $address_1,
