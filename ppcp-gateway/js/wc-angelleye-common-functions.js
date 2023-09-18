@@ -62,7 +62,9 @@ const angelleyeOrder = {
 			} else {
 				checkoutSelector = 'form.checkout';
 			}
-		}
+		} else if(angelleye_ppcp_manager.page === '') {
+                    checkoutSelector = 'form#add_payment_method';
+                }
 		return checkoutSelector;
 	},
 	scrollToWooCommerceNoticesSection: () => {
@@ -600,6 +602,9 @@ const angelleyeOrder = {
             }
 	},
         CCAddPaymentMethod : async () => {
+            if (typeof angelleye_paypal_sdk === 'undefined') {
+                return;
+            }
             const cardFields = angelleye_paypal_sdk.CardFields({
             createVaultSetupToken: async () => {
                 const result = await fetch(angelleye_ppcp_manager.angelleye_ppcp_cc_setup_tokens, {
@@ -616,19 +621,19 @@ const angelleyeOrder = {
                 }).then(data => {
                     window.location.href = data.redirect;
                 }).catch(error => {
+                    angelleyeOrder.showError(error);
                     console.error('An error occurred:', error);
                 });
             },
-            onError: (error) => console.error('Something went wrong:', error)
+            onError: (error) => { angelleyeOrder.showError(error); console.error('Something went wrong:', error)}
         });
         if (cardFields.isEligible()) {
-
             cardFields.NameField().render("#card-holder-name");
             cardFields.NumberField().render("#card-number");
             cardFields.ExpiryField().render("#expiration-date");
             cardFields.CVVField().render("#cvv");
         } else {
-            console.log('disable');
+            jQuery('.payment_method_angelleye_ppcp_cc').hide();
         }
         
         const submitButton = document.getElementById("add_payment_method");
@@ -637,6 +642,7 @@ const angelleyeOrder = {
             cardFields.submit().then((hf) => {
                 console.log("submit was successful");
             }).catch((error) => {
+                angelleyeOrder.showError(error);
                 console.error("submit erred:", error);
             });
         });  

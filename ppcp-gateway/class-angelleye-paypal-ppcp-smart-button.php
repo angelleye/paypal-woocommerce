@@ -350,15 +350,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->enable_apple_pay) {
             wp_register_script($this->angelleye_ppcp_plugin_name . '-apple-pay', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay' . $this->minified_version . '.js', array('angelleye-paypal-checkout-sdk'), $script_versions, false);
         }
-        
-        
-        
-        
         $components = ["buttons"];
-
         $smart_js_arg = ['currency' => $this->angelleye_ppcp_currency];
         $smart_js_arg = array_merge($smart_js_arg, $this->getClientIdMerchantId());
-
         $enable_funding = [];
         $localize_script_handler = 'angelleye-paypal-checkout-sdk';
         $page = '';
@@ -543,7 +537,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
             // This script is only required for the payment processing
             wp_register_script($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-public' . $this->minified_version . '.js', array('angelleye-paypal-checkout-sdk', 'angelleye_ppcp-common-functions'), $script_versions, true);
-            wp_register_script($this->angelleye_ppcp_plugin_name . '-add-payment-method', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-add-payment-method.js', array('angelleye-paypal-checkout-sdk', 'angelleye_ppcp-common-functions'), $script_versions, true);
+            if (is_add_payment_method_page()) {
+                wp_register_script($this->angelleye_ppcp_plugin_name . '-add-payment-method', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-add-payment-method' . $this->minified_version . '.js', array('angelleye-paypal-checkout-sdk', 'angelleye_ppcp-common-functions'), $script_versions, true);
+            }
         }
         if ($this->enabled_pay_later_messaging) {
             array_push($components, 'messages');
