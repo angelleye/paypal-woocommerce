@@ -86,19 +86,51 @@ function initSmartButtons() {
 	'use strict';
 	// queue the woocommerce hook events immediately to trigger those later in case sdk load takes time
 	angelleyeOrder.hooks.handleRaceConditionOnWooHooks();
+
 	angelleyeLoadPayPalScript({
 		url: angelleye_ppcp_manager.paypal_sdk_url,
 		script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
 	}, function() {
+		console.log('PayPal lib loaded, initialize buttons.')
+		let scriptsToLoad = [];
 		if (angelleyeOrder.isApplePayEnabled()) {
-			angelleyeLoadPayPalScript({
-				url: angelleye_ppcp_manager.apple_sdk_url
-			}, function () {
-				console.log('apple pay lib loaded');
-				initSmartButtons();
+			let appleResolveOnLoad = new Promise((resolve) => {
+					console.log('apple sdk loaded');
+					resolve();
+				});
+			scriptsToLoad.push({
+				url: angelleye_ppcp_manager.apple_sdk_url,
+				callback: appleResolveOnLoad
 			});
-		} else {
+		}
+
+		if (angelleyeOrder.isGooglePayEnabled()) {
+			let googleResolveOnLoad = new Promise((resolve) => {
+				console.log('google sdk loaded');
+				resolve();
+			});
+			scriptsToLoad.push({
+				url: angelleye_ppcp_manager.google_sdk_url,
+				callback: googleResolveOnLoad
+			});
+		}
+
+		if (scriptsToLoad.length === 0){
 			initSmartButtons();
+		} else {
+			let allPromises = []
+			for (let i = 0; i < scriptsToLoad.length; i++) {
+				allPromises.push(scriptsToLoad[i].callback);
+			}
+			Promise.all(allPromises).then((success) => {
+				console.log('all libs loaded');
+				initSmartButtons();
+			}, (error) => {
+				console.log('An error occurred in loading the SDKs.')
+			})
+			for (let i = 0; i < scriptsToLoad.length; i++) {
+				angelleyeLoadPayPalScript(scriptsToLoad[i], scriptsToLoad[i].callback);
+			}
 		}
 	})
 })(jQuery);

@@ -993,4 +993,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         return ! is_null( $value ) ? 'yes' : 'no';
     }
 
+    public function validate_checkbox_enable_paypal_google_pay_field($key, $value) {
+        return ! is_null( $value ) ? 'yes' : 'no';
+    }
+
 }

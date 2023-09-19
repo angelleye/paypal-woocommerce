@@ -461,13 +461,10 @@ if (!function_exists('angelleye_ppcp_get_payment_method_title')) {
             'paylater' => __('PayPal Pay Later', 'paypal-for-woocommerce'),
             'paypal' => __('PayPal Checkout', 'paypal-for-woocommerce'),
             'apple_pay' => __('Apple Pay', 'paypal-for-woocommerce'),
+            'google_pay' => __('Google Pay', 'paypal-for-woocommerce'),
         );
         if (!empty($payment_name)) {
-            if (isset($list_payment_method[$payment_name])) {
-                $final_payment_method_name = $list_payment_method[$payment_name];
-            } else {
-                $final_payment_method_name = $payment_name;
-            }
+            $final_payment_method_name = $list_payment_method[$payment_name] ?? $payment_name;
         }
         return apply_filters('angelleye_ppcp_get_payment_method_title', $final_payment_method_name, $payment_name, $list_payment_method);
     }
@@ -557,6 +554,7 @@ if (!function_exists('angelleye_ppcp_add_css_js')) {
     function angelleye_ppcp_add_css_js() {
         wp_enqueue_script('angelleye_ppcp-common-functions');
         wp_enqueue_script('angelleye_ppcp-apple-pay');
+        wp_enqueue_script('angelleye_ppcp-google-pay');
         wp_enqueue_script('angelleye-paypal-checkout-sdk');
         wp_enqueue_script('angelleye_ppcp');
         wp_enqueue_script('angelleye-pay-later-messaging');

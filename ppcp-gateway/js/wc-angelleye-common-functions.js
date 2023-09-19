@@ -32,13 +32,16 @@ const angelleyeOrder = {
 	isCCPaymentMethodSelected: () => {
 		return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp_cc';
 	},
+	isGooglePayPaymentMethodSelected: () => {
+		return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp_google_pay';
+	},
 	isAngelleyePpcpPaymentMethodSelected: () => {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
-		return paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay';
+		return paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay' || paymentMethod === 'angelleye_ppcp_google_pay';
 	},
 	isAngelleyePaymentMethodSelected: () => {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
-		return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay';
+		return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay' || paymentMethod === 'angelleye_ppcp_google_pay';
 	},
 	isSavedPaymentMethodSelected: () => {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
@@ -53,6 +56,9 @@ const angelleyeOrder = {
 	},
 	isApplePayEnabled: () => {
 		return angelleye_ppcp_manager.apple_sdk_url !== "";
+	},
+	isGooglePayEnabled: () => {
+		return angelleye_ppcp_manager.google_sdk_url !== "";
 	},
 	getCheckoutSelectorCss: () => {
 		let checkoutSelector = '.woocommerce';
@@ -258,16 +264,17 @@ const angelleyeOrder = {
 		return false;
 	},
 	showPpcpPaymentMethods: () => {
+		jQuery('#angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay, #angelleye_ppcp_checkout_google_pay').hide();
 		if (angelleyeOrder.isApplePayPaymentMethodSelected()) {
-			jQuery('#angelleye_ppcp_checkout').hide();
 			jQuery('#angelleye_ppcp_checkout_apple_pay').show();
+		} else if (angelleyeOrder.isGooglePayPaymentMethodSelected()) {
+			jQuery('#angelleye_ppcp_checkout_google_pay').show();
 		} else {
-			jQuery('#angelleye_ppcp_checkout_apple_pay').hide();
 			jQuery('#angelleye_ppcp_checkout').show();
 		}
 	},
 	hidePpcpPaymentMethods: () => {
-		jQuery('#angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay').hide();
+		jQuery('#angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay, #angelleye_ppcp_checkout_google_pay').hide();
 	},
 	hideShowPlaceOrderButton: () => {
 		let selectedPaymentMethod = angelleyeOrder.getSelectedPaymentMethod();
@@ -366,6 +373,11 @@ const angelleyeOrder = {
 		if (angelleyeOrder.isApplePayEnabled()) {
 			jQuery.each(angelleye_ppcp_manager.apple_pay_btn_selector, function (key, angelleye_ppcp_apple_button_selector) {
 				(new ApplePayCheckoutButton()).render(angelleye_ppcp_apple_button_selector);
+			});
+		}
+		if (angelleyeOrder.isGooglePayEnabled()) {
+			jQuery.each(angelleye_ppcp_manager.google_pay_btn_selector, function (key, angelleye_ppcp_google_button_selector) {
+				(new GooglePayCheckoutButton()).render(angelleye_ppcp_google_button_selector);
 			});
 		}
 	},
