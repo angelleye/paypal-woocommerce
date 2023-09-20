@@ -1184,7 +1184,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             // so that we can add more gateways in future
             $payment_method_used = AngellEye_Session_Manager::get('used_payment_method');
             foreach ($methods as $key => $method) {
-                if ($key !== 'angelleye_ppcp_' . $payment_method_used) {
+                if ($payment_method_used == 'apple_pay' && $key !== 'angelleye_ppcp_apple_pay') {
+                    unset($methods[$key]);
+                } else if ($payment_method_used != 'apple_pay' && $key == 'angelleye_ppcp_apple_pay') {
+                    unset($methods[$key]);
+                } else if ($payment_method_used == 'google_pay' && $key !== 'angelleye_ppcp_google_pay') {
+                    unset($methods[$key]);
+                } else if ($payment_method_used != 'google_pay' && $key == 'angelleye_ppcp_google_pay') {
                     unset($methods[$key]);
                 }
             }
@@ -1202,6 +1208,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         if (is_add_payment_method_page()) {
             unset($methods['angelleye_ppcp_cc']);
+            unset($methods['angelleye_ppcp_google_pay']);
+            unset($methods['angelleye_ppcp_apple_pay']);
         }
         return $methods;
     }

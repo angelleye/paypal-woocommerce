@@ -118,7 +118,6 @@ class GooglePayCheckoutButton {
 
         return new Promise( (resolve, reject) => {
             angelleyeOrder.showProcessingSpinner();
-            angelleyeOrder.setPaymentMethodSelector('google_pay');
             additionalData.thisObject.processPayment(additionalData, paymentData)
                 .then(function (data) {
                     resolve({ transactionState: "SUCCESS" });
@@ -224,7 +223,7 @@ class GooglePayCheckoutButton {
         if (window.angelleye_cart_totals.totalAmount <= 0) {
             angelleyeOrder.showError("Your shopping cart seems to be empty.");
         }
-
+        angelleyeOrder.setPaymentMethodSelector('google_pay');
         let orderID;
         try {
             angelleyeOrder.showProcessingSpinner();
