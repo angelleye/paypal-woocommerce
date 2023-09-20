@@ -628,10 +628,10 @@ const angelleyeOrder = {
             onError: (error) => { angelleyeOrder.showError(error); console.error('Something went wrong:', error)}
         });
         if (cardFields.isEligible()) {
-            cardFields.NameField().render("#card-holder-name");
-            cardFields.NumberField().render("#card-number");
-            cardFields.ExpiryField().render("#expiration-date");
-            cardFields.CVVField().render("#cvv");
+            cardFields.NameField().render("#ppcp-my-account-card-holder-name");
+            cardFields.NumberField().render("#ppcp-my-account-card-number");
+            cardFields.ExpiryField().render("#ppcp-my-account-expiration-date");
+            cardFields.CVVField().render("#ppcp-my-account-cvv");
         } else {
             jQuery('.payment_method_angelleye_ppcp_cc').hide();
         }

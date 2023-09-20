@@ -290,10 +290,10 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     
     public function add_payment_method_form() {
         ?>
-        <div id='card-number'></div>
-        <div id='expiration-date'></div>
-        <div id='cvv'></div>
-        <div id='card-holder-name'></div>
+        <div id='ppcp-my-account-card-number'></div>
+        <div id='ppcp-my-account-expiration-date'></div>
+        <div id='ppcp-my-account-cvv'></div>
+        <div id='ppcp-my-account-card-holder-name'></div>
         <?php 
     }
 
