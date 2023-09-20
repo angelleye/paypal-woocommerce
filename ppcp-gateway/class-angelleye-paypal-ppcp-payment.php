@@ -4186,4 +4186,51 @@ class AngellEYE_PayPal_PPCP_Payment {
             return array();
         }
     }
+    
+    public function ppcp_send_paypal_tracking() {
+        $json = '{ 
+
+    "capture_id": "3MA20349RB949063A", 
+
+    "tracking_number": "443844607820", 
+
+    "carrier": "FEDEX", 
+
+    "notify_payer": true,
+
+    "items": [ 
+
+   {
+
+    "sku": "woo-belt", 
+
+    "quantity": "1",
+
+    "name": "Belt", 
+
+    
+
+    
+
+    "upc": { 
+
+     "type": "UPC-A",
+
+     "code": "123456789012"
+
+    }
+
+         }
+
+    ]
+
+}';
+        $args = array(
+                'method' => 'POST',
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                'body' => json_decode($json, true)
+            );
+       $data =  $this->api_request->request('https://api-m.sandbox.paypal.com/v2/checkout/orders/3KB84126348657933/track', $args, 'shipment_tracking');
+    }
+    
 }

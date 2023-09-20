@@ -47,6 +47,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
         add_action('set_logged_in_cookie', [$this, 'handle_logged_in_cookie_nonce_on_checkout'], 1000, 6);
+        //$this->payment_request->ppcp_send_paypal_tracking();
     }
 
     public function angelleye_ppcp_load_class() {

@@ -355,7 +355,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $package_tracking_text = __('Adding tracking information to your PayPal orders as soon as you ship items to your customers can help you streamline the post-purchase lifecycle.', 'paypal-for-woocommerce');
                 $this->need_to_display_package_tracking = false;
                 $this->is_package_tracking_enable = false;
-            } elseif (!isset($available_endpoints['apple_pay'])) {
+            } elseif (!isset($available_endpoints['TRACKING_SHIPMENT_READWRITE'])) {
                 $package_tracking_text = __('Track shipments is not enabled on your PayPal account.', 'paypal-for-woocommerce');
                 $this->need_to_display_package_tracking = true;
                 $this->is_package_tracking_enable = true;
