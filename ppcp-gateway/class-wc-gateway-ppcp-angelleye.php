@@ -537,7 +537,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if (false !== get_transient('angelleye_ppcp_googlepay_onboarding_done')) {
             $is_saller_onboarding_done = true;
             $onboarding_success_message = "Google Pay feature has been enabled successfully.";
-            delete_transient('angelleye_ppcp_applepay_onboarding_done');
+            delete_transient('angelleye_ppcp_googlepay_onboarding_done');
         }
 
         if ($is_saller_onboarding_done) {
