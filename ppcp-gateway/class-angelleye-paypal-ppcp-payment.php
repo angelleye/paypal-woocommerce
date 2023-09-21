@@ -3342,17 +3342,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'country_code' => $country
                 );
             }
-            $body_request['payment_source']['card']['verification_method'] = 'SCA_WHEN_REQUIRED';
             $body_request['payment_source']['card']['experience_context'] = array(
                 'brand_name' => $this->brand_name,
                 'locale' => 'en-US',
                 'return_url' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
                 'cancel_url' => wc_get_account_endpoint_url('add-payment-method')
-            );
-            $body_request['payment_source']['card']['stored_credential'] = array(
-                'payment_initiator' => 'CUSTOMER',
-                'payment_type' => 'UNSCHEDULED',
-                'usage' => 'SUBSEQUENT'
             );
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
             if (!empty($paypal_generated_customer_id)) {
