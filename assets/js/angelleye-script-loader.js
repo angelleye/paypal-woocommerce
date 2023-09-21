@@ -31,6 +31,7 @@ function angelleyeLoadPayPalScript(config, onLoaded) {
     // delay the onload event to let the PayPal lib initialized in the env
     script.addEventListener('load', finalLoaded.bind(null, scriptUrl));
     script.setAttribute('src', config.url);
+    script.async = true;
     if (config.script_attributes) {
         Object.entries(config.script_attributes).forEach((keyValue) => {
             script.setAttribute(keyValue[0], keyValue[1]);
