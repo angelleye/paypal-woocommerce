@@ -420,26 +420,18 @@ if (!function_exists('angelleye_key_generator')) {
 
 if (!function_exists('is_angelleye_aws_down')) {
     function is_angelleye_aws_down() {
-        if (false === ( $status = get_transient('is_angelleye_aws_down') )) {
-            $args['method'] = 'POST';
-            $args['timeout'] = 10;
-            $args['user-agent'] = 'PFW_PPCP';
-            $response = wp_remote_get(PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE . 'ppcp-request', $args);
-            $status_code = (int) wp_remote_retrieve_response_code($response);
-            if (200 < $status_code || empty($response)) {
-                $status = 'yes';
-                set_transient('is_angelleye_aws_down', $status, 15 * MINUTE_IN_SECONDS);
-            } else {
-                $status = 'no';
-                set_transient('is_angelleye_aws_down', $status, 24 * HOUR_IN_SECONDS);
-            }
-        }
-        if ($status === 'yes') {
+        $status = get_transient('is_angelleye_aws_down');
+        if(empty($status) || $status === false) {
+            return false;
+        } elseif($status === 'no') {
+            return false;
+        } elseif($status === 'yes') {
             return true;
         }
         return false;
     }
 }
+
 
 if (!function_exists('angelleye_ppcp_get_payment_method_title')) {
     function angelleye_ppcp_get_payment_method_title($payment_name = '') {

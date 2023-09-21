@@ -9,6 +9,7 @@ class AngellEYE_PayPal_PPCP_Response {
     public $generate_signup_link_default_request_param;
     protected static $_instance = null;
     public $is_sandbox;
+    public $api_request;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -64,7 +65,6 @@ class AngellEYE_PayPal_PPCP_Response {
 
         try {
             if (is_wp_error($paypal_api_response)) {
-                delete_transient('is_angelleye_aws_down');
                 $response = array(
                     'status' => 'failed',
                     'body' => array('error_message' => $paypal_api_response->get_error_message(), 'error_code' => $paypal_api_response->get_error_code())
@@ -72,8 +72,11 @@ class AngellEYE_PayPal_PPCP_Response {
             } else {
                 $body = wp_remote_retrieve_body($paypal_api_response);
                 $status_code = (int) wp_remote_retrieve_response_code($paypal_api_response);
-                if (201 < $status_code && $action_name !== 'update_order') {
-                    delete_transient('is_angelleye_aws_down');
+                if($status_code >= 200 && $status_code < 400) {
+                    set_transient('is_angelleye_aws_down', 'yes', 15 * MINUTE_IN_SECONDS);
+                    $this->api_request->request($url, $request, $action_name);
+                } else {
+                    set_transient('is_angelleye_aws_down', 'no', 24 * HOUR_IN_SECONDS);
                 }
                 $response = !empty($body) ? json_decode($body, true) : '';
                 $response = isset($response['body']) ? $response['body'] : $response;
@@ -133,6 +136,10 @@ class AngellEYE_PayPal_PPCP_Response {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Request')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
+            }
+            $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
         } catch (Exception $ex) {
