@@ -9,7 +9,6 @@ class AngellEYE_PayPal_PPCP_Response {
     public $generate_signup_link_default_request_param;
     protected static $_instance = null;
     public $is_sandbox;
-    public $api_request;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -61,37 +60,6 @@ class AngellEYE_PayPal_PPCP_Response {
         add_action('angelleye_ppcp_request_respose_data', array($this, 'angelleye_ppcp_tpv_tracking'), 10, 3);
     }
 
-    public function parse_response($paypal_api_response, $url, $request, $action_name) {
-
-        try {
-            if (is_wp_error($paypal_api_response)) {
-                $response = array(
-                    'status' => 'failed',
-                    'body' => array('error_message' => $paypal_api_response->get_error_message(), 'error_code' => $paypal_api_response->get_error_code())
-                );
-            } else {
-                $body = wp_remote_retrieve_body($paypal_api_response);
-                $status_code = (int) wp_remote_retrieve_response_code($paypal_api_response);
-                if($status_code >= 200 && $status_code < 400) {
-                    set_transient('is_angelleye_aws_down', 'yes', 15 * MINUTE_IN_SECONDS);
-                    $this->api_request->request($url, $request, $action_name);
-                } else {
-                    set_transient('is_angelleye_aws_down', 'no', 24 * HOUR_IN_SECONDS);
-                }
-                $response = !empty($body) ? json_decode($body, true) : '';
-                $response = isset($response['body']) ? $response['body'] : $response;
-                $this->angelleye_ppcp_write_log($url, $request, $paypal_api_response, $action_name);
-                if (strpos($url, 'paypal.com') !== false) {
-                    do_action('angelleye_ppcp_request_respose_data', $request, $response, $action_name);
-                }
-                return $response;
-            }
-        } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
-        }
-    }
-
     public function angelleye_ppcp_write_log($url, $request, $response, $action_name = 'Exception') {
         global $wp_version;
         if($action_name === 'list_all_payment_tokens') {
@@ -136,10 +104,6 @@ class AngellEYE_PayPal_PPCP_Response {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
-            if (!class_exists('AngellEYE_PayPal_PPCP_Request')) {
-                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
-            }
-            $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
         } catch (Exception $ex) {

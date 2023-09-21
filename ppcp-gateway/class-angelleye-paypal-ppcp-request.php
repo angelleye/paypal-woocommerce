@@ -175,8 +175,39 @@ class AngellEYE_PayPal_PPCP_Request {
                 $args['user-agent'] = 'PFW_PPCP';
                 $this->result = $this->angelleye_ppcp_remote_get($url, $args, $action_name);
             }
-
-            return $this->api_response->parse_response($this->result, $url, $args, $action_name);
+            return $this->parse_response($this->result, $url, $args, $action_name);
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
+        }
+    }
+    
+    
+    public function parse_response($result, $url, $args, $action_name) {
+        try {
+            if (is_wp_error($result)) {
+                $response = array(
+                    'status' => 'failed',
+                    'body' => array('error_message' => $result->get_error_message(), 'error_code' => $result->get_error_code())
+                );
+            } else {
+                $body = wp_remote_retrieve_body($result);
+                $status_code = (int) wp_remote_retrieve_response_code($result);
+                if($status_code >= 200 && $status_code < 400) {
+                    $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE;
+                    set_transient('is_angelleye_aws_down', 'yes', 15 * MINUTE_IN_SECONDS);
+                    $this->request($url, $args, $action_name);
+                } else {
+                    set_transient('is_angelleye_aws_down', 'no', 24 * HOUR_IN_SECONDS);
+                }
+                $response = !empty($body) ? json_decode($body, true) : '';
+                $response = isset($response['body']) ? $response['body'] : $response;
+                $this->api_response->angelleye_ppcp_write_log($url, $args, $result, $action_name);
+                if (strpos($url, 'paypal.com') !== false) {
+                    do_action('angelleye_ppcp_request_respose_data', $args, $response, $action_name);
+                }
+                return $response;
+            }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
