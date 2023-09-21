@@ -1020,7 +1020,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $attributes['data-client-token'] = $this->client_token;
             }
             if ($this->enable_tokenized_payments && is_user_logged_in()) {
-                $attributes['data-user-id-token'] = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                if( is_add_payment_method_page()) {
+                    if($this->ppcp_payment_token->angelleye_ppcp_is_paypal_generated_customer_id_exist($this->is_sandbox)) {
+                        $attributes['data-user-id-token'] = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                    }
+                } else {
+                    $attributes['data-user-id-token'] = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                }
             }
         }
         return $attributes;
