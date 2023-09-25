@@ -902,8 +902,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         return ! is_null( $value ) ? 'yes' : 'no';
     }
     
-    public function generate_checkbox_enable_enable_package_tracking_integration_html($key, $data) {
-        if (isset($data['type']) && $data['type'] === 'checkbox_enable_enable_package_tracking_integration') {
+    public function generate_paypal_shipment_tracking_html($key, $data) {
+        if (isset($data['type']) && $data['type'] === 'paypal_shipment_tracking') {
             $testmode = $this->sandbox ? 'yes' : 'no';
             $field_key = $this->get_field_key($key);
             $defaults = array(
@@ -921,13 +921,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (!$data['label']) {
                 $data['label'] = $data['title'];
             }
-            $is_package_tracking_approved = $data['is_package_tracking_approved'] ?? false;
-            $is_package_tracking_enabled = $data['is_package_tracking_enable'] ?? false;
-            $is_ppcp_connected = $data['is_ppcp_connected'] ?? false;
-            $need_to_display_package_tracking_button = $data['need_to_display_package_tracking_button'] ?? false;
-            if ($is_package_tracking_approved && $is_package_tracking_enabled) {
-                $package_tracking_approved = true;
-            }
             ob_start();
             ?>
             <tr valign="top">
@@ -936,52 +929,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 </th>
                 <td class="forminp">
                     <fieldset>
-                        <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
-                        <label for="<?php echo esc_attr($field_key); ?>">
-                            <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
-                            <?php
-                            if ($is_package_tracking_enabled && $is_package_tracking_approved) {
-                                ?>
-                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/' . ($package_tracking_approved ? 'ppcp_check_mark_status.png' : 'ppcp_info_icon.png'); ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
-                                <b><?php echo __(($package_tracking_approved ? 'Package Tracking is active in your account!' : 'Register your domain to activate Package Tracking.'), 'paypal-for-woocommerce'); ?></b>
-                            <?php } else if ($is_ppcp_connected && !$is_package_tracking_approved && !$need_to_display_package_tracking_button) {
-                                ?>
-                                <br><br><b style="color:red"><?php echo __('Package Tracking is only currently available in the United States. PayPal is working to expand this to other countries as quickly as possible.', 'paypal-for-woocommerce'); ?></b>
-                                <?php
-                            }?>
-                        </label>
-                        <?php
-                        echo $this->get_description_html($data);
-                        ?>
-                        <?php
-                        if ($need_to_display_package_tracking_button) {
-                            $signup_link = $this->angelleye_get_signup_link($testmode, 'package_tracking');
-                            if ($signup_link) {
-                                $args = array(
-                                    'displayMode' => 'minibrowser',
-                                );
-                                $url = add_query_arg($args, $signup_link);
-                                ?>
-                                <br>
-                                <a target="_blank" class="wplk-button button-primary" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Activate Package Tracking', 'paypal-for-woocommerce'); ?></a>
-                            <?php
-                            $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
-                            ?>
-                                <script type="text/javascript">
-									document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
-										element.addEventListener('click', (e) => {
-											if ('undefined' === typeof PAYPAL) {
-												e.preventDefault();
-												alert('PayPal');
-											}
-										});
-									});</script>
-                                <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
-                            } else {
-                                echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
-                            }
-                        }
-                        ?>
+                        <p class="description">When using our PayPal integration for payment processing you get access to our premium add-on plugins for free.  This includes our PayPal Shipment Tracking plugin which will allow you to send tracking numbers from WooCommerce orders to PayPal which can help avoid payment holds.  Learn More</p>
+                        <a href="<?php echo add_query_arg(array('angelleye_ppcp_action' => 'install_plugin', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))); ?>">Download</a>
                     </fieldset>
                 </td>
             </tr>

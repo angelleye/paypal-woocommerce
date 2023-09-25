@@ -73,7 +73,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -196,7 +196,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             }
                             exit();
                         } catch (Exception $ex) {
-                            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+                            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
                             $this->api_log->log($ex->getMessage(), 'error');
                         }
                     } else {
@@ -230,7 +230,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             $this->product = AngellEYE_PayPal_PPCP_Product::instance();
                             $this->product::angelleye_ppcp_add_to_cart_action();
                         } catch (Exception $ex) {
-                            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+                            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
                             $this->api_log->log($ex->getMessage(), 'error');
                         }
                     }
@@ -256,7 +256,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         if (ob_get_length()) {
                             ob_end_clean();
                         }
-                        WC()->session->set( 'reload_checkout', true );
+                        WC()->session->set('reload_checkout', true);
                         wp_send_json_success(array(
                             'result' => 'success',
                             'redirect' => add_query_arg(array('paypal_order_id' => wc_clean($_GET['paypal_order_id']), 'utm_nooverride' => '1', 'wfacp_is_checkout_override' => 'yes'), untrailingslashit(wc_get_checkout_url())),
@@ -296,6 +296,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     exit();
                 case "paypal_create_payment_token_sub_change_payment":
                     $this->payment_request->angelleye_ppcp_paypal_create_payment_token_sub_change_payment();
+                    exit();
+                case "install_plugin":
+                    $this->install_shipment_tracking_plugin();
                     exit();
             }
         }
@@ -421,7 +424,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 exit();
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -440,7 +443,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             wp_safe_redirect(apply_filters('woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order));
             exit();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -465,7 +468,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 exit();
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -536,7 +539,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 $customer->set_billing_email($billing_email);
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -609,6 +612,52 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     }
 
     private function no_liability_shift(AuthResult $result): int {
+        
+    }
 
+    public function install_shipment_tracking_plugin() {
+        try {
+            require_once(ABSPATH . 'wp-load.php');
+            require_once(ABSPATH . 'wp-admin/includes/plugin-install.php');
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+            $github_repo_url = 'https://updates.angelleye.com/ae-updater/angelleye-paypal-shipment-tracking-woocommerce/angelleye-paypal-shipment-tracking-woocommerce.zip';
+            $plugin_slug = 'paypal-shipment-tracking-for-woocommerce';
+            $temp_zip_file = download_url($github_repo_url);
+            echo $temp_zip_file;
+
+            if (is_wp_error($temp_zip_file)) {
+                echo 'Error downloading the plugin: ' . esc_html($temp_zip_file->get_error_message());
+            } else {
+                // Extract the plugin to the plugins directory
+                $plugin_dir = WP_PLUGIN_DIR . '/' . $plugin_slug;
+                $unzip_result = unzip_file($temp_zip_file, $plugin_dir);
+
+                if (is_wp_error($unzip_result)) {
+                    echo 'Error extracting the plugin: ' . esc_html($unzip_result->get_error_message());
+                } else {
+                    // Activate the plugin
+                    $activation_result = activate_plugin($plugin_slug . '/plugin-file.php'); // Adjust the path to the main plugin file
+
+                    if (is_wp_error($activation_result)) {
+                        echo 'Error activating the plugin: ' . esc_html($activation_result->get_error_message());
+                    } else {
+                        echo 'Plugin installed and activated successfully!';
+                    }
+                }
+
+                // Clean up the downloaded file
+                unlink($temp_zip_file);
+            }
+
+
+
+
+
+
+           
+        } catch (Exception $ex) {
+            
+        }
     }
 }

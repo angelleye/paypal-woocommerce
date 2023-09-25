@@ -350,21 +350,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $applePayText = __('Apple Pay feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
             }
             $apple_pay_custom_attributes = $this->is_apple_pay_approved ? [] : array('disabled' => 'disabled');
-            $this->need_to_display_package_tracking = false;
-            if ($available_endpoints === false) {
-                $package_tracking_text = __('Adding tracking information to your PayPal orders as soon as you ship items to your customers can help you streamline the post-purchase lifecycle.', 'paypal-for-woocommerce');
-                $this->need_to_display_package_tracking = false;
-                $this->is_package_tracking_enable = false;
-            } elseif (!isset($available_endpoints['TRACKING_SHIPMENT_READWRITE'])) {
-                $package_tracking_text = __('Track shipments is not enabled on your PayPal account.', 'paypal-for-woocommerce');
-                $this->need_to_display_package_tracking = true;
-                $this->is_package_tracking_enable = true;
-            } elseif (isset($available_endpoints['apple_pay'])) {
-                $this->is_package_tracking_enable = true;
-                $this->is_package_tracking_approved = true; //$available_endpoints['apple_pay'] == 'APPROVED';
-                $package_tracking_text = __('Track shipments feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
-            }
-            $package_tracking_custom_attributes = $this->is_package_tracking_approved ? [] : array('disabled' => 'disabled');
 
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
@@ -1535,25 +1520,20 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
-                'package_tracking_integration' => array(
-                    'title' => __('Package Tracking Integration', 'paypal-for-woocommerce'),
+                'paypal_shipment_tracking' => array(
+                    'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'description' => '',
                     'class' => 'ppcp_separator_heading',
                 ),
-                'enable_package_tracking_integration' => array(
-                    'title' => __('Enable Package Tracking Integration', 'paypal-for-woocommerce'),
-                    'label' => __('Enable Package Tracking Integration', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox_enable_enable_package_tracking_integration',
-                    'description' => $package_tracking_text,
+                'enable_paypal_shipment_tracking' => array(
+                    'title' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'label' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'type' => 'paypal_shipment_tracking',
+                    'description' => '',
                     'default' => 'no',
                     'desc_tip' => true,
                     'class' => 'enable_package_tracking',
-                    'need_to_display_package_tracking_button' => $this->need_to_display_package_tracking,
-                    'is_package_tracking_enable' => $this->is_package_tracking_enable,
-                    'is_package_tracking_approved' => $this->is_package_tracking_approved,
-                    'custom_attributes' => $package_tracking_custom_attributes,
-                    'is_ppcp_connected' => $this->is_ppcp_connected
                 ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
