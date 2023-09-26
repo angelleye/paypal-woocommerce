@@ -52,6 +52,11 @@ class WC_Gateway_Google_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
         }
     }
 
+    public function isSubscriptionsSupported(): bool
+    {
+        return false;
+    }
+
     public function is_available() {
         return $this->ppcp_enabled === true && $this->enable_google_pay == true && $this->is_credentials_set();
     }

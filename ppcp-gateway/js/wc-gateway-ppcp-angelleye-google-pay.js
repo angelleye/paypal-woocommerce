@@ -171,20 +171,34 @@ class GooglePayCheckoutButton {
         container.html('');
         console.log('rendering google_pay button', containerSelector, container);
 
-        let googlePayContainer = jQuery('<div class="google-pay-container"></div>');
+        let buttonColor = 'default';
+        let buttonType = 'plain';
+        let containerStyle = '';
+        if (typeof angelleye_ppcp_manager.google_pay_button_props !== 'undefined') {
+            buttonColor = angelleye_ppcp_manager.google_pay_button_props.buttonColor;
+            buttonType = angelleye_ppcp_manager.google_pay_button_props.buttonType;
+            let height = angelleye_ppcp_manager.google_pay_button_props.height;
+            height = height !== '' ? 'height: ' + height + 'px;' : '';
+            containerStyle = height;
+        }
+        let googlePayContainer = jQuery('<div class="google-pay-container" style="'+(containerStyle != '' ? containerStyle  : '')+'"></div>');
         let thisObject = this;
         const paymentsClient = this.getGooglePaymentsClient();
         const button = paymentsClient.createButton({
+            buttonColor: buttonColor,
+            buttonType: buttonType,
+            buttonSizeMode: 'fill',
             onClick: async (event) => {
                 await thisObject.handleClickEvent(event, thisObject);
             }
         });
         googlePayContainer.append(button);
 
-        if (!angelleyeOrder.isCheckoutPage()) {
-            let separator = jQuery('<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; OR &mdash;</div><br>');
-            container.html(separator);
-        }
+        // Remove the separator
+        // if (!angelleyeOrder.isCheckoutPage()) {
+        //     let separator = jQuery('<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; OR &mdash;</div><br>');
+        //     container.html(separator);
+        // }
         container.append(googlePayContainer);
     }
 
@@ -195,9 +209,22 @@ class GooglePayCheckoutButton {
     }
 
     getGoogleTransactionInfo() {
+        let displayItems = [];
+        for (let i = 0; i < (window.angelleye_cart_totals.lineItems).length; i++) {
+            let type = "LINE_ITEM";
+            let prodLabel = window.angelleye_cart_totals.lineItems[i].label;
+            if (prodLabel.toLowerCase() === 'tax') {
+                type = 'TAX';
+            }
+            displayItems.push({
+                'label': window.angelleye_cart_totals.lineItems[i].label,
+                'price': window.angelleye_cart_totals.lineItems[i].amount,
+                'type': type,
+            })
+        }
+
         return {
-            // displayItems: window.angelleye_cart_totals.lineItems,
-            // countryCode: "US",
+            displayItems: displayItems,
             currencyCode: window.angelleye_cart_totals.currencyCode,
             totalPriceStatus: "FINAL",
             totalPrice: window.angelleye_cart_totals.totalAmount,
@@ -246,6 +273,7 @@ class GooglePayCheckoutButton {
             console.log('success', success);
         }, (e) => {
             angelleyeOrder.hideProcessingSpinner(thisObject.containerSelector);
+            angelleyeOrder.hideProcessingSpinner();
             console.log('error handler click', e);
         });
 

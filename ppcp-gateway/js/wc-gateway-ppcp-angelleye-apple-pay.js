@@ -82,10 +82,11 @@ class ApplePayCheckoutButton {
         applePayBtn.on('click', {thisObject: this}, this.handleClickEvent);
         applePayContainer.append(applePayBtn);
 
-        if (!angelleyeOrder.isCheckoutPage()) {
-            let separatorApplePay = jQuery('<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; OR &mdash;</div><br>');
-            container.html(separatorApplePay);
-        }
+        // Remove the separator
+        // if (!angelleyeOrder.isCheckoutPage()) {
+        //     let separatorApplePay = jQuery('<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; OR &mdash;</div><br>');
+        //     container.html(separatorApplePay);
+        // }
         container.append(applePayContainer);
     }
 
