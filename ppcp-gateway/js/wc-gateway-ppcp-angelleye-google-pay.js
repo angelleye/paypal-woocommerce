@@ -61,7 +61,7 @@ class GooglePayCheckoutButton {
                 })
                 .catch((err) => {
                     console.error('errorcatch',err);
-                    this.removeGooglePayPaymentMethod();
+                    this.removeGooglePayPaymentMethod(containerSelector);
                 });
         });
     }
@@ -99,9 +99,12 @@ class GooglePayCheckoutButton {
         }
     }
 
-    removeGooglePayPaymentMethod() {
+    removeGooglePayPaymentMethod(containerSelector) {
         if (angelleyeOrder.isCheckoutPage()) {
             jQuery('.wc_payment_method.payment_method_angelleye_ppcp_google_pay').hide();
+        }
+        if (jQuery(containerSelector).length) {
+            jQuery(containerSelector).remove();
         }
     }
 
@@ -179,13 +182,20 @@ class GooglePayCheckoutButton {
 
     async processPayment(additionalData, paymentData) {
         try {
-            console.log('processPayment', additionalData, paymentData);
+            console.log('processPayment', additionalData, JSON.stringify(paymentData));
 
             const { status } = await GooglePayCheckoutButton.googlePay().confirmOrder({
                 orderId: additionalData.orderID,
                 paymentMethodData: paymentData.paymentMethodData,
             });
             if (status === "APPROVED") {
+                // check if the billing address details are available
+                // Do not run this service on checkout page as user already provides all details there
+                if (!angelleyeOrder.isCheckoutPage() && paymentData.paymentMethodData && paymentData.paymentMethodData.info && paymentData.paymentMethodData.info.billingAddress) {
+                    let shippingDetails = paymentData.shippingAddress;
+                    let billingDetails = paymentData.paymentMethodData.info.billingAddress;
+                    await angelleyeOrder.shippingAddressUpdate({shippingDetails}, {billingDetails});
+                }
                 /* Capture the Order */
                 angelleyeOrder.approveOrder({orderID: additionalData.orderID, payerID: ''});
                 return { transactionState: "SUCCESS" };
@@ -193,6 +203,7 @@ class GooglePayCheckoutButton {
                 return { transactionState: "ERROR" };
             }
         } catch (error) {
+            console.log('processPaymentError', error);
             angelleyeOrder.hideProcessingSpinner();
             angelleyeOrder.showError(error);
 

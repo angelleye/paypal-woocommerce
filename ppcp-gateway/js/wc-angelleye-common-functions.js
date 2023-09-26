@@ -199,8 +199,8 @@ const angelleyeOrder = {
 			}
 		}
 	},
-	shippingAddressUpdate: (shippingDetails) => {
-		return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails});
+	shippingAddressUpdate: (shippingDetails, billingDetails) => {
+		return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails, billingDetails});
 	},
 	onCancel: () => {
 		jQuery(document.body).trigger('angelleye_paypal_oncancel');

@@ -54,7 +54,7 @@ class ApplePayCheckoutButton {
             });
         } else {
             console.log('apple pay not supported');
-            this.removeApplePayPaymentMethod();
+            this.removeApplePayPaymentMethod(containerSelector);
         }
     }
 
@@ -64,9 +64,12 @@ class ApplePayCheckoutButton {
         }
     }
 
-    removeApplePayPaymentMethod() {
+    removeApplePayPaymentMethod(containerSelector) {
         if (angelleyeOrder.isCheckoutPage()) {
             jQuery('.wc_payment_method.payment_method_angelleye_ppcp_apple_pay').hide();
+        }
+        if (jQuery(containerSelector).length) {
+            jQuery(containerSelector).remove();
         }
     }
 

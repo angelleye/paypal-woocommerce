@@ -190,6 +190,15 @@ if (!function_exists('angelleye_ppcp_readable')) {
     }
 }
 
+if (!function_exists('angelleye_split_name')) {
+    function angelleye_split_name($fullName) {
+        $parts = explode(' ', $fullName);
+        $lastname = array_pop($parts);
+        $firstname = implode(" ", $parts);
+        return [$firstname, $lastname];
+    }
+}
+
 if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
     function angelleye_ppcp_get_mapped_billing_address($checkout_details, $is_name_only = false) {
         global $woocommerce;
