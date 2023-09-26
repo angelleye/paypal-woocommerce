@@ -583,7 +583,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
 
         // Remove google pay option for the subscription products on product, cart and checkout page
-        if ($product_cart_amounts['isSubscriptionRequired'] === true) {
+        if (isset($product_cart_amounts['isSubscriptionRequired']) && $product_cart_amounts['isSubscriptionRequired'] === true) {
             $this->enable_google_pay = false;
             $google_pay_btn_selector = [];
         }
@@ -603,6 +603,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $js_url = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
 
         wp_localize_script($localize_script_handler, 'angelleye_ppcp_manager', array(
+            'sandbox_mode' => (bool)$this->is_sandbox,
             'paypal_sdk_url' => $js_url,
             'paypal_sdk_attributes' => $this->get_paypal_sdk_attributes(),
             'apple_sdk_url' => $this->enable_apple_pay ? 'https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js' : '',
@@ -1318,13 +1319,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
         $order_data['terms'] = 1;
         $order_data['createaccount'] = 0;
+        $order_data['ship_to_different_address'] = 0;
 
         // merge post data with the transaction details data during the cc_capture api call
         if (isset($_POST)) {
             $look_for_keys_post = ['createaccount', 'terms',
                 'wc-angelleye_ppcp_cc-new-payment-method', 'wc-angelleye_ppcp_cc-payment-token',
                 'wc-angelleye_ppcp-new-payment-method', 'wc-angelleye_ppcp-payment-token',
-                'wc-angelleye_ppcp_apple_pay-new-payment-method', 'wc-angelleye_ppcp_apple_pay-payment-token'
+                'wc-angelleye_ppcp_apple_pay-new-payment-method', 'wc-angelleye_ppcp_apple_pay-payment-token',
+                'ship_to_different_address'
             ];
             foreach ($_POST as $key => $value) {
                 if (in_array($key, $look_for_keys_post)) {

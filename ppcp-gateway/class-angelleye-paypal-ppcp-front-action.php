@@ -205,23 +205,24 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     break;
                 case 'shipping_address_update':
                     global $woocommerce;
+                    $paymentMethod = $_REQUEST['angelleye_ppcp_payment_method_title'] ?? null;
                     if (isset($_REQUEST['shipping_address_source'])) {
                         $shipping_address = json_decode(stripslashes($_REQUEST['shipping_address_source']), true);
                         $shipping_address = $shipping_address['shippingDetails'] ?? null;
                         if (!empty($shipping_address)) {
                             !empty($shipping_address['addressLines'][0]) ? $woocommerce->customer->set_shipping_address_1($shipping_address['addressLines'][0]) : null;
                             !empty($shipping_address['addressLines'][1]) ? $woocommerce->customer->set_shipping_address_2($shipping_address['addressLines'][1]) : null;
-                            $woocommerce->customer->set_billing_email($shipping_address['emailAddress']);
-                            $woocommerce->customer->set_shipping_first_name($shipping_address['givenName']);
-                            $woocommerce->customer->set_shipping_last_name($shipping_address['familyName']);
-                            $woocommerce->customer->set_shipping_postcode($shipping_address['postalCode']);
-                            $woocommerce->customer->set_shipping_country($shipping_address['countryCode']);
-                            $woocommerce->customer->set_shipping_city($shipping_address['locality']);
-                            $woocommerce->customer->set_shipping_state($shipping_address['administrativeArea']);
+                            isset($shipping_address['emailAddress']) && $woocommerce->customer->set_billing_email($shipping_address['emailAddress']);
+                            isset($shipping_address['givenName']) &&  $woocommerce->customer->set_shipping_first_name($shipping_address['givenName']);
+                            isset($shipping_address['familyName']) && $woocommerce->customer->set_shipping_last_name($shipping_address['familyName']);
+                            isset($shipping_address['postalCode']) && $woocommerce->customer->set_shipping_postcode($shipping_address['postalCode']);
+                            isset($shipping_address['countryCode']) && $woocommerce->customer->set_shipping_country($shipping_address['countryCode']);
+                            isset($shipping_address['locality']) && $woocommerce->customer->set_shipping_city($shipping_address['locality']);
+                            isset($shipping_address['administrativeArea']) && $woocommerce->customer->set_shipping_state($shipping_address['administrativeArea']);
                         }
                     }
                     $orderTotal = WC()->cart->get_total('');
-                    if (isset($_GET['from']) && 'product' === $_GET['from']) {
+                    if (isset($_GET['from']) && 'product' === $_GET['from'] && in_array($paymentMethod, [WC_Gateway_Apple_Pay_AngellEYE::PAYMENT_METHOD])) {
                         try {
                             if (!class_exists('AngellEYE_PayPal_PPCP_Product')) {
                                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-product.php');

@@ -404,6 +404,7 @@ const angelleyeOrder = {
 			console.log('capture error', error);
 			jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder').unblock();
 			angelleyeOrder.showError(error.message);
+			angelleyeOrder.hideProcessingSpinner();
 		});
 	},
 	renderHostedButtons: () => {

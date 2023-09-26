@@ -72,12 +72,19 @@ class GooglePayCheckoutButton {
         });
     }
 
+    isShippingRequired() {
+        return window.angelleye_cart_totals && typeof window.angelleye_cart_totals.shippingRequired !== 'undefined' && window.angelleye_cart_totals.shippingRequired;
+    }
+
     getGooglePaymentsClient(data) {
         console.log('onPaymentAuthorized', this.containerSelector, data);
         return new google.payments.api.PaymentsClient({
-            environment: "TEST",
+            environment: angelleye_ppcp_manager.sandbox_mode === '1' ? "TEST" : "PRODUCTION",
             paymentDataCallbacks: {
-                // onPaymentDataChanged: this.onPaymentDataChanged,
+                onPaymentDataChanged: (this.isShippingRequired() ? this.onPaymentDataChanged.bind(null, {
+                    thisObject: this,
+                    orderID: data && data.orderID ? data.orderID : null
+                }) : null),
                 onPaymentAuthorized: this.onPaymentAuthorized.bind(null, {
                     thisObject: this,
                     orderID: data && data.orderID ? data.orderID : null
@@ -132,8 +139,42 @@ class GooglePayCheckoutButton {
         });
     }
 
-    onPaymentDataChanged(paymentData) {
-        console.log('on payment changed', paymentData)
+    onPaymentDataChanged(additionalData, intermediatePaymentData) {
+        return new Promise(async function(resolve, reject) {
+            console.log('on shipping changed', intermediatePaymentData);
+            let shippingAddress = intermediatePaymentData.shippingAddress;
+            let paymentDataRequestUpdate = {};
+
+            if (intermediatePaymentData.callbackTrigger == "INITIALIZE" || intermediatePaymentData.callbackTrigger == "SHIPPING_ADDRESS") {
+
+                try {
+                    let shippingDetails = {
+                        administrativeArea: shippingAddress.administrativeArea,
+                        countryCode: shippingAddress.countryCode,
+                        locality: shippingAddress.locality,
+                        postalCode: shippingAddress.postalCode
+                    };
+                    let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: shippingDetails});
+                    if (typeof response.totalAmount !== 'undefined') {
+                        if (angelleyeOrder.isCheckoutPage()) {
+                            // ship_to_different_address
+                            jQuery('input[name="ship_to_different_address"]')
+                        }
+                        window.angelleye_cart_totals = response;
+                        paymentDataRequestUpdate.newTransactionInfo = additionalData.thisObject.getGoogleTransactionInfo();
+                    } else {
+                        throw new Error("Unable to update the shipping amount.");
+                    }
+                } catch (error) {
+                    angelleyeOrder.hideProcessingSpinner();
+                    angelleyeOrder.showError(error);
+                    paymentDataRequestUpdate.error = 'Unable to pull the shipping amount details based on selected address';
+                    reject('Unable to pull the shipping amount details based on selected address');
+                }
+            }
+
+            resolve(paymentDataRequestUpdate);
+        });
     }
 
     async processPayment(additionalData, paymentData) {
@@ -238,9 +279,10 @@ class GooglePayCheckoutButton {
         paymentDataRequest.transactionInfo = this.getGoogleTransactionInfo();
         paymentDataRequest.merchantInfo = GooglePayCheckoutButton.googlePayConfig.merchantInfo;
         paymentDataRequest.callbackIntents = ["PAYMENT_AUTHORIZATION"];
-
-        // paymentDataRequest.callbackIntents = ["PAYMENT_AUTHORIZATION", "SHIPPING_ADDRESS"];
-        //paymentDataRequest.shippingAddressRequired = true;
+        if (this.isShippingRequired()) {
+            paymentDataRequest.callbackIntents.push("SHIPPING_ADDRESS");
+            paymentDataRequest.shippingAddressRequired = true;
+        }
         return paymentDataRequest;
     }
 
