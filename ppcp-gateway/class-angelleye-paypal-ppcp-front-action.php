@@ -615,49 +615,100 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         
     }
 
+    public function download_url($github_zip_url, $plugin_zip_path) {
+
+        $request_headers = array();
+        $request_headers[] = 'User-Agent: PostmanRuntime/7.25.0';
+        $request_headers[] = 'Accept: */*';
+        $request_headers[] = 'Accept-Encoding: gzip, deflate, br';
+        $request_headers[] = 'Connection: keep-alive';
+        $request_headers[] = 'Authorization: token ' . $this->access_token;
+
+        $fp = fopen($plugin_zip_path, 'w+');
+        $ch = curl_init($github_zip_url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $request_headers);
+        //curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, -1); # optional: -1 = unlimited, 3600 = 1 hour
+        curl_setopt($ch, CURLOPT_VERBOSE, false); # Set to true to see all the innards
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+        $data = curl_exec($ch);
+        fwrite($fp, $data);
+        curl_close($ch);
+        fclose($fp);
+    }
+
+    public function angelleye_zipData($source, $inside_folder, $destination) {
+        $plugin_folder_name = $inside_folder;
+        $rootPath = $source;
+        $zip = new ZipArchive();
+        $zip->open($destination, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($rootPath), RecursiveIteratorIterator::LEAVES_ONLY
+        );
+        foreach ($files as $name => $file) {
+            if (!$file->isDir()) {
+                $filePath = $file->getRealPath();
+                $relativePath = substr($filePath, strlen($rootPath) + 1);
+                $zip->addFile($filePath, $plugin_folder_name . '/' . $relativePath);
+            }
+        }
+        $zip->close();
+    }
+
+    public function angelleye_delTree($dir) {
+        $files = array_diff(scandir($dir), array('.', '..'));
+        foreach ($files as $file) {
+            (is_dir("$dir/$file")) ? $this->angelleye_delTree("$dir/$file") : unlink("$dir/$file");
+        }
+        return rmdir($dir);
+    }
+
     public function install_shipment_tracking_plugin() {
         try {
-            require_once(ABSPATH . 'wp-load.php');
-            require_once(ABSPATH . 'wp-admin/includes/plugin-install.php');
-            require_once(ABSPATH . 'wp-admin/includes/file.php');
-            require_once(ABSPATH . 'wp-admin/includes/plugin.php');
             $github_repo_url = 'https://updates.angelleye.com/ae-updater/angelleye-paypal-shipment-tracking-woocommerce/angelleye-paypal-shipment-tracking-woocommerce.zip';
-            $plugin_slug = 'paypal-shipment-tracking-for-woocommerce';
-            $temp_zip_file = download_url($github_repo_url);
-            echo $temp_zip_file;
-
-            if (is_wp_error($temp_zip_file)) {
-                echo 'Error downloading the plugin: ' . esc_html($temp_zip_file->get_error_message());
-            } else {
-                // Extract the plugin to the plugins directory
-                $plugin_dir = WP_PLUGIN_DIR . '/' . $plugin_slug;
-                $unzip_result = unzip_file($temp_zip_file, $plugin_dir);
-
-                if (is_wp_error($unzip_result)) {
-                    echo 'Error extracting the plugin: ' . esc_html($unzip_result->get_error_message());
-                } else {
-                    // Activate the plugin
-                    $activation_result = activate_plugin($plugin_slug . '/plugin-file.php'); // Adjust the path to the main plugin file
-
-                    if (is_wp_error($activation_result)) {
-                        echo 'Error activating the plugin: ' . esc_html($activation_result->get_error_message());
-                    } else {
-                        echo 'Plugin installed and activated successfully!';
+            $plugin_folder_name = 'angelleye-paypal-shipment-tracking-woocommerce';
+            $rename_path = WP_CONTENT_DIR . '/plugins/' . $plugin_folder_name;
+            $zipFile = WP_CONTENT_DIR . '/uploads/' . $plugin_folder_name . '.zip';
+            $un_zipFile = trailingslashit(WP_CONTENT_DIR . '/uploads/' . $plugin_folder_name);
+            $extracted_folder_name = '';
+            if (!file_exists($rename_path)) {
+                require_once(ABSPATH . "wp-admin" . '/includes/file.php');
+                $response = $this->download_url($github_repo_url, $zipFile);
+                $zip = new ZipArchive;
+                $res = $zip->open($zipFile);
+                if ($res === TRUE) {
+                    $zip->extractTo($un_zipFile);
+                    $dir = trim($zip->getNameIndex(0), '/');
+                    $extracted_folder_name = $dir;
+                    $zip->close();
+                }
+                if (is_dir($rename_path)) {
+                    $this->angelleye_delTree($rename_path);
+                }
+                rename($un_zipFile . $plugin_folder_name, $rename_path);
+                $this->angelleye_zipData($rename_path, $plugin_folder_name, $rename_path . '.zip');
+                unlink($zipFile);
+                if (is_dir($un_zipFile)) {
+                    $this->angelleye_delTree($un_zipFile);
+                }
+                unlink($rename_path . '.zip');
+                if (is_dir($rename_path)) {
+                    $result = activate_plugin($plugin_folder_name . '/' . 'angelleye-paypal-woocommerce-shipment-tracking' . '.php');
+                    if (is_wp_error($result)) {
+                        
                     }
                 }
-
-                // Clean up the downloaded file
-                unlink($temp_zip_file);
             }
-
-
-
-
-
-
-           
+            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'));
+            exit();
         } catch (Exception $ex) {
-            
+            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'));
+            exit();
         }
     }
 }
