@@ -933,7 +933,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                         <?php if (!is_plugin_active('angelleye-paypal-shipment-tracking-woocommerce/angelleye-paypal-woocommerce-shipment-tracking.php')) { ?>
                             <a class="wplk-button button-primary" href="<?php echo add_query_arg(array('angelleye_ppcp_action' => 'install_plugin', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))); ?>">PayPal Shipment Tracking</a>
                         <?php } else { ?>
-                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="65" height="65">
+                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
                         <?php } ?>
                     </fieldset>
                 </td>

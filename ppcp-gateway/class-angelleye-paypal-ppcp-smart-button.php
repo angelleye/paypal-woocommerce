@@ -1746,7 +1746,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                             <?php echo __('PayPal Shipment Tracking', 'angelleye-paypal-shipment-tracking-woocommerce'); ?>
                         </th>
                         <td>
-                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="65" height="65">
+                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
                             <b>Connected via PayPal by Angelleye</b>
                         </td>
                     </tr>
