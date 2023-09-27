@@ -261,7 +261,9 @@
     padding: 5px 6px;
     border-radius: 4px;
 }
-
+#place_order.hide_place_order_btn {
+    display: none !important;
+}
 @supports (-webkit-appearance: -apple-pay-button) {
     .apple-pay-button {
         -webkit-appearance: -apple-pay-button;

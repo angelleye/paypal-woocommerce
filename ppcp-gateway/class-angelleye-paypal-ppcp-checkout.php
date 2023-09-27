@@ -4,11 +4,13 @@ if (class_exists('WC_Checkout')) {
 
     class AngellEYE_PayPal_PPCP_Checkout extends WC_Checkout {
 
+        public static $_instance;
+
         public static function instance() {
-            if (is_null(self::$instance)) {
-                self::$instance = new self();
+            if (is_null(self::$_instance)) {
+                self::$_instance = new self();
             }
-            return self::$instance;
+            return self::$_instance;
         }
 
         public function process_checkout() {
