@@ -616,26 +616,20 @@ class AngellEYE_PayPal_PPCP_Front_Action {
     }
 
     public function angelleye_ppcp_download_zip_file($github_zip_url, $plugin_zip_path) {
-
         $request_headers = array();
-        $request_headers[] = 'User-Agent: PostmanRuntime/7.25.0';
         $request_headers[] = 'Accept: */*';
         $request_headers[] = 'Accept-Encoding: gzip, deflate, br';
         $request_headers[] = 'Connection: keep-alive';
-        $request_headers[] = 'Authorization: token ' . $this->access_token;
-
         $fp = fopen($plugin_zip_path, 'w+');
         $ch = curl_init($github_zip_url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $request_headers);
-        //curl_setopt($ch, CURLOPT_FILE, $fp);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, -1); # optional: -1 = unlimited, 3600 = 1 hour
-        curl_setopt($ch, CURLOPT_VERBOSE, false); # Set to true to see all the innards
+        curl_setopt($ch, CURLOPT_TIMEOUT, -1);
+        curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
         $data = curl_exec($ch);
         fwrite($fp, $data);
         curl_close($ch);
