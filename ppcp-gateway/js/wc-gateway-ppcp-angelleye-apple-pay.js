@@ -80,8 +80,19 @@ class ApplePayCheckoutButton {
         container.html('');
         console.log('rendering apple_pay button', containerSelector, container);
         // let applePayBtn = jQuery('<button type="button" id="apple-pay-btn" class="apple-pay-button apple-pay-button-black">Apple Pay</button>');
-        let applePayContainer = jQuery('<div class="apple-pay-container"></div>');
-        let applePayBtn = jQuery('<apple-pay-button id="btn-appl" buttonstyle="black" type="buy" locale="en">');
+        let buttonColor = 'black';
+        let buttonType = 'plain';
+        let containerStyle = '';
+        if (typeof angelleye_ppcp_manager.apple_pay_button_props !== 'undefined') {
+            buttonColor = angelleye_ppcp_manager.apple_pay_button_props.buttonColor;
+            buttonType = angelleye_ppcp_manager.apple_pay_button_props.buttonType;
+            let height = angelleye_ppcp_manager.apple_pay_button_props.height;
+            height = height !== '' ? 'height: ' + height + 'px;' : '';
+            containerStyle = height;
+        }
+        let applePayContainer = jQuery('<div class="apple-pay-container" style="'+(containerStyle !== '' ? containerStyle  : '')+'"></div>');
+
+        let applePayBtn = jQuery('<apple-pay-button id="btn-appl" buttonstyle="' + buttonColor + '" type="' + buttonType + '" locale="en">');
         applePayBtn.on('click', {thisObject: this}, this.handleClickEvent);
         applePayContainer.append(applePayBtn);
 

@@ -73,6 +73,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $enable_guest_checkout;
     public $must_create_account;
     private array $google_pay_button_props;
+    private array $apple_pay_button_props;
     private array $common_button_props;
 
     public function __construct() {
@@ -191,7 +192,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'width' => '',
         ];
         $this->google_pay_button_props = [
-             'buttonColor' => 'default', 'buttonType' => 'plain', 'height' => ''
+            'buttonColor' => 'default', 'buttonType' => 'plain', 'height' => ''
+        ];
+        $this->apple_pay_button_props = [
+            'buttonStyle' => 'black', 'buttonType' => 'plain', 'height' => ''
         ];
         if (is_product()) {
             $this->disable_funding = $this->setting_obj->get('product_disallowed_funding_methods', array());
@@ -206,6 +210,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 'buttonColor' => $this->setting_obj->get('product_google_style_color', 'default'),
                 'buttonType' => $this->setting_obj->get('product_google_button_type', 'plain'),
                 'height' => $this->setting_obj->get('product_google_button_height', ''),
+            ];
+            $this->apple_pay_button_props = [
+                'buttonColor' => $this->setting_obj->get('product_apple_style_color', 'black'),
+                'buttonType' => $this->setting_obj->get('product_apple_button_type', 'plain'),
+                'height' => $this->setting_obj->get('product_apple_button_height', ''),
             ];
             $this->common_button_props['width'] = $this->setting_obj->get('product_button_width', '');
         } elseif (is_cart()) {
@@ -222,6 +231,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 'buttonType' => $this->setting_obj->get('cart_google_button_type', 'plain'),
                 'height' => $this->setting_obj->get('cart_google_button_height', ''),
             ];
+            $this->apple_pay_button_props = [
+                'buttonColor' => $this->setting_obj->get('cart_apple_style_color', 'black'),
+                'buttonType' => $this->setting_obj->get('cart_apple_button_type', 'plain'),
+                'height' => $this->setting_obj->get('cart_apple_button_height', ''),
+            ];
             $this->common_button_props['width'] = $this->setting_obj->get('cart_button_width', '');
         } elseif (is_checkout() || is_checkout_pay_page()) {
             $this->disable_funding = $this->setting_obj->get('checkout_disallowed_funding_methods', array());
@@ -236,6 +250,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 'buttonColor' => $this->setting_obj->get('checkout_google_style_color', 'default'),
                 'buttonType' => $this->setting_obj->get('checkout_google_button_type', 'plain'),
                 'height' => $this->setting_obj->get('checkout_google_button_height', ''),
+            ];
+            $this->apple_pay_button_props = [
+                'buttonColor' => $this->setting_obj->get('cart_apple_style_color', 'black'),
+                'buttonType' => $this->setting_obj->get('cart_apple_button_type', 'plain'),
+                'height' => $this->setting_obj->get('cart_apple_button_height', ''),
             ];
             $this->common_button_props['width'] = $this->setting_obj->get('checkout_button_width', '');
         }
@@ -617,6 +636,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'style_tagline' => $this->style_tagline,
             'common_button_props' => $this->common_button_props,
             'google_pay_button_props' => $this->google_pay_button_props,
+            'apple_pay_button_props' => $this->apple_pay_button_props,
             'page' => $page,
             'is_pre_checkout_offer' => $pre_checkout_offer,
             'is_pay_page' => $is_pay_page,
@@ -651,6 +671,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $customCss = '';
         if (!empty($this->common_button_props['width'])) {
             $customCss .= '.angelleye_ppcp-button-container #angelleye_ppcp_product, .angelleye_ppcp-button-container #angelleye_ppcp_product_apple_pay, .angelleye_ppcp-button-container #angelleye_ppcp_product_google_pay, .angelleye_ppcp-button-container #angelleye_ppcp_cart, .angelleye_ppcp-button-container #angelleye_ppcp_cart_apple_pay, .angelleye_ppcp-button-container #angelleye_ppcp_cart_google_pay, .angelleye_ppcp-button-container #angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay, #angelleye_ppcp_checkout_google_pay {width: '.$this->common_button_props['width'].'px;}';
+        }
+
+        if (!empty($this->apple_pay_button_props['height'])) {
+            $customCss .= 'apple-pay-button{--apple-pay-button-height: ' . $this->apple_pay_button_props['height'] .'px;}';
         }
         wp_add_inline_style( $this->angelleye_ppcp_plugin_name, $customCss );
         if (is_account_page()) {

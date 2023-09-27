@@ -113,6 +113,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'product_google_style_color' => 'default',
                 'product_google_button_type' => 'plain',
                 'product_google_button_height' => '',
+                'product_apple_style_color' => 'black',
+                'product_apple_button_type' => 'plain',
+                'product_apple_button_height' => '',
                 'cart_button_settings' => '',
                 'enable_cart_button' => 'yes',
                 'cart_button_position' => 'bottom',
@@ -128,6 +131,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'cart_google_style_color' => 'default',
                 'cart_google_button_type' => 'plain',
                 'cart_google_button_height' => '',
+                'cart_apple_style_color' => 'black',
+                'cart_apple_button_type' => 'plain',
+                'cart_apple_button_height' => '',
                 'checkout_button_settings' => '',
                 'enable_paypal_checkout_page' => 'yes',
                 'checkout_page_display_option' => 'regular',
@@ -144,6 +150,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'checkout_google_style_color' => 'default',
                 'checkout_google_button_type' => 'checkout',
                 'checkout_google_button_height' => '',
+                'checkout_apple_style_color' => 'black',
+                'checkout_apple_button_type' => 'plain',
+                'checkout_apple_button_height' => '',
                 'mini_cart_button_settings' => '',
                 'enable_mini_cart_button' => 'yes',
                 'mini_cart_disallowed_funding_methods' => '',
@@ -359,6 +368,22 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $googlePayText = __('Google Pay feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
             }
             $google_pay_custom_attributes = $this->is_google_pay_approved ? [] : array('disabled' => 'disabled');
+            $applePayBtnTypes = [
+                'plain' => __('Plain (Recommended)', 'paypal-for-woocommerce'),
+                'buy' => __('Buy', 'paypal-for-woocommerce'),
+                'donate' => __('Donate', 'paypal-for-woocommerce'),
+                'book' => __('Book', 'paypal-for-woocommerce'),
+                'check-out' => __('Checkout', 'paypal-for-woocommerce'),
+                'subscribe' => __('Subscribe', 'paypal-for-woocommerce'),
+                'contribute' => __('Contribute', 'paypal-for-woocommerce'),
+                'order' => __('Order', 'paypal-for-woocommerce'),
+                'reload' => __('Reload', 'paypal-for-woocommerce'),
+                'rent' => __('Rent', 'paypal-for-woocommerce'),
+                'support' => __('Support', 'paypal-for-woocommerce'),
+                'tip' => __('Tip', 'paypal-for-woocommerce'),
+                'top-up' => __('Top Up', 'paypal-for-woocommerce'),
+                'continue' => __('Continue', 'paypal-for-woocommerce'),
+            ];
 
             $this->angelleye_ppcp_gateway_setting = array(
                 'enabled' => array(
@@ -645,6 +670,38 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'options' => $button_height,
                 ),
 
+                'product_apple_style_color' => array(
+                    'title' => __('Apple Pay Button Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
+                    'description' => __('Set the color you would like to use for the Apple Pay button.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                    'default' => 'default',
+                    'options' => array(
+                        'black' => __('Black (Recommended)', 'paypal-for-woocommerce'),
+                        'white' => __('White', 'paypal-for-woocommerce'),
+                        'white-outline' => __('White Outline', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'product_apple_button_type' => array(
+                    'title' => __('Apple Pay Button Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
+                    'description' => __('Set the color you would like to use for the Apple Pay button.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                    'default' => 'plain',
+                    'options' => $applePayBtnTypes,
+                ),
+                'product_apple_button_height' => array(
+                    'title' => __('Apple Pay Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
+                    'description' => __('Set the height of the Apple Pay button you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
+                ),
+
                 'cart_button_settings' => array(
                     'title' => __('Cart Page Settings', 'paypal-for-woocommerce'),
                     'description' => __('Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your Cart page.', 'paypal-for-woocommerce'),
@@ -830,6 +887,38 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'select',
                     'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
                     'description' => __('Set the height of the Google Pay button you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
+                ),
+
+                'cart_apple_style_color' => array(
+                    'title' => __('Apple Pay Button Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
+                    'description' => __('Set the color you would like to use for the Apple Pay button.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                    'default' => 'default',
+                    'options' => array(
+                        'black' => __('Black (Recommended)', 'paypal-for-woocommerce'),
+                        'white' => __('White', 'paypal-for-woocommerce'),
+                        'white-outline' => __('White Outline', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'cart_apple_button_type' => array(
+                    'title' => __('Apple Pay Button Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
+                    'description' => __('Set the color you would like to use for the Apple Pay button.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                    'default' => 'plain',
+                    'options' => $applePayBtnTypes,
+                ),
+                'cart_apple_button_height' => array(
+                    'title' => __('Apple Pay Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
+                    'description' => __('Set the height of the Apple Pay button you would like displayed.', 'paypal-for-woocommerce'),
                     'default' => '',
                     'desc_tip' => true,
                     'options' => $button_height,
@@ -1031,6 +1120,39 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'options' => $button_height,
                 ),
+
+                'checkout_apple_style_color' => array(
+                    'title' => __('Apple Pay Button Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
+                    'description' => __('Set the color you would like to use for the Apple Pay button.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                    'default' => 'default',
+                    'options' => array(
+                        'black' => __('Black (Recommended)', 'paypal-for-woocommerce'),
+                        'white' => __('White', 'paypal-for-woocommerce'),
+                        'white-outline' => __('White Outline', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'checkout_apple_button_type' => array(
+                    'title' => __('Apple Pay Button Type', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
+                    'description' => __('Set the color you would like to use for the Apple Pay button.', 'paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                    'default' => 'plain',
+                    'options' => $applePayBtnTypes,
+                ),
+                'checkout_apple_button_height' => array(
+                    'title' => __('Apple Pay Button Height', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select angelleye_ppcp_product_button_settings',
+                    'description' => __('Set the height of the Apple Pay button you would like displayed.', 'paypal-for-woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                    'options' => $button_height,
+                ),
+
                 'mini_cart_button_settings' => array(
                     'title' => __('Mini Cart Page Settings', 'paypal-for-woocommerce'),
                     'description' => __('Enable the Mini Cart specific button settings, and the options set will be applied to the PayPal buttons on your Mini Cart page.', 'paypal-for-woocommerce'),
