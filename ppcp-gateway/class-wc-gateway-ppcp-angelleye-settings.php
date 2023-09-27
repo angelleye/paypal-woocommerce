@@ -21,6 +21,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $is_sandbox;
         public $enable_tokenized_payments;
         public $is_multi_account_active;
+        public $is_package_tracking_approved = false;
 
         public static function instance() {
             if (is_null(self::$_instance)) {
@@ -79,7 +80,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 return false;
             }
             $this->setting_obj = get_option($this->gateway_key, array());
-            $defaults = array('enabled' => 'yes',
+            $defaults = array('enabled' => 'no',
                 'title' => __('PayPal', 'paypal-for-woocommerce'),
                 'description' => __(
                         'The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce'
@@ -1518,6 +1519,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('A localized billing agreement that the payment sheet displays to the user before the user authorizes the payment.', 'paypal-for-woocommerce'),
                     'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
+                ),
+                'paypal_shipment_tracking' => array(
+                    'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'enable_paypal_shipment_tracking' => array(
+                    'title' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'label' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'type' => 'paypal_shipment_tracking',
+                    'description' => '',
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'class' => 'enable_package_tracking',
                 ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),

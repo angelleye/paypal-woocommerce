@@ -287,6 +287,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_action('wp', array($this, 'angelleye_ppcp_delete_payment_method_action'), 9);
         add_action('plugins_loaded', array($this, 'angelleye_ppcp_plugins_loaded'), 99);
         add_action('woocommerce_valid_order_statuses_for_payment_complete', array($this, 'angelleye_ppcp_woocommerce_valid_order_statuses_for_payment_complete'), 10, 2);
+        add_action('angelleye_ppcp_shipment_tracking_section', array($this, 'angelleye_ppcp_shipment_tracking_section'));
 
         // Currently, This is to support the applepay, so that we can pass the total amount to SDK popup
         add_filter('woocommerce_update_order_review_fragments', array($this, 'add_order_checkout_data_for_direct_checkouts'), 99);
@@ -1746,6 +1747,31 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             return $gateways;
         } catch (Exception $ex) {
             return $gateways;
+        }
+    }
+    
+    public function angelleye_ppcp_shipment_tracking_section() {
+        try {
+            ?>
+            <h3 class="wc-settings-sub-title " id="woocommerce_paypal_express_general">
+                <?php echo __('PayPal Shipment Tracking Settings', 'angelleye-paypal-shipment-tracking-woocommerce'); ?>
+            </h3>
+            <table class="form-table shipping_tracking_api">
+                <tbody>
+                    <tr>
+                        <th>
+                            <?php echo __('PayPal Shipment Tracking', 'angelleye-paypal-shipment-tracking-woocommerce'); ?>
+                        </th>
+                        <td>
+                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
+                            <b>Connected via PayPal by Angelleye</b>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <?php 
+        } catch (Exception $ex) {
+
         }
     }
 }

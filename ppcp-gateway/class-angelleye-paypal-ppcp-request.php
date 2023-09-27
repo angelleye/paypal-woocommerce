@@ -108,6 +108,9 @@ class AngellEYE_PayPal_PPCP_Request {
             }
         }
         $this->basicAuth = base64_encode($this->client_id . ":" . $this->secret_id);
+        if(!function_exists('is_angelleye_aws_down')) {
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/angelleye-paypal-ppcp-common-functions.php');
+        }
         if (is_angelleye_aws_down() == false) {
             $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE;
         } else {
