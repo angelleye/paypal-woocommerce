@@ -72,7 +72,7 @@ const angelleyeOrder = {
 		return checkoutSelector;
 	},
 	getWooNoticeAreaSelector: () => {
-		let wooNoticeClass = '.woocommerce-notices-wrapper';
+		let wooNoticeClass = '.woocommerce-notices-wrapper:first';
 		if (jQuery(wooNoticeClass).length) {
 			return wooNoticeClass;
 		}
