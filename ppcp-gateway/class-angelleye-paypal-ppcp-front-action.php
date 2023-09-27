@@ -703,6 +703,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             } elseif(file_exists($github_rename_path)) {
                 $result = activate_plugin('paypal-shipment-tracking-for-woocommerce' . '/' . 'angelleye-paypal-woocommerce-shipment-tracking' . '.php');
             }
+            delete_transient('license_key_status_check');
+            delete_site_transient( 'update_plugins' );
+            delete_site_option('angelleye_helper_dismiss_activation_notice');
             wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=paypal_shipment_tracking'));
             exit();
         } catch (Exception $ex) {
