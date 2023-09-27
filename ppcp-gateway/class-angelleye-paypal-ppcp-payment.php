@@ -393,9 +393,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $return_response['currencyCode'] = $this->api_response['purchase_units'][0]['amount']['currency_code'];
                 $return_response['totalAmount'] = $this->api_response['purchase_units'][0]['amount']['value'];
                 $return_response['orderID'] = $this->api_response['id'];
-                if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
-                    angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
-                }
+                !empty($order) && angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
                 wp_send_json($return_response, 200);
                 exit();
             } else {
@@ -403,12 +401,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'request' => 'create_order',
                     'order_id' => $woo_order_id
                 );
-                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
-                wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
-                if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
-                    $order->add_order_note($error_message);
-                }
-                wp_send_json_error($error_message);
+                $errorMessage = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                !empty($order) && $order->add_order_note($errorMessage);
+                wp_send_json_error(__('We were unable to process your order, please try again with same or other payment method(s).', 'paypal-for-woocommerce'));
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');

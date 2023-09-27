@@ -315,6 +315,7 @@ class GooglePayCheckoutButton {
                 return orderData.orderID;
             });
         } catch (error) {
+            error = error.message;
             angelleyeOrder.hideProcessingSpinner();
             angelleyeOrder.showError(error);
             return;

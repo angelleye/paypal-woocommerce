@@ -62,7 +62,7 @@ const angelleyeOrder = {
 	},
 	getCheckoutSelectorCss: () => {
 		let checkoutSelector = '.woocommerce';
-		if (angelleye_ppcp_manager.page === 'checkout') {
+		if (angelleyeOrder.isCheckoutPage()) {
 			if (angelleye_ppcp_manager.is_pay_page === 'yes') {
 				checkoutSelector = 'form#order_review';
 			} else {
@@ -70,6 +70,13 @@ const angelleyeOrder = {
 			}
 		}
 		return checkoutSelector;
+	},
+	getWooNoticeAreaSelector: () => {
+		let wooNoticeClass = '.woocommerce-notices-wrapper';
+		if (jQuery(wooNoticeClass).length) {
+			return wooNoticeClass;
+		}
+		return this.getCheckoutSelectorCss();
 	},
 	scrollToWooCommerceNoticesSection: () => {
 		let scrollElement = jQuery('.woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout');
@@ -95,7 +102,7 @@ const angelleyeOrder = {
 				angelleyeOrder.updateWooCheckoutFormNonce(data.nonce);
 			}
 			return data.orderID;
-		})
+		});
 	},
 	createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, callback}) => {
 		if (typeof apiUrl == 'undefined') {
@@ -180,7 +187,9 @@ const angelleyeOrder = {
 					messages = messages.map(function (message) {
 						return '<li>' + message + '</li>';
 					}).join('');
-					messages = '<div>Unable to create the order due to below errors.</div>' + messages;
+					messages = '<li>Unable to create the order due to below errors.</li>' + messages;
+				} else {
+					messages = '<li>' + messages + '</li>';
 				}
 				throw new Error(messages);
 			} else {
@@ -209,15 +218,15 @@ const angelleyeOrder = {
 			window.location.reload();
 		}
 	},
-	prepareWooErrorMessage: (message) => {
-		return '<div class="woocommerce-error">' + message + '</div>'
+	prepareWooErrorMessage: (messages) => {
+		return '<ul class="woocommerce-error">' + messages + '</ul>'
 	},
-	showError: (error_message) => {
-		error_message = angelleyeOrder.prepareWooErrorMessage(error_message);
-		let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
-		jQuery(checkoutSelector).prepend('<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' + error_message + '</div>');
-		jQuery(checkoutSelector).removeClass('processing').unblock();
-		jQuery(checkoutSelector).find('.input-text, select, input:checkbox').trigger('validate').trigger('blur');
+	showError: (errorMessage) => {
+		errorMessage = angelleyeOrder.prepareWooErrorMessage(errorMessage);
+		let errorMessageLocation = angelleyeOrder.getWooNoticeAreaSelector();
+		jQuery(errorMessageLocation).prepend('<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' + errorMessage + '</div>');
+		jQuery(errorMessageLocation).removeClass('processing').unblock();
+		jQuery(errorMessageLocation).find('.input-text, select, input:checkbox').trigger('validate').trigger('blur');
 		angelleyeOrder.scrollToWooCommerceNoticesSection();
 	},
 	showProcessingSpinner: (containerSelector) => {
@@ -237,7 +246,7 @@ const angelleyeOrder = {
 		}
 	},
 	handleCreateOrderError: (error) => {
-		console.log(error);
+		console.log('create_order_error', error);
 		angelleyeOrder.hideProcessingSpinner();
 		jQuery(document.body).trigger('angelleye_paypal_onerror');
 		let errorMessage = error.message;
