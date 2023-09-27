@@ -100,5 +100,25 @@ function initSmartButtons() {
 		} else {
 			initSmartButtons();
 		}
-	})
+	});
+
+	jQuery(document.body).on('angelleye_paypal_oncancel', function (event) {
+		event.preventDefault();
+		let is_from_product = angelleyeOrder.isProductPage();
+		if (is_from_product) {
+			fetch(angelleye_ppcp_manager.update_cart_oncancel, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: jQuery('form.cart').serialize()
+			}).then(function (res) {
+				return res.json();
+			}).then(function (data) {
+				window.location.href = window.location.href;
+			});
+		} else {
+			window.location.href = window.location.href;
+		}
+	});
 })(jQuery);
