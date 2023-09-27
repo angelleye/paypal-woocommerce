@@ -362,6 +362,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         AngellEye_Session_Manager::unset('paypal_order_id');
                         remove_filter('woocommerce_get_checkout_url', [$this->smart_button, 'angelleye_ppcp_woocommerce_get_checkout_url']);
                         wc_add_notice($exception->getMessage(), 'error');
+                        // Clear any warnings from the error buffer before sending a final JSON response to the frontend.
+                        if (ob_get_length()) {
+                            ob_end_clean();
+                        }
                         wp_send_json_success(array(
                             'result' => 'failure',
                             'redirect' => ae_get_checkout_url()
