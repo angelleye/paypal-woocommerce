@@ -601,6 +601,9 @@ const angelleyeOrder = {
 			}
 		}
 	},
+        updateLocalizedScriptDatapayLaterMessaging: () => {
+                return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.get_updated_pay_later_data});
+	},
 	queuedEvents: {},
 	addEventsForCallback: (eventType, event, data) => {
 		angelleyeOrder.queuedEvents[eventType] = {event, data};
