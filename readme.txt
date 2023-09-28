@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.2.4 - 09.28.2023 =
+= 4.2.5 - 09.28.2023 =
 * Tweak - Pay Later Not Updating Properly. ([PFW-1587](https://github.com/angelleye/paypal-woocommerce/pull/1912))
 
 = 4.2.4 - 09.28.2023 =
