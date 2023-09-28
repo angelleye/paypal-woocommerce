@@ -297,38 +297,33 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     $this->payment_request->angelleye_ppcp_paypal_create_payment_token_sub_change_payment();
                     exit();
                 case "update_cart_oncancel":
-
                     if( !empty( $_REQUEST['angelleye_ppcp-add-to-cart'] ) && is_numeric( (int) $_REQUEST['angelleye_ppcp-add-to-cart'] ) ) {
-
                         if ( class_exists( 'WooCommerce' ) ) {
-
+                            $error_messages = wc_get_notices('error');
+                            wc_clear_notices();
                             $product_id = sanitize_text_field( $_REQUEST['angelleye_ppcp-add-to-cart'] ) ;
                             $quantity = !empty( $_REQUEST['quantity'] ) ? sanitize_text_field( $_REQUEST['quantity'] ) : 0;
-
                             $cart = WC()->cart;
-
                             foreach ( $cart->get_cart() as $cart_item_key => $cart_item ) {
-
                                 if ( !empty( $cart_item['product_id'] ) && $cart_item['product_id'] == $product_id ) {
-
                                     $updated_quantity = $cart_item['quantity'] - $quantity;
-
                                     if ( $updated_quantity > 0 ) {
-
                                         $cart->set_quantity( $cart_item_key, $updated_quantity );
                                     } else {
-
                                         $cart->remove_cart_item( $cart_item_key );
                                     }
                                 }
                             }
-
                             $cart->calculate_totals();
-
+                            if (ob_get_length()) {
+                                ob_end_clean();
+                            }
                             wp_send_json(['status' => true]);
                         }
                     }
-
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
                     wp_send_json(['status' => false]);
                     exit();
             }

@@ -115,10 +115,10 @@ function initSmartButtons() {
 			}).then(function (res) {
 				return res.json();
 			}).then(function (data) {
-				window.location.href = window.location.href;
+				window.location.reload();
 			});
 		} else {
-			window.location.href = window.location.href;
+			window.location.reload();
 		}
 	});
 })(jQuery);

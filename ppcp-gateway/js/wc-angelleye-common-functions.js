@@ -199,8 +199,10 @@ const angelleyeOrder = {
 	onCancel: () => {
 		jQuery(document.body).trigger('angelleye_paypal_oncancel');
 		if (angelleyeOrder.isCheckoutPage() === false) {
-			angelleyeOrder.showProcessingSpinner();
-			window.location.reload();
+                    angelleyeOrder.showProcessingSpinner();
+                    if( angelleyeOrder.isProductPage() !== true) {
+                        window.location.reload();
+                    }
 		}
 	},
 	prepareWooErrorMessage: (message) => {
