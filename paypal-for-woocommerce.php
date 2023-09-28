@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily add the PayPal Commerce Platform including PayPal Checkout, Pay Later, Venmo, Direct Credit Processing, and alternative payment methods like Apple Pay, Google Pay, and more! Also fully supports Braintree Payments.
- * Version:           4.2.2
+ * Version:           4.2.4
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -15,7 +15,7 @@
  * Requires at least: 5.8
  * Tested up to: 6.3.1
  * WC requires at least: 3.0.0
- * WC tested up to: 8.1.0
+ * WC tested up to: 8.1.1
  *
  *************
  * Attribution
@@ -40,7 +40,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '4.2.2');
+    define('VERSION_PFW', '4.2.4');
 }
 if ( ! defined( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' ) ) {
     define( 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__ );
@@ -147,6 +147,13 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
 
             add_action('wp_enqueue_scripts', array($this, 'angelleye_cc_ui_style'), 100);
+            // To load the deferred PPCP JS SDK async
+            add_filter('script_loader_tag', function ( $tag, $handle ) {
+                if ('angelleye_ppcp' !== $handle) {
+                    return $tag;
+                }
+                return str_replace( ' src', ' async src', $tag );
+            }, 10, 2 );
 
             add_action( 'parse_request', array($this, 'wc_gateway_payment_token_api_parser') , 99);
             add_action('wp_ajax_angelleye_dismiss_notice', array($this, 'angelleye_dismiss_notice'), 10);

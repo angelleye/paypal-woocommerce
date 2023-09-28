@@ -617,7 +617,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'button_selector' => $button_selector,
             'apple_pay_btn_selector' => $apple_pay_btn_selector ?? [],
             'advanced_card_payments_title' => $this->advanced_card_payments_title,
-            'product_cart_details' => $product_cart_amounts
+            'product_cart_details' => $product_cart_amounts,
+            'update_cart_oncancel' => add_query_arg(array('angelleye_ppcp_action' => 'update_cart_oncancel', 'utm_nooverride' => '1',), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
         ));
     }
 
