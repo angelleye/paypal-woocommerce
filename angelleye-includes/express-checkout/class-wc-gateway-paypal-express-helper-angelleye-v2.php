@@ -286,12 +286,17 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                         }
                     }
                     add_shortcode('aepfw_bnpl_message', array($this, 'aepfw_bnpl_message_shortcode'), 10);
+
                 }
+                // YITH deposit payment compatibility
+                add_action("yith_wcdp_after_suborders_create", array($this, "angelleye_restore_express_checkout_session"));
+                add_action("yith_wcdp_before_suborders_create", array($this, "angelleye_backup_express_checkout_session"));
             }
         } catch (Exception $ex) {
 
         }
     }
+
 
     public function buy_now_button() {
         try {
@@ -1930,6 +1935,61 @@ class Angelleye_PayPal_Express_Checkout_Helper {
             }
         }
         return $fields;
+    }
+
+    /**
+     * This function creates backup of the paypal express checkouts sessions before the yith deposit creates suborder
+     */
+    public function angelleye_backup_express_checkout_session() {
+        $paypal_express_checkout = angelleye_get_session("paypal_express_checkout");
+        $paypal_express_terms = angelleye_get_session("paypal_express_terms");
+        $ec_save_to_account = angelleye_get_session("ec_save_to_account");
+        $post_data = angelleye_get_session("post_data");
+        $shiptoname = angelleye_get_session("shiptoname");
+        $payeremail = angelleye_get_session("payeremail");
+        $validate_data = angelleye_get_session("validate_data");
+        $angelleye_fraudnet_f = angelleye_get_session("angelleye_fraudnet_f");
+
+        angelleye_set_session("paypal_express_checkout_bkp", $paypal_express_checkout);
+        angelleye_set_session("paypal_express_terms_bkp", $paypal_express_terms);
+        angelleye_set_session("ec_save_to_account_bkp", $ec_save_to_account);
+        angelleye_set_session("post_data_bkp", $post_data);
+        angelleye_set_session("shiptoname_bkp", $shiptoname);
+        angelleye_set_session("payeremail_bkp", $payeremail);
+        angelleye_set_session("validate_data_bkp", $validate_data);
+        angelleye_set_session("angelleye_fraudnet_f_bkp", $angelleye_fraudnet_f);
+    }
+
+    /**
+     * This function restores the paypal express checkout sessions after the yith deposit creates suborder
+     */
+    public function angelleye_restore_express_checkout_session() {
+        $paypal_express_checkout = angelleye_get_session("paypal_express_checkout_bkp");
+        $paypal_express_terms = angelleye_get_session("paypal_express_terms_bkp");
+        $ec_save_to_account = angelleye_get_session("ec_save_to_account_bkp");
+        $post_data = angelleye_get_session("post_data_bkp");
+        $shiptoname = angelleye_get_session("shiptoname_bkp");
+        $payeremail = angelleye_get_session("payeremail_bkp");
+        $validate_data = angelleye_get_session("validate_data_bkp");
+        $angelleye_fraudnet_f = angelleye_get_session("angelleye_fraudnet_f_bkp");
+
+        angelleye_set_session("paypal_express_checkout", $paypal_express_checkout);
+        angelleye_set_session("paypal_express_terms", $paypal_express_terms);
+        angelleye_set_session("ec_save_to_account", $ec_save_to_account);
+        angelleye_set_session("post_data", $post_data);
+        angelleye_set_session("shiptoname", $shiptoname);
+        angelleye_set_session("payeremail", $payeremail);
+        angelleye_set_session("validate_data", $validate_data);
+        angelleye_set_session("angelleye_fraudnet_f", $angelleye_fraudnet_f);
+        
+        angelleye_unset_session("paypal_express_checkout_bkp");
+        angelleye_unset_session("paypal_express_terms_bkp");
+        angelleye_unset_session("ec_save_to_account_bkp");
+        angelleye_unset_session("post_data_bkp");
+        angelleye_unset_session("shiptoname_bkp");
+        angelleye_unset_session("payeremail_bkp");
+        angelleye_unset_session("validate_data_bkp");
+        angelleye_unset_session("angelleye_fraudnet_f_bkp");
     }
 
 }
