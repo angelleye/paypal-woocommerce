@@ -174,7 +174,7 @@ const angelleyeOrder = {
 					messages = messages.map(function (message) {
 						return '<li>' + message + '</li>';
 					}).join('');
-					messages = '<div>Unable to create the order due to below errors.</div>' + messages;
+					messages = '<div>' + angelleye_ppcp_manager.error_message_checkout_validation + '</div>' + messages;
 				}
 				throw new Error(messages);
 			} else {
