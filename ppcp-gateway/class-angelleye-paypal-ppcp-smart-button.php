@@ -367,7 +367,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $product_cart_amounts = [];
         $pre_checkout_offer = "no";
 
-        if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
+        if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_is_subs_change_payment() === true) {
             if (is_product()) {
                 $page = 'product';
             } else if (is_cart() && !WC()->cart->is_empty()) {
