@@ -335,7 +335,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
                     }
-                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
+                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['country'])) {
                         $body_request['purchase_units'][0]['shipping']['address'] = array(
                             'address_line_1' => $cart['shipping_address']['address_1'],
                             'address_line_2' => $cart['shipping_address']['address_2'],
@@ -353,7 +353,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . '' . $cart['shipping_address']['last_name'];
                     }
-                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
+                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['country'])) {
                         $body_request['purchase_units'][0]['shipping']['address'] = array(
                             'address_line_1' => $cart['shipping_address']['address_1'],
                             'address_line_2' => $cart['shipping_address']['address_2'],
@@ -2157,7 +2157,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                             $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
                         }
-                        if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
+                        if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['country'])) {
                             $body_request['purchase_units'][0]['shipping']['address'] = array(
                                 'address_line_1' => $cart['shipping_address']['address_1'],
                                 'address_line_2' => $cart['shipping_address']['address_2'],
