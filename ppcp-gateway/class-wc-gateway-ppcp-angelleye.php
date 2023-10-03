@@ -789,6 +789,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if ($is_apple_pay_approved && $is_apple_pay_enabled) {
                 $is_domain_added = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoRegisterDomain();
             }
+            $is_disabled = $data['disabled'] || isset($data['custom_attributes']['disabled']) || !$is_domain_added;
             ob_start();
             ?>
             <tr valign="top">
@@ -799,7 +800,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     <fieldset>
                         <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
                         <label for="<?php echo esc_attr($field_key); ?>">
-                            <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
+                            <input <?php disabled($is_disabled, true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php !$is_disabled && checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
                             <?php
                             if ($is_apple_pay_enabled && $is_apple_pay_approved) {
                                 ?>
