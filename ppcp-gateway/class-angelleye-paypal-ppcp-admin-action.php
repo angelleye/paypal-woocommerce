@@ -130,7 +130,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         $payment_method = $old_wc ? $order->payment_method : $order->get_payment_method();
         $paymentaction = angelleye_ppcp_get_post_meta($order, '_paymentaction');
         $auth_transaction_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
-        if ('angelleye_ppcp' === $payment_method && $paymentaction === 'authorize' && !empty($auth_transaction_id)) {
+        $auto_capture_payment_support_gateways = ['angelleye_ppcp', 'angelleye_ppcp_google_pay', 'angelleye_ppcp_apple_pay'];
+        if (in_array($payment_method, $auto_capture_payment_support_gateways) && $paymentaction === 'authorize' && !empty($auth_transaction_id)) {
             $trans_details = $this->payment_request->angelleye_ppcp_show_details_authorized_payment($auth_transaction_id);
             if ($this->angelleye_ppcp_is_authorized_only($trans_details)) {
                 $this->payment_request->angelleye_ppcp_capture_authorized_payment($order_id);
