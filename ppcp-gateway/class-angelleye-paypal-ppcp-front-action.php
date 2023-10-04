@@ -102,6 +102,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "create_order":
                     // check if billing and shipping details posted from frontend then update cart
                     global $woocommerce;
+                    // Remove the shipping address override flag from session so that we can use the
+                    // PayPal returned shipping address for other payment methods except google_pay
+                    AngellEye_Session_Manager::unset('shipping_address_updated_from_callback');
                     if (isset($_REQUEST['billing_address_source'])) {
                         $billing_address = json_decode(stripslashes($_REQUEST['billing_address_source']), true);
                         if (!empty($billing_address)) {
@@ -210,6 +213,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         $shipping_address = json_decode(stripslashes($_REQUEST['shipping_address_source']), true);
                         $shipping_address = $shipping_address['shippingDetails'] ?? null;
                         if (!empty($shipping_address)) {
+                            AngellEye_Session_Manager::set('shipping_address_updated_from_callback', time());
                             !empty($shipping_address['addressLines'][0]) ? $woocommerce->customer->set_shipping_address_1($shipping_address['addressLines'][0]) : null;
                             !empty($shipping_address['address1']) ? $woocommerce->customer->set_shipping_address_1($shipping_address['address1']) : null;
                             !empty($shipping_address['addressLines'][1]) ? $woocommerce->customer->set_shipping_address_2($shipping_address['addressLines'][1]) : null;
