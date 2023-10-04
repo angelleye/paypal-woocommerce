@@ -490,16 +490,29 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     public function maybe_start_checkout($data, $errors = null) {
         try {
-            if (is_null($errors)) {
-                $error_messages = wc_get_notices('error');
-                wc_clear_notices();
-            } else {
-                $error_messages = $errors->get_error_messages();
+            foreach ( $errors->errors as $code => $messages ) {
+                $data = $errors->get_error_data( $code );
+                foreach ( $messages as $message ) {
+                    wc_add_notice( $message, 'error', $data );
+                }
             }
-            if (empty($error_messages)) {
+            if (0 === wc_notice_count( 'error' )) {
                 $this->angelleye_ppcp_set_customer_data($_POST);
             } else {
-                ob_start();
+                $error_messages = array();
+                $messages = wc_get_notices('error');
+                if(!empty($messages)) {
+                    foreach ($messages as $key => $message) {
+                        $error_messages[] = $message['notice'];
+                    }
+                }
+                if(empty($error_messages)) {
+                    $error_messages = $errors->get_error_messages();
+                }
+                wc_clear_notices();
+                if (ob_get_length()) {
+                    ob_end_clean();
+                }
                 wp_send_json_error(array('messages' => $error_messages));
                 exit;
             }
