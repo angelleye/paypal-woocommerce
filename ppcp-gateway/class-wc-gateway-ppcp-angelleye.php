@@ -492,6 +492,11 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if ('angelleye_ppcp' !== $payment_method) {
             return false;
         }
+        $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
+        if ('on-hold' === $order->get_status()) {
+            return false;
+        }
+        
         $fee = angelleye_ppcp_get_post_meta($order, '_paypal_fee', true);
         $currency = angelleye_ppcp_get_post_meta($order, '_paypal_fee_currency_code', true);
         if ($order->get_status() == 'refunded') {

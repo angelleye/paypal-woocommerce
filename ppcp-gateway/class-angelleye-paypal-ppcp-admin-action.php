@@ -54,7 +54,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -83,6 +83,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             }
         }
         add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_ppcp_save'), 50, 2);
+        add_action('woocommerce_order_item_add_action_buttons', array($this, 'angelleye_ppcp_add_order_action_buttons'), 10);
+        add_action('admin_enqueue_scripts', array($this, 'angelleye_ppcp_add_order_action_js'), 10);
+        add_action('woocommerce_admin_order_totals_after_total', array($this, 'angelleye_ppcp_add_order_action_item_edit'), 10);
     }
 
     public function angelleye_ppcp_admin_void_action_handler($order, $order_data) {
@@ -93,7 +96,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
             $this->payment_request->angelleye_ppcp_void_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -105,7 +108,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
             $this->payment_request->angelleye_ppcp_capture_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -117,7 +120,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
             $this->payment_request->angelleye_ppcp_refund_order_admin($order, $order_data);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -176,7 +179,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -200,15 +203,15 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
     public function angelleye_ppcp_order_action_callback($post, $metabox) {
         try {
             global $theorder;
-            if ( ! is_object( $theorder ) ) {
-                $theorder = wc_get_order( $post->ID );
+            if (!is_object($theorder)) {
+                $theorder = wc_get_order($post->ID);
             }
             $order = $theorder;
             if (empty($order)) {
@@ -308,7 +311,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 $this->angelleye_ppcp_display_paypal_activity_table($html_table_row);
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -414,7 +417,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     </tbody>
                 </table><?php
             }
-        ?></div>
+            ?></div>
 
         <?php if (isset($this->angelleye_ppcp_order_status_data['void']) && isset($this->angelleye_ppcp_order_actions['void'])) { ?>
 
@@ -507,7 +510,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             </table>
             <?php
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -561,7 +564,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'ans_button_label' => 'Enable PayPal Vault',
                 'is_dismiss' => true
             );
-             $notice_data['enable_apple_pay'] = array(
+            $notice_data['enable_apple_pay'] = array(
                 'id' => 'ppcp_notice_apple_pay',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'PayPal Commerce Now Supports Apple Pay!',
@@ -603,16 +606,46 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     }
                 }
             }
-            if(isset($notice_type['vault_upgrade']) &&  $notice_type['vault_upgrade'] === true && isset($notice_type['enable_apple_pay']) &&  $notice_type['enable_apple_pay'] === true) {
+            if (isset($notice_type['vault_upgrade']) && $notice_type['vault_upgrade'] === true && isset($notice_type['enable_apple_pay']) && $notice_type['enable_apple_pay'] === true) {
                 angelleye_ppcp_display_notice($notice_data->vault_upgrade_enable_apple_pay);
-            } elseif(isset($notice_type['vault_upgrade']) &&  $notice_type['vault_upgrade'] === true) {
+            } elseif (isset($notice_type['vault_upgrade']) && $notice_type['vault_upgrade'] === true) {
                 angelleye_ppcp_display_notice($notice_data->vault_upgrade);
-            } elseif(isset($notice_type['enable_apple_pay']) &&  $notice_type['enable_apple_pay'] === true) {
+            } elseif (isset($notice_type['enable_apple_pay']) && $notice_type['enable_apple_pay'] === true) {
                 angelleye_ppcp_display_notice($notice_data->enable_apple_pay);
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
+    public function angelleye_ppcp_add_order_action_buttons() {
+        try {
+            wp_enqueue_script('angelleye-ppcp-order-action');
+            $render_refunds = TRUE;
+            if ($render_refunds) :
+                ?><button type="button" class="button angelleye-ppcp-admin-action"><?php esc_html_e('PPCP Payment Actions', 'woocommerce'); ?></button><?php
+            endif;
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_add_order_action_js() {
+        wp_register_script('angelleye-ppcp-order-action', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-admin-action.js', array('jquery'), VERSION_PFW, true);
+    }
+
+    public function angelleye_ppcp_add_order_action_item_edit() {
+        ?><tr class="ppcp_auth_void_amount" style="display: none;">
+            <td class="label">
+                <label for="refund_amount">
+                    <?php echo wc_help_tip(__('This will show the total amount to be capture/void', 'woocommerce')); ?>
+                    <?php esc_html_e('Amount', 'woocommerce'); ?>:
+                </label>
+            </td>
+            <td class="total">
+                <input type="text" id="refund_amount" name="refund_amount" class="wc_input_price"/>
+                <div class="clear"></div>
+            </td>
+        </tr> <?php
+    }
 }
