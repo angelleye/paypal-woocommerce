@@ -72,6 +72,7 @@ function initSmartButtons() {
 	}
 
 	// Hook the function to run on totals, cart or checkout updates
+	angelleyeOrder.updateCartTotalsInEnvironment();
 	angelleyeOrder.hooks.onPaymentMethodChange();
 	angelleyeOrder.hooks.onCartValueUpdate();
 

@@ -292,6 +292,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         // Currently, This is to support the applepay, so that we can pass the total amount to SDK popup
         add_filter('woocommerce_update_order_review_fragments', array($this, 'add_order_checkout_data_for_direct_checkouts'), 99);
 
+        // This is utilised on cart page to inform the shipping changes or cart total changes in frontend
+        add_action('woocommerce_after_cart_totals', [$this, 'add_cart_data_in_html'], 99);
+
         add_filter('wfocu_wc_get_supported_gateways', array($this, 'wfocu_upsell_supported_gateways'), 99, 1);
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
             add_filter('wfocu_subscriptions_get_supported_gateways', array($this, 'wfocu_subscription_supported_gateways'), 99, 1);
@@ -1697,6 +1700,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         ];
         $fragments['angelleye_payments_data'] = json_encode($paymentData);
         return $fragments;
+    }
+
+    public function add_cart_data_in_html()
+    {
+        $fragments = $this->add_order_checkout_data_for_direct_checkouts([]);
+        echo '<div id="angelleye_cart_totals" style="display:none;">' . $fragments['angelleye_payments_data'] . '</div>';
     }
 
     public function angelleye_ppcp_woocommerce_valid_order_statuses_for_payment_complete($order_status_list, $order) {
