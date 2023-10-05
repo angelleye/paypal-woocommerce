@@ -62,13 +62,10 @@ if (!function_exists('angelleye_session_init')) {
         if (is_admin()) {
             return false;
         }
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        if(!$old_wc) {
+        if (class_exists('WC_Session_Handler')) {
             $session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
             $session = new $session_class();
             $session->init();
-        } else {
-            return false;
         }
     }
 

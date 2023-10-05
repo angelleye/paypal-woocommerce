@@ -29,6 +29,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public $subscription_support_enabled;
     public $angelleye_ppcp_migration_wizard_notice_key = 'angelleye_ppcp_migration_wizard_notice_key';
     public $angelleye_ppcp_migration_wizard_notice_data = array();
+    public $setting_sandbox;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
