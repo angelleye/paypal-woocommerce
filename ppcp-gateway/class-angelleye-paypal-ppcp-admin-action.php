@@ -628,6 +628,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $this->ae_capture_amount = 0;
             $this->ae_refund_amount = 0;
             $this->ae_auth_amount = 0;
+
             $paypal_order_id = angelleye_ppcp_get_post_meta($order, '_paypal_order_id');
             if (empty($paypal_order_id)) {
                 echo __('PayPal order id does not exist for this order.', 'paypal-for-woocommerce');
@@ -636,6 +637,32 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
             if (isset($this->payment_response) && !empty($this->payment_response) && isset($this->payment_response['intent']) && $this->payment_response['intent'] === 'AUTHORIZE') {
                 if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']) && !empty($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {
+                    if (isset($this->payment_response['purchase_units']['0']['payments']['refunds'])) {
+                        foreach ($this->payment_response['purchase_units']['0']['payments']['refunds'] as $key => $refunds) {
+                            $this->currency_code = $refunds['amount']['currency_code'];
+
+                            $this->ae_refund_amount = $this->ae_refund_amount + $refunds['amount']['value'];
+                        }
+                    }
+                    if (isset($this->payment_response['purchase_units']['0']['payments']['captures'])) {
+                        foreach ($this->payment_response['purchase_units']['0']['payments']['captures'] as $key => $captures) {
+                            $this->currency_code = $captures['amount']['currency_code'];
+
+                            if ('COMPLETED' === $captures['status'] || 'PARTIALLY_REFUNDED' === $captures['status']) {
+                                $this->angelleye_ppcp_order_status_data['refund'][$line_item['transaction_id']] = $captures['amount']['value'];
+                            }
+                            $this->ae_capture_amount = $this->ae_capture_amount + $captures['amount']['value'];
+                        }
+                    }
+                    if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {
+                        foreach ($this->payment_response['purchase_units']['0']['payments']['authorizations'] as $key => $authorizations) {
+                            $this->currency_code = $authorizations['amount']['currency_code'];
+
+                            $this->ae_auth_amount = $this->ae_auth_amount + $authorizations['amount']['value'];
+                            $this->angelleye_ppcp_order_status_data['capture'][$line_item['transaction_id']] = $authorizations['amount']['value'];
+                            $this->angelleye_ppcp_order_status_data['void'][$line_item['transaction_id']] = $authorizations['amount']['value'];
+                        }
+                    }
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'CREATED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
                         $this->angelleye_ppcp_order_actions['void'] = __('Void Authorization', '');
                         $this->angelleye_ppcp_order_actions['capture'] = __('Capture Funds', '');
@@ -684,6 +711,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             return;
         }
         $this->angelleye_ppcp_order_action_list($order_id);
+        $this->angelleye_ppcp_order_meta_auth_capture_html();
+    }
+
+    public function angelleye_ppcp_order_meta_auth_capture_html() {
         if (isset($this->angelleye_ppcp_order_actions) && !empty($this->angelleye_ppcp_order_actions)) {
             ?>
             <tr class="ppcp_auth_void_border" style="display: none;">
@@ -691,11 +722,11 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             </tr>
             <tr class="ppcp_auth_void_option" style="display: none;">
                 <td class="label">
-                    <label for="angelleye_ppcp_payment_action"><?php echo __('Select PayPal Action', 'paypal-for-woocommerce'); ?></label>
+                    <label for="order_metabox_angelleye_ppcp_payment_action"><?php echo __('Select PayPal Action', 'paypal-for-woocommerce'); ?></label>
                 </td>
                 <td width="1%"></td>
                 <td class="total">
-                        <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
+                    <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
                         <select name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action">
                             <?php
                             $i = 0;
@@ -710,27 +741,104 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             endforeach;
                             ?>
                         </select>
-            <?php } ?>
+                    <?php } ?>
                 </td>
             </tr>
         <?php } ?>
-
-        <tr class="ppcp_auth_void_amount" style="display: none;">
-            <td class="label">
-                <label for="refund_amount">
-                    <?php echo wc_help_tip(__('This will show the total amount to be capture/void', 'woocommerce')); ?>
-        <?php esc_html_e('Amount', 'woocommerce'); ?>:
-                </label>
-            </td>
+        <?php if (isset($this->angelleye_ppcp_order_status_data['capture']) && isset($this->angelleye_ppcp_order_actions['capture'])) { ?>
+            <tr class="angelleye_ppcp_capture_box" style="display: none;">
+                <td class="label"><?php echo __('Additional Capture Possible', 'paypal-for-woocommerce'); ?></th>
             <td width="1%"></td>
-            <td class="total">
-                <input type="text" id="ppcp_refund_amount" name="ppcp_refund_amount" class="wc_input_price"/>
-
+            <td>
+                <fieldset>
+                    <label for="additional_capture_yes"><input type="radio" name="additionalCapture" value="yes" id="additional_capture_yes">Yes<?php echo wc_help_tip(__('Yes (option to capture additional funds on this authorization if need)', 'paypal-for-woocommerce')); ?></label>
+                    <label for="additional_capture_no"><input type="radio" name="additionalCapture" value="no" id="additional_capture_no">No<?php echo wc_help_tip(__('No (no additional capture needed; close authorization after this capture)', 'paypal-for-woocommerce')); ?></label>
+                </fieldset>
             </td>
-        </tr> <?php
-    }
+            </tr>
+            <tr class="angelleye_ppcp_capture_box" style="display: none;">
+                <td class="label"><?php echo __('Capture Amount', 'paypal-for-woocommerce'); ?></th>
+            <td width="1%"></td>
+            <td>
+                <fieldset>
+                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_regular_price" class="short wc_input_price text-box" style="width: 220px">
+                </fieldset>
+            </td>
+            </tr>
+            <tr class="angelleye_ppcp_capture_box" style="display: none;">
+                <td class="label"><?php echo __('Note To Buyer (Optional)', 'paypal-for-woocommerce');
+                echo wc_help_tip(__('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.', 'paypal-for-woocommerce')) ?></td>
+                <td width="1%"></td>
+                <td>
+                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture"></textarea>
+                </td>
+            </tr>
 
-    public function angelleye_ppcp_is_meta_order_action_enable($order_id) {
-        
+        <?php } ?>
+        <?php if (isset($this->angelleye_ppcp_order_status_data['refund']) && isset($this->angelleye_ppcp_order_actions['refund'])) { ?>
+
+
+            <tr class="angelleye_ppcp_refund_box" style="display: none;">
+                <td class="label"><?php echo __('Transaction Id', ''); ?></th>
+            <td width="1%"></td>
+            <td>
+                <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data">
+                    <?php
+                    $i = 0;
+                    foreach ($this->angelleye_ppcp_order_status_data['refund'] as $k => $v) :
+                        if ($i == 0) {
+                            echo "<option value=''>" . __('Select Transaction Id', '') . "</option>";
+                        }
+                        ?>
+                        <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
+                        <?php
+                        $i = $i + 1;
+                    endforeach;
+                    ?>
+                </select>
+            </td>
+            </tr>
+            <tr class="angelleye_ppcp_refund_box" style="display: none;">
+                <td class="label"><?php echo __('Refund Amount', 'paypal-for-woocommerce'); ?></th>
+            <td width="1%"></td>
+            <td>
+                <fieldset>
+                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_refund_price" class="short wc_input_price text-box" style="width: 220px">
+                </fieldset>
+            </td>
+            </tr>
+            <tr class="angelleye_ppcp_refund_box" style="display: none;">
+                <td class="label"><?php echo __('Note To Buyer (Optional)', 'paypal-for-woocommerce');
+                    echo wc_help_tip(__('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.', 'paypal-for-woocommerce'));
+                    ?> </td>
+                <td width="1%"></td>
+                <td>
+                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture"></textarea>
+                </td>
+            </tr>
+            <?php
+        }
+        ?></div>
+
+        <?php if (isset($this->angelleye_ppcp_order_status_data['void']) && isset($this->angelleye_ppcp_order_actions['void'])) { ?>
+
+
+
+            <tr class="angelleye_ppcp_void_box" style="display: none;">
+                <td class="label">Note To Buyer (Optional)<?php echo wc_help_tip('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.'); ?></td>
+                <td width="1%"></td>
+                <td>
+                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_void" id="angelleye_ppcp_note_to_buyer_void"></textarea>
+                </td>
+            </tr>
+
+            <?php
+        }
+        ?>
+
+
+        <input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited">
+
+        <?php
     }
 }
