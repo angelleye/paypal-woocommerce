@@ -95,11 +95,12 @@ const angelleyeOrder = {
 		if (typeof apiUrl == 'undefined') {
 			apiUrl = angelleye_ppcp_manager.create_order_url;
 		}
+
+		let formSelector = angelleyeOrder.getWooFormSelector();
 		jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 		let formData;
 		let is_from_checkout = angelleyeOrder.isCheckoutPage();
 		let is_from_product = angelleyeOrder.isProductPage();
-		let is_sale = angelleyeOrder.isSale();
 		let billingField = null;
 		let shippingField = null;
 		if (billingDetails) {
@@ -116,40 +117,31 @@ const angelleyeOrder = {
 				value: JSON.stringify(shippingDetails)
 			});
 		}
-		if (is_from_checkout) {
-			if (angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
-				formData = '';
-			} else {
-				formData = jQuery(angelleye_ppcp_button_selector).closest('form').serialize();
-			}
-		} else if (is_from_product) {
-			let add_to_cart = jQuery("[name='add-to-cart']").val();
-			jQuery('<input>', {
-				type: 'hidden',
-				name: 'angelleye_ppcp-add-to-cart',
-				value: add_to_cart
-			}).appendTo('form.cart');
 
-			if (billingField) {
-				jQuery('form.cart').find('input[name=billing_address_source]').remove();
-				billingField.appendTo('form.cart');
-			}
-			if (shippingField) {
-				jQuery('form.cart').find('input[name=shipping_address_source]').remove();
-				shippingField.appendTo('form.cart');
-			}
-			formData = jQuery('form.cart').serialize();
+		console.log('formSelector', formSelector, jQuery(formSelector).length);
+		if (is_from_checkout && angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
+			formData = '';
 		} else {
+			if (is_from_product) {
+				let add_to_cart = jQuery("[name='add-to-cart']").val();
+				jQuery(formSelector).find('input[name=angelleye_ppcp-add-to-cart]').remove();
+				jQuery('<input>', {
+					type: 'hidden',
+					name: 'angelleye_ppcp-add-to-cart',
+					value: add_to_cart
+				}).appendTo(formSelector);
+			}
 			if (billingField) {
-				jQuery('form.cart').find('input[name=billing_address_source]').remove();
-				billingField.appendTo('form.woocommerce-cart-form');
+				jQuery(formSelector).find('input[name=billing_address_source]').remove();
+				billingField.appendTo(formSelector);
 			}
 			if (shippingField) {
-				jQuery('form.cart').find('input[name=shipping_address_source]').remove();
-				shippingField.appendTo('form.woocommerce-cart-form');
+				jQuery(formSelector).find('input[name=shipping_address_source]').remove();
+				shippingField.appendTo(formSelector);
 			}
-			formData = jQuery('form.woocommerce-cart-form').serialize();
+			formData = jQuery(formSelector).serialize();
 		}
+
 		return fetch(apiUrl, {
 			method: 'POST',
 			headers: {
