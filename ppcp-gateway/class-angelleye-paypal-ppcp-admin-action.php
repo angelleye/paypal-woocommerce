@@ -727,7 +727,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 <td width="1%"></td>
                 <td class="total">
                     <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
-                        <select name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action">
+                        <select name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action" style="width: 220px;">
                             <?php
                             $i = 0;
                             foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
@@ -747,9 +747,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         <?php } ?>
         <?php if (isset($this->angelleye_ppcp_order_status_data['capture']) && isset($this->angelleye_ppcp_order_actions['capture'])) { ?>
             <tr class="angelleye_ppcp_capture_box" style="display: none;">
-                <td class="label"><?php echo __('Additional Capture Possible', 'paypal-for-woocommerce'); ?></th>
+                <td class="label"><?php echo __('Additional Capture Possible', 'paypal-for-woocommerce'); ?></td>
             <td width="1%"></td>
-            <td>
+            <td class="total">
                 <fieldset>
                     <label for="additional_capture_yes"><input type="radio" name="additionalCapture" value="yes" id="additional_capture_yes">Yes<?php echo wc_help_tip(__('Yes (option to capture additional funds on this authorization if need)', 'paypal-for-woocommerce')); ?></label>
                     <label for="additional_capture_no"><input type="radio" name="additionalCapture" value="no" id="additional_capture_no">No<?php echo wc_help_tip(__('No (no additional capture needed; close authorization after this capture)', 'paypal-for-woocommerce')); ?></label>
@@ -757,32 +757,32 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             </td>
             </tr>
             <tr class="angelleye_ppcp_capture_box" style="display: none;">
-                <td class="label"><?php echo __('Capture Amount', 'paypal-for-woocommerce'); ?></th>
+            <td class="label">
+                <label for="refund_amount">
+                    <?php echo wc_help_tip(__('This will show the total amount to be capture/void', 'woocommerce')); ?>
+                    <?php esc_html_e('Amount', 'woocommerce'); ?>:
+                </label>
+            </td>
             <td width="1%"></td>
-            <td>
-                <fieldset>
-                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_regular_price" class="short wc_input_price text-box" style="width: 220px">
-                </fieldset>
+            <td class="total">
+                <input type="text" id="ppcp_refund_amount" name="ppcp_refund_amount" style="width: 220px;" class="wc_input_price"/>
+
             </td>
             </tr>
             <tr class="angelleye_ppcp_capture_box" style="display: none;">
-                <td class="label"><?php echo __('Note To Buyer (Optional)', 'paypal-for-woocommerce');
-                echo wc_help_tip(__('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.', 'paypal-for-woocommerce')) ?></td>
+                <td class="label"><?php echo __('Note To Buyer (Optional)', 'paypal-for-woocommerce'); echo wc_help_tip(__('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.', 'paypal-for-woocommerce')); ?></td>
                 <td width="1%"></td>
-                <td>
-                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture"></textarea>
+                <td class="total">
+                    <textarea maxlength="150" rows="2" cols="20" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture" style="width: 220px;"></textarea>
                 </td>
             </tr>
-
         <?php } ?>
         <?php if (isset($this->angelleye_ppcp_order_status_data['refund']) && isset($this->angelleye_ppcp_order_actions['refund'])) { ?>
-
-
             <tr class="angelleye_ppcp_refund_box" style="display: none;">
-                <td class="label"><?php echo __('Transaction Id', ''); ?></th>
+                <td class="label"><?php echo __('Transaction Id', ''); ?></td>
             <td width="1%"></td>
-            <td>
-                <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data">
+            <td class="total">
+                <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data" style="width: 220px;">
                     <?php
                     $i = 0;
                     foreach ($this->angelleye_ppcp_order_status_data['refund'] as $k => $v) :
@@ -799,46 +799,39 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             </td>
             </tr>
             <tr class="angelleye_ppcp_refund_box" style="display: none;">
-                <td class="label"><?php echo __('Refund Amount', 'paypal-for-woocommerce'); ?></th>
+                <td class="label"><?php echo __('Refund Amount', 'paypal-for-woocommerce'); ?></td>
             <td width="1%"></td>
-            <td>
+            <td class="total">
                 <fieldset>
                     <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_refund_price" class="short wc_input_price text-box" style="width: 220px">
                 </fieldset>
             </td>
             </tr>
             <tr class="angelleye_ppcp_refund_box" style="display: none;">
-                <td class="label"><?php echo __('Note To Buyer (Optional)', 'paypal-for-woocommerce');
+                <td class="label"><?php
+                    echo __('Note To Buyer (Optional)', 'paypal-for-woocommerce');
                     echo wc_help_tip(__('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.', 'paypal-for-woocommerce'));
                     ?> </td>
                 <td width="1%"></td>
-                <td>
-                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture"></textarea>
+                <td class="total">
+                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture" style="width: 220px;"></textarea>
                 </td>
             </tr>
             <?php
         }
         ?></div>
-
         <?php if (isset($this->angelleye_ppcp_order_status_data['void']) && isset($this->angelleye_ppcp_order_actions['void'])) { ?>
-
-
-
             <tr class="angelleye_ppcp_void_box" style="display: none;">
                 <td class="label">Note To Buyer (Optional)<?php echo wc_help_tip('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.'); ?></td>
                 <td width="1%"></td>
-                <td>
-                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_void" id="angelleye_ppcp_note_to_buyer_void"></textarea>
+                <td class="total">
+                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_void" id="angelleye_ppcp_note_to_buyer_void" style="width: 220px;"></textarea>
                 </td>
             </tr>
-
             <?php
         }
         ?>
-
-
         <input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited">
-
         <?php
     }
 }
