@@ -287,7 +287,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'VOIDED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
                         unset($this->angelleye_ppcp_order_actions);
                     }
-                    $this->angelleye_ppcp_display_payment_action();
+                    //$this->angelleye_ppcp_display_payment_action();
                     $this->angelleye_ppcp_display_paypal_activity_table($html_table_row);
                 }
             } elseif (isset($this->payment_response) && $this->payment_response['name'] === 'RESOURCE_NOT_FOUND') {
