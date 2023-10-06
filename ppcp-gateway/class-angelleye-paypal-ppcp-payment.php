@@ -2563,10 +2563,12 @@ class AngellEYE_PayPal_PPCP_Payment {
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
             $amount_value = isset($order_data['_angelleye_ppcp_refund_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_refund_price'], $decimals) : '';
-            $body_request['amount'] = array(
-                'value' => $amount_value,
-                'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount_value)
-            );
+            if(!empty($amount_value) && $amount_value > 0.1) {
+                $body_request['amount'] = array(
+                    'value' => $amount_value,
+                    'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount_value)
+                );
+            }
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $transaction_id = $order_data['angelleye_ppcp_refund_data'] ?? '';
             $args = array(

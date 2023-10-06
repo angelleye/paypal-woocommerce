@@ -505,8 +505,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             return true;
         }
         ?>
-        <tr>
-            <td class="label stripe-fee">
+        <tr class="paypal-fee-tr">
+            <td class="label paypal-fee">
                 <?php echo wc_help_tip(__('This represents the fee PayPal collects for the transaction.', 'paypal-for-woocommerce')); ?>
                 <?php esc_html_e('PayPal Fee:', 'paypal-for-woocommerce'); ?>
             </td>

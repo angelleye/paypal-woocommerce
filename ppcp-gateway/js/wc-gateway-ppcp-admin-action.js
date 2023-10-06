@@ -6,13 +6,10 @@ jQuery(function ($) {
             $('.angelleye_ppcp_capture_box input[name="ppcp_refund_amount"]').attr('name', 'refund_amount');
             $('.angelleye_ppcp_capture_box input[id="ppcp_refund_amount"]').attr('id', 'refund_amount');
             $('div.wc-order-data-row.wc-order-add-item.wc-order-data-row-toggle').slideDown();
+            $('.paypal-fee-tr').slideUp();
             $('.ppcp_auth_void_option').slideDown();
             $('.ppcp_auth_void_border').slideDown();
-            window.wcTracks.recordEvent('order_edit_refund_button_click', {
-                order_id: woocommerce_admin_meta_boxes.post_id,
-                status: $('#order_status').val()
-            });
-            return false;
+            $('#order_metabox_angelleye_ppcp_payment_action').prop('selectedIndex', 0);
         });
         $('#woocommerce-order-items').on('click', 'button.cancel-action', function (e) {
             $('.ppcp_auth_void_border').slideUp();
@@ -23,6 +20,7 @@ jQuery(function ($) {
             $('.angelleye_ppcp_refund_box').slideUp();
             $('.angelleye_ppcp_capture_box').slideUp();
             $('.angelleye_ppcp_void_box').slideUp();
+            $('.paypal-fee-tr').slideUp();
         });
     });
     $('#order_metabox_angelleye_ppcp_payment_action').change(function (e) {
@@ -49,10 +47,10 @@ jQuery(function ($) {
             $('#woocommerce-order-items').find('div.refund').slideUp();
         }
         if ($(this).val().length === 0) {
-            $('#angelleye_ppcp_payment_submit_button').slideUp();
+            $('.angelleye-ppcp-order-action-submit').slideUp();
             return false;
         } else {
-            $('#angelleye_ppcp_payment_submit_button').slideDown();
+            $('.angelleye-ppcp-order-action-submit').slideDown();
         }
     }).change();
 });
