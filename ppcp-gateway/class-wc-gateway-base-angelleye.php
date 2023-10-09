@@ -55,8 +55,11 @@ trait WC_Gateway_Base_AngellEYE
         }
     }
 
-    public function isSubscriptionRequired(): bool
+    public function isSubscriptionRequired($orderId = null): bool
     {
+        if (!empty($orderId) && class_exists('WC_Subscriptions_Order')) {
+            return WC_Subscriptions_Order::order_contains_subscription($orderId);
+        }
         if (class_exists('WC_Subscriptions_Cart')) {
             return WC_Subscriptions_Cart::cart_contains_subscription();
         }

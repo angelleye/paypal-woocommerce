@@ -394,7 +394,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 exit();
             } else {
                 if (isset($_GET['from']) && 'checkout' === $_GET['from']) {
-                    AngellEye_Session_Manager::set('checkout_post', isset($_POST) ? wc_clean($_POST) : false);
+                    AngellEye_Session_Manager::set('checkout_post', isset($_POST) ? $_POST : false);
                     $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
                     exit();
                 } elseif (!empty($angelleye_ppcp_paypal_order_id)) {

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.3.1
-Stable tag: 4.2.2
+Stable tag: 4.2.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,31 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.2.8 - 10.05.2023 =
+* Tweak - Updated the PayLater messaging dynamic amount update flow. ([PFW-1622](https://github.com/angelleye/paypal-woocommerce/pull/1922))
+* Fix - Resolves the amount update issue on order pay page with Apple Pay gateway. ([PFW-1618](https://github.com/angelleye/paypal-woocommerce/pull/1921))
+
+= 4.2.7 - 10.05.2023 =
+* Fix - Resolves the shipping address validation error on checkout page. ([PFW-1617](https://github.com/angelleye/paypal-woocommerce/pull/1920))
+
+= 4.2.6 - 10.02.2023 =
+* Fix - Resolves the shipping validation issue. ([PFW-1590](https://github.com/angelleye/paypal-woocommerce/pull/1913))
+* Tweak - woocommerce_add_error hook not working properly with PPCP. ([PFW-1601](https://github.com/angelleye/paypal-woocommerce/pull/1914))
+* Tweak - Move to spinner when submitting form. ([PFW-1600](https://github.com/angelleye/paypal-woocommerce/pull/1915))
+* Tweak - Cookies and Content Security Policy Compatibility. ([PFW-1588](https://github.com/angelleye/paypal-woocommerce/pull/1916))
+* Tweak - Smart Button Doesn't Load Properly After Clicking 'Order Again' and Redirecting to Cart Page. ([PFW-1605](https://github.com/angelleye/paypal-woocommerce/pull/1917))
+
+= 4.2.5 - 09.28.2023 =
+* Tweak - Pay Later Not Updating Properly. ([PFW-1587](https://github.com/angelleye/paypal-woocommerce/pull/1912))
+
+= 4.2.4 - 09.28.2023 =
+* Feature - Update cart product qty on cancel or close the PayPal login window. ([PFW-1591](https://github.com/angelleye/paypal-woocommerce/pull/1908))
+* Tweak - Line Breaks in Order Notes no longer respected. ([PFW-1586](https://github.com/angelleye/paypal-woocommerce/pull/1905))
+
+= 4.2.3 - 09.27.2023 =
+* Fix - Fixes the undefined method error & Place order button css override issue. ([PFW-1604](https://github.com/angelleye/paypal-woocommerce/pull/1911))
+* Tweak - Load javascript file asynchronously to enhance the site load time.  ([PFW-1321](https://github.com/angelleye/paypal-woocommerce/pull/1907))
 
 = 4.2.2 - 09.13.2023 =
 * Fix - Resolves pending orders issue due to CC authorize/capture failure. ([PFW-1585](https://github.com/angelleye/paypal-woocommerce/pull/1903))

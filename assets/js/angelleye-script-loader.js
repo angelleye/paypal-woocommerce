@@ -31,6 +31,7 @@ function angelleyeLoadPayPalScript(config, onLoaded) {
     // delay the onload event to let the PayPal lib initialized in the env
     script.addEventListener('load', finalLoaded.bind(null, scriptUrl));
     script.setAttribute('src', config.url);
+    script.async = true;
     if (config.script_attributes) {
         Object.entries(config.script_attributes).forEach((keyValue) => {
             script.setAttribute(keyValue[0], keyValue[1]);
@@ -55,9 +56,9 @@ function canShowPlaceOrderBtn() {
 function showHidePlaceOrderBtn() {
     // console.log(canShowPlaceOrderBtn(), abc.sss);
     if (canShowPlaceOrderBtn()) {
-        jQuery('#place_order').show();
+        jQuery('#place_order').removeClass('hide_place_order_btn').show();
     } else {
-        jQuery('#place_order').hide();
+        jQuery('#place_order').addClass('hide_place_order_btn').hide();
     }
 }
 

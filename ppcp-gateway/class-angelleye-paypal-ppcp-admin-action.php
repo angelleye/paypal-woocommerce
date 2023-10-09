@@ -567,7 +567,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'PayPal Commerce Now Supports Apple Pay!',
                 'ans_message_description' => 'Unlock advanced features such as Apple Pay. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
-                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
+                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=additional_authorizations'),
                 'ans_button_label' => 'Enable Apple Pay',
                 'is_dismiss' => true
             );
