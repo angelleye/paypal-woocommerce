@@ -73,7 +73,7 @@ class GooglePayCheckoutButton {
     }
 
     isShippingRequired() {
-        return window.angelleye_cart_totals && typeof window.angelleye_cart_totals.shippingRequired !== 'undefined' && window.angelleye_cart_totals.shippingRequired;
+        return !angelleyeOrder.isCheckoutPage() && window.angelleye_cart_totals && typeof window.angelleye_cart_totals.shippingRequired !== 'undefined' && window.angelleye_cart_totals.shippingRequired;
     }
 
     getGooglePaymentsClient(data) {
