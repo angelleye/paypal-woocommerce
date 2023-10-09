@@ -114,15 +114,6 @@ class GooglePayCheckoutButton {
         let parseErrorMessage = (errorObject) => {
             console.error('parseErrorMessage', errorObject)
             console.log(JSON.stringify(errorObject));
-            if (errorObject.name === 'PayPalApplePayError') {
-                let debugID = errorObject.paypalDebugId;
-                switch (errorObject.errorName) {
-                    case 'ERROR_VALIDATING_MERCHANT':
-                        return 'This merchant is not enabled to process apple pay. please contact website owner. [DebugId: ' + debugID + ']';
-                    default:
-                        return 'We are unable to process your request at the moment, please contact website owner. [DebugId: ' + debugID + ']'
-                }
-            }
             return errorObject;
         };
 
@@ -159,10 +150,6 @@ class GooglePayCheckoutButton {
                     };
                     let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: shippingDetails});
                     if (typeof response.totalAmount !== 'undefined') {
-                        if (angelleyeOrder.isCheckoutPage()) {
-                            // ship_to_different_address
-                            jQuery('input[name="ship_to_different_address"]')
-                        }
                         window.angelleye_cart_totals = response;
                         paymentDataRequestUpdate.newTransactionInfo = additionalData.thisObject.getGoogleTransactionInfo();
                     } else {
