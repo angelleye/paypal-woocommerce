@@ -203,8 +203,11 @@ const angelleyeOrder = {
 	shippingAddressUpdate: (shippingDetails, billingDetails) => {
 		return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails, billingDetails});
 	},
-	onCancel: () => {
+	triggerPaymentCancelEvent: () => {
 		jQuery(document.body).trigger('angelleye_paypal_oncancel');
+	},
+	onCancel: () => {
+		angelleyeOrder.triggerPaymentCancelEvent();
 		if (!angelleyeOrder.isCheckoutPage()) {
 			angelleyeOrder.showProcessingSpinner();
 			if (!angelleyeOrder.isProductPage()) {
@@ -688,6 +691,24 @@ const angelleyeOrder = {
 			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function (event, data) {
 				if (!angelleyeOrder.isPendingEventTriggering) {
 					angelleyeOrder.addEventsForCallback(event.type, event, data);
+				}
+			});
+		},
+		onPaymentCancellation: () => {
+			jQuery(document.body).on('angelleye_paypal_oncancel', function (event) {
+				event.preventDefault();
+				if (angelleyeOrder.isProductPage()) {
+					fetch(angelleye_ppcp_manager.update_cart_oncancel, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded'
+						},
+						body: jQuery(angelleyeOrder.getWooFormSelector()).serialize()
+					}).then(function (res) {
+						return res.json();
+					}).then(function (data) {
+						window.location.reload();
+					});
 				}
 			});
 		}

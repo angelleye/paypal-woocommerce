@@ -281,6 +281,7 @@ class ApplePayCheckoutButton {
                 });
                 angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
             } catch (error) {
+                angelleyeOrder.triggerPaymentCancelEvent();
                 let errorMessage = parseErrorMessage(error);
                 angelleyeOrder.hideProcessingSpinner();
                 angelleyeOrder.showError(errorMessage);

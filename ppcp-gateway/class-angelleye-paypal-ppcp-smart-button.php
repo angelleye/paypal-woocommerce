@@ -448,13 +448,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
                 }
             }
-            $product_cart_amounts = [
-                'currencyCode' => get_woocommerce_currency(),
-                'totalAmount' => WC()->cart->get_total(''),
-                'shippingRequired' => WC()->cart->needs_shipping(),
-                'lineItems' => [],
-                'isSubscriptionRequired' => $this->isSubscriptionRequired()
-            ];
+
+            $product_cart_amounts = $this->payment_request->ae_get_updated_checkout_payment_data();
 
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
             if (is_product()) {
@@ -1793,13 +1788,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function add_order_checkout_data_for_direct_checkouts($fragments) {
-        $paymentData = [
-            'currencyCode' => get_woocommerce_currency(),
-            'totalAmount' => WC()->cart->get_total(''),
-            'shippingRequired' => WC()->cart->needs_shipping(),
-            'lineItems' => $this->payment_request->getCartLineItems(),
-            'isSubscriptionRequired' => $this->isSubscriptionRequired()
-        ];
+        $paymentData = $this->payment_request->ae_get_updated_checkout_payment_data();
         $fragments['angelleye_payments_data'] = json_encode($paymentData);
         return $fragments;
     }

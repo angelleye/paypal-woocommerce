@@ -191,9 +191,18 @@ class GooglePayCheckoutButton {
             if (status === "APPROVED") {
                 // check if the billing address details are available
                 // Do not run this service on checkout page as user already provides all details there
-                if (!angelleyeOrder.isCheckoutPage() && paymentData.paymentMethodData && paymentData.paymentMethodData.info && paymentData.paymentMethodData.info.billingAddress) {
+                if (!angelleyeOrder.isCheckoutPage()) {
+                    let billingDetails;
                     let shippingDetails = paymentData.shippingAddress;
-                    let billingDetails = paymentData.paymentMethodData.info.billingAddress;
+                    if (paymentData.paymentMethodData && paymentData.paymentMethodData.info && paymentData.paymentMethodData.info.billingAddress) {
+                        billingDetails = paymentData.paymentMethodData.info.billingAddress;
+                    }
+                    if (paymentData.email) {
+                        if (!billingDetails) {
+                            billingDetails = {};
+                        }
+                        billingDetails.emailAddress = paymentData.email;
+                    }
                     await angelleyeOrder.shippingAddressUpdate({shippingDetails}, {billingDetails});
                 }
                 /* Capture the Order */
@@ -289,6 +298,7 @@ class GooglePayCheckoutButton {
         paymentDataRequest.allowedPaymentMethods = GooglePayCheckoutButton.googlePayConfig.allowedPaymentMethods;
         paymentDataRequest.transactionInfo = this.getGoogleTransactionInfo();
         paymentDataRequest.merchantInfo = GooglePayCheckoutButton.googlePayConfig.merchantInfo;
+        paymentDataRequest.emailRequired = true;
         paymentDataRequest.callbackIntents = ["PAYMENT_AUTHORIZATION"];
         if (this.isShippingRequired()) {
             paymentDataRequest.callbackIntents.push("SHIPPING_ADDRESS");
@@ -312,6 +322,8 @@ class GooglePayCheckoutButton {
                 angelleye_ppcp_button_selector: thisObject.containerSelector
             }).then((orderData) => {
                 console.log('orderCreated', orderData);
+                angelleye_ppcp_manager.product_cart_details = orderData;
+                thisObject.initProductCartPage();
                 return orderData.orderID;
             });
         } catch (error) {
@@ -326,6 +338,7 @@ class GooglePayCheckoutButton {
         paymentsClient.loadPaymentData(paymentDataRequest).then((success) => {
             console.log('success', success);
         }, (e) => {
+            angelleyeOrder.triggerPaymentCancelEvent();
             angelleyeOrder.hideProcessingSpinner(thisObject.containerSelector);
             angelleyeOrder.hideProcessingSpinner();
             console.log('error handler click', e);

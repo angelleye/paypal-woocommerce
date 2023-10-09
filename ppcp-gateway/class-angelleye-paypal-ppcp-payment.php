@@ -390,6 +390,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($this->api_response['status'])) {
                 $return_response = $this->add_nonce_in_response($return_response);
                 // Add currency code and total for the apple pay orders
+                $response = $this->ae_get_updated_checkout_payment_data((!empty($order) ? $order : null));
+                $return_response = array_merge($return_response, $response);
                 $return_response['currencyCode'] = $this->api_response['purchase_units'][0]['amount']['currency_code'];
                 $return_response['totalAmount'] = $this->api_response['purchase_units'][0]['amount']['value'];
                 $return_response['orderID'] = $this->api_response['id'];
@@ -409,6 +411,41 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
+    }
+
+    /**
+     * @param null $order
+     * @return array
+     */
+    public function ae_get_updated_checkout_payment_data($order = null) {
+        if (!empty($order)) {
+            $details = $this->getOrderLineItems($order);
+            $totalAmount = $order->get_total('');
+            $shippingRequired = $order->needs_shipping_address();
+        } else {
+            $totalAmount = WC()->cart->get_total('');
+            $shippingRequired = WC()->cart->needs_shipping();
+            $details = $this->getCartLineItems();
+        }
+
+        return [
+            'currencyCode' => get_woocommerce_currency(),
+            'totalAmount' => $totalAmount,
+            'lineItems' => $details,
+            'shippingRequired' => $shippingRequired,
+            'isSubscriptionRequired' => $this->isSubscriptionRequired($order)
+        ];
+    }
+
+    public function isSubscriptionRequired($order = null): bool
+    {
+        if (!empty($order) && class_exists('WC_Subscriptions_Order')) {
+            return WC_Subscriptions_Order::order_contains_subscription($order);
+        }
+        if (class_exists('WC_Subscriptions_Cart')) {
+            return WC_Subscriptions_Cart::cart_contains_subscription();
+        }
+        return false;
     }
 
     public function angelleye_ppcp_get_details_from_cart() {

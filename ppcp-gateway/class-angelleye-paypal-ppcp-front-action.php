@@ -245,15 +245,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 $woocommerce->customer->set_billing_last_name($splitName[1]);
                             }
                             isset($billing_address['familyName']) && $woocommerce->customer->set_billing_last_name($billing_address['familyName']);
-
                             !empty($billing_address['addressLines'][0]) ? $woocommerce->customer->set_billing_address_1($billing_address['addressLines'][0]) : null;
                             !empty($billing_address['address1']) ? $woocommerce->customer->set_billing_address_1($billing_address['address1']) : null;
                             !empty($billing_address['addressLines'][1]) ? $woocommerce->customer->set_billing_address_2($billing_address['addressLines'][1]) : null;
                             !empty($billing_address['address2']) ? $woocommerce->customer->set_billing_address_2($billing_address['address2']) : null;
-
                             isset($billing_address['emailAddress']) && $woocommerce->customer->set_billing_email($billing_address['emailAddress']);
-
-
                             isset($billing_address['postalCode']) && $woocommerce->customer->set_billing_postcode($billing_address['postalCode']);
                             isset($billing_address['countryCode']) && $woocommerce->customer->set_billing_country($billing_address['countryCode']);
                             isset($billing_address['locality']) && $woocommerce->customer->set_billing_city($billing_address['locality']);
@@ -276,28 +272,17 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     if (!empty($woo_order_id)) {
                         $order = wc_get_order($woo_order_id);
                         if (is_a($order, 'WC_Order')) {
-                            $details = $this->payment_request->getOrderLineItems($order);
-                            $totalAmount = $order->get_total('');
-                            $shippingRequired = $order->needs_shipping_address();
+                            $response = $this->payment_request->ae_get_updated_checkout_payment_data($order);
                         } else {
-                            wp_send_json([
+                            $response = [
                                 'status' => false,
                                 'message' => __('Order ID is invalid', 'woocommerce')
-                            ]);
-                            die;
+                            ];
                         }
                     } else {
-                        $totalAmount = WC()->cart->get_total('');
-                        $shippingRequired = WC()->cart->needs_shipping();
-                        $details = $this->payment_request->getCartLineItems();
+                        $response = $this->payment_request->ae_get_updated_checkout_payment_data();
                     }
-                    wp_send_json([
-                        'currencyCode' => get_woocommerce_currency(),
-                        'totalAmount' => $totalAmount,
-                        'lineItems' => $details,
-                        'shippingRequired' => $shippingRequired,
-                        'isSubscriptionRequired' => $this->smart_button->isSubscriptionRequired($woo_order_id)
-                    ]);
+                    wp_send_json($response);
                     break;
                 case "display_order_page":
                     $this->angelleye_ppcp_display_order_page();

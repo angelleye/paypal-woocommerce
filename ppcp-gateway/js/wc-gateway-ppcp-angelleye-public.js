@@ -73,6 +73,7 @@ function initSmartButtons() {
 
 	// Hook the function to run on totals, cart or checkout updates
 	angelleyeOrder.updateCartTotalsInEnvironment();
+	angelleyeOrder.hooks.onPaymentCancellation();
 	angelleyeOrder.hooks.onPaymentMethodChange();
 	angelleyeOrder.hooks.onCartValueUpdate();
 
@@ -132,26 +133,6 @@ function initSmartButtons() {
 			for (let i = 0; i < scriptsToLoad.length; i++) {
 				angelleyeLoadPayPalScript(scriptsToLoad[i], scriptsToLoad[i].callback);
 			}
-		}
-	});
-
-	jQuery(document.body).on('angelleye_paypal_oncancel', function (event) {
-		event.preventDefault();
-		let is_from_product = angelleyeOrder.isProductPage();
-		if (is_from_product) {
-			fetch(angelleye_ppcp_manager.update_cart_oncancel, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
-				body: jQuery('form.cart').serialize()
-			}).then(function (res) {
-				return res.json();
-			}).then(function (data) {
-				window.location.reload();
-			});
-		} else {
-			window.location.reload();
 		}
 	});
 })(jQuery);
