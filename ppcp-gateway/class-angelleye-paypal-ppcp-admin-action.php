@@ -248,7 +248,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             $line_item['expired_date'] = isset($captures['expiration_time']) ? $captures['expiration_time'] : 'N/A';
                             $line_item['payment_action'] = __('Capture', '');
                             if ('COMPLETED' === $captures['status'] || 'PARTIALLY_REFUNDED' === $captures['status']) {
-                                $this->angelleye_ppcp_order_status_data['refund'][$line_item['transaction_id']] = $captures['amount']['value'];
+                                $this->angelleye_ppcp_order_status_data['refund'][$line_item['transaction_id']] = $line_item['amount'];
                             }
                             $this->ae_capture_amount = $this->ae_capture_amount + $captures['amount']['value'];
                             $html_table_row[] = $line_item;
@@ -265,8 +265,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             $line_item['payment_action'] = isset($this->payment_response['intent']) ? ucwords(str_replace('_', ' ', strtolower($this->payment_response['intent']))) : 'N/A';
                             $html_table_row[] = $line_item;
                             $this->ae_auth_amount = $this->ae_auth_amount + $authorizations['amount']['value'];
-                            $this->angelleye_ppcp_order_status_data['capture'][$line_item['transaction_id']] = $authorizations['amount']['value'];
-                            $this->angelleye_ppcp_order_status_data['void'][$line_item['transaction_id']] = $authorizations['amount']['value'];
+                            $this->angelleye_ppcp_order_status_data['capture'][$line_item['transaction_id']] = $line_item['amount'];
+                            $this->angelleye_ppcp_order_status_data['void'][$line_item['transaction_id']] = $line_item['amount'];
                         }
                     }
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'CREATED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
@@ -287,7 +287,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'VOIDED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
                         unset($this->angelleye_ppcp_order_actions);
                     }
-                    //$this->angelleye_ppcp_display_payment_action();
+                    $this->angelleye_ppcp_display_payment_action();
                     $this->angelleye_ppcp_display_paypal_activity_table($html_table_row);
                 }
             } elseif (isset($this->payment_response) && $this->payment_response['name'] === 'RESOURCE_NOT_FOUND') {
@@ -357,7 +357,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             <th scope="row"><?php echo __('Capture Amount', 'paypal-for-woocommerce'); ?></th>
                             <td>
                                 <fieldset>
-                                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_regular_price" class="short wc_input_price text-box" style="width: 220px">
+                                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_regular_price" class="short wc_input_price text-box" style="width: 250px;">
                                 </fieldset>
                             </td>
                         </tr>
@@ -385,7 +385,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                                             echo "<option value=''>" . __('Select Transaction Id', '') . "</option>";
                                         }
                                         ?>
-                                        <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
+                                        <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k) . ' - ' . $v; ?></option>
                                         <?php
                                         $i = $i + 1;
                                     endforeach;
@@ -397,7 +397,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             <th scope="row"><?php echo __('Refund Amount', 'paypal-for-woocommerce'); ?></th>
                             <td>
                                 <fieldset>
-                                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_refund_price" class="short wc_input_price text-box" style="width: 220px">
+                                    <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_refund_price" class="short wc_input_price text-box" style="width: 250px;">
                                 </fieldset>
                             </td>
                         </tr>
@@ -665,7 +665,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             $line_item['expired_date'] = isset($captures['expiration_time']) ? $captures['expiration_time'] : 'N/A';
                             $line_item['payment_action'] = __('Capture', '');
                             if ('COMPLETED' === $captures['status'] || 'PARTIALLY_REFUNDED' === $captures['status']) {
-                                $this->angelleye_ppcp_order_status_data['refund'][$line_item['transaction_id']] = $captures['amount']['value'];
+                                $this->angelleye_ppcp_order_status_data['refund'][$line_item['transaction_id']] = $line_item['amount'];
                             }
                             $this->ae_capture_amount = $this->ae_capture_amount + $captures['amount']['value'];
                   
@@ -682,8 +682,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             $line_item['payment_action'] = isset($this->payment_response['intent']) ? ucwords(str_replace('_', ' ', strtolower($this->payment_response['intent']))) : 'N/A';
                   
                             $this->ae_auth_amount = $this->ae_auth_amount + $authorizations['amount']['value'];
-                            $this->angelleye_ppcp_order_status_data['capture'][$line_item['transaction_id']] = $authorizations['amount']['value'];
-                            $this->angelleye_ppcp_order_status_data['void'][$line_item['transaction_id']] = $authorizations['amount']['value'];
+                            $this->angelleye_ppcp_order_status_data['capture'][$line_item['transaction_id']] = $line_item['amount'];
+                            $this->angelleye_ppcp_order_status_data['void'][$line_item['transaction_id']] = $line_item['amount'];
                         }
                     }
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'CREATED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
@@ -751,7 +751,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 <td width="1%"></td>
                 <td class="total">
                     <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
-                        <select name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action" style="width: 220px;">
+                        <select name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action" style="width: 250px;">
                             <?php
                             $i = 0;
                             foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
@@ -789,7 +789,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 </td>
                 <td width="1%"></td>
                 <td class="total">
-                    <input type="text" id="ppcp_refund_amount" name="ppcp_refund_amount" style="width: 220px;" class="wc_input_price"/>
+                    <input type="text" id="ppcp_refund_amount" name="ppcp_refund_amount" style="width: 250px;" class="wc_input_price"/>
 
                 </td>
             </tr>
@@ -798,7 +798,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             echo wc_help_tip(__('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.', 'paypal-for-woocommerce')); ?></td>
                 <td width="1%"></td>
                 <td class="total">
-                    <textarea maxlength="150" rows="2" cols="20" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture" style="width: 220px;"></textarea>
+                    <textarea maxlength="150" rows="2" cols="20" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture" style="width: 250px;"></textarea>
                 </td>
             </tr>
         <?php } ?>
@@ -807,7 +807,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 <td class="label"><?php echo __('Transaction Id', ''); ?></td>
                 <td width="1%"></td>
                 <td class="total">
-                    <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data" style="width: 220px;">
+                    <select name="angelleye_ppcp_refund_data" id="angelleye_ppcp_refund_data" style="width: 250px;">
                         <?php
                         $i = 0;
                         foreach ($this->angelleye_ppcp_order_status_data['refund'] as $k => $v) :
@@ -815,7 +815,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                                 echo "<option value=''>" . __('Select Transaction Id', '') . "</option>";
                             }
                             ?>
-                            <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k); ?></option>
+                            <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($k) . ' - ' . $v; ?></option>
                             <?php
                             $i = $i + 1;
                         endforeach;
@@ -828,7 +828,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 <td width="1%"></td>
                 <td class="total">
                     <fieldset>
-                        <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_refund_price" class="short wc_input_price text-box" style="width: 220px">
+                        <input type="text" placeholder="Enter amount" id="_regular_price" name="_angelleye_ppcp_refund_price" class="short wc_input_price text-box" style="width: 250px;">
                     </fieldset>
                 </td>
             </tr>
@@ -839,7 +839,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     ?> </td>
                 <td width="1%"></td>
                 <td class="total">
-                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture" style="width: 220px;"></textarea>
+                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture" style="width: 250px;"></textarea>
                 </td>
             </tr>
             <?php
@@ -850,7 +850,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 <td class="label">Note To Buyer (Optional)<?php echo wc_help_tip('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.'); ?></td>
                 <td width="1%"></td>
                 <td class="total">
-                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_void" id="angelleye_ppcp_note_to_buyer_void" style="width: 220px;"></textarea>
+                    <textarea maxlength="150" rows="4" cols="50" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_void" id="angelleye_ppcp_note_to_buyer_void" style="width: 250px;"></textarea>
                 </td>
             </tr>
             <?php
