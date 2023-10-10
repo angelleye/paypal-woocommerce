@@ -357,9 +357,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                 case 'paypal_pro':
                                     $existing_paypal_account_details = angelleye_ppcp_get_classic_paypal_details($product);
                                     if (isset($_GET['do_not_check_diffrent_account']) || (!empty($existing_paypal_account_details) && $existing_paypal_account_details === $merchant_id) || empty($existing_paypal_account_details)) {
-                                        $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
-                                        if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
-                                            $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp');
+                                        if (angelleye_is_acdc_payments_enable($seller_onboarding_status)) {
+                                            $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
+                                            if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
+                                                $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp_cc');
+                                            }
                                         }
                                     } else {
                                         if ($this->is_sandbox) {
@@ -377,19 +379,25 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                     }
                                     break;
                                 case 'paypal_pro_payflow':
-                                    $this->ppcp_migration->angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status);
-                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
-                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro_payflow', 'angelleye_ppcp');
+                                    if (angelleye_is_acdc_payments_enable($seller_onboarding_status)) {
+                                        $this->ppcp_migration->angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status);
+                                        if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
+                                            $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro_payflow', 'angelleye_ppcp');
+                                        }
                                     }
                                     break;
                                 case 'paypal_advanced':
-                                    $this->ppcp_migration->angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status);
-                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
-                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_advanced', 'angelleye_ppcp');
+                                    if (angelleye_is_acdc_payments_enable($seller_onboarding_status)) {
+                                        $this->ppcp_migration->angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status);
+                                        if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
+                                            $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_advanced', 'angelleye_ppcp');
+                                        }
                                     }
                                     break;
                                 case 'paypal_credit_card_rest':
-                                    $this->ppcp_migration->angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status);
+                                    if (angelleye_is_acdc_payments_enable($seller_onboarding_status)) {
+                                        $this->ppcp_migration->angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status);
+                                    }
                                     break;
                                 case 'paypal':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_to_ppcp();
