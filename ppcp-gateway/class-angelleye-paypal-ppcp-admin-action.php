@@ -590,6 +590,20 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     Please submit a <a href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">help desk</a> ticket with any questions or concerns about this.',
                 'is_dismiss' => true,
             );
+            $ae_ppcp_account_reconnect_notice = get_option('ae_ppcp_account_reconnect_notice');
+            if (!empty($ae_ppcp_account_reconnect_notice)) {
+                // This can be converted as a switch statement as the flag will tell use error reason
+                $notice_data_account_reconnect = array(
+                    'id' => 'ppcp_notice_account_reconnect',
+                    'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
+                    'ans_message_title' => 'Action Required: Reconnect Your PayPal Account',
+                    'ans_message_description' => "We're experiencing permission issues preventing us from making certain PayPal API calls on your behalf. To fix this, please reconnect your PayPal account from the settings page. Click the button below to go to settings and select 'Reconnect PayPal Account'.",
+                    'ans_button_url' => admin_url('options-general.php?page=paypal-for-woocommerce'),
+                    'ans_button_label' => 'Settings',
+                    'is_dismiss' => false
+                );
+                angelleye_ppcp_display_notice(json_decode(json_encode($notice_data_account_reconnect)));
+            }
             $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status_from_cache($this->merchant_id);
             $notice_data = json_decode(json_encode($notice_data));
             $notice_type = angelleye_ppcp_display_upgrade_notice_type($result);

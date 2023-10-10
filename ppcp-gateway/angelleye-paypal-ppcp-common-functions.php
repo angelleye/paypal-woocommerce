@@ -862,7 +862,7 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
                 $message .= '<h2>' . $response_data->ans_message_title . '</h2>';
             }
             $message .= '<div class="angelleye-notice-message-inner">'
-                    . '<p style="margin-top: 15px !important;line-height: 20px;">' . $response_data->ans_message_description . '</p><div class="angelleye-notice-action">';
+                    . '<p style="line-height: 20px;">' . $response_data->ans_message_description . '</p><div class="angelleye-notice-action">';
             if (!empty($response_data->ans_button_url)) {
                 $message .= '<a href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a>';
             }
