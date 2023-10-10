@@ -29,7 +29,7 @@ class AngellEye_Session_Manager
     public function getData($key, $default = null)
     {
         if ($this->_data == null) {
-            if (!class_exists('WooCommerce') || empty(WC()->session))) {
+            if (!class_exists('WooCommerce') || empty(WC()->session)) {
                 return false;
             }
 
