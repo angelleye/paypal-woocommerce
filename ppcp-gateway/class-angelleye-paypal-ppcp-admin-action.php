@@ -77,9 +77,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             add_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
         }
         add_action('add_meta_boxes', array($this, 'angelleye_ppcp_order_action_meta_box'), 0, 2);
-        add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_ppcp_save'), 50, 2);
+        add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_ppcp_save'), 10, 2);
         add_action('woocommerce_order_item_add_line_buttons', array($this, 'angelleye_ppcp_capture_void_refund_submit'), 10, 1);
-        add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_ppcp_save'), 50, 2);
         add_action('woocommerce_order_item_add_action_buttons', array($this, 'angelleye_ppcp_add_order_action_buttons'), 10, 1);
         add_action('admin_enqueue_scripts', array($this, 'angelleye_ppcp_add_order_action_js'), 10);
         add_action('woocommerce_admin_order_totals_after_total', array($this, 'angelleye_ppcp_add_order_action_item_edit'), 10, 1);
@@ -287,7 +286,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'VOIDED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
                         unset($this->angelleye_ppcp_order_actions);
                     }
-                    $this->angelleye_ppcp_display_payment_action();
+                    // $this->angelleye_ppcp_display_payment_action();
                     $this->angelleye_ppcp_display_paypal_activity_table($html_table_row);
                 }
             } elseif (isset($this->payment_response) && $this->payment_response['name'] === 'RESOURCE_NOT_FOUND') {
@@ -409,8 +408,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         </tr>
                     </tbody>
                 </table><?php
-                    }
-                                ?></div>
+            }
+            ?></div>
 
         <?php if (isset($this->angelleye_ppcp_order_status_data['void']) && isset($this->angelleye_ppcp_order_actions['void'])) { ?>
 
@@ -508,30 +507,28 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     }
 
     public function angelleye_ppcp_save($post_id, $post_or_order_object) {
-        if (!empty($_POST['save']) && $_POST['save'] == 'Submit') {
+        if (!empty($_POST['is_ppcp_submited']) && 'yes' === $_POST['is_ppcp_submited']) {
             $screen = wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id('shop-order') : 'shop_order';
             $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order($post_or_order_object->ID) : $post_or_order_object;
             if (!is_a($order, 'WC_Order')) {
                 return;
             }
             if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
-                if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
-                    if (!empty($_POST['angelleye_ppcp_payment_action'])) {
-                        $order_data = wc_clean($_POST);
-                        $action = wc_clean($_POST['angelleye_ppcp_payment_action']);
-                        switch ($action) {
-                            case 'void':
-                                $this->angelleye_ppcp_admin_void_action_handler($order, $order_data);
-                                break;
-                            case 'capture':
-                                $this->angelleye_ppcp_admin_capture_action_handler($order, $order_data);
-                                break;
-                            case 'refund':
-                                $this->angelleye_ppcp_admin_refund_action_handler($order, $order_data);
-                                break;
-                            default:
-                                break;
-                        }
+                if (!empty($_POST['order_metabox_angelleye_ppcp_payment_action'])) {
+                    $order_data = wc_clean($_POST);
+                    $action = wc_clean($_POST['order_metabox_angelleye_ppcp_payment_action']);
+                    switch ($action) {
+                        case 'void':
+                            $this->angelleye_ppcp_admin_void_action_handler($order, $order_data);
+                            break;
+                        case 'capture':
+                            $this->angelleye_ppcp_admin_capture_action_handler($order, $order_data);
+                            break;
+                        case 'refund':
+                            $this->angelleye_ppcp_admin_refund_action_handler($order, $order_data);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
@@ -589,7 +586,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'id' => 'ppcp_notice_outside_us',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => '',
-                'ans_message_description' => 'We notice that are running WooCommerce Subscriptions and your store country is outside the United States.<br>  
+                'ans_message_description' => 'We notice that are running WooCommerce Subscriptions and your store country is outside the United States.<br>
                     Unfortunately, the PayPal Commerce Platform Vault functionality, which is required for Subscriptions, is only available for United States PayPal accounts.<br>
                     If your PayPal account is in fact based in the United States, you can continue with this update.<br>
                     However, if your PayPal account is not based in the U.S. you will need to wait until this feature is available in your country.<br>
@@ -652,7 +649,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             $line_item['expired_date'] = isset($refunds['expiration_time']) ? $refunds['expiration_time'] : 'N/A';
                             $line_item['payment_action'] = __('Refund', '');
                             $this->ae_refund_amount = $this->ae_refund_amount + $refunds['amount']['value'];
-                  
                         }
                     }
                     if (isset($this->payment_response['purchase_units']['0']['payments']['captures'])) {
@@ -668,7 +664,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                                 $this->angelleye_ppcp_order_status_data['refund'][$line_item['transaction_id']] = $line_item['amount'];
                             }
                             $this->ae_capture_amount = $this->ae_capture_amount + $captures['amount']['value'];
-                  
                         }
                     }
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {
@@ -680,7 +675,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             $line_item['payment_status'] = isset($authorizations['status']) ? ucwords(str_replace('_', ' ', strtolower($authorizations['status']))) : 'N/A';
                             $line_item['expired_date'] = isset($authorizations['expiration_time']) ? $authorizations['expiration_time'] : 'N/A';
                             $line_item['payment_action'] = isset($this->payment_response['intent']) ? ucwords(str_replace('_', ' ', strtolower($this->payment_response['intent']))) : 'N/A';
-                  
+
                             $this->ae_auth_amount = $this->ae_auth_amount + $authorizations['amount']['value'];
                             $this->angelleye_ppcp_order_status_data['capture'][$line_item['transaction_id']] = $line_item['amount'];
                             $this->angelleye_ppcp_order_status_data['void'][$line_item['transaction_id']] = $line_item['amount'];
@@ -704,9 +699,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'VOIDED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
                         unset($this->angelleye_ppcp_order_actions);
                     }
-                  
                 }
-            } 
+            }
         } catch (Exception $ex) {
             
         }
@@ -794,8 +788,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 </td>
             </tr>
             <tr class="angelleye_ppcp_capture_box" style="display: none;">
-                <td class="label"><?php echo __('Note To Buyer (Optional)', 'paypal-for-woocommerce');
-            echo wc_help_tip(__('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.', 'paypal-for-woocommerce')); ?></td>
+                <td class="label"><?php
+                    echo __('Note To Buyer (Optional)', 'paypal-for-woocommerce');
+                    echo wc_help_tip(__('PayPal strongly recommends that you explain any unique circumstances (e.g. multiple captures, changes in item availability) to your buyer in detail below. Your buyer will see this note in the Transaction Details.', 'paypal-for-woocommerce'));
+                    ?></td>
                 <td width="1%"></td>
                 <td class="total">
                     <textarea maxlength="150" rows="2" cols="20" class="wide-input" type="textarea" name="angelleye_ppcp_note_to_buyer_capture" id="angelleye_ppcp_note_to_buyer_capture" style="width: 250px;"></textarea>
@@ -856,11 +852,11 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             <?php
         }
         ?>
-        <input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited">
+
         <?php
     }
-    
+
     public function angelleye_ppcp_capture_void_refund_submit() {
-        ?><button type="button" class="button angelleye-ppcp-order-action-submit button-primary"><?php esc_html_e( 'Submit', 'woocommerce' ); ?></button><?php 
+        ?><input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited"><button type="button" class="button angelleye-ppcp-order-action-submit button-primary"><?php esc_html_e('Submit', 'woocommerce'); ?></button><?php
     }
 }

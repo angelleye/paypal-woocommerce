@@ -2433,7 +2433,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order_id = $order->get_id();
             $angelleye_ppcp_payment_method_title = $this->get_payment_method_title_for_order($order_id);
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
-            $amount_value = isset($order_data['_angelleye_ppcp_regular_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_regular_price'], $decimals) : '';
+            $amount_value = isset($order_data['ppcp_refund_amount']) ? angelleye_ppcp_round($order_data['ppcp_refund_amount'], $decimals) : '';
             $capture_arg = array(
                 'amount' =>
                 array(
