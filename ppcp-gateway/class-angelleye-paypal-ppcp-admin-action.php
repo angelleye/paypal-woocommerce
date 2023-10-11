@@ -590,8 +590,14 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     Please submit a <a href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">help desk</a> ticket with any questions or concerns about this.',
                 'is_dismiss' => true,
             );
+            $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status_from_cache($this->merchant_id);
+            $notice_data = json_decode(json_encode($notice_data));
+            $notice_type = angelleye_ppcp_display_upgrade_notice_type($result);
+
             $ae_ppcp_account_reconnect_notice = get_option('ae_ppcp_account_reconnect_notice');
-            if (!empty($ae_ppcp_account_reconnect_notice)) {
+            // This is to ensure to display the notice only when angelleye_ppcp (main gateway) is enabled.
+            if (!empty($ae_ppcp_account_reconnect_notice) && !empty($notice_type['active_ppcp_gateways'])
+            && isset($notice_type['active_ppcp_gateways']['angelleye_ppcp'])) {
                 // This can be converted as a switch statement as the flag will tell use error reason
                 $notice_data_account_reconnect = array(
                     'id' => 'ppcp_notice_account_reconnect',
@@ -604,9 +610,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 );
                 angelleye_ppcp_display_notice(json_decode(json_encode($notice_data_account_reconnect)));
             }
-            $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status_from_cache($this->merchant_id);
-            $notice_data = json_decode(json_encode($notice_data));
-            $notice_type = angelleye_ppcp_display_upgrade_notice_type($result);
+
             if (!empty($notice_type)) {
                 foreach ($notice_type as $key => $type) {
                     if ('classic_upgrade' === $key && $type === true && isset($notice_data->$key)) {

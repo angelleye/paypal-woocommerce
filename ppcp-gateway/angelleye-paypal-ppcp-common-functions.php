@@ -805,13 +805,21 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
             if (class_exists('WC_Subscriptions_Order')) {
                 $is_subscriptions = true;
             }
+            $ppcp_gateway_list = ['angelleye_ppcp', 'angelleye_ppcp_apple_pay', 'angelleye_ppcp_google_pay'];
+            $active_ppcp_gateways = [];
             $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
             $active_classic_gateway_list = array();
             foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
-                if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
-                    $active_classic_gateway_list[$gateway->id] = $gateway->id;
+                if ('yes' === $gateway->enabled && $gateway->is_available() === true) {
+                    if (in_array($gateway->id, $angelleye_classic_gateway_id_list)) {
+                        $active_classic_gateway_list[$gateway->id] = $gateway->id;
+                    }
+                    if (in_array($gateway->id, $ppcp_gateway_list)) {
+                        $active_ppcp_gateways[$gateway->id] = $gateway->id;
+                    }
                 }
             }
+            $notice_type['active_ppcp_gateways'] = $active_ppcp_gateways;
             if (count($active_classic_gateway_list) > 0) {
                 $is_classic = true;
             }
