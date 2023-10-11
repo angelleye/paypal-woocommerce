@@ -214,7 +214,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -232,7 +232,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -260,7 +260,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -359,7 +359,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -375,7 +375,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             ");
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -414,7 +414,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_header.php');
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
-            
+
             $result = $this->angelleye_ppcp_get_result_migrate_to_ppcp();
             if (!empty($result)) {
                 if (!get_user_meta(get_current_user_id(), 'ppcp_migration_report')) :
@@ -439,9 +439,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     <?php
                 endif;
             }
-                
+
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -449,6 +449,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
 
         try {
             $this->angelleye_ppcp_load_variable();
+            $ae_ppcp_account_reconnect_notice = get_option('ae_ppcp_account_reconnect_notice');
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_header.php');
             ?>
             <div id="angelleye_paypal_marketing_table">
@@ -537,12 +538,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 <a class="green-button open_ppcp_account_request_form" ><?php echo __('Apply for Cheaper Fees!', 'paypal-for-woocommerce'); ?></a>
                                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
                                 <?php
+                                if (isset($_GET['testmode'])) {
+                                    $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
+                                } else {
+                                    $testmode = $this->sandbox ? 'yes' : 'no';
+                                }
                                 if ($this->is_paypal_vault_approved === false && $this->ppcp_paypal_country === 'US') {
-                                    if (isset($_GET['testmode'])) {
-                                        $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
-                                    } else {
-                                        $testmode = $this->sandbox ? 'yes' : 'no';
-                                    }
                                     $signup_link = $this->angelleye_get_signup_link_for_vault($testmode, 'admin_settings_onboarding');
                                     if ($signup_link) {
                                         $args = array(
@@ -567,6 +568,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                     } else {
                                         echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
                                     }
+                                } else if (!empty($ae_ppcp_account_reconnect_notice)) {
+                                    $this->print_general_reconnect_paypal_account_section($testmode);
                                 }
                                 ?>
                                 <a href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
@@ -596,12 +599,12 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 <br>
                                 <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'); ?>" class="wplk-button"><?php echo __('Modify Setup', 'paypal-for-woocommerce'); ?></a>
                                 <?php
+                                if (isset($_GET['testmode'])) {
+                                    $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
+                                } else {
+                                    $testmode = $this->sandbox ? 'yes' : 'no';
+                                }
                                 if ($this->is_paypal_vault_approved === false && $this->ppcp_paypal_country === 'US') {
-                                    if (isset($_GET['testmode'])) {
-                                        $testmode = ($_GET['testmode'] === 'yes') ? 'yes' : 'no';
-                                    } else {
-                                        $testmode = $this->sandbox ? 'yes' : 'no';
-                                    }
                                     $signup_link = $this->angelleye_get_signup_link_for_vault($testmode, 'admin_settings_onboarding');
                                     if ($signup_link) {
                                         $args = array(
@@ -626,6 +629,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                     } else {
                                         echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
                                     }
+                                } elseif (!empty($ae_ppcp_account_reconnect_notice)) {
+                                    $this->print_general_reconnect_paypal_account_section($testmode);
                                 }
                                 ?>
                                 <a href="https://www.angelleye.com/paypal-commerce-platform-setup-guide/" class="slate_gray" target="_blank"><?php echo __('Learn More', 'paypal-for-woocommerce'); ?></a>
@@ -691,7 +696,35 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-            
+
+        }
+    }
+
+    public function print_general_reconnect_paypal_account_section($testmode)
+    {
+        $signup_link = $this->angelleye_get_signup_link($testmode, 'admin_settings_onboarding');
+        if ($signup_link) {
+            $args = array(
+                'displayMode' => 'minibrowser',
+            );
+            $url = add_query_arg($args, $signup_link);
+            ?>
+            <a target="_blank" class="green-button" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="generalOnboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Reconnect PayPal Account', 'paypal-for-woocommerce'); ?></a>
+            <?php
+            $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
+            ?>
+            <script type="text/javascript">
+				document.querySelectorAll('[data-paypal-onboard-complete=generalOnboardingCallback]').forEach((element) => {
+					element.addEventListener('click', (e) => {
+						if ('undefined' === typeof PAYPAL) {
+							e.preventDefault();
+							alert('PayPal error');
+						}
+					});
+				});</script>
+            <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
+        } else {
+            echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
         }
     }
 
@@ -703,7 +736,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -740,7 +773,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -785,7 +818,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 GROUP BY pm2.meta_value, pm.meta_value;", ARRAY_A);
             return $payment_methods;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -822,7 +855,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     ) AS subquery
                 )");
         } catch (Exception $ex) {
-            
+
         }
     }
 }

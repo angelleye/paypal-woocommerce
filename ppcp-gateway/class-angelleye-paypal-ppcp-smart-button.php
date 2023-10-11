@@ -1017,12 +1017,20 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function get_paypal_sdk_attributes(): array {
         $attributes = ['data-namespace' => 'angelleye_paypal_sdk'];
         if (!isset($_GET['paypal_order_id'])) {
-            if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
-                $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
-                $attributes['data-client-token'] = $this->client_token;
+            $ae_ppcp_account_reconnect_notice = get_option('ae_ppcp_account_reconnect_notice');
+            if (empty($ae_ppcp_account_reconnect_notice)) {
+                if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
+                    $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
+                    if (!empty($this->client_token)) {
+                        $attributes['data-client-token'] = $this->client_token;
+                    }
+                }
             }
             if ($this->enable_tokenized_payments && is_user_logged_in()) {
-                $attributes['data-user-id-token'] = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                $clientToken = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                if (!empty($clientToken)) {
+                    $attributes['data-user-id-token'] = $clientToken;
+                }
             }
         }
         return $attributes;

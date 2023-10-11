@@ -1983,6 +1983,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $this->client_token = $response['client_token'];
                 return $this->client_token;
             }
+            $this->handle_generate_token_error_response($response);
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -2013,9 +2014,18 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $this->client_token = $response['id_token'];
                 return $this->client_token;
             }
+            $this->handle_generate_token_error_response($response);
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
+        }
+    }
+
+    private function handle_generate_token_error_response($response) {
+        if (isset($response['error'], $response['error_description'])
+            && str_contains(strtolower($response['error_description']), 'no permissions')) {
+            // display a notice to the users based on this flag and clear the flag only when call is successful
+            update_option('ae_ppcp_account_reconnect_notice', 'generate_token_error');
         }
     }
 
