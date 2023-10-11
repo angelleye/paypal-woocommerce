@@ -88,11 +88,9 @@ const payLaterMessaging = {
         console.log('PayPal lib loaded, initialize pay later messaging.');
         payLaterMessaging.init();
         if (angelleyeOrder.isCartPage() || angelleyeOrder.isCheckoutPage()) {
-            jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', async function () {
-                var angelleye_pay_later_messaging_data = await angelleyeOrder.updateLocalizedScriptDatapayLaterMessaging();
-                if (typeof angelleye_pay_later_messaging_data.pay_later_data.updated_amount !== 'undefined') {
-                    angelleye_pay_later_messaging.amount = angelleye_pay_later_messaging_data.pay_later_data.updated_amount;
-                }
+            jQuery(document.body).on('angelleye_cart_total_updated', async function () {
+                console.log('PayLater amount update', window.angelleye_cart_totals.totalAmount);
+                angelleye_pay_later_messaging.amount = window.angelleye_cart_totals.totalAmount;
                 payLaterMessaging.init();
             });
         }

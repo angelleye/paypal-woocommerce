@@ -27,9 +27,7 @@ if (class_exists('WC_Checkout')) {
                  * @var AngellEYE_PayPal_PPCP_Smart_Button $smart_button
                  */
                 $smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
-                $posted_data = $smart_button->angelleye_ppcp_prepare_order_data();
-                $_POST = $posted_data;
-                $posted_data = $this->get_posted_data();
+                $posted_data = $smart_button->angelleye_ppcp_prepare_order_data($this->get_posted_data());
                 $this->update_session($posted_data);
                 $this->validate_checkout($posted_data, $errors);
                 $paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id', false);
@@ -93,9 +91,7 @@ if (class_exists('WC_Checkout')) {
              * @var AngellEYE_PayPal_PPCP_Smart_Button $smart_button
              */
             $smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
-            $posted_data = $smart_button->angelleye_ppcp_prepare_order_data();
-            $_POST = $posted_data;
-            $posted_data = $this->get_posted_data();
+            $posted_data = $smart_button->angelleye_ppcp_prepare_order_data($this->get_posted_data());
             $this->update_session($posted_data);
             $this->validate_checkout($posted_data, $errors);
             foreach ($errors->errors as $code => $messages) {
