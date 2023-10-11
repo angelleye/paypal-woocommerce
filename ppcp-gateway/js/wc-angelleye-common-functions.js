@@ -372,6 +372,13 @@ const angelleyeOrder = {
 		if (angelleyeOrder.isCheckoutPage()) {
 			data = jQuery(checkoutSelector).serialize();
 		}
+		// Fluid-Checkout compatibility to stop showing the Leave popup on beforeunload event
+		if (typeof window.can_update_checkout !== 'undefined') {
+			jQuery(checkoutSelector).on('checkout_place_order_' + angelleyeOrder.getSelectedPaymentMethod(), function () {
+				return false;
+			});
+			jQuery(checkoutSelector).submit();
+		}
 		fetch(captureUrl, {
 			method: 'POST',
 			headers: {
