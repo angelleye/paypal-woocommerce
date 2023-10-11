@@ -407,6 +407,7 @@ function initExpressCheckout() {
         if (typeof angelleye_in_content_param.button_height !== "undefined" && angelleye_in_content_param.button_height !== '') {
             angelleye_cart_style_object['height'] = parseInt(angelleye_in_content_param.button_height);
         }
+        angelleye_manage_smart_button();
         angelleye_button_selector.forEach(function (selector) {
             $(selector).html("");
             if (selector.length > 0 && $(selector).length > 0) {
@@ -438,6 +439,12 @@ function initExpressCheckout() {
                             token: data.orderID,
                             request_from: 'JSv4'
                         };
+                        if ($(selector).closest('form').find('input[name=pay_for_order]').length) {
+                            params.pay_for_order = $(selector).closest('form').find('input[name=pay_for_order]').val();
+                        }
+                        if ($(selector).closest('form').find('input[name=pay_for_order_key]').length) {
+                            params.pay_for_order_key = $(selector).closest('form').find('input[name=pay_for_order_key]').val();
+                        }
                         $.post(angelleye_in_content_param.get_express_checkout_details + '&token=' + data.orderID, params).then(function (res) {
                             if (angelleye_in_content_param.is_pre_checkout_offer === "no") {
                                 window.location.href = res.url;
@@ -482,7 +489,8 @@ function initExpressCheckout() {
         display_smart_button_on_cart_checkout();
     });
     if (angelleye_in_content_param.checkout_page_disable_smart_button === "no") {
-        $(document.body).on('updated_cart_totals updated_checkout', function (event) {
+        display_smart_button_checkout_bottom();
+        $(document.body).on('updated_cart_totals updated_checkout payment_method_selected', function (event) {
             display_smart_button_checkout_bottom();
         });
     }

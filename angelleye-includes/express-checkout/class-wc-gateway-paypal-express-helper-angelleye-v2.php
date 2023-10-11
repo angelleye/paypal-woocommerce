@@ -248,7 +248,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('template_redirect', array($this, 'angelleye_redirect_to_checkout_page'));
                 add_action('wp_enqueue_scripts', array($this, 'frontend_scripts'), 100);
                 add_filter('body_class', array($this, 'add_body_classes'));
+                add_action('woocommerce_pay_order_after_submit', array($this, 'angelleye_ppcp_add_order_id'));
                 if ($this->checkout_page_disable_smart_button == false && $this->enable_in_context_checkout_flow == 'yes') {
+                    add_action('woocommerce_pay_order_before_submit', array($this, 'angelleye_display_paypal_button_checkout_page'));
                     add_action('woocommerce_review_order_after_submit', array($this, 'angelleye_display_paypal_button_checkout_page'));
                 }
                 $this->is_order_completed = true;
@@ -291,6 +293,15 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         } catch (Exception $ex) {
 
         }
+    }
+
+    public function angelleye_ppcp_add_order_id() {
+        global $wp;
+        $order_id = absint($wp->query_vars['order-pay']);
+        ?>
+        <input type="hidden" name="pay_for_order" value="<?php echo $order_id; ?>" />
+        <input type="hidden" name="pay_for_order_key" value="<?php echo $_GET['key']; ?>" />
+        <?php
     }
 
     public function buy_now_button() {
