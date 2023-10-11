@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.3.1
-Stable tag: 4.2.9
+Stable tag: 4.2.10
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,8 +127,14 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 4.2.10 - 10.10.2023 =
+* Fix - Resolves the script dependency problem with Classic Payment Gateways. ([PFW-1609](https://github.com/angelleye/paypal-woocommerce/pull/1926))
+* Fix - Resolves the session handling issues. ([PFW-1619](https://github.com/angelleye/paypal-woocommerce/pull/1925))
+* Fix - Resolves advanced credit card issue on the checkout page due to API permissions issues. ([PFW-1627](https://github.com/angelleye/paypal-woocommerce/pull/1924))
+* Tweak - Resolves the fluid checkout page compatibility issue with leave popup coming due to before unload event. ([PFW-1611](https://github.com/angelleye/paypal-woocommerce/pull/1918))
+
 = 4.2.9 - 10.10.2023 =
-* Fix -  PPCP Migration Wizard - Bug with ACC Approval/Denial. ([PFW-1624](https://github.com/angelleye/paypal-woocommerce/pull/1923))
+* Fix - PPCP Migration Wizard - Bug with ACC Approval/Denial. ([PFW-1624](https://github.com/angelleye/paypal-woocommerce/pull/1923))
 
 = 4.2.8 - 10.05.2023 =
 * Tweak - Updated the PayLater messaging dynamic amount update flow. ([PFW-1622](https://github.com/angelleye/paypal-woocommerce/pull/1922))
