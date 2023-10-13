@@ -2941,11 +2941,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
 
     public function handle_wc_api() {
         try {
-            if (!empty($_REQUEST['pay_for_order']) && !empty($_REQUEST['pay_for_order_key']) && empty($_POST['token'])) {
-                $order_id = $_REQUEST['pay_for_order'];
-                $_GET['pay_for_order'] = true;
-                $_GET['key'] = $_REQUEST['pay_for_order_key'];
-            } else if (!empty($_REQUEST['pay_for_order']) && !empty($_REQUEST['pay_for_order_key']) && !empty($_POST['token'])) {
+            if (!empty($_REQUEST['pay_for_order']) && !empty($_REQUEST['pay_for_order_key'])) {
                 $order_id = $_REQUEST['pay_for_order'];
                 $_GET['order_id'] = $order_id;
                 $_GET['pay_for_order'] = true;
