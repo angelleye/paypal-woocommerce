@@ -369,10 +369,10 @@ if (!function_exists('angelleye_ppcp_round')) {
 }
 
 if (!function_exists('angelleye_ppcp_number_format')) {
-    function angelleye_ppcp_number_format($price, $order) {
+    function angelleye_ppcp_number_format($price, $order = null) {
         $decimals = 2;
 
-        if (!angelleye_ppcp_currency_has_decimals($order->get_currency())) {
+        if (!empty($order) && !angelleye_ppcp_currency_has_decimals($order->get_currency())) {
             $decimals = 0;
         }
 

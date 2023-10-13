@@ -185,7 +185,8 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                 $finalArray[$placement][$onlyKey] = $this->settings[$key] ?? $value;
             }
         }
-        wp_localize_script('angelleye-pay-later-messaging', 'angelleye_pay_later_messaging', ['placements' => $finalArray, 'amount' => angelleye_ppcp_get_order_total()]);
+        wp_localize_script('angelleye-pay-later-messaging', 'angelleye_pay_later_messaging', ['placements' => $finalArray, 'amount' => angelleye_ppcp_number_format(angelleye_ppcp_get_order_total()),
+            'currencyCode' => angelleye_ppcp_get_currency()]);
         angelleye_ppcp_add_css_js();
     }
 
@@ -229,7 +230,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                 echo '<div class="angelleye_ppcp_message_product"></div>';
             }
         } catch (Exception $ex) {
-            
+
         }
         return false;
     }
