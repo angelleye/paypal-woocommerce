@@ -95,11 +95,12 @@ const angelleyeOrder = {
 		if (typeof apiUrl == 'undefined') {
 			apiUrl = angelleye_ppcp_manager.create_order_url;
 		}
+
+		let formSelector = angelleyeOrder.getWooFormSelector();
 		jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 		let formData;
 		let is_from_checkout = angelleyeOrder.isCheckoutPage();
 		let is_from_product = angelleyeOrder.isProductPage();
-		let is_sale = angelleyeOrder.isSale();
 		let billingField = null;
 		let shippingField = null;
 		if (billingDetails) {
@@ -116,40 +117,31 @@ const angelleyeOrder = {
 				value: JSON.stringify(shippingDetails)
 			});
 		}
-		if (is_from_checkout) {
-			if (angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
-				formData = '';
-			} else {
-				formData = jQuery(angelleye_ppcp_button_selector).closest('form').serialize();
-			}
-		} else if (is_from_product) {
-			let add_to_cart = jQuery("[name='add-to-cart']").val();
-			jQuery('<input>', {
-				type: 'hidden',
-				name: 'angelleye_ppcp-add-to-cart',
-				value: add_to_cart
-			}).appendTo('form.cart');
 
-			if (billingField) {
-				jQuery('form.cart').find('input[name=billing_address_source]').remove();
-				billingField.appendTo('form.cart');
-			}
-			if (shippingField) {
-				jQuery('form.cart').find('input[name=shipping_address_source]').remove();
-				shippingField.appendTo('form.cart');
-			}
-			formData = jQuery('form.cart').serialize();
+		console.log('formSelector', formSelector, jQuery(formSelector).length);
+		if (is_from_checkout && angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
+			formData = '';
 		} else {
+			if (is_from_product) {
+				let add_to_cart = jQuery("[name='add-to-cart']").val();
+				jQuery(formSelector).find('input[name=angelleye_ppcp-add-to-cart]').remove();
+				jQuery('<input>', {
+					type: 'hidden',
+					name: 'angelleye_ppcp-add-to-cart',
+					value: add_to_cart
+				}).appendTo(formSelector);
+			}
 			if (billingField) {
-				jQuery('form.cart').find('input[name=billing_address_source]').remove();
-				billingField.appendTo('form.woocommerce-cart-form');
+				jQuery(formSelector).find('input[name=billing_address_source]').remove();
+				billingField.appendTo(formSelector);
 			}
 			if (shippingField) {
-				jQuery('form.cart').find('input[name=shipping_address_source]').remove();
-				shippingField.appendTo('form.woocommerce-cart-form');
+				jQuery(formSelector).find('input[name=shipping_address_source]').remove();
+				shippingField.appendTo(formSelector);
 			}
-			formData = jQuery('form.woocommerce-cart-form').serialize();
+			formData = jQuery(formSelector).serialize();
 		}
+
 		return fetch(apiUrl, {
 			method: 'POST',
 			headers: {
@@ -157,7 +149,13 @@ const angelleyeOrder = {
 			},
 			body: formData
 		}).then(function (res) {
-			console.log('createOrder response', {res, apiUrl, redirected:res.redirected, url: res.url, status: res.status});
+			console.log('createOrder response', {
+				res,
+				apiUrl,
+				redirected: res.redirected,
+				url: res.url,
+				status: res.status
+			});
 			if (res.redirected) {
 				window.location.href = res.url;
 			} else {
@@ -198,11 +196,11 @@ const angelleyeOrder = {
 	},
 	onCancel: () => {
 		jQuery(document.body).trigger('angelleye_paypal_oncancel');
-		if (angelleyeOrder.isCheckoutPage() === false) {
-                    angelleyeOrder.showProcessingSpinner();
-                    if( angelleyeOrder.isProductPage() !== true) {
-                        window.location.reload();
-                    }
+		if (!angelleyeOrder.isCheckoutPage()) {
+			angelleyeOrder.showProcessingSpinner();
+			if (!angelleyeOrder.isProductPage()) {
+				window.location.reload();
+			}
 		}
 	},
 	prepareWooErrorMessage: (message) => {
@@ -380,6 +378,13 @@ const angelleyeOrder = {
 		if (angelleyeOrder.isCheckoutPage()) {
 			data = jQuery(checkoutSelector).serialize();
 		}
+		// Fluid-Checkout compatibility to stop showing the Leave popup on beforeunload event
+		if (typeof window.can_update_checkout !== 'undefined') {
+			jQuery(checkoutSelector).on('checkout_place_order_' + angelleyeOrder.getSelectedPaymentMethod(), function () {
+				return false;
+			});
+			jQuery(checkoutSelector).submit();
+		}
 		fetch(captureUrl, {
 			method: 'POST',
 			headers: {
@@ -393,7 +398,7 @@ const angelleyeOrder = {
 		}).catch((error) => {
 			console.log('capture error', error);
 			jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
-                        angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
+			angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
 			angelleyeOrder.showError(error.message);
 		});
 	},
@@ -515,7 +520,7 @@ const angelleyeOrder = {
 						if (typeof cardname !== 'undefined' && cardname !== null || cardname.length !== 0) {
 							if (jQuery.inArray(cardname, angelleye_ppcp_manager.disable_cards) !== -1) {
 								jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
-                                                                angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
+								angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
 								jQuery('#angelleye_ppcp_cc-card-number').addClass('ppcp-invalid-cart');
 								jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 								angelleyeOrder.showError(angelleye_ppcp_manager.card_not_supported);
@@ -525,7 +530,7 @@ const angelleyeOrder = {
 					}
 				} else {
 					jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
-                                        angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
+					angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
 					jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 					angelleyeOrder.showError(angelleye_ppcp_manager.fields_not_valid);
 					return;
@@ -536,19 +541,19 @@ const angelleyeOrder = {
 				if (formValid === false) {
 					jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 					jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
-                                        angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
+					angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
 					angelleyeOrder.showError(angelleye_ppcp_manager.fields_not_valid);
 					return;
 				}
 				let contingencies = [];
 				contingencies = [angelleye_ppcp_manager.three_d_secure_contingency];
-                                jQuery( '#customer_details, .woocommerce-checkout-review-order' ).block({
-                                        message: null,
-                                        overlayCSS: {
-                                                background: '#fff',
-                                                opacity: 0.6
-                                        }
-                                });
+				jQuery('#customer_details, .woocommerce-checkout-review-order').block({
+					message: null,
+					overlayCSS: {
+						background: '#fff',
+						opacity: 0.6
+					}
+				});
 				let firstName;
 				let lastName;
 				if (angelleye_ppcp_manager.is_pay_page === 'yes') {
@@ -568,7 +573,7 @@ const angelleyeOrder = {
 						}
 					}, function (error) {
 						jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
-                                                angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
+						angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
 						let error_message = '';
 						if (Array.isArray(error.details) && error.details[0]['description']) {
 							error_message = error.details[0]['description'];
@@ -590,6 +595,7 @@ const angelleyeOrder = {
 		});
 	},
 	applePayDataInit: async () => {
+		// This function is deprecated as we don't use it because its already loaded in environment
 		if (angelleyeOrder.isApplePayEnabled()) {
 			// block the apple pay button UI to make sure nobody can click it while its updating.
 			angelleyeOrder.showProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
@@ -598,15 +604,41 @@ const angelleyeOrder = {
 			angelleyeOrder.hideProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
 			if (typeof response.totalAmount !== 'undefined') {
 				// successful response
-				window.angelleye_cart_totals = response;
+				angelleye_ppcp_manager.angelleye_cart_totals = response;
 			} else {
 				// in case of unsuccessful response, refresh the page.
 				window.location.reload();
 			}
 		}
 	},
-        updateLocalizedScriptDatapayLaterMessaging: () => {
-                return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.get_updated_pay_later_data});
+	getCartDetails: () => {
+		return angelleye_ppcp_manager.angelleye_cart_totals;
+	},
+	updateCartTotalsInEnvironment: (data) => {
+		let cartTotals;
+		if (data) {
+			cartTotals = data;
+		} else if (jQuery('#angelleye_cart_totals').length) {
+			cartTotals = JSON.parse(jQuery('#angelleye_cart_totals').text());
+		}
+		if (cartTotals) {
+			// Check if the currency changed then reload the JS SDK with latest currency
+			const updateCartTotal = () => {
+				console.log('angelleye_cart_total_updated', cartTotals);
+				angelleye_ppcp_manager.angelleye_cart_totals = cartTotals;
+				jQuery(document.body).trigger('angelleye_cart_total_updated');
+			};
+			const cartDetails = angelleyeOrder.getCartDetails();
+			if (cartDetails.currencyCode !== cartTotals.currencyCode) {
+				console.log('Currency changed, refreshing PayPal Lib SDK');
+				angelleye_ppcp_manager.paypal_sdk_url = pfwUrlHelper.setQueryParam('currency', cartTotals.currencyCode, angelleye_ppcp_manager.paypal_sdk_url);
+				window.angelleyeLoadAsyncLibs(() => {
+					updateCartTotal();
+				});
+			} else {
+				updateCartTotal();
+			}
+		}
 	},
 	queuedEvents: {},
 	addEventsForCallback: (eventType, event, data) => {
@@ -644,19 +676,21 @@ const angelleyeOrder = {
 				}, 300);
 			});
 			if (angelleyeOrder.isCartPage()) {
-				jQuery(document.body).on('updated_cart_totals', async function (event) {
-					angelleyeOrder.dequeueEvent(event.type);
-					await angelleyeOrder.applePayDataInit();
-				});
+				// jQuery(document.body).on('updated_cart_totals', async function (event) {
+				// 	angelleyeOrder.dequeueEvent(event.type);
+				// 	await angelleyeOrder.applePayDataInit();
+				// });
 			}
 		},
 		onCartValueUpdate: () => {
-			jQuery(document.body).on('updated_checkout', function (event, data) {
+			jQuery(document.body).on('updated_cart_totals updated_checkout', function (event, data) {
 				angelleyeOrder.dequeueEvent(event.type);
 				if (typeof data !== 'undefined' && typeof data["fragments"] !== 'undefined' && typeof data["fragments"]["angelleye_payments_data"] !== "undefined") {
-					window.angelleye_cart_totals = JSON.parse(data["fragments"]["angelleye_payments_data"]);
+					angelleyeOrder.updateCartTotalsInEnvironment(JSON.parse(data["fragments"]["angelleye_payments_data"]));
+				} else if (event.type === 'updated_cart_totals') {
+					angelleyeOrder.updateCartTotalsInEnvironment();
 				}
-				console.log('cart updated',data, window.angelleye_cart_totals);
+				console.log('cart update hook finished', data, angelleyeOrder.getCartDetails());
 			});
 		},
 		handleRaceConditionOnWooHooks: () => {
@@ -666,5 +700,37 @@ const angelleyeOrder = {
 				}
 			});
 		}
+	}
+}
+
+const pfwUrlHelper = {
+	getUrlObject: (url) => {
+		if (!url) {
+			url = window.location.href;
+		}
+		return new URL(url);
+	},
+	setQueryParam: (name, value, url) => {
+		url = pfwUrlHelper.getUrlObject(url);
+		let searchParams = url.searchParams;
+		searchParams.set(name, value);
+		url.search = searchParams.toString();
+		return url.toString();
+	},
+	getQueryParams: (url) => {
+		url = pfwUrlHelper.getUrlObject(url);
+		return url.searchParams;
+	},
+	removeQueryParam: (name, url) => {
+		url = pfwUrlHelper.getUrlObject(url);
+		let searchParams = url.searchParams;
+		searchParams.delete(name);
+		url.search = searchParams.toString();
+		return url.toString();
+	},
+	removeAllParams: (url) => {
+		url = pfwUrlHelper.getUrlObject(url);
+		url.search = '';
+		return url.toString();
 	}
 }

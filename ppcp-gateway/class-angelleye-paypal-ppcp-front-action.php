@@ -210,6 +210,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     break;
                 case 'shipping_address_update':
                     global $woocommerce;
+                    $woo_order_id = $_POST['woo_order_id'] ?? null;
                     if (isset($_REQUEST['shipping_address_source'])) {
                         $shipping_address = json_decode(stripslashes($_REQUEST['shipping_address_source']), true);
                         $shipping_address = $shipping_address['shippingDetails'] ?? null;
@@ -225,7 +226,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             $woocommerce->customer->set_shipping_state($shipping_address['administrativeArea']);
                         }
                     }
-                    $orderTotal = WC()->cart->get_total('');
                     if (isset($_GET['from']) && 'product' === $_GET['from']) {
                         try {
                             if (!class_exists('AngellEYE_PayPal_PPCP_Product')) {
@@ -238,13 +238,30 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             $this->api_log->log($ex->getMessage(), 'error');
                         }
                     }
-                    $details = $this->payment_request->getCartLineItems();
+                    if (!empty($woo_order_id)) {
+                        $order = wc_get_order($woo_order_id);
+                        if (is_a($order, 'WC_Order')) {
+                            $details = $this->payment_request->getOrderLineItems($order);
+                            $totalAmount = $order->get_total('');
+                            $shippingRequired = $order->needs_shipping_address();
+                        } else {
+                            wp_send_json([
+                                'status' => false,
+                                'message' => __('Order ID is invalid', 'woocommerce')
+                            ]);
+                            die;
+                        }
+                    } else {
+                        $totalAmount = WC()->cart->get_total('');
+                        $shippingRequired = WC()->cart->needs_shipping();
+                        $details = $this->payment_request->getCartLineItems();
+                    }
                     wp_send_json([
                         'currencyCode' => get_woocommerce_currency(),
-                        'totalAmount' => WC()->cart->get_total(''),
+                        'totalAmount' => $totalAmount,
                         'lineItems' => $details,
-                        'shippingRequired' => WC()->cart->needs_shipping(),
-                        'isSubscriptionRequired' => $this->smart_button->isSubscriptionRequired()
+                        'shippingRequired' => $shippingRequired,
+                        'isSubscriptionRequired' => $this->smart_button->isSubscriptionRequired($woo_order_id)
                     ]);
                     break;
                 case "display_order_page":

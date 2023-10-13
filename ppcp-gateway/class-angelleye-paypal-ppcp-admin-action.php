@@ -569,7 +569,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'PayPal Commerce Now Supports Apple Pay!',
                 'ans_message_description' => 'Unlock advanced features such as Apple Pay. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
-                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
+                'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=additional_authorizations'),
                 'ans_button_label' => 'Enable Apple Pay',
                 'is_dismiss' => true
             );
@@ -596,6 +596,24 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $result = $this->seller_onboarding->angelleye_track_seller_onboarding_status_from_cache($this->merchant_id);
             $notice_data = json_decode(json_encode($notice_data));
             $notice_type = angelleye_ppcp_display_upgrade_notice_type($result);
+
+            $ae_ppcp_account_reconnect_notice = get_option('ae_ppcp_account_reconnect_notice');
+            // This is to ensure to display the notice only when angelleye_ppcp (main gateway) is enabled.
+            if (!empty($ae_ppcp_account_reconnect_notice) && !empty($notice_type['active_ppcp_gateways'])
+            && isset($notice_type['active_ppcp_gateways']['angelleye_ppcp'])) {
+                // This can be converted as a switch statement as the flag will tell use error reason
+                $notice_data_account_reconnect = array(
+                    'id' => 'ppcp_notice_account_reconnect',
+                    'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
+                    'ans_message_title' => 'Action Required: Reconnect Your PayPal Account',
+                    'ans_message_description' => "We're experiencing permission issues preventing us from making certain PayPal API calls on your behalf. To fix this, please reconnect your PayPal account from the settings page. Click the button below to go to settings and select 'Reconnect PayPal Account'.",
+                    'ans_button_url' => admin_url('options-general.php?page=paypal-for-woocommerce'),
+                    'ans_button_label' => 'Settings',
+                    'is_dismiss' => false
+                );
+                angelleye_ppcp_display_notice(json_decode(json_encode($notice_data_account_reconnect)));
+            }
+
             if (!empty($notice_type)) {
                 foreach ($notice_type as $key => $type) {
                     if ('classic_upgrade' === $key && $type === true && isset($notice_data->$key)) {

@@ -88,7 +88,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             $this->function_helper = new WC_Gateway_PayPal_Express_Function_AngellEYE();
             add_action('angelleye_save_angelleye_fraudnet', array($this, 'angelleye_save_angelleye_fraudnet'));
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -236,7 +236,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_redirect();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -299,7 +299,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_redirect();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -476,7 +476,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $this->angelleye_redirect();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -487,7 +487,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 $customer_note_value = wptexturize($order->get_customer_note());
                 $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
             } else {
-                
+
             }
             do_action('angelleye_paypal_for_woocommerce_product_level_payment_action', $this->gateway);
             if ($this->send_items) {
@@ -588,7 +588,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             return $this->paypal_response;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -626,7 +626,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             $this->paypal = new Angelleye_PayPal_WC($this->credentials);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -754,7 +754,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
                 'currencycode' => $currencycode,
                 'custom' => apply_filters('ae_ppec_custom_parameter', ''),
                 'notetext' => '',
-                'paymentaction' => ($this->gateway->payment_action == 'Authorization' || WC()->cart->total == 0 ) ? 'Authorization' : $this->gateway->payment_action,
+                'paymentaction' => ($this->gateway->payment_action == 'Authorization' || $order_total == 0 ) ? 'Authorization' : $this->gateway->payment_action,
             );
 
             if (empty($_GET['pay_for_order'])) {
@@ -868,7 +868,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             return $this->paypal_response;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -897,7 +897,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             }
             return $PayPalRequestData;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1011,7 +1011,7 @@ class WC_Gateway_PayPal_Express_Request_AngellEYE {
             endswitch;
             return;
         } catch (Exception $ex) {
-            
+
         }
     }
 
