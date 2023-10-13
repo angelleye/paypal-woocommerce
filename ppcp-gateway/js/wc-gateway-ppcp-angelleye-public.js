@@ -87,21 +87,24 @@ function initSmartButtons() {
 	'use strict';
 	// queue the woocommerce hook events immediately to trigger those later in case sdk load takes time
 	angelleyeOrder.hooks.handleRaceConditionOnWooHooks();
-	angelleyeLoadPayPalScript({
-		url: angelleye_ppcp_manager.paypal_sdk_url,
-		script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
-	}, function() {
-		if (angelleyeOrder.isApplePayEnabled()) {
-			angelleyeLoadPayPalScript({
-				url: angelleye_ppcp_manager.apple_sdk_url
-			}, function () {
-				console.log('apple pay lib loaded');
-				initSmartButtons();
-			});
-		} else {
-			initSmartButtons();
-		}
-	});
+	window.angelleyeLoadAsyncLibs = (callback) => {
+		angelleyeLoadPayPalScript({
+			url: angelleye_ppcp_manager.paypal_sdk_url,
+			script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
+		}, function () {
+			if (angelleyeOrder.isApplePayEnabled()) {
+				angelleyeLoadPayPalScript({
+					url: angelleye_ppcp_manager.apple_sdk_url
+				}, function () {
+					console.log('apple pay lib loaded');
+					callback();
+				});
+			} else {
+				callback();
+			}
+		});
+	}
+	window.angelleyeLoadAsyncLibs(initSmartButtons);
 
 	jQuery(document.body).on('angelleye_paypal_oncancel', function (event) {
 		event.preventDefault();

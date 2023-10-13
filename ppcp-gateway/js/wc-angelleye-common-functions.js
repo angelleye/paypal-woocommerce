@@ -149,7 +149,13 @@ const angelleyeOrder = {
 			},
 			body: formData
 		}).then(function (res) {
-			console.log('createOrder response', {res, apiUrl, redirected:res.redirected, url: res.url, status: res.status});
+			console.log('createOrder response', {
+				res,
+				apiUrl,
+				redirected: res.redirected,
+				url: res.url,
+				status: res.status
+			});
 			if (res.redirected) {
 				window.location.href = res.url;
 			} else {
@@ -589,6 +595,7 @@ const angelleyeOrder = {
 		});
 	},
 	applePayDataInit: async () => {
+		// This function is deprecated as we don't use it because its already loaded in environment
 		if (angelleyeOrder.isApplePayEnabled()) {
 			// block the apple pay button UI to make sure nobody can click it while its updating.
 			angelleyeOrder.showProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
@@ -597,24 +604,40 @@ const angelleyeOrder = {
 			angelleyeOrder.hideProcessingSpinner('#angelleye_ppcp_cart_apple_pay');
 			if (typeof response.totalAmount !== 'undefined') {
 				// successful response
-				window.angelleye_cart_totals = response;
+				angelleye_ppcp_manager.angelleye_cart_totals = response;
 			} else {
 				// in case of unsuccessful response, refresh the page.
 				window.location.reload();
 			}
 		}
 	},
+	getCartDetails: () => {
+		return angelleye_ppcp_manager.angelleye_cart_totals;
+	},
 	updateCartTotalsInEnvironment: (data) => {
 		let cartTotals;
 		if (data) {
 			cartTotals = data;
-		} else if(jQuery('#angelleye_cart_totals').length) {
+		} else if (jQuery('#angelleye_cart_totals').length) {
 			cartTotals = JSON.parse(jQuery('#angelleye_cart_totals').text());
 		}
 		if (cartTotals) {
-			console.log('angelleye_cart_total_updated', cartTotals);
-			window.angelleye_cart_totals = cartTotals;
-			jQuery(document.body).trigger('angelleye_cart_total_updated');
+			// Check if the currency changed then reload the JS SDK with latest currency
+			const updateCartTotal = () => {
+				console.log('angelleye_cart_total_updated', cartTotals);
+				angelleye_ppcp_manager.angelleye_cart_totals = cartTotals;
+				jQuery(document.body).trigger('angelleye_cart_total_updated');
+			};
+			const cartDetails = angelleyeOrder.getCartDetails();
+			if (cartDetails.currencyCode !== cartTotals.currencyCode) {
+				console.log('Currency changed, refreshing PayPal Lib SDK');
+				angelleye_ppcp_manager.paypal_sdk_url = pfwUrlHelper.setQueryParam('currency', cartTotals.currencyCode, angelleye_ppcp_manager.paypal_sdk_url);
+				window.angelleyeLoadAsyncLibs(() => {
+					updateCartTotal();
+				});
+			} else {
+				updateCartTotal();
+			}
 		}
 	},
 	queuedEvents: {},
@@ -653,10 +676,10 @@ const angelleyeOrder = {
 				}, 300);
 			});
 			if (angelleyeOrder.isCartPage()) {
-				jQuery(document.body).on('updated_cart_totals', async function (event) {
-					angelleyeOrder.dequeueEvent(event.type);
-					await angelleyeOrder.applePayDataInit();
-				});
+				// jQuery(document.body).on('updated_cart_totals', async function (event) {
+				// 	angelleyeOrder.dequeueEvent(event.type);
+				// 	await angelleyeOrder.applePayDataInit();
+				// });
 			}
 		},
 		onCartValueUpdate: () => {
@@ -664,10 +687,10 @@ const angelleyeOrder = {
 				angelleyeOrder.dequeueEvent(event.type);
 				if (typeof data !== 'undefined' && typeof data["fragments"] !== 'undefined' && typeof data["fragments"]["angelleye_payments_data"] !== "undefined") {
 					angelleyeOrder.updateCartTotalsInEnvironment(JSON.parse(data["fragments"]["angelleye_payments_data"]));
-				} else if(event.type === 'updated_cart_totals') {
+				} else if (event.type === 'updated_cart_totals') {
 					angelleyeOrder.updateCartTotalsInEnvironment();
 				}
-				console.log('cart updated', data, window.angelleye_cart_totals);
+				console.log('cart update hook finished', data, angelleyeOrder.getCartDetails());
 			});
 		},
 		handleRaceConditionOnWooHooks: () => {
@@ -677,5 +700,37 @@ const angelleyeOrder = {
 				}
 			});
 		}
+	}
+}
+
+const pfwUrlHelper = {
+	getUrlObject: (url) => {
+		if (!url) {
+			url = window.location.href;
+		}
+		return new URL(url);
+	},
+	setQueryParam: (name, value, url) => {
+		url = pfwUrlHelper.getUrlObject(url);
+		let searchParams = url.searchParams;
+		searchParams.set(name, value);
+		url.search = searchParams.toString();
+		return url.toString();
+	},
+	getQueryParams: (url) => {
+		url = pfwUrlHelper.getUrlObject(url);
+		return url.searchParams;
+	},
+	removeQueryParam: (name, url) => {
+		url = pfwUrlHelper.getUrlObject(url);
+		let searchParams = url.searchParams;
+		searchParams.delete(name);
+		url.search = searchParams.toString();
+		return url.toString();
+	},
+	removeAllParams: (url) => {
+		url = pfwUrlHelper.getUrlObject(url);
+		url.search = '';
+		return url.toString();
 	}
 }
