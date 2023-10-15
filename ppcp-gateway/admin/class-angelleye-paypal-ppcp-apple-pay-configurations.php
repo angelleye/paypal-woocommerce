@@ -96,17 +96,31 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         } catch (Exception $exception) {
             echo '<div class="error">' . $exception->getMessage() . '</div>';
         }
+        try {
+            $checkIsDomainAdded = self::isApplePayDomainAdded($jsonResponse);
+            if ($checkIsDomainAdded) {
+                $successMessage = __('Your domain has been registered successfully, Close the popup and refresh the page to update the status.', 'paypal-for-woocommerce');
+                $applePayGateway = WC_Gateway_Apple_Pay_AngellEYE::instance();
+                $applePayGateway->update_option('apple_pay_domain_added', 'yes');
+            }
+        } catch (Exception $exception) {
+
+        }
         require_once (PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/admin/templates/apple-pay-domain-list.php');
         die;
     }
 
-    public static function isApplePayDomainAdded(): bool
+    public static function isApplePayDomainAdded($response = null): bool
     {
-        $addedDomains = get_transient("angelleye_apple_pay_domain_list_cache");
-        if (!is_array($addedDomains)) {
-            $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
-            $addedDomains = $instance->listApplePayDomain(true);
-            set_transient("angelleye_apple_pay_domain_list_cache", $addedDomains, 24 * HOUR_IN_SECONDS);
+        if (empty($response)) {
+            $addedDomains = get_transient("angelleye_apple_pay_domain_list_cache");
+            if (!is_array($addedDomains)) {
+                $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
+                $addedDomains = $instance->listApplePayDomain(true);
+                set_transient("angelleye_apple_pay_domain_list_cache", $addedDomains, 24 * HOUR_IN_SECONDS);
+            }
+        } else {
+            $addedDomains = $response;
         }
 
         if ($addedDomains['status'] && count($addedDomains['domains'])) {
@@ -116,24 +130,26 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
                     return true;
                 }
             }
+            return false;
         }
-        return false;
+        throw new Exception('Unable to retrieve apple pay domain list.');
     }
 
-    public static function autoRegisterDomain(): bool
+    public static function autoRegisterDomain($is_domain_added = false): bool
     {
-        if (!self::isApplePayDomainAdded()) {
-            /**
-             * Try to register the domain max 1 time, this reduces the register attempt in case add domain fails
-             * If domain registration fails its expected user will register manually.
-             */
-            $auto_register_status = get_option('ae_apple_pay_domain_reg_retries', 0);
-            if ($auto_register_status > 0) {
-                return false;
-            }
-            update_option('ae_apple_pay_domain_reg_retries', 1);
-            $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
-            try {
+        try {
+            if (!self::isApplePayDomainAdded()) {
+                /**
+                 * Try to register the domain max 1 time, this reduces the register attempt in case add domain fails
+                 * If domain registration fails its expected user will register manually.
+                 */
+                $auto_register_status = get_option('ae_apple_pay_domain_reg_retries', 0);
+                if ($auto_register_status > 0) {
+                    return false;
+                }
+                update_option('ae_apple_pay_domain_reg_retries', 1);
+                $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
+
                 /**
                  * Add the file in physical path so that If due to some reasons server handles the path request then that should
                  * find the file in path
@@ -145,26 +161,27 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
                 $domainNameToRegister = parse_url( get_site_url(), PHP_URL_HOST );
                 $result = $instance->registerDomain($domainNameToRegister);
                 return $result['status'];
-            } catch (Exception $ex) {
-                return false;
+            } else {
+                return true;
             }
+        } catch (Exception $ex) {
+
         }
-        return true;
+        return $is_domain_added;
     }
 
+    /**
+     * @throws Exception
+     */
     public static function autoUnRegisterDomain(): bool
     {
         if (self::isApplePayDomainAdded()) {
             $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
-            try {
-                $domainNameToRemove = parse_url( get_site_url(), PHP_URL_HOST );
-                $result = $instance->removeDomain($domainNameToRemove);
-                return $result['status'];
-            } catch (Exception $ex) {
-                return false;
-            }
+            $domainNameToRemove = parse_url(get_site_url(), PHP_URL_HOST);
+            $result = $instance->removeDomain($domainNameToRemove);
+            return $result['status'];
         }
-        return true;
+        return false;
     }
 
     /**

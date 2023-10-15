@@ -128,7 +128,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         delete_transient(AE_FEE);
         if (!isset($_POST['woocommerce_angelleye_ppcp_enabled']) || $_POST['woocommerce_angelleye_ppcp_enabled'] == "0") {
             // run the automatic domain remove feature
-            AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoUnRegisterDomain();
+            try {
+                AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoUnRegisterDomain();
+            } catch (Exception $exception) {
+                $this->api_log->log("The exception was created on line: " . $exception->getFile() . ' ' .$exception->getLine(), 'error');
+                $this->api_log->log($exception->getMessage(), 'error');
+            }
             delete_option('ae_apple_pay_domain_reg_retries');
             delete_transient('ae_seller_onboarding_status');
         }
@@ -781,15 +786,27 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (!$data['label']) {
                 $data['label'] = $data['title'];
             }
+            $is_enabled = $this->get_option($key);
+            $is_domain_added_new = false;
+            $is_domain_added = $this->get_option('apple_pay_domain_added', null) == 'yes';
             $is_apple_pay_approved = $data['is_apple_pay_approved'] ?? false;
             $is_apple_pay_enabled = $data['is_apple_pay_enable'] ?? false;
             $is_ppcp_connected = $data['is_ppcp_connected'] ?? false;
             $need_to_display_apple_pay_button = $data['need_to_display_apple_pay_button'] ?? false;
-            $is_domain_added = false;
             if ($is_apple_pay_approved && $is_apple_pay_enabled) {
-                $is_domain_added = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoRegisterDomain();
+                $is_domain_added_new = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoRegisterDomain($is_domain_added);
             }
             $is_disabled = $data['disabled'] || isset($data['custom_attributes']['disabled']) || !$is_domain_added;
+
+            if ($is_domain_added == null || $is_domain_added_new != $is_domain_added) {
+                if ($is_domain_added_new) {
+                    $is_domain_added = true;
+                    $this->update_option('apple_pay_domain_added', 'yes');
+                } else {
+                    $is_domain_added = false;
+                    $this->update_option('apple_pay_domain_added', 'no');
+                }
+            }
             ob_start();
             ?>
             <tr valign="top">
@@ -800,7 +817,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     <fieldset>
                         <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
                         <label for="<?php echo esc_attr($field_key); ?>">
-                            <input <?php disabled($is_disabled, true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php !$is_disabled && checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
+                            <input <?php disabled($is_disabled, true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php !$is_disabled && checked($is_enabled, 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
                             <?php
                             if ($is_apple_pay_enabled && $is_apple_pay_approved) {
                                 ?>
