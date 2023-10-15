@@ -1,4 +1,5 @@
 const angelleyeOrder = {
+	productAddToCart: true,
 	isCheckoutPage: () => {
 		return 'checkout' === angelleye_ppcp_manager.page;
 	},
@@ -136,13 +137,15 @@ const angelleyeOrder = {
 			formData = '';
 		} else {
 			if (is_from_product) {
-				let add_to_cart = jQuery("[name='add-to-cart']").val();
 				jQuery(formSelector).find('input[name=angelleye_ppcp-add-to-cart]').remove();
-				jQuery('<input>', {
-					type: 'hidden',
-					name: 'angelleye_ppcp-add-to-cart',
-					value: add_to_cart
-				}).appendTo(formSelector);
+				if (angelleyeOrder.productAddToCart) {
+					jQuery('<input>', {
+						type: 'hidden',
+						name: 'angelleye_ppcp-add-to-cart',
+						value: jQuery("[name='add-to-cart']").val()
+					}).appendTo(formSelector);
+					angelleyeOrder.productAddToCart = false;
+				}
 			}
 			if (billingField) {
 				jQuery(formSelector).find('input[name=billing_address_source]').remove();
@@ -727,7 +730,7 @@ const angelleyeOrder = {
 		onPaymentCancellation: () => {
 			jQuery(document.body).on('angelleye_paypal_oncancel', function (event) {
 				event.preventDefault();
-				if (angelleyeOrder.isProductPage()) {
+				if (angelleyeOrder.isProductPage() && angelleyeOrder.productAddToCart === false) {
 					fetch(angelleye_ppcp_manager.update_cart_oncancel, {
 						method: 'POST',
 						headers: {

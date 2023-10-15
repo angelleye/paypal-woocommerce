@@ -83,12 +83,10 @@ class GooglePayCheckoutButton {
             environment: angelleye_ppcp_manager.sandbox_mode === '1' ? "TEST" : "PRODUCTION",
             paymentDataCallbacks: {
                 onPaymentDataChanged: (this.isShippingRequired() ? this.onPaymentDataChanged.bind(null, {
-                    thisObject: this,
-                    orderID: data && data.orderID ? data.orderID : null
+                    thisObject: this
                 }) : null),
                 onPaymentAuthorized: this.onPaymentAuthorized.bind(null, {
-                    thisObject: this,
-                    orderID: data && data.orderID ? data.orderID : null
+                    thisObject: this
                 }),
             },
         });
@@ -109,14 +107,24 @@ class GooglePayCheckoutButton {
         }
     }
 
+    parseErrorMessage(errorObject) {
+        console.log(JSON.stringify(errorObject));
+        if (errorObject.name === 'PayPalGooglePayError') {
+            let debugID = errorObject.paypalDebugId;
+            switch (errorObject.errorName) {
+                case 'ERROR_VALIDATING_MERCHANT':
+                    return 'This merchant is not enabled to process google pay. please contact website owner. [DebugId: ' + debugID + ']';
+                //case 'UNPROCESSABLE_ENTITY':
+                //    return JSON.stringify(errorObject);
+                default:
+                    return 'We are unable to process your request at the moment, please contact website owner. [DebugId: ' + debugID + ']'
+            }
+        }
+    }
+
     onPaymentAuthorized(additionalData, paymentData) {
         // let thisObj = this;
         console.log('onPaymentAuthorized', additionalData, paymentData);
-        let parseErrorMessage = (errorObject) => {
-            console.error('parseErrorMessage', errorObject)
-            console.log(JSON.stringify(errorObject));
-            return errorObject;
-        };
 
         return new Promise( (resolve, reject) => {
             angelleyeOrder.showProcessingSpinner();
@@ -125,10 +133,9 @@ class GooglePayCheckoutButton {
                     resolve({ transactionState: "SUCCESS" });
                 })
                 .catch(function (error) {
-                    let errorMessage = parseErrorMessage(error);
+                    let errorMessage = additionalData.thisObject.parseErrorMessage(error);
                     angelleyeOrder.hideProcessingSpinner();
                     angelleyeOrder.showError(errorMessage);
-
                     resolve({ transactionState: "ERROR" });
                 });
         });
@@ -157,8 +164,9 @@ class GooglePayCheckoutButton {
                         throw new Error("Unable to update the shipping amount.");
                     }
                 } catch (error) {
+                    console.log('shipping change error');
                     angelleyeOrder.hideProcessingSpinner();
-                    angelleyeOrder.showError(error);
+                    angelleyeOrder.showError(additionalData.thisObject.parseErrorMessage(error));
                     paymentDataRequestUpdate.error = 'Unable to pull the shipping amount details based on selected address';
                     reject('Unable to pull the shipping amount details based on selected address');
                 }
@@ -171,9 +179,19 @@ class GooglePayCheckoutButton {
     async processPayment(additionalData, paymentData) {
         try {
             console.log('processPayment', additionalData, JSON.stringify(paymentData));
+            let thisObject = additionalData.thisObject;
+            angelleyeOrder.showProcessingSpinner();
+            /* Create Order */
+            let orderID = await angelleyeOrder.createOrder({
+                angelleye_ppcp_button_selector: thisObject.containerSelector
+            }).then((orderData) => {
+                console.log('orderCreated', orderData);
+                angelleyeOrder.updateCartTotalsInEnvironment(orderData);
+                return orderData.orderID;
+            });
 
             const { status } = await GooglePayCheckoutButton.googlePay().confirmOrder({
-                orderId: additionalData.orderID,
+                orderId: orderID,
                 paymentMethodData: paymentData.paymentMethodData,
             });
             if (status === "APPROVED") {
@@ -194,7 +212,7 @@ class GooglePayCheckoutButton {
                     await angelleyeOrder.shippingAddressUpdate({shippingDetails}, {billingDetails});
                 }
                 /* Capture the Order */
-                angelleyeOrder.approveOrder({orderID: additionalData.orderID, payerID: ''});
+                angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
                 return { transactionState: "SUCCESS" };
             } else {
                 return { transactionState: "ERROR" };
@@ -202,7 +220,7 @@ class GooglePayCheckoutButton {
         } catch (error) {
             console.log('processPaymentError', error);
             angelleyeOrder.hideProcessingSpinner();
-            angelleyeOrder.showError(error);
+            angelleyeOrder.showError(additionalData.thisObject.parseErrorMessage(error));
 
             return {
                 transactionState: "ERROR",
@@ -296,25 +314,8 @@ class GooglePayCheckoutButton {
             angelleyeOrder.showError("Your shopping cart seems to be empty.");
         }
         angelleyeOrder.setPaymentMethodSelector('google_pay');
-        let orderID;
-        try {
-            angelleyeOrder.showProcessingSpinner();
-            /* Create Order */
-            orderID = await angelleyeOrder.createOrder({
-                angelleye_ppcp_button_selector: thisObject.containerSelector
-            }).then((orderData) => {
-                console.log('orderCreated', orderData);
-                angelleyeOrder.updateCartTotalsInEnvironment(orderData);
-                return orderData.orderID;
-            });
-        } catch (error) {
-            error = error.message;
-            angelleyeOrder.hideProcessingSpinner();
-            angelleyeOrder.showError(error);
-            return;
-        }
         const paymentDataRequest = thisObject.getGooglePaymentDataRequest();
-        const paymentsClient = thisObject.getGooglePaymentsClient({orderID});
+        const paymentsClient = thisObject.getGooglePaymentsClient({});
 
         paymentsClient.loadPaymentData(paymentDataRequest).then((success) => {
             console.log('success', success);

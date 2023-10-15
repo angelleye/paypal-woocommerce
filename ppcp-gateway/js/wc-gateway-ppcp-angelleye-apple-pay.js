@@ -182,6 +182,20 @@ class ApplePayCheckoutButton {
             angelleyeOrder.showError("An error occurred while initiating the ApplePay payment.<br/>Error: " + e);
             return;
         }
+
+        let paymentCancelled = (error) => {
+            angelleyeOrder.triggerPaymentCancelEvent();
+            angelleyeOrder.hideProcessingSpinner();
+            if (error) {
+                let errorMessage = parseErrorMessage(error);
+                angelleyeOrder.showError(errorMessage);
+
+                session.completePayment({
+                    status: ApplePaySession.STATUS_FAILURE,
+                });
+            }
+        };
+
         let parseErrorMessage = (errorObject) => {
             console.error(errorObject)
             console.log(JSON.stringify(errorObject));
@@ -247,12 +261,7 @@ class ApplePayCheckoutButton {
                     throw new Error("Unable to update the shipping amount.");
                 }
             } catch (error) {
-                let errorMessage = parseErrorMessage(error);
-                angelleyeOrder.hideProcessingSpinner();
-                angelleyeOrder.showError(errorMessage);
-                session.completePayment({
-                    status: ApplePaySession.STATUS_FAILURE,
-                });
+                paymentCancelled(error);
             }
         };
 
@@ -285,19 +294,13 @@ class ApplePayCheckoutButton {
                 });
                 angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
             } catch (error) {
-                angelleyeOrder.triggerPaymentCancelEvent();
-                let errorMessage = parseErrorMessage(error);
-                angelleyeOrder.hideProcessingSpinner();
-                angelleyeOrder.showError(errorMessage);
-                session.completePayment({
-                    status: ApplePaySession.STATUS_FAILURE,
-                });
+                paymentCancelled(error);
             }
         };
 
         session.oncancel  = (event) => {
             console.log("Apple Pay Cancelled !!", event)
-            angelleyeOrder.hideProcessingSpinner();
+            paymentCancelled();
         }
 
         session.begin();
