@@ -1,8 +1,8 @@
 (function () {
     'use strict';
     function initializePayPal() {
-        console.log('PayPal lib loaded, initialize pay later messaging.');
-        angelleyeOrder.CCAddPaymentMethod();
+        console.log('PayPal lib loaded, initialize add payment method.');
+        angelleyeOrder.addPaymentMethodAdvancedCreditCard();
     }
     angelleyeLoadPayPalScript({
         url: angelleye_ppcp_manager.paypal_sdk_url,

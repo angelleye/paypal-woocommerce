@@ -114,7 +114,7 @@ const angelleyeOrder = {
 		}
 
 		let formSelector = angelleyeOrder.getWooFormSelector();
-		jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
+		angelleyeOrder.removeError();
 		let formData;
 		let is_from_checkout = angelleyeOrder.isCheckoutPage();
 		let is_from_product = angelleyeOrder.isProductPage();
@@ -229,6 +229,9 @@ const angelleyeOrder = {
 	},
 	prepareWooErrorMessage: (messages) => {
 		return '<ul class="woocommerce-error">' + messages + '</ul>'
+	},
+	removeError: () => {
+		jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 	},
 	showError: (errorMessage) => {
 		errorMessage = angelleyeOrder.prepareWooErrorMessage(errorMessage);
@@ -670,8 +673,7 @@ const angelleyeOrder = {
 			}
 		}
 	},
-    CCAddPaymentMethod: async () => {
-        console.log('605');
+    addPaymentMethodAdvancedCreditCard: () => {
         if (typeof angelleye_paypal_sdk === 'undefined') {
             return;
         }
@@ -708,18 +710,26 @@ const angelleyeOrder = {
         } else {
             jQuery('.payment_method_angelleye_ppcp_cc').hide();
         }
-        const submitButton = document.getElementById("add_payment_method");
-        submitButton.addEventListener("submit", (evt) => {
-            if (angelleyeOrder.isCCPaymentMethodSelected() === true) {
-                evt.preventDefault();
-                cardFields.submit().then((hf) => {
-                    console.log("submit was successful");
-                }).catch((error) => {
-                    angelleyeOrder.showError(error);
-                    console.error("submit erred:", error);
-                });
-            }
-        });
+
+        const submitForm = jQuery("#add_payment_method");
+		let addPaymentMethodForm = 'form#add_payment_method';
+		submitForm.unbind('submit').on('submit', (event) => {
+			angelleyeOrder.removeError();
+			if (angelleyeOrder.isCCPaymentMethodSelected() || angelleyeOrder.isPpcpPaymentMethodSelected()) {
+				angelleyeOrder.showProcessingSpinner(addPaymentMethodForm);
+				if (angelleyeOrder.isCCPaymentMethodSelected() === true) {
+					event.preventDefault();
+					cardFields.submit().then((hf) => {
+						console.log("add_payment_method_submit_success");
+					}).catch((error) => {
+						angelleyeOrder.showError(error);
+						console.error("add_payment_method_submit_error:", error);
+					}).finally(() => {
+						angelleyeOrder.hideProcessingSpinner(addPaymentMethodForm);
+					});
+				}
+			}
+		});
     },
 	queuedEvents: {},
 	addEventsForCallback: (eventType, event, data) => {

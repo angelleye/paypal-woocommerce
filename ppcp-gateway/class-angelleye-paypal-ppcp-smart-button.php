@@ -395,15 +395,17 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-capture', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-capture.js', array('jquery'), $this->version, false);
         }
 
+        $ae_script_loader_handle = 'angelleye-paypal-checkout-sdk';
+
         $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
         wp_register_script($this->angelleye_ppcp_plugin_name . '-common-functions', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-common-functions' . $this->minified_version . '.js', array('jquery',), $script_versions, false);
         // wp_register_script('angelleye-paypal-checkout-sdk', $js_url, array(), null, false);
-        wp_register_script('angelleye-paypal-checkout-sdk', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-script-loader' . $this->minified_version . '.js', array('jquery', 'angelleye_ppcp-common-functions'), $script_versions, true);
+        wp_register_script($ae_script_loader_handle, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-script-loader' . $this->minified_version . '.js', array('jquery', 'angelleye_ppcp-common-functions'), $script_versions, true);
         if ($this->enable_apple_pay) {
-            wp_register_script($this->angelleye_ppcp_plugin_name . '-apple-pay', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay' . $this->minified_version . '.js', array('angelleye-paypal-checkout-sdk'), $script_versions, false);
+            wp_register_script($this->angelleye_ppcp_plugin_name . '-apple-pay', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay' . $this->minified_version . '.js', array($ae_script_loader_handle), $script_versions, false);
         }
         if ($this->enable_google_pay) {
-            wp_register_script($this->angelleye_ppcp_plugin_name . '-google-pay', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay' . $this->minified_version . '.js', array('angelleye-paypal-checkout-sdk'), $script_versions, false);
+            wp_register_script($this->angelleye_ppcp_plugin_name . '-google-pay', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay' . $this->minified_version . '.js', array($ae_script_loader_handle), $script_versions, false);
         }
         $components = ["buttons"];
 
@@ -411,7 +413,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $smart_js_arg = array_merge($smart_js_arg, $this->getClientIdMerchantId());
 
         $enable_funding = [];
-        $localize_script_handler = 'angelleye-paypal-checkout-sdk';
+
         $page = '';
         $is_pay_page = 'no';
         $first_name = '';
@@ -598,11 +600,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
 
             // This script is only required for the payment processing
-            wp_register_script($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-public' . $this->minified_version . '.js', array('angelleye-paypal-checkout-sdk', 'angelleye_ppcp-common-functions'), $script_versions, true);
+            wp_register_script($this->angelleye_ppcp_plugin_name, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-public' . $this->minified_version . '.js', array($ae_script_loader_handle, 'angelleye_ppcp-common-functions'), $script_versions, true);
 
         }
         if (is_add_payment_method_page()) {
-            wp_register_script($this->angelleye_ppcp_plugin_name . '-add-payment-method', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-add-payment-method' . $this->minified_version . '.js', array('angelleye-paypal-checkout-sdk', 'angelleye_ppcp-common-functions'), $script_versions, true);
+            wp_register_script($this->angelleye_ppcp_plugin_name . '-add-payment-method', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-add-payment-method' . $this->minified_version . '.js', [$ae_script_loader_handle], $script_versions, true);
         }
 
         // Remove google pay option for the subscription products on product, cart and checkout page
@@ -628,7 +630,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $js_url = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
 
-        wp_localize_script($localize_script_handler, 'angelleye_ppcp_manager', array(
+        wp_localize_script($ae_script_loader_handle, 'angelleye_ppcp_manager', array(
             'sandbox_mode' => (bool)$this->is_sandbox,
             'paypal_sdk_url' => $js_url,
             'paypal_sdk_attributes' => $this->get_paypal_sdk_attributes(),
@@ -671,7 +673,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'advanced_card_payments_title' => $this->advanced_card_payments_title,
             'angelleye_cart_totals' => $product_cart_amounts,
             'update_cart_oncancel' => add_query_arg(array('angelleye_ppcp_action' => 'update_cart_oncancel', 'utm_nooverride' => '1',), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
-            'get_updated_pay_later_data' => add_query_arg(array('angelleye_ppcp_action' => 'get_updated_pay_later_data', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Pay_Later'))),
             'error_message_checkout_validation' => __('Unable to create the order due to the following errors.', 'paypal-for-woocommerce'),
             'angelleye_ppcp_cc_setup_tokens' => add_query_arg(array('angelleye_ppcp_action' => 'angelleye_ppcp_cc_setup_tokens', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'advanced_credit_card_create_payment_token' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')))
@@ -1296,7 +1297,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $methods = angelleye_ppcp_short_payment_method($methods, 'angelleye_ppcp', 'angelleye_ppcp_cc', $this->advanced_card_payments_display_position);
         }
         if (is_add_payment_method_page()) {
-            unset($methods['angelleye_ppcp_cc']);
             unset($methods['angelleye_ppcp_google_pay']);
             unset($methods['angelleye_ppcp_apple_pay']);
         }
@@ -1795,6 +1795,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     wc_add_notice(__('Invalid payment method.', 'woocommerce'), 'error');
                 } else {
                     $payment_token_id = $token->get_token();
+                    // TODO add the handling to check if the delete api failed then do not delete the token from user account as well.
                     $this->payment_request->angelleye_ppcp_delete_payment_token($payment_token_id);
                     WC_Payment_Tokens::delete($token_id);
                     wc_add_notice(__('Payment method deleted.', 'woocommerce'));
