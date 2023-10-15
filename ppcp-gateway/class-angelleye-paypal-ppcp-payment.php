@@ -3296,6 +3296,10 @@ class AngellEYE_PayPal_PPCP_Payment {
         try {
             $body_request = array();
             if (isset($_GET[APPROVAL_TOKEN_ID_PARAM_NAME])) {
+                // Clear the notices as WooCommerce PayPal Payments tries to handle the approval_token_id parameter
+                // before our handler and sets an error in session [RESOURCE_NOT_FOUND] The specified resource does not exist.
+                // so clear those notices to show the clean notice to users
+                wc_clear_notices();
                 $body_request['payment_source']['token'] = array(
                     'id' => wc_clean($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]),
                     'type' => 'SETUP_TOKEN'
