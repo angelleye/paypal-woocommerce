@@ -52,5 +52,4 @@ trait AngellEye_PPCP_Core
     {
         return 'yes' === $this->setting_obj->get('testmode', 'no');
     }
-
 }

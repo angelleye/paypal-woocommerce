@@ -261,6 +261,21 @@
     padding: 5px 6px;
     border-radius: 4px;
 }
+.angelleye_ppcp-button-container #angelleye_ppcp_product, .angelleye_ppcp-button-container #angelleye_ppcp_cart {
+    margin-bottom: 7px;
+}
+.angelleye_ppcp-button-container #angelleye_ppcp_product_apple_pay, .angelleye_ppcp-button-container #angelleye_ppcp_product_google_pay,
+.angelleye_ppcp-button-container #angelleye_ppcp_cart_apple_pay, .angelleye_ppcp-button-container #angelleye_ppcp_cart_google_pay{
+    margin-bottom: 10px;
+}
+apple-pay-button {
+    --apple-pay-button-width: 100%;
+    --apple-pay-button-height: 40px;
+    --apple-pay-button-border-radius: 5px;
+    --apple-pay-button-padding: 5px 0px;
+    --apple-pay-button-box-sizing: border-box;
+}
+
 #place_order.hide_place_order_btn {
     display: none !important;
 }
