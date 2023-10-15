@@ -29,11 +29,8 @@ class AngellEye_Session_Manager
     public function getData($key, $default = null)
     {
         if ($this->_data == null) {
-            if (!class_exists('WooCommerce') || WC()->session == null) {
+            if (!class_exists('WooCommerce') || empty(WC()->session)) {
                 return false;
-            }
-            if (!WC()->session->has_session()) {
-                WC()->session->init();
             }
 
             $this->_data = WC()->session->get($this->sessionName, []);

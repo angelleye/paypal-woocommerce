@@ -225,7 +225,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             if (strtolower($payment_method) == 'ideal') {
                 $body_request['payment_source'] = [
-                    'ideal' => ["country_code" => $country_code, 'name' => trim($full_name)]
+                    'ideal' => ["country_code" => strtoupper($country_code), 'name' => trim($full_name)]
                 ];
                 $body_request['processing_instruction'] = 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL';
             }
@@ -311,6 +311,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
                     $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
                 }
+                $shipping_country = strtoupper($shipping_country);
                 if ($order->needs_shipping_address() || WC()->cart->needs_shipping()) {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
@@ -335,14 +336,14 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
                     }
-                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
+                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['country'])) {
                         $body_request['purchase_units'][0]['shipping']['address'] = array(
                             'address_line_1' => $cart['shipping_address']['address_1'],
                             'address_line_2' => $cart['shipping_address']['address_2'],
                             'admin_area_2' => $cart['shipping_address']['city'],
                             'admin_area_1' => $cart['shipping_address']['state'],
                             'postal_code' => $cart['shipping_address']['postcode'],
-                            'country_code' => $cart['shipping_address']['country'],
+                            'country_code' => strtoupper($cart['shipping_address']['country']),
                         );
                         AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                     }
@@ -353,14 +354,14 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . '' . $cart['shipping_address']['last_name'];
                     }
-                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
+                    if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['country'])) {
                         $body_request['purchase_units'][0]['shipping']['address'] = array(
                             'address_line_1' => $cart['shipping_address']['address_1'],
                             'address_line_2' => $cart['shipping_address']['address_2'],
                             'admin_area_2' => $cart['shipping_address']['city'],
                             'admin_area_1' => $cart['shipping_address']['state'],
                             'postal_code' => $cart['shipping_address']['postcode'],
-                            'country_code' => $cart['shipping_address']['country'],
+                            'country_code' => strtoupper($cart['shipping_address']['country']),
                         );
                         AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                     }
@@ -390,12 +391,12 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($this->api_response['status'])) {
                 $return_response = $this->add_nonce_in_response($return_response);
                 // Add currency code and total for the apple pay orders
+                $response = $this->ae_get_updated_checkout_payment_data((!empty($order) ? $order : null));
+                $return_response = array_merge($return_response, $response);
                 $return_response['currencyCode'] = $this->api_response['purchase_units'][0]['amount']['currency_code'];
                 $return_response['totalAmount'] = $this->api_response['purchase_units'][0]['amount']['value'];
                 $return_response['orderID'] = $this->api_response['id'];
-                if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
-                    angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
-                }
+                !empty($order) && angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $this->api_response['id']);
                 wp_send_json($return_response, 200);
                 exit();
             } else {
@@ -403,17 +404,49 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'request' => 'create_order',
                     'order_id' => $woo_order_id
                 );
-                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
-                wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
-                if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
-                    $order->add_order_note($error_message);
-                }
-                wp_send_json_error($error_message);
+                $errorMessage = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                !empty($order) && $order->add_order_note($errorMessage);
+                wp_send_json_error(__('We were unable to process your order, please try again with same or other payment method(s).', 'paypal-for-woocommerce'));
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
+    }
+
+    /**
+     * @param null $order
+     * @return array
+     */
+    public function ae_get_updated_checkout_payment_data($order = null) {
+        if (!empty($order)) {
+            $details = $this->getOrderLineItems($order);
+            $totalAmount = $order->get_total('');
+            $shippingRequired = $order->needs_shipping_address();
+        } else {
+            $totalAmount = WC()->cart->get_total('');
+            $shippingRequired = WC()->cart->needs_shipping();
+            $details = $this->getCartLineItems();
+        }
+
+        return [
+            'currencyCode' => get_woocommerce_currency(),
+            'totalAmount' => $totalAmount,
+            'lineItems' => $details,
+            'shippingRequired' => $shippingRequired,
+            'isSubscriptionRequired' => $this->isSubscriptionRequired($order)
+        ];
+    }
+
+    public function isSubscriptionRequired($order = null): bool
+    {
+        if (!empty($order) && class_exists('WC_Subscriptions_Order')) {
+            return WC_Subscriptions_Order::order_contains_subscription($order);
+        }
+        if (class_exists('WC_Subscriptions_Cart')) {
+            return WC_Subscriptions_Cart::cart_contains_subscription();
+        }
+        return false;
     }
 
     public function angelleye_ppcp_get_details_from_cart() {
@@ -819,7 +852,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $city = $old_wc ? $order->billing_city : $order->get_billing_city();
             $state = $old_wc ? $order->billing_state : $order->get_billing_state();
             $postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
-            $country = $old_wc ? $order->billing_country : $order->get_billing_country();
+            $country = strtoupper($old_wc ? $order->billing_country : $order->get_billing_country());
             if (!empty($address_1) && !empty($city) && !empty($state) && !empty($postcode) && !empty($country)) {
                 $body_request['payer']['address'] = array(
                     'address_line_1' => $address_1,
@@ -841,7 +874,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $city = $old_wc ? $customer->get_city() : $customer->get_billing_city();
                 $state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
                 $postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
-                $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
+                $country = strtoupper($old_wc ? $customer->get_country() : $customer->get_billing_country());
                 $email_address = $old_wc ? WC()->customer->billing_email : WC()->customer->get_billing_email();
                 $billing_phone = $old_wc ? $customer->billing_phone : $customer->get_billing_phone();
                 if (!empty($first_name)) {
@@ -1294,6 +1327,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
                 $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
             }
+            $shipping_country = strtoupper($shipping_country);
             if ($order->needs_shipping_address() || WC()->cart->needs_shipping()) {
                 if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                     $purchase_units['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
@@ -1983,6 +2017,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $this->client_token = $response['client_token'];
                 return $this->client_token;
             }
+            $this->handle_generate_token_error_response($response);
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -2013,9 +2048,18 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $this->client_token = $response['id_token'];
                 return $this->client_token;
             }
+            $this->handle_generate_token_error_response($response);
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
+        }
+    }
+
+    private function handle_generate_token_error_response($response) {
+        if (isset($response['error'], $response['error_description'])
+            && str_contains(strtolower($response['error_description']), 'no permissions')) {
+            // display a notice to the users based on this flag and clear the flag only when call is successful
+            update_option('ae_ppcp_account_reconnect_notice', 'generate_token_error');
         }
     }
 
@@ -2137,6 +2181,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $shipping_postcode = $old_wc ? $order->billing_postcode : $order->get_billing_postcode();
                     $shipping_country = $old_wc ? $order->billing_country : $order->get_billing_country();
                 }
+                $shipping_country = strtoupper($shipping_country);
                 if ($order->needs_shipping_address() || WC()->cart->needs_shipping()) {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
@@ -2157,14 +2202,14 @@ class AngellEYE_PayPal_PPCP_Payment {
                         if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                             $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
                         }
-                        if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['postcode']) && !empty($cart['shipping_address']['country'])) {
+                        if (!empty($cart['shipping_address']['address_1']) && !empty($cart['shipping_address']['city']) && !empty($cart['shipping_address']['country'])) {
                             $body_request['purchase_units'][0]['shipping']['address'] = array(
                                 'address_line_1' => $cart['shipping_address']['address_1'],
                                 'address_line_2' => $cart['shipping_address']['address_2'],
                                 'admin_area_2' => $cart['shipping_address']['city'],
                                 'admin_area_1' => $cart['shipping_address']['state'],
                                 'postal_code' => $cart['shipping_address']['postcode'],
-                                'country_code' => $cart['shipping_address']['country'],
+                                'country_code' => strtoupper($cart['shipping_address']['country']),
                             );
                             AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                         }
@@ -2612,7 +2657,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                                 'admin_area_2' => $request['payer']['address']['admin_area_2'] ?? '',
                                 'admin_area_1' => $request['payer']['address']['admin_area_1'] ?? '',
                                 'postal_code' => $request['payer']['address']['postal_code'] ?? '',
-                                'country_code' => $request['payer']['address']['country_code'] ?? '',
+                                'country_code' => strtoupper($request['payer']['address']['country_code'] ?? ''),
                             );
                         }
                         $first_name = $request['payer']['name']['given_name'] ?? '';
@@ -2790,6 +2835,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                     $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                 }
+                $shipping_country = strtoupper($shipping_country);
                 $body_request['purchase_units'][0]['shipping']['address'] = array(
                     'address_line_1' => $shipping_address_1,
                     'address_line_2' => $shipping_address_2,
@@ -3325,7 +3371,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $city = $old_wc ? $customer->get_city() : $customer->get_billing_city();
             $state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
             $postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
-            $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
+            $country = strtoupper($old_wc ? $customer->get_country() : $customer->get_billing_country());
             $name = $first_name . ' ' . $last_name;
             if(!empty($name)) {
                 $body_request['payment_source']['card'] = array(
@@ -3569,7 +3615,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $city = $old_wc ? $customer->get_city() : $customer->get_billing_city();
             $state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
             $postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
-            $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
+            $country = strtoupper($old_wc ? $customer->get_country() : $customer->get_billing_country());
             $name = $first_name . ' ' . $last_name;
             $body_request['payment_source']['card'] = array(
                 'number' => $posted_card->number,
@@ -3662,7 +3708,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $city = $old_wc ? $customer->get_city() : $customer->get_billing_city();
             $state = $old_wc ? $customer->get_state() : $customer->get_billing_state();
             $postcode = $old_wc ? $customer->get_postcode() : $customer->get_billing_postcode();
-            $country = $old_wc ? $customer->get_country() : $customer->get_billing_country();
+            $country = strtoupper($old_wc ? $customer->get_country() : $customer->get_billing_country());
             $name = $first_name . ' ' . $last_name;
             $order = wc_get_order($order_id);
             $body_request['payment_source']['card'] = array(

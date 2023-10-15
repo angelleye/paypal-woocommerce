@@ -40,6 +40,19 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $this->angelleye_ppcp_get_properties();
         $this->angelleye_ppcp_pay_later_messaging_properties();
         $this->angelleye_ppcp_add_hooks();
+        if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
+            add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Pay_Later'), array($this, 'handle_wc_api'));
+        }
+    }
+
+    public function handle_wc_api() {
+        if (!empty($_GET['angelleye_ppcp_action'])) {
+            switch ($_GET['angelleye_ppcp_action']) {
+                case "get_updated_pay_later_data":
+                    $this->add_pay_later_script_in_ajax();
+                    exit();
+            }
+        }
     }
 
     public function angelleye_ppcp_load_class() {
@@ -54,7 +67,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
             $this->settings = $this->setting_obj->get_load();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -172,8 +185,14 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                 $finalArray[$placement][$onlyKey] = $this->settings[$key] ?? $value;
             }
         }
-        wp_localize_script('angelleye-pay-later-messaging', 'angelleye_pay_later_messaging', ['placements' => $finalArray, 'amount' => angelleye_ppcp_get_order_total()]);
+        wp_localize_script('angelleye-pay-later-messaging', 'angelleye_pay_later_messaging', ['placements' => $finalArray, 'amount' => angelleye_ppcp_number_format(angelleye_ppcp_get_order_total()),
+            'currencyCode' => angelleye_ppcp_get_currency()]);
         angelleye_ppcp_add_css_js();
+    }
+
+    public function add_pay_later_script_in_ajax() {
+        $this->angelleye_pay_later_messaging = ['updated_amount' => angelleye_ppcp_get_order_total()];
+        wp_send_json(['pay_later_data' => $this->angelleye_pay_later_messaging]);
     }
 
     public function angelleye_ppcp_pay_later_messaging_home_page_content($content) {
@@ -203,8 +222,10 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     public function angelleye_ppcp_pay_later_messaging_product_page() {
         try {
             global $product;
-            if (angelleye_ppcp_is_cart_contains_subscription() !== true &&
-                angelleye_ppcp_is_product_purchasable($product, $this->enable_tokenized_payments) === true) {
+            if ($product->is_type(array('subscription', 'subscription_variation', 'variable-subscription'))) {
+                return false;
+            }
+            if (angelleye_ppcp_is_cart_contains_subscription() !== true && angelleye_ppcp_is_product_purchasable($product, $this->enable_tokenized_payments) === true) {
                 $this->add_pay_later_script_in_frontend();
                 echo '<div class="angelleye_ppcp_message_product"></div>';
             }
