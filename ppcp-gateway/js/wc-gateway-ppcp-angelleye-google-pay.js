@@ -73,7 +73,8 @@ class GooglePayCheckoutButton {
     }
 
     isShippingRequired() {
-        return !angelleyeOrder.isCheckoutPage() && window.angelleye_cart_totals && typeof window.angelleye_cart_totals.shippingRequired !== 'undefined' && window.angelleye_cart_totals.shippingRequired;
+        const cartDetails = angelleyeOrder.getCartDetails();
+        return !angelleyeOrder.isCheckoutPage() && cartDetails && typeof cartDetails.shippingRequired !== 'undefined' && cartDetails.shippingRequired;
     }
 
     getGooglePaymentsClient(data) {
@@ -150,7 +151,7 @@ class GooglePayCheckoutButton {
                     };
                     let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: shippingDetails});
                     if (typeof response.totalAmount !== 'undefined') {
-                        window.angelleye_cart_totals = response;
+                        angelleyeOrder.updateCartTotalsInEnvironment(response);
                         paymentDataRequestUpdate.newTransactionInfo = additionalData.thisObject.getGoogleTransactionInfo();
                     } else {
                         throw new Error("Unable to update the shipping amount.");
@@ -214,7 +215,6 @@ class GooglePayCheckoutButton {
 
     renderButton(containerSelector) {
         this.containerSelector = containerSelector;
-        this.initProductCartPage();
         let container = jQuery(containerSelector);
         container.html('');
         console.log('rendering google_pay button', containerSelector, container);
@@ -250,32 +250,27 @@ class GooglePayCheckoutButton {
         container.append(googlePayContainer);
     }
 
-    initProductCartPage() {
-        if (angelleyeOrder.isProductPage() || angelleyeOrder.isCartPage() || angelleyeOrder.isOrderPayPage()) {
-            window.angelleye_cart_totals = angelleye_ppcp_manager.product_cart_details;
-        }
-    }
-
     getGoogleTransactionInfo() {
         let displayItems = [];
-        for (let i = 0; i < (window.angelleye_cart_totals.lineItems).length; i++) {
+        const cartDetails = angelleyeOrder.getCartDetails();
+        for (let i = 0; i < (cartDetails.lineItems).length; i++) {
             let type = "LINE_ITEM";
-            let prodLabel = window.angelleye_cart_totals.lineItems[i].label;
+            let prodLabel = cartDetails.lineItems[i].label;
             if (prodLabel.toLowerCase() === 'tax') {
                 type = 'TAX';
             }
             displayItems.push({
-                'label': window.angelleye_cart_totals.lineItems[i].label,
-                'price': window.angelleye_cart_totals.lineItems[i].amount,
+                'label': cartDetails.lineItems[i].label,
+                'price': cartDetails.lineItems[i].amount,
                 'type': type,
             })
         }
 
         return {
             displayItems: displayItems,
-            currencyCode: window.angelleye_cart_totals.currencyCode,
+            currencyCode: cartDetails.currencyCode,
             totalPriceStatus: "FINAL",
-            totalPrice: window.angelleye_cart_totals.totalAmount,
+            totalPrice: cartDetails.totalAmount,
             totalPriceLabel: "Total",
         };
     }
@@ -296,8 +291,8 @@ class GooglePayCheckoutButton {
 
     async handleClickEvent(event, thisObject) {
         console.log('click event', event, thisObject.containerSelector);
-
-        if (window.angelleye_cart_totals.totalAmount <= 0) {
+        const cartDetails = angelleyeOrder.getCartDetails();
+        if (cartDetails.totalAmount <= 0) {
             angelleyeOrder.showError("Your shopping cart seems to be empty.");
         }
         angelleyeOrder.setPaymentMethodSelector('google_pay');
@@ -309,8 +304,7 @@ class GooglePayCheckoutButton {
                 angelleye_ppcp_button_selector: thisObject.containerSelector
             }).then((orderData) => {
                 console.log('orderCreated', orderData);
-                angelleye_ppcp_manager.product_cart_details = orderData;
-                thisObject.initProductCartPage();
+                angelleyeOrder.updateCartTotalsInEnvironment(orderData);
                 return orderData.orderID;
             });
         } catch (error) {
