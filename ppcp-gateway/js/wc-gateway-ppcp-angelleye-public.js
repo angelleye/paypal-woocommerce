@@ -89,17 +89,14 @@ function initSmartButtons() {
 	// queue the woocommerce hook events immediately to trigger those later in case sdk load takes time
 	angelleyeOrder.hooks.handleRaceConditionOnWooHooks();
 
-	angelleyeLoadPayPalScript({
-		url: angelleye_ppcp_manager.paypal_sdk_url,
-		script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
-	}, function() {
+	const paypalSdkLoadCallback = () => {
 		console.log('PayPal lib loaded, initialize buttons.')
 		let scriptsToLoad = [];
 		if (angelleyeOrder.isApplePayEnabled()) {
 			let appleResolveOnLoad = new Promise((resolve) => {
-					console.log('apple sdk loaded');
-					resolve();
-				});
+				console.log('apple sdk loaded');
+				resolve();
+			});
 			scriptsToLoad.push({
 				url: angelleye_ppcp_manager.apple_sdk_url,
 				callback: appleResolveOnLoad
@@ -134,5 +131,14 @@ function initSmartButtons() {
 				angelleyeLoadPayPalScript(scriptsToLoad[i], scriptsToLoad[i].callback);
 			}
 		}
-	});
+	};
+
+	window.angelleyeLoadAsyncLibs = (callback) => {
+		angelleyeLoadPayPalScript({
+			url: angelleye_ppcp_manager.paypal_sdk_url,
+			script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
+		}, callback);
+	}
+
+	window.angelleyeLoadAsyncLibs(initSmartButtons, paypalSdkLoadCallback);
 })(jQuery);

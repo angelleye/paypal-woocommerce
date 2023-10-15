@@ -241,6 +241,9 @@ hr {
 .angelleye-notice-message h3 {
     margin: 4px 0px !important;
 }
+.angelleye-notice-message h2 {
+    margin:10px 0 5px 0 !important;
+}
 .angelleye-notice-message p {
     margin: 3px 0px !important;
     padding: 0px;
@@ -280,7 +283,7 @@ hr {
     margin: 0px 10px 0px 10px;
 }
 .angelleye-notice-action {
-    padding-top: 5px;
+    margin-top: 13px;
 }
 
 .updater-dismissible {
@@ -604,10 +607,9 @@ hr {
     background: #1aae9f;
     border-color: #e2e6eb;
     font-size: 16px;
-    font-family: arial;
+    font-family: arial, serif;
     height: 60px;
     border-radius: 8px;
-    margin-right: 12px;
     margin-bottom: 20px;
 }
 .paypal_woocommerce_product_onboard [class*="slate_gray"] {

@@ -661,7 +661,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'apple_pay_btn_selector' => $apple_pay_btn_selector ?? [],
             'google_pay_btn_selector' => $google_pay_btn_selector ?? [],
             'advanced_card_payments_title' => $this->advanced_card_payments_title,
-            'product_cart_details' => $product_cart_amounts,
+            'angelleye_cart_totals' => $product_cart_amounts,
             'update_cart_oncancel' => add_query_arg(array('angelleye_ppcp_action' => 'update_cart_oncancel', 'utm_nooverride' => '1',), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'get_updated_pay_later_data' => add_query_arg(array('angelleye_ppcp_action' => 'get_updated_pay_later_data', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Pay_Later'))),
             'error_message_checkout_validation' => __('Unable to create the order due to the following errors.', 'paypal-for-woocommerce')
@@ -1103,12 +1103,20 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function get_paypal_sdk_attributes(): array {
         $attributes = ['data-namespace' => 'angelleye_paypal_sdk'];
         if (!isset($_GET['paypal_order_id'])) {
-            if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
-                $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
-                $attributes['data-client-token'] = $this->client_token;
+            $ae_ppcp_account_reconnect_notice = get_option('ae_ppcp_account_reconnect_notice');
+            if (empty($ae_ppcp_account_reconnect_notice)) {
+                if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
+                    $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
+                    if (!empty($this->client_token)) {
+                        $attributes['data-client-token'] = $this->client_token;
+                    }
+                }
             }
             if ($this->enable_tokenized_payments && is_user_logged_in()) {
-                $attributes['data-user-id-token'] = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                $clientToken = $this->payment_request->angelleye_ppcp_get_generate_id_token();
+                if (!empty($clientToken)) {
+                    $attributes['data-user-id-token'] = $clientToken;
+                }
             }
         }
         return $attributes;

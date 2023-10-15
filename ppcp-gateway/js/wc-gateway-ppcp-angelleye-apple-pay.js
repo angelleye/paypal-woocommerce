@@ -105,20 +105,21 @@ class ApplePayCheckoutButton {
     }
 
     initProductCartPage() {
-        if (angelleyeOrder.isProductPage() || angelleyeOrder.isCartPage() || angelleyeOrder.isOrderPayPage()) {
-            window.angelleye_cart_totals = angelleye_ppcp_manager.product_cart_details;
-        }
+        // if (angelleyeOrder.isProductPage() || angelleyeOrder.isCartPage() || angelleyeOrder.isOrderPayPage()) {
+        //     window.angelleye_cart_totals = angelleye_ppcp_manager.angelleye_cart_totals;
+        // }
     }
 
     static addPaymentMethodSaveParams () {
         let isNewPaymentMethodSelected = jQuery('input#wc-angelleye_ppcp_apple_pay-new-payment-method:checked').val();
-        if (isNewPaymentMethodSelected === 'true' || window.angelleye_cart_totals.isSubscriptionRequired) {
+        const cartDetails = angelleyeOrder.getCartDetails();
+        if (isNewPaymentMethodSelected === 'true' || cartDetails.isSubscriptionRequired) {
             return {
                 recurringPaymentRequest: {
                     paymentDescription: angelleye_ppcp_manager.apple_pay_recurring_params.paymentDescription,
                     regularBilling: {
                         label: "Recurring",
-                        amount: `${window.angelleye_cart_totals.totalAmount}`,
+                        amount: `${cartDetails.totalAmount}`,
                         paymentTiming: "recurring",
                         recurringPaymentStartDate: new Date()
                     },
@@ -133,6 +134,7 @@ class ApplePayCheckoutButton {
 
     async handleClickEvent(event) {
         let containerSelector = event.data.thisObject.containerSelector;
+        const cartDetails = angelleyeOrder.getCartDetails();
         angelleyeOrder.showProcessingSpinner();
         angelleyeOrder.setPaymentMethodSelector('apple_pay');
 
@@ -144,29 +146,29 @@ class ApplePayCheckoutButton {
             return;
         }
 
-        if (window.angelleye_cart_totals.totalAmount <= 0) {
+        if (cartDetails.totalAmount <= 0) {
             angelleyeOrder.showError("Your shopping cart seems to be empty.");
         }
 
         let shippingAddressRequired = [];
-        if (window.angelleye_cart_totals.shippingRequired) {
+        if (cartDetails.shippingRequired) {
             shippingAddressRequired = ["postalAddress", "name", "email"];
         }
 
         let subscriptionParams = ApplePayCheckoutButton.addPaymentMethodSaveParams();
         let paymentRequest = {
             countryCode: ApplePayCheckoutButton.applePayConfig.countryCode,
-            currencyCode: window.angelleye_cart_totals.currencyCode,
+            currencyCode: cartDetails.currencyCode,
             merchantCapabilities: ApplePayCheckoutButton.applePayConfig.merchantCapabilities,
             supportedNetworks: ApplePayCheckoutButton.applePayConfig.supportedNetworks,
             requiredBillingContactFields: ["name", "phone", "email", "postalAddress"],
             requiredShippingContactFields: shippingAddressRequired,
             total: {
                 label: "Total Amount",
-                amount: `${window.angelleye_cart_totals.totalAmount}`,
+                amount: `${cartDetails.totalAmount}`,
                 type: "final",
             },
-            lineItems: window.angelleye_cart_totals.lineItems,
+            lineItems: cartDetails.lineItems,
             ...subscriptionParams
         };
         console.log('paymentRequest', ApplePayCheckoutButton.applePayConfig, paymentRequest);
@@ -216,10 +218,11 @@ class ApplePayCheckoutButton {
         };
 
         session.onshippingcontactselected = async (event) => {
+            const cartDetails = angelleyeOrder.getCartDetails();
             console.log('on shipping contact selected', event);
             let newTotal = {
                 label: "Total Amount",
-                amount: `${window.angelleye_cart_totals.totalAmount}`,
+                amount: `${cartDetails.totalAmount}`,
                 type: "final",
             };
 
@@ -227,6 +230,7 @@ class ApplePayCheckoutButton {
                 let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: event.shippingContact});
                 console.log('shipping update response', response);
                 if (typeof response.totalAmount !== 'undefined') {
+                    angelleyeOrder.updateCartTotalsInEnvironment(response);
                     newTotal.amount = response.totalAmount;
                     let shippingContactUpdate = {
                         newTotal,

@@ -248,7 +248,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 add_action('template_redirect', array($this, 'angelleye_redirect_to_checkout_page'));
                 add_action('wp_enqueue_scripts', array($this, 'frontend_scripts'), 100);
                 add_filter('body_class', array($this, 'add_body_classes'));
+                add_action('woocommerce_pay_order_after_submit', array($this, 'angelleye_ppcp_add_order_id'));
                 if ($this->checkout_page_disable_smart_button == false && $this->enable_in_context_checkout_flow == 'yes') {
+                    add_action('woocommerce_pay_order_before_submit', array($this, 'angelleye_display_paypal_button_checkout_page'));
                     add_action('woocommerce_review_order_after_submit', array($this, 'angelleye_display_paypal_button_checkout_page'));
                 }
                 $this->is_order_completed = true;
@@ -291,6 +293,15 @@ class Angelleye_PayPal_Express_Checkout_Helper {
         } catch (Exception $ex) {
 
         }
+    }
+
+    public function angelleye_ppcp_add_order_id() {
+        global $wp;
+        $order_id = absint($wp->query_vars['order-pay']);
+        ?>
+        <input type="hidden" name="pay_for_order" value="<?php echo $order_id; ?>" />
+        <input type="hidden" name="pay_for_order_key" value="<?php echo $_GET['key']; ?>" />
+        <?php
     }
 
     public function buy_now_button() {
@@ -740,7 +751,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 // wp_register_script('angelleye-paypal-checkout-sdk', add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'), array(), null, true);
                 $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
                 wp_register_script('angelleye_ppcp-common-functions', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-common-functions' . $this->minified_version . '.js', array('jquery',), $script_versions, false);
-                wp_register_script('angelleye-paypal-checkout-sdk', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-script-loader'. $this->minified_version .'.js', array('jquery'), $script_versions, true);
+                wp_register_script('angelleye-paypal-checkout-sdk', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-script-loader'. $this->minified_version .'.js', array('jquery', 'angelleye_ppcp-common-functions'), $script_versions, true);
                 wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout'.($this->minified_version ? '.min-v2.js' : '_v2.js'), array('angelleye-paypal-checkout-sdk'), $script_versions, true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
                     'paypal_sdk_url' => add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'),
