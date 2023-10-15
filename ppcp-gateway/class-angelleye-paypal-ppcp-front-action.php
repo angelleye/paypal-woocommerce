@@ -370,6 +370,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     }
                     wp_send_json(['status' => false]);
                     exit();
+                case "angelleye_ppcp_cc_setup_tokens":
+                    $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens();
+                    exit();
             }
         }
     }
