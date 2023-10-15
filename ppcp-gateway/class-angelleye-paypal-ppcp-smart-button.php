@@ -47,7 +47,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $is_first_party_used;
     public $three_d_secure_contingency;
     public $disable_cards;
-    public $enable_tokenized_payments;
+    public bool $enable_tokenized_payments;
     public $angelleye_ppcp_currency_list;
     public $angelleye_ppcp_currency;
     public $enable_product_button;
@@ -549,6 +549,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
                 $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
                 ;
+            } elseif (is_add_payment_method_page()) {
+                $page = 'add_payment_method';
             }
             $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
             $smart_js_arg['intent'] = ($this->paymentaction === 'capture') ? 'capture' : 'authorize';
@@ -675,7 +677,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'update_cart_oncancel' => add_query_arg(array('angelleye_ppcp_action' => 'update_cart_oncancel', 'utm_nooverride' => '1',), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'error_message_checkout_validation' => __('Unable to create the order due to the following errors.', 'paypal-for-woocommerce'),
             'angelleye_ppcp_cc_setup_tokens' => add_query_arg(array('angelleye_ppcp_action' => 'angelleye_ppcp_cc_setup_tokens', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
-            'advanced_credit_card_create_payment_token' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')))
+            'advanced_credit_card_create_payment_token' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
+            'constants' => [
+                    'approval_token_id' => APPROVAL_TOKEN_ID_PARAM_NAME
+            ]
         ));
     }
 

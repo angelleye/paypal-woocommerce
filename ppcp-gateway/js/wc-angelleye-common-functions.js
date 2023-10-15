@@ -61,6 +61,9 @@ const angelleyeOrder = {
 	isGooglePayEnabled: () => {
 		return angelleye_ppcp_manager.google_sdk_url !== "";
 	},
+	getConstantValue: (constantName, defaultValue) => {
+		return angelleye_ppcp_manager.constants && angelleye_ppcp_manager.constants[constantName] ? angelleye_ppcp_manager.constants[constantName] : defaultValue;
+	},
 	getCheckoutSelectorCss: () => {
 		let checkoutSelector = '.woocommerce';
 		if (angelleyeOrder.isCheckoutPage()) {
@@ -69,8 +72,7 @@ const angelleyeOrder = {
 			} else {
 				checkoutSelector = 'form.checkout';
 			}
-        } else if (angelleye_ppcp_manager.page === '') {
-			// TODO check why this condition has been added
+        } else if (angelleye_ppcp_manager.page === 'add_payment_method') {
             checkoutSelector = 'form#add_payment_method';
 		}
 		return checkoutSelector;
@@ -677,8 +679,10 @@ const angelleyeOrder = {
         if (typeof angelleye_paypal_sdk === 'undefined') {
             return;
         }
+		let addPaymentMethodForm = angelleyeOrder.getCheckoutSelectorCss();
         const cardFields = angelleye_paypal_sdk.CardFields({
             createVaultSetupToken: async () => {
+				angelleyeOrder.showProcessingSpinner(addPaymentMethodForm);
                 const result = await fetch(angelleye_ppcp_manager.angelleye_ppcp_cc_setup_tokens, {
                     method: "POST"
                 });
@@ -686,18 +690,21 @@ const angelleyeOrder = {
                 return id;
             },
             onApprove: async (data) => {
+				const approvalTokenIdParamName = angelleyeOrder.getConstantValue('approval_token_id');
                 const endpoint = angelleye_ppcp_manager.advanced_credit_card_create_payment_token;
-                const url = `${endpoint}&approval_token_id=${data.vaultSetupToken}`;
+                const url = `${endpoint}&${approvalTokenIdParamName}=${data.vaultSetupToken}`;
                 fetch(url, {method: "POST"}).then(response => {
                     return response.json();
                 }).then(data => {
                     window.location.href = data.redirect;
                 }).catch(error => {
                     angelleyeOrder.showError(error);
+					angelleyeOrder.hideProcessingSpinner(addPaymentMethodForm);
                     console.error('An error occurred:', error);
                 });
             },
             onError: (error) => {
+				angelleyeOrder.hideProcessingSpinner(addPaymentMethodForm);
                 angelleyeOrder.showError(error);
                 console.error('Something went wrong:', error)
             }
@@ -711,9 +718,7 @@ const angelleyeOrder = {
             jQuery('.payment_method_angelleye_ppcp_cc').hide();
         }
 
-        const submitForm = jQuery("#add_payment_method");
-		let addPaymentMethodForm = 'form#add_payment_method';
-		submitForm.unbind('submit').on('submit', (event) => {
+		jQuery(addPaymentMethodForm).unbind('submit').on('submit', (event) => {
 			angelleyeOrder.removeError();
 			if (angelleyeOrder.isCCPaymentMethodSelected() || angelleyeOrder.isPpcpPaymentMethodSelected()) {
 				angelleyeOrder.showProcessingSpinner(addPaymentMethodForm);
@@ -722,10 +727,9 @@ const angelleyeOrder = {
 					cardFields.submit().then((hf) => {
 						console.log("add_payment_method_submit_success");
 					}).catch((error) => {
+						angelleyeOrder.hideProcessingSpinner(addPaymentMethodForm);
 						angelleyeOrder.showError(error);
 						console.error("add_payment_method_submit_error:", error);
-					}).finally(() => {
-						angelleyeOrder.hideProcessingSpinner(addPaymentMethodForm);
 					});
 				}
 			}

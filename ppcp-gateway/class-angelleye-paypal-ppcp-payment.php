@@ -3215,9 +3215,9 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_paypal_create_payment_token_free_signup_with_free_trial() {
         try {
             $body_request = array();
-            if (isset($_GET['approval_token_id']) && isset($_GET['order_id'])) {
+            if (isset($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]) && isset($_GET['order_id'])) {
                 $body_request['payment_source']['token'] = array(
-                    'id' => wc_clean($_GET['approval_token_id']),
+                    'id' => wc_clean($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]),
                     'type' => 'SETUP_TOKEN'
                 );
                 $args = array(
@@ -3295,9 +3295,9 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_paypal_create_payment_token() {
         try {
             $body_request = array();
-            if (isset($_GET['approval_token_id'])) {
+            if (isset($_GET[APPROVAL_TOKEN_ID_PARAM_NAME])) {
                 $body_request['payment_source']['token'] = array(
-                    'id' => wc_clean($_GET['approval_token_id']),
+                    'id' => wc_clean($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]),
                     'type' => 'SETUP_TOKEN'
                 );
                 $args = array(
@@ -3430,9 +3430,9 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_advanced_credit_card_create_payment_token() {
         try {
             $body_request = array();
-            if (isset($_GET['approval_token_id'])) {
+            if (isset($_GET[APPROVAL_TOKEN_ID_PARAM_NAME])) {
                 $body_request['payment_source']['token'] = array(
-                    'id' => wc_clean($_GET['approval_token_id']),
+                    'id' => wc_clean($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]),
                     'type' => 'SETUP_TOKEN'
                 );
                 $args = array(
@@ -3514,9 +3514,9 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_advanced_credit_card_create_payment_token_free_signup_with_free_trial() {
         try {
             $body_request = array();
-            if (isset($_GET['approval_token_id']) && isset($_GET['order_id'])) {
+            if (isset($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]) && isset($_GET['order_id'])) {
                 $body_request['payment_source']['token'] = array(
-                    'id' => wc_clean($_GET['approval_token_id']),
+                    'id' => wc_clean($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]),
                     'type' => 'SETUP_TOKEN'
                 );
                 $args = array(
@@ -3660,7 +3660,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (isset($this->api_response['status']) && 'APPROVED' === $this->api_response['status']) {
                     return array(
                         'result' => 'success',
-                        'redirect' => add_query_arg(array('approval_token_id' => $this->api_response['id'], 'angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token_free_signup_with_free_trial', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id(), 'order_id' => $order_id), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')))
+                        'redirect' => add_query_arg(array(APPROVAL_TOKEN_ID_PARAM_NAME => $this->api_response['id'], 'angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token_free_signup_with_free_trial', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id(), 'order_id' => $order_id), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')))
                     );
                 } elseif (isset($this->api_response['status']) && 'PAYER_ACTION_REQUIRED' === $this->api_response['status']) {
                     if (!empty($this->api_response['links'])) {
@@ -3754,7 +3754,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if (isset($this->api_response['status']) && 'APPROVED' === $this->api_response['status']) {
                     return array(
                         'result' => 'success',
-                        'redirect' => add_query_arg(array('approval_token_id' => $this->api_response['id'], 'angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token_sub_change_payment', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id(), 'order_id' => $order_id), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')))
+                        'redirect' => add_query_arg(array(APPROVAL_TOKEN_ID_PARAM_NAME => $this->api_response['id'], 'angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token_sub_change_payment', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id(), 'order_id' => $order_id), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')))
                     );
                 } elseif (isset($this->api_response['status']) && 'PAYER_ACTION_REQUIRED' === $this->api_response['status']) {
                     if (!empty($this->api_response['links'])) {
@@ -3791,9 +3791,9 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_advanced_credit_card_create_payment_token_sub_change_payment() {
         try {
             $body_request = array();
-            if (isset($_GET['approval_token_id']) && isset($_GET['order_id'])) {
+            if (isset($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]) && isset($_GET['order_id'])) {
                 $body_request['payment_source']['token'] = array(
-                    'id' => wc_clean($_GET['approval_token_id']),
+                    'id' => wc_clean($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]),
                     'type' => 'SETUP_TOKEN'
                 );
                 $args = array(
@@ -3934,9 +3934,9 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_paypal_create_payment_token_sub_change_payment() {
         try {
             $body_request = array();
-            if (isset($_GET['approval_token_id']) && isset($_GET['order_id'])) {
+            if (isset($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]) && isset($_GET['order_id'])) {
                 $body_request['payment_source']['token'] = array(
-                    'id' => wc_clean($_GET['approval_token_id']),
+                    'id' => wc_clean($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]),
                     'type' => 'SETUP_TOKEN'
                 );
                 $args = array(
