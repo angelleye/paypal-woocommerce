@@ -197,7 +197,7 @@ const angelleyeOrder = {
 				} else {
 					messages = '<li>' + messages + '</li>';
 				}
-				throw new Error(messages);
+				throw messages;
 			} else {
 				return data;
 			}

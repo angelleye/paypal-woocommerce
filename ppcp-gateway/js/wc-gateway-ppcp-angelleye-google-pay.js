@@ -108,7 +108,7 @@ class GooglePayCheckoutButton {
     }
 
     parseErrorMessage(errorObject) {
-        console.log(JSON.stringify(errorObject));
+        console.log(errorObject, JSON.stringify(errorObject));
         if (errorObject.name === 'PayPalGooglePayError') {
             let debugID = errorObject.paypalDebugId;
             switch (errorObject.errorName) {
@@ -120,6 +120,7 @@ class GooglePayCheckoutButton {
                     return 'We are unable to process your request at the moment, please contact website owner. [DebugId: ' + debugID + ']'
             }
         }
+        return errorObject;
     }
 
     onPaymentAuthorized(additionalData, paymentData) {
