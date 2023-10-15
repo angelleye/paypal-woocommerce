@@ -106,7 +106,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         if (!is_array($addedDomains)) {
             $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
             $addedDomains = $instance->listApplePayDomain(true);
-            set_transient("angelleye_apple_pay_domain_list_cache", $addedDomains,  HOUR_IN_SECONDS);
+            set_transient("angelleye_apple_pay_domain_list_cache", $addedDomains, 24 * HOUR_IN_SECONDS);
         }
 
         if ($addedDomains['status'] && count($addedDomains['domains'])) {

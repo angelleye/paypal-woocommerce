@@ -525,18 +525,15 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 // any other feature then these will be activated based on on-boarding status, while user may don't want
                 // to enable these
                 if (isset($_GET['feature_activated'])) {
-                    if ($_GET['feature_activated'] == 'applepay') {
-                        if ($this->angelleye_is_apple_pay_approved($this->result)) {
-                            $this->setting_obj->set('enable_apple_pay', 'yes');
-                        } else {
-                            $this->setting_obj->set('enable_apple_pay', 'no');
-                        }
-                    } elseif($_GET['feature_activated'] == 'googlepay') {
-                        if ($this->angelleye_is_google_pay_approved($this->result)) {
-                            $this->setting_obj->set('enable_google_pay', 'yes');
-                        } else {
-                            $this->setting_obj->set('enable_google_pay', 'no');
-                        }
+                    if ($this->angelleye_is_apple_pay_approved($this->result)) {
+                        $_GET['feature_activated'] == 'applepay' && $this->setting_obj->set('enable_apple_pay', 'yes');
+                    } else {
+                        $this->setting_obj->set('enable_apple_pay', 'no');
+                    }
+                    if ($this->angelleye_is_google_pay_approved($this->result)) {
+                        $_GET['feature_activated'] == 'googlepay' && $this->setting_obj->set('enable_google_pay', 'yes');
+                    } else {
+                        $this->setting_obj->set('enable_google_pay', 'no');
                     }
                 }
                 $this->setting_obj->persist();
