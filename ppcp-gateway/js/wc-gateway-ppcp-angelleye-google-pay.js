@@ -114,8 +114,8 @@ class GooglePayCheckoutButton {
             switch (errorObject.errorName) {
                 case 'ERROR_VALIDATING_MERCHANT':
                     return 'This merchant is not enabled to process google pay. please contact website owner. [DebugId: ' + debugID + ']';
-                case 'UNPROCESSABLE_ENTITY':
-                    return JSON.stringify(erroObject);
+                //case 'UNPROCESSABLE_ENTITY':
+                //    return JSON.stringify(errorObject);
                 default:
                     return 'We are unable to process your request at the moment, please contact website owner. [DebugId: ' + debugID + ']'
             }
