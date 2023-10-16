@@ -726,13 +726,15 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     }
 
     public function angelleye_ppcp_add_order_action_buttons($order) {
+        $this->angelleye_ppcp_order_actions;
         try {
             if ($this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id()) === false) {
                 return;
             }
             wp_enqueue_script('angelleye-ppcp-order-action');
             ?>
-            <button type="button" class="button angelleye-ppcp-admin-action"><?php esc_html_e('PPCP Payment Actions', 'woocommerce'); ?></button>
+            <button type="button" class="button angelleye-ppcp-order-capture"><?php esc_html_e('Capture', 'woocommerce'); ?></button>
+            <button type="button" class="button angelleye-ppcp-order-void"><?php esc_html_e('Void', 'woocommerce'); ?></button>
             <?php
         } catch (Exception $ex) {
             
@@ -757,7 +759,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             <tr class="ppcp_auth_void_border" style="display: none;">
                 <td colspan="3" style="border-top: 1px solid #dfdfdf;">&nbsp</td>
             </tr>
-            <tr class="ppcp_auth_void_option" style="display: none;">
+            <!--<tr class="ppcp_auth_void_option" style="display: none;">
                 <td class="label">
                     <label for="order_metabox_angelleye_ppcp_payment_action"><?php echo __('Select PayPal Action', 'paypal-for-woocommerce'); ?></label>
                 </td>
@@ -780,7 +782,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         </select>
                     <?php } ?>
                 </td>
-            </tr>
+            </tr>-->
         <?php } ?>
         <?php if (isset($this->angelleye_ppcp_order_status_data['capture']) && isset($this->angelleye_ppcp_order_actions['capture'])) { ?>
             <tr class="angelleye_ppcp_capture_box" style="display: none;">
@@ -802,7 +804,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 </td>
                 <td width="1%"></td>
                 <td class="total">
-                    <input type="text" id="ppcp_refund_amount" name="ppcp_refund_amount" style="width: 250px;" class="wc_input_price"/>
+                    <input readonly="readonly" type="text" id="ppcp_refund_amount" name="ppcp_refund_amount" style="width: 250px;" class="wc_input_price"/>
 
                 </td>
             </tr>
