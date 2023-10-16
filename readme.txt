@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.3.1
-Stable tag: 4.2.12
+Tested up to: 6.3.2
+Stable tag: 4.3.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,15 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.3.0 - 10.16.2023 =
+* Feature - Added the Google Pay payment gateway. ([PFW-1576](https://github.com/angelleye/paypal-woocommerce/pull/1906))
+* Feature - Add new payment method using PayPal & Advanced CC (vault) without payment. ([PFW-1577](https://github.com/angelleye/paypal-woocommerce/pull/1933))
+* Tweak - Added the Apple Pay button customization settings. ([PFW-1529](https://github.com/angelleye/paypal-woocommerce/pull/1910))
+* Tweak - Do not load Apple Pay JS SDK when domain is not registered. ([PFW-1612](https://github.com/angelleye/paypal-woocommerce/pull/1932))
+* Tweak - Added the Google Pay compatibility with Safari browsers. ([PFW-1576](https://github.com/angelleye/paypal-woocommerce/pull/1931))
+* Fix - Resolves the error message display issue on product, cart and checkout pages. ([PFW-1602](https://github.com/angelleye/paypal-woocommerce/pull/1909))
+* Fix - Fixes the PayPal environment change handling on PPCP gateway settings page. ([PFW-1633](https://github.com/angelleye/paypal-woocommerce/pull/1934))
 
 = 4.2.12 - 10.13.2023 =
 * Fix - Resolves the woocommerce validation issue with other plugins. ([PFW-1630](https://github.com/angelleye/paypal-woocommerce/pull/1930))

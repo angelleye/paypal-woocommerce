@@ -126,6 +126,13 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_admin_options() {
         delete_transient(AE_FEE);
+        $cacheCleared = false;
+        $clearCache = function () {
+            delete_option('ae_apple_pay_domain_reg_retries');
+            delete_transient('ae_seller_onboarding_status');
+            delete_transient('angelleye_apple_pay_domain_list_cache');
+            return true;
+        };
         if (!isset($_POST['woocommerce_angelleye_ppcp_enabled']) || $_POST['woocommerce_angelleye_ppcp_enabled'] == "0") {
             // run the automatic domain remove feature
             try {
@@ -134,10 +141,23 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 $this->api_log->log("The exception was created on line: " . $exception->getFile() . ' ' .$exception->getLine(), 'error');
                 $this->api_log->log($exception->getMessage(), 'error');
             }
-            delete_option('ae_apple_pay_domain_reg_retries');
-            delete_transient('ae_seller_onboarding_status');
+            $cacheCleared = $clearCache();
+        } else {
+            $oldSandboxMode = $this->get_option('testmode', 'no') == 'yes';
+            $newSandboxMode = isset($_POST['woocommerce_angelleye_ppcp_testmode']);
+            if ($oldSandboxMode != $newSandboxMode) {
+                $cacheCleared = $clearCache();
+            }
         }
         parent::process_admin_options();
+        if ($cacheCleared) {
+            // reload the page so that all the initialized classes are able to load the new config changes
+            if (ob_get_length()) {
+                ob_end_clean();
+            }
+            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&redirected=true'));
+            die;
+        }
     }
 
     public function admin_options() {
@@ -804,7 +824,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if ($is_apple_pay_approved && $is_apple_pay_enabled) {
                 $is_domain_added_new = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoRegisterDomain($is_domain_added);
             }
-            $is_disabled = $data['disabled'] || isset($data['custom_attributes']['disabled']) || !$is_domain_added;
+            $is_disabled = $data['disabled'] || isset($data['custom_attributes']['disabled']) || !$is_domain_added_new || !$is_apple_pay_approved;
 
             if ($is_domain_added == null || $is_domain_added_new != $is_domain_added) {
                 if ($is_domain_added_new) {
@@ -822,6 +842,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
                 </th>
                 <td class="forminp">
+                    <?php //var_dump($data, $is_enabled, $is_apple_pay_approved, $is_apple_pay_enabled, $need_to_display_apple_pay_button, $is_domain_added, $is_domain_added_new); ?>
                     <fieldset>
                         <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
                         <label for="<?php echo esc_attr($field_key); ?>">
@@ -907,11 +928,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $is_google_pay_enabled = $data['is_google_pay_enable'] ?? false;
             $is_ppcp_connected = $data['is_ppcp_connected'] ?? false;
             $need_to_display_google_pay_button = $data['need_to_display_google_pay_button'] ?? false;
-            $is_disabled = $data['disabled'] || isset($data['custom_attributes']['disabled']);
+            $is_disabled = $data['disabled'] || isset($data['custom_attributes']['disabled']) || !$is_google_pay_approved;
             ob_start();
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
+                    <?php //var_dump($data['disabled'], $is_google_pay_approved, $is_disabled); ?>
                     <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
                 </th>
                 <td class="forminp">
