@@ -54,6 +54,7 @@ jQuery(function ($) {
             $('.angelleye_ppcp_capture_box').slideDown();
             $('.angelleye_ppcp_refund_box').slideUp();
             $('.angelleye_ppcp_void_box').slideUp();
+            $( ".refund_order_item_qty:first").focus();
         } else if ($(this).val() === 'void') {
             $('.angelleye_ppcp_capture_box').slideUp();
             $('.angelleye_ppcp_refund_box').slideUp();

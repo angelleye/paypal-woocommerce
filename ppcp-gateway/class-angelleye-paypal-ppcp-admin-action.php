@@ -347,7 +347,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             <th scope="row"><?php echo __('Additional Capture Possible', 'paypal-for-woocommerce'); ?></th>
                             <td>
                                 <fieldset>
-                                    <label for="additional_capture_yes"><input type="radio" name="additionalCapture" value="yes" id="additional_capture_yes"><span><?php echo __('Yes (option to capture additional funds on this authorization if need)', 'paypal-for-woocommerce'); ?></span></label>
+                                    <label for="additional_capture_yes"><input checked type="radio" name="additionalCapture" value="yes" id="additional_capture_yes"><span><?php echo __('Yes (option to capture additional funds on this authorization if need)', 'paypal-for-woocommerce'); ?></span></label>
                                     <label for="additional_capture_no"><input type="radio" name="additionalCapture" value="no" id="additional_capture_no"><span><?php echo __('No (no additional capture needed; close authorization after this capture)', 'paypal-for-woocommerce'); ?></span></label>
                                 </fieldset>
                             </td>
@@ -787,7 +787,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 <td width="1%"></td>
                 <td class="total">
                     <fieldset>
-                        <label for="additional_capture_yes"><input type="radio" name="additionalCapture" value="yes" id="additional_capture_yes">Yes<?php echo wc_help_tip(__('Yes (option to capture additional funds on this authorization if need)', 'paypal-for-woocommerce')); ?></label>
+                        <label for="additional_capture_yes"><input checked type="radio" name="additionalCapture" value="yes" id="additional_capture_yes">Yes<?php echo wc_help_tip(__('Yes (option to capture additional funds on this authorization if need)', 'paypal-for-woocommerce')); ?></label>
                         <label for="additional_capture_no"><input type="radio" name="additionalCapture" value="no" id="additional_capture_no">No<?php echo wc_help_tip(__('No (no additional capture needed; close authorization after this capture)', 'paypal-for-woocommerce')); ?></label>
                     </fieldset>
                 </td>
