@@ -4,6 +4,11 @@ trait WC_Gateway_Base_AngellEYE
 {
     use AngellEye_PPCP_Core;
 
+    public function isSubscriptionsSupported(): bool
+    {
+        return true;
+    }
+
     protected function setGatewaySupports($additionalSupports = [])
     {
         $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
@@ -14,19 +19,23 @@ trait WC_Gateway_Base_AngellEYE
             'pay_button'
         ], $additionalSupports);
 
-        $subscriptionSupports = [
-            'subscriptions',
-            'subscription_cancellation',
-            'subscription_reactivation',
-            'subscription_suspension',
-            'subscription_amount_changes',
-            'subscription_payment_method_change', // Subs 1.n compatibility.
-            'subscription_payment_method_change_customer',
-            'subscription_payment_method_change_admin',
-            'subscription_date_changes',
-            'multiple_subscriptions',
-            'add_payment_method'
-        ];
+        if ($this->isSubscriptionsSupported()) {
+            $subscriptionSupports = [
+                'subscriptions',
+                'subscription_cancellation',
+                'subscription_reactivation',
+                'subscription_suspension',
+                'subscription_amount_changes',
+                'subscription_payment_method_change', // Subs 1.n compatibility.
+                'subscription_payment_method_change_customer',
+                'subscription_payment_method_change_admin',
+                'subscription_date_changes',
+                'multiple_subscriptions',
+                'add_payment_method'
+            ];
+        } else {
+            $subscriptionSupports = [];
+        }
 
         if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
             $this->supports = array_merge($baseSupports, $subscriptionSupports);
@@ -44,17 +53,6 @@ trait WC_Gateway_Base_AngellEYE
         } else {
             return false;
         }
-    }
-
-    public function isSubscriptionRequired($orderId = null): bool
-    {
-        if (!empty($orderId) && class_exists('WC_Subscriptions_Order')) {
-            return WC_Subscriptions_Order::order_contains_subscription($orderId);
-        }
-        if (class_exists('WC_Subscriptions_Cart')) {
-            return WC_Subscriptions_Cart::cart_contains_subscription();
-        }
-        return false;
     }
 
     public function getApplePayRecurringParams()

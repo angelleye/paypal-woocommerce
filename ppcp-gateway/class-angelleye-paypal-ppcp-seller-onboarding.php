@@ -202,6 +202,26 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         ));
     }
 
+    public function ppcp_google_pay_data() {
+        $testmode = ($this->is_sandbox) ? 'yes' : 'no';
+        return array(
+            'testmode' => $testmode,
+            'return_url' => admin_url(
+                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=googlepay&testmode=' . $testmode
+            ),
+            'return_url_description' => __(
+                'Return to your shop.', 'paypal-for-woocommerce'
+            ),
+            'capabilities' => array(
+                'GOOGLE_PAY'
+            ),
+            'third_party_features' => array('VAULT', 'BILLING_AGREEMENT'),
+            'products' => array(
+                $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
+                'PAYMENT_METHODS'
+            ));
+    }
+
     public function ppcp_vault_data() {
         $testmode = ($this->is_sandbox) ? 'yes' : 'no';
         return array(
@@ -296,7 +316,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     case 'applepay':
                         set_transient('angelleye_ppcp_applepay_onboarding_done', 'yes', 29000);
                         delete_transient('angelleye_apple_pay_domain_list_cache');
-                        $move_to_location = 'additional_authorizations';
+                        $move_to_location = 'apple_pay_authorizations';
+                        break;
+                    case 'googlepay':
+                        set_transient('angelleye_ppcp_googlepay_onboarding_done', 'yes', 29000);
+                        $move_to_location = 'google_pay_authorizations';
                         break;
                 }
             }
@@ -496,10 +520,21 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 } else {
                     $this->setting_obj->set('enable_tokenized_payments', 'no');
                 }
-                if ($this->angelleye_is_apple_pay_approved($this->result)) {
-                    $this->setting_obj->set('enable_apple_pay', 'yes');
-                } else {
-                    $this->setting_obj->set('enable_apple_pay', 'no');
+
+                // Enable these features only when someone returns from on-boarding, otherwise if someone will enable
+                // any other feature then these will be activated based on on-boarding status, while user may don't want
+                // to enable these
+                if (isset($_GET['feature_activated'])) {
+                    if ($this->angelleye_is_apple_pay_approved($this->result)) {
+                        $_GET['feature_activated'] == 'applepay' && $this->setting_obj->set('enable_apple_pay', 'yes');
+                    } else {
+                        $this->setting_obj->set('enable_apple_pay', 'no');
+                    }
+                    if ($this->angelleye_is_google_pay_approved($this->result)) {
+                        $_GET['feature_activated'] == 'googlepay' && $this->setting_obj->set('enable_google_pay', 'yes');
+                    } else {
+                        $this->setting_obj->set('enable_google_pay', 'no');
+                    }
                 }
                 $this->setting_obj->persist();
                 if ($this->angelleye_ppcp_is_fee_enable($this->result)) {
@@ -568,11 +603,26 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     }
 
     public function angelleye_is_apple_pay_approved($result) {
-        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
-            foreach ($result['products'] as $key => $product) {
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products'])) {
+            foreach ($result['products'] as $product) {
                 if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status']) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('APPLE_PAY', $product['capabilities'])) {
                     foreach ($result['capabilities'] as $key => $capabilities) {
                         if (isset($capabilities['name']) && 'APPLE_PAY' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public function angelleye_is_google_pay_approved($result) {
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status']) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('GOOGLE_PAY', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $capabilities) {
+                        if (isset($capabilities['name']) && 'GOOGLE_PAY' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
                             return true;
                         }
                     }

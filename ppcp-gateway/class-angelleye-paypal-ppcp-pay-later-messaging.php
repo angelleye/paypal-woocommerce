@@ -40,19 +40,6 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $this->angelleye_ppcp_get_properties();
         $this->angelleye_ppcp_pay_later_messaging_properties();
         $this->angelleye_ppcp_add_hooks();
-        if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
-            add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Pay_Later'), array($this, 'handle_wc_api'));
-        }
-    }
-
-    public function handle_wc_api() {
-        if (!empty($_GET['angelleye_ppcp_action'])) {
-            switch ($_GET['angelleye_ppcp_action']) {
-                case "get_updated_pay_later_data":
-                    $this->add_pay_later_script_in_ajax();
-                    exit();
-            }
-        }
     }
 
     public function angelleye_ppcp_load_class() {

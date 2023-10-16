@@ -3,10 +3,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
+class WC_Gateway_Google_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
 
-    protected bool $enable_apple_pay;
-    const PAYMENT_METHOD = 'apple_pay';
+    protected bool $enable_google_pay;
+    const PAYMENT_METHOD = 'google_pay';
     public $sandbox;
     public $sandbox_merchant_id;
     public $live_merchant_id;
@@ -25,66 +25,40 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     public $paymentaction;
     public $three_d_secure_contingency;
     public $is_enabled;
-    public $ppcp_enabled;
-    
+
     /**
      * @var ?string
      */
-    public ?string $apple_pay_payments_description;
+    public ?string $google_pay_payments_description;
+    private bool $ppcp_enabled;
 
     public function __construct() {
         parent::__construct();
         try {
-            $this->id = 'angelleye_ppcp_apple_pay';
-            $this->icon = apply_filters('woocommerce_angelleye_ppcp_apple_pay_icon', plugins_url('/ppcp-gateway/images/icon/apple_pay.png', plugin_basename(dirname(__FILE__))));
-            $this->method_description = __('Accept payments using Apple Pay.', 'paypal-for-woocommerce');
+            $this->id = 'angelleye_ppcp_google_pay';
+            $this->icon = apply_filters('woocommerce_angelleye_ppcp_google_pay_icon', plugins_url('/ppcp-gateway/images/icon/google_pay.png', plugin_basename(dirname(__FILE__))));
+            $this->method_description = __('Accept payments using Google Pay.', 'paypal-for-woocommerce');
             $this->has_fields = true;
             $this->angelleye_ppcp_load_class();
-            // disable temp $this->setGatewaySupports();
+            $this->setGatewaySupports();
 
-            $baseSupports = array(
-                'products',
-                'refunds',
-                'pay_button'
-            );
-
-            $subscriptionSupports = [
-                'subscriptions',
-                'subscription_cancellation',
-                'subscription_reactivation',
-                'subscription_suspension',
-                'subscription_amount_changes',
-                'subscription_payment_method_change', // Subs 1.n compatibility.
-                'subscription_payment_method_change_customer',
-                'subscription_payment_method_change_admin',
-                'subscription_date_changes',
-                'multiple_subscriptions',
-                'add_payment_method'
-            ];
-
-            $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
-
-            if (isset($_GET['paypal_order_id']) && isset($_GET['paypal_payer_id']) && $this->enable_tokenized_payments) {
-                $this->supports = array_merge($baseSupports, $subscriptionSupports);
-            } elseif ($this->enable_tokenized_payments || (isset($_GET['page']) && isset($_GET['tab']) && 'wc-settings' === $_GET['page'] && 'checkout' === $_GET['tab'])) {
-                $this->supports = array_merge($baseSupports, $subscriptionSupports, array('tokenization'));
-            } else {
-                $this->supports = $baseSupports;
-            }
             $this->ppcp_enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
-            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay'));
-            $this->title = $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay');
-
-            $is_domain_added = $this->setting_obj->get('apple_pay_domain_added', 'no') == 'yes';
-            $this->enable_apple_pay = $is_domain_added && 'yes' === $this->setting_obj->get('enable_apple_pay', 'no');
-            $this->apple_pay_payments_description = $this->setting_obj->get('apple_pay_payments_description', 'Complete your purchase by selecting your saved payment methods or using Apple Pay.');
+            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('google_pay_payments_title', 'Google Pay'));
+            $this->title = $this->setting_obj->get('google_pay_payments_title', 'Google Pay');
+            $this->enable_google_pay = 'yes' === $this->setting_obj->get('enable_google_pay', 'no');
+            $this->google_pay_payments_description = $this->setting_obj->get('google_pay_payments_description', 'Complete your purchase by selecting your saved payment methods or using Google Pay.');
         } catch (Exception $ex) {
 
         }
     }
 
+    public function isSubscriptionsSupported(): bool
+    {
+        return false;
+    }
+
     public function is_available() {
-        return $this->ppcp_enabled === true && $this->enable_apple_pay == true && $this->is_credentials_set();
+        return $this->ppcp_enabled === true && $this->enable_google_pay == true && $this->is_credentials_set();
     }
 
     public function payment_fields() {
@@ -112,10 +86,10 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     public function form() {
         try {
             ?>
-            <p><?php echo __($this->apple_pay_payments_description, 'paypal-for-woocommerce'); ?></p>
-            <fieldset id="wc-<?php echo esc_attr($this->id); ?>-form" class='wc-apple-pay-form wc-payment-form'>
-                <?php do_action('woocommerce_apple_pay_form_start', $this->id); ?>
-                <?php do_action('woocommerce_apple_pay_form_start', $this->id); ?>
+            <p><?php echo __($this->google_pay_payments_description, 'paypal-for-woocommerce'); ?></p>
+            <fieldset id="wc-<?php echo esc_attr($this->id); ?>-form" class='wc-google-pay-form wc-payment-form'>
+                <?php do_action('woocommerce_google_pay_form_start', $this->id); ?>
+                <?php do_action('woocommerce_google_pay_form_start', $this->id); ?>
                 <div class="clear"></div>
             </fieldset>
             <?php

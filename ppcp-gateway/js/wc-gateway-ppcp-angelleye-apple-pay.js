@@ -54,7 +54,7 @@ class ApplePayCheckoutButton {
             });
         } else {
             console.log('apple pay not supported');
-            this.removeApplePayPaymentMethod();
+            this.removeApplePayPaymentMethod(containerSelector);
         }
     }
 
@@ -64,9 +64,12 @@ class ApplePayCheckoutButton {
         }
     }
 
-    removeApplePayPaymentMethod() {
+    removeApplePayPaymentMethod(containerSelector) {
         if (angelleyeOrder.isCheckoutPage()) {
             jQuery('.wc_payment_method.payment_method_angelleye_ppcp_apple_pay').hide();
+        }
+        if (jQuery(containerSelector).length) {
+            jQuery(containerSelector).remove();
         }
     }
 
@@ -77,15 +80,27 @@ class ApplePayCheckoutButton {
         container.html('');
         console.log('rendering apple_pay button', containerSelector, container);
         // let applePayBtn = jQuery('<button type="button" id="apple-pay-btn" class="apple-pay-button apple-pay-button-black">Apple Pay</button>');
-        let applePayContainer = jQuery('<div class="apple-pay-container"></div>');
-        let applePayBtn = jQuery('<apple-pay-button id="btn-appl" buttonstyle="black" type="buy" locale="en">');
+        let buttonColor = 'black';
+        let buttonType = 'plain';
+        let containerStyle = '';
+        if (typeof angelleye_ppcp_manager.apple_pay_button_props !== 'undefined') {
+            buttonColor = angelleye_ppcp_manager.apple_pay_button_props.buttonColor;
+            buttonType = angelleye_ppcp_manager.apple_pay_button_props.buttonType;
+            let height = angelleye_ppcp_manager.apple_pay_button_props.height;
+            height = height !== '' ? 'height: ' + height + 'px;' : '';
+            containerStyle = height;
+        }
+        let applePayContainer = jQuery('<div class="apple-pay-container" style="'+(containerStyle !== '' ? containerStyle  : '')+'"></div>');
+
+        let applePayBtn = jQuery('<apple-pay-button id="btn-appl" buttonstyle="' + buttonColor + '" type="' + buttonType + '" locale="en">');
         applePayBtn.on('click', {thisObject: this}, this.handleClickEvent);
         applePayContainer.append(applePayBtn);
 
-        if (!angelleyeOrder.isCheckoutPage()) {
-            let separatorApplePay = jQuery('<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; OR &mdash;</div><br>');
-            container.html(separatorApplePay);
-        }
+        // Remove the separator
+        // if (!angelleyeOrder.isCheckoutPage()) {
+        //     let separatorApplePay = jQuery('<div class="angelleye_ppcp-proceed-to-checkout-button-separator">&mdash; OR &mdash;</div><br>');
+        //     container.html(separatorApplePay);
+        // }
         container.append(applePayContainer);
     }
 
@@ -167,6 +182,20 @@ class ApplePayCheckoutButton {
             angelleyeOrder.showError("An error occurred while initiating the ApplePay payment.<br/>Error: " + e);
             return;
         }
+
+        let paymentCancelled = (error) => {
+            angelleyeOrder.triggerPaymentCancelEvent();
+            angelleyeOrder.hideProcessingSpinner();
+            if (error) {
+                let errorMessage = parseErrorMessage(error);
+                angelleyeOrder.showError(errorMessage);
+
+                session.completePayment({
+                    status: ApplePaySession.STATUS_FAILURE,
+                });
+            }
+        };
+
         let parseErrorMessage = (errorObject) => {
             console.error(errorObject)
             console.log(JSON.stringify(errorObject));
@@ -232,12 +261,7 @@ class ApplePayCheckoutButton {
                     throw new Error("Unable to update the shipping amount.");
                 }
             } catch (error) {
-                let errorMessage = parseErrorMessage(error);
-                angelleyeOrder.hideProcessingSpinner();
-                angelleyeOrder.showError(errorMessage);
-                session.completePayment({
-                    status: ApplePaySession.STATUS_FAILURE,
-                });
+                paymentCancelled(error);
             }
         };
 
@@ -270,18 +294,13 @@ class ApplePayCheckoutButton {
                 });
                 angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
             } catch (error) {
-                let errorMessage = parseErrorMessage(error);
-                angelleyeOrder.hideProcessingSpinner();
-                angelleyeOrder.showError(errorMessage);
-                session.completePayment({
-                    status: ApplePaySession.STATUS_FAILURE,
-                });
+                paymentCancelled(error);
             }
         };
 
         session.oncancel  = (event) => {
             console.log("Apple Pay Cancelled !!", event)
-            angelleyeOrder.hideProcessingSpinner();
+            paymentCancelled();
         }
 
         session.begin();
