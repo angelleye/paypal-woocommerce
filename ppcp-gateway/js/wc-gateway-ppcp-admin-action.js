@@ -9,13 +9,13 @@ jQuery(function ($) {
             $('.paypal-fee-tr').slideUp();
             $('.ppcp_auth_void_option').slideDown();
             $('.ppcp_auth_void_border').slideDown();
-            $('#order_metabox_angelleye_ppcp_payment_action').prop('selectedIndex', 0);
             $('#woocommerce-order-items').find('div.refund').slideDown();
             $('.angelleye_ppcp_capture_box').slideDown();
             $('.angelleye_ppcp_refund_box').slideUp();
             $('.angelleye_ppcp_void_box').slideUp();
             $(".refund_order_item_qty:first").focus();
             $('.angelleye-ppcp-order-action-submit').slideDown();
+            $('#order_metabox_angelleye_ppcp_payment_action').val('capture');
         });
         $('#woocommerce-order-items').on('click', 'button.angelleye-ppcp-order-void', function (e) {
             $('.wc-order-data-row.wc-order-bulk-actions.wc-order-data-row-toggle').slideUp();
@@ -26,11 +26,11 @@ jQuery(function ($) {
             $('.paypal-fee-tr').slideUp();
             $('.ppcp_auth_void_option').slideDown();
             $('.ppcp_auth_void_border').slideDown();
-            $('#order_metabox_angelleye_ppcp_payment_action').prop('selectedIndex', 0);
             $('.angelleye_ppcp_capture_box').slideUp();
             $('.angelleye_ppcp_refund_box').slideUp();
             $('.angelleye_ppcp_void_box').slideDown();
             $('.angelleye-ppcp-order-action-submit').slideDown();
+            $('#order_metabox_angelleye_ppcp_payment_action').val('void');
         });
         $('#woocommerce-order-items').on('click', 'button.cancel-action', function (e) {
             $('.ppcp_auth_void_border').slideUp();
@@ -42,6 +42,7 @@ jQuery(function ($) {
             $('.angelleye_ppcp_capture_box').slideUp();
             $('.angelleye_ppcp_void_box').slideUp();
             $('.paypal-fee-tr').slideUp();
+            $('#angelleye_ppcp_payment_submit_button').val('');
         });
         $('#woocommerce-order-items').on('click', 'button.angelleye-ppcp-order-action-submit', function (e) {
             if ($('#is_ppcp_submited').val() === 'no') {

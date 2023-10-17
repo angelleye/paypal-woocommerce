@@ -434,8 +434,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         }
         ?>
         <input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited">
+        
         <input type="submit" id="angelleye_ppcp_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
-
         <table class="widefat  angelleye_ppcp_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;border: none;">
             <tbody>
                 <tr>
@@ -759,30 +759,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             <tr class="ppcp_auth_void_border" style="display: none;">
                 <td colspan="3" style="border-top: 1px solid #dfdfdf;">&nbsp</td>
             </tr>
-            <!--<tr class="ppcp_auth_void_option" style="display: none;">
-                <td class="label">
-                    <label for="order_metabox_angelleye_ppcp_payment_action"><?php echo __('Select PayPal Action', 'paypal-for-woocommerce'); ?></label>
-                </td>
-                <td width="1%"></td>
-                <td class="total">
-                    <?php if (!empty($this->angelleye_ppcp_order_actions)) { ?>
-                        <select name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action" style="width: 250px;">
-                            <?php
-                            $i = 0;
-                            foreach ($this->angelleye_ppcp_order_actions as $k => $v) :
-                                if ($i == 0) {
-                                    echo "<option value=''>" . __('Select Action', 'paypal-for-woocommerce') . "</option>";
-                                }
-                                ?>
-                                <option value="<?php echo esc_attr($k); ?>" ><?php echo esc_html($v); ?></option>
-                                <?php
-                                $i = $i + 1;
-                            endforeach;
-                            ?>
-                        </select>
-                    <?php } ?>
-                </td>
-            </tr>-->
         <?php } ?>
         <?php if (isset($this->angelleye_ppcp_order_status_data['capture']) && isset($this->angelleye_ppcp_order_actions['capture'])) { ?>
             <tr class="angelleye_ppcp_capture_box" style="display: none;">
@@ -878,6 +854,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     }
 
     public function angelleye_ppcp_capture_void_refund_submit() {
-        ?><input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited"><button type="button" class="button angelleye-ppcp-order-action-submit button-primary"><?php esc_html_e('Submit', 'woocommerce'); ?></button><?php
+        ?><input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited"><input type="hidden" name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action"><button type="button" class="button angelleye-ppcp-order-action-submit button-primary"><?php esc_html_e('Submit', 'woocommerce'); ?></button><?php
     }
 }
