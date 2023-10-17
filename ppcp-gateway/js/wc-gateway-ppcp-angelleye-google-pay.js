@@ -46,14 +46,15 @@ class GooglePayCheckoutButton {
     }
 
     render(containerSelector) {
-        console.log('containerSelector', containerSelector)
+        if (jQuery(containerSelector).length === 0) {
+            return;
+        }
         this.initGooglePayConfig().then(() => {
             let thisObj = this;
             let paymentsClient = this.getGooglePaymentsClient();
             let allowedPaymentMethods = GooglePayCheckoutButton.googlePayConfig.allowedPaymentMethods;
             paymentsClient.isReadyToPay(this.getGoogleIsReadyToPayRequest(allowedPaymentMethods))
                 .then((response) => {
-                    console.log('isReadyToPay', response);
                     if (response.result) {
                         this.showGooglePayPaymentMethod();
                         this.renderButton(containerSelector);
@@ -78,7 +79,6 @@ class GooglePayCheckoutButton {
     }
 
     getGooglePaymentsClient(data) {
-        console.log('onPaymentAuthorized', this.containerSelector, data);
         return new google.payments.api.PaymentsClient({
             environment: angelleye_ppcp_manager.sandbox_mode === '1' ? "TEST" : "PRODUCTION",
             paymentDataCallbacks: {
@@ -236,7 +236,6 @@ class GooglePayCheckoutButton {
         this.containerSelector = containerSelector;
         let container = jQuery(containerSelector);
         container.html('');
-        console.log('rendering google_pay button', containerSelector, container);
 
         let buttonColor = 'default';
         let buttonType = 'plain';

@@ -1371,8 +1371,14 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($ex->getCode() == 302) {
                 $this->api_log->log('UpdateOrder Request URL: ' . $this->paypal_order_api . $paypal_order_id);
                 $this->api_log->log('UpdateOrder Request Body: ' . wc_print_r($args, true));
-                wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
-                wp_redirect(wc_get_checkout_url());
+                // Commenting this as I've seen this creates an issue when someone starts the checkout process from
+                // product page with Authorize intent, and on complete my order page if due to some reason this update
+                // order function fails then on complete order action this tries to redirect the user to checkout page
+                // during ajax call, and user starts seeing the "unexpected <" error.
+                // and if its not ajax call, then they will be redirected to checkout page with
+                // "session expired message", that creates issue reported in AHD-20796
+                /*wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
+                wp_redirect(wc_get_checkout_url()); */
             }
         }
     }
