@@ -1062,3 +1062,14 @@ if (!function_exists('ae_get_checkout_url')) {
         return $checkout_page_url;
     }
 }
+
+if (!function_exists('angelleye_ppcp_order_item_meta_key_exists')) {
+    function angelleye_ppcp_order_item_meta_key_exists($order, $key) {
+        foreach ($order->get_items() as $item) {
+            if ($item->meta_exists($key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

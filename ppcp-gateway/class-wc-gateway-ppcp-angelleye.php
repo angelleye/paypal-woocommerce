@@ -505,12 +505,18 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_refund($order_id, $amount = null, $reason = '') {
         $order = wc_get_order($order_id);
-        if (!$this->can_refund_order($order)) {
-            return new WP_Error('error', __('Refund failed.', 'paypal-for-woocommerce'));
+        if($order && $this->can_refund_order($order) && angelleye_ppcp_order_item_meta_key_exists($order, '_ppcp_capture_details')) {
+            $refund_data = $this->payment_request->angelleye_ppcp_prepare_refund_request_data_for_capture($order, $amount);
+            
+        } else {
+            if (!$this->can_refund_order($order)) {
+                return new WP_Error('error', __('Refund failed.', 'paypal-for-woocommerce'));
+            }
+            $transaction_id = $order->get_transaction_id();
+            $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
+            return $bool;
         }
-        $transaction_id = $order->get_transaction_id();
-        $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
-        return $bool;
+        
     }
 
     public static function angelleye_ppcp_display_order_fee($order_id) {

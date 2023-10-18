@@ -4262,4 +4262,79 @@ class AngellEYE_PayPal_PPCP_Payment {
             return array();
         }
     }
+    
+    public function angelleye_ppcp_prepare_refund_request_data_for_capture($order, $amount) {
+        try {
+            $ppcp_refunded_amount = 0;
+            $prepare_refund_data = array();
+            $refund_amount = isset($_POST['refund_amount']) ? wc_format_decimal(sanitize_text_field(wp_unslash($_POST['refund_amount'])), wc_get_price_decimals()) : 0;
+            if (!empty($_POST['line_item_totals'])) {
+                $line_item_totals = json_decode(sanitize_text_field(wp_unslash($_POST['line_item_totals'])), true);
+            } else {
+                $line_item_totals = array();
+            }
+            $capture_data_list = $this->angelleye_ppcp_get_capture_data($order);
+            if(!empty($line_item_totals)) {
+                foreach ($line_item_totals as $item_id => $amount) {
+                    if ($amount > 0 && isset($capture_data_list[$item_id])) {
+                        foreach ($capture_data_list[$item_id] as $transaction_id => $capture_amount) {
+                            $remaining_refund = $refund_amount - $ppcp_refunded_amount;
+                            if ($remaining_refund > 0) {
+                                $refund_to_add = min($remaining_refund, $capture_amount);
+                                $prepare_refund_data[$item_id][$transaction_id] = $refund_to_add;
+                                $ppcp_refunded_amount += $refund_to_add;
+                            } else {
+                                return $prepare_refund_data;
+                            }
+                        }
+                    }
+                }
+            }
+            $remaining_refund = $refund_amount - $ppcp_refunded_amount;
+            if ($remaining_refund > 0) {
+                foreach ($capture_data_list as $item_id => $capture_data) {
+                    if (!array_key_exists($item_id,$prepare_refund_data)) {
+                        foreach ($capture_data as $transaction_id => $capture_amount) {
+                            $remaining_refund = $refund_amount - $ppcp_refunded_amount;
+                            if ($remaining_refund > 0) {
+                                $refund_to_add = min($remaining_refund, $capture_amount);
+                                $prepare_refund_data[$item_id][$transaction_id] = $refund_to_add;
+                                $ppcp_refunded_amount += $refund_to_add;
+                            } else {
+                                return $prepare_refund_data;
+                            }
+                        }
+                    }
+                    foreach ($capture_data as $transaction_id => $capture_amount) {
+                        $remaining_refund = $refund_amount - $ppcp_refunded_amount;
+                        if ($remaining_refund > 0) {
+                            $refund_to_add = min($remaining_refund, $capture_amount);
+                            $prepare_refund_data[$item_id][$transaction_id] = $refund_to_add;
+                            $ppcp_refunded_amount += $refund_to_add;
+                        } else {
+                            return $prepare_refund_data;
+                        }
+                    }
+                }
+            }
+            return $prepare_refund_data;
+        } catch (Exception $ex) {
+
+        }
+    }
+    
+    public function angelleye_ppcp_get_capture_data($order) {
+        $capture_data_list = array();
+        foreach ($order->get_items() as $item) {
+            if ($item->meta_exists('_ppcp_capture_details')) {
+                $ppcp_capture_details = $item->get_meta('_ppcp_capture_details');
+                if(!empty($ppcp_capture_details)) {
+                    foreach ($ppcp_capture_details as $key => $capture_data) {
+                        $capture_data_list[$item->get_id()][$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'];
+                    }
+                }
+            }
+        }
+        return $capture_data_list;
+    }
 }
