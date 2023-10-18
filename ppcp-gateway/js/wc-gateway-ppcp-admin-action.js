@@ -52,7 +52,7 @@ jQuery(function ($) {
                 var r = confirm('Are you sure?');
                 if (r === true) {
                     $("#woocommerce-order-items").block({message: null, overlayCSS: {background: "#fff", opacity: .6}});
-                    $('form#post').submit();
+                    $('form#post, form#order').submit();
                 } else {
                     $('.angelleye_ppcp_capture_box input[name="ppcp_refund_amount"]').attr('name', 'refund_amount');
                     $('.angelleye_ppcp_capture_box input[id="ppcp_refund_amount"]').attr('id', 'refund_amount');

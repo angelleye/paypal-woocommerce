@@ -76,12 +76,14 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             add_action('woocommerce_order_status_cancelled', array($this, 'angelleye_ppcp_cancel_authorization'));
             add_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
         }
-        add_action('add_meta_boxes', array($this, 'angelleye_ppcp_order_action_meta_box'), 0, 2);
+        //add_action('add_meta_boxes', array($this, 'angelleye_ppcp_order_action_meta_box'), 0, 2);
         add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_ppcp_save'), 10, 2);
         add_action('woocommerce_order_item_add_line_buttons', array($this, 'angelleye_ppcp_capture_void_refund_submit'), 10, 1);
         add_action('woocommerce_order_item_add_action_buttons', array($this, 'angelleye_ppcp_add_order_action_buttons'), 10, 1);
         add_action('admin_enqueue_scripts', array($this, 'angelleye_ppcp_add_order_action_js'), 10);
         add_action('woocommerce_admin_order_totals_after_total', array($this, 'angelleye_ppcp_add_order_action_item_edit'), 10, 1);
+        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_woocommerce_after_order_itemmeta'), 10, 3);
+        //add_filter('woocommerce_hidden_order_itemmeta', array($this, 'woocommerce_hidden_order_itemmeta'), 10, 1);
     }
 
     public function angelleye_ppcp_admin_void_action_handler($order, $order_data) {
@@ -287,7 +289,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'VOIDED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
                         unset($this->angelleye_ppcp_order_actions);
                     }
-                    // $this->angelleye_ppcp_display_payment_action();
+                    //$this->angelleye_ppcp_display_payment_action();
                     $this->angelleye_ppcp_display_paypal_activity_table($html_table_row);
                 }
             } elseif (isset($this->payment_response) && $this->payment_response['name'] === 'RESOURCE_NOT_FOUND') {
@@ -434,7 +436,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         }
         ?>
         <input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited">
-        
+
         <input type="submit" id="angelleye_ppcp_payment_submit_button" value="Submit" name="save" class="button button-primary" style="display: none">
         <table class="widefat  angelleye_ppcp_order_action_table" style="width: 190px;float: right;margin-bottom: 20px;border: none;">
             <tbody>
@@ -600,8 +602,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
 
             $ae_ppcp_account_reconnect_notice = get_option('ae_ppcp_account_reconnect_notice');
             // This is to ensure to display the notice only when angelleye_ppcp (main gateway) is enabled.
-            if (!empty($ae_ppcp_account_reconnect_notice) && !empty($notice_type['active_ppcp_gateways'])
-            && isset($notice_type['active_ppcp_gateways']['angelleye_ppcp'])) {
+            if (!empty($ae_ppcp_account_reconnect_notice) && !empty($notice_type['active_ppcp_gateways']) && isset($notice_type['active_ppcp_gateways']['angelleye_ppcp'])) {
                 // This can be converted as a switch statement as the flag will tell use error reason
                 $notice_data_account_reconnect = array(
                     'id' => 'ppcp_notice_account_reconnect',
@@ -726,15 +727,14 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     }
 
     public function angelleye_ppcp_add_order_action_buttons($order) {
-        $this->angelleye_ppcp_order_actions;
         try {
-            if ($this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id()) === false) {
+            if (!$this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id()) || empty($this->angelleye_ppcp_order_actions)) {
                 return;
             }
             wp_enqueue_script('angelleye-ppcp-order-action');
             ?>
-            <button type="button" class="button angelleye-ppcp-order-capture"><?php esc_html_e('Capture', 'woocommerce'); ?></button>
-            <button type="button" class="button angelleye-ppcp-order-void"><?php esc_html_e('Void', 'woocommerce'); ?></button>
+            <button type="button" class="button angelleye-ppcp-order-capture" <?php echo (isset($this->angelleye_ppcp_order_actions['capture']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>> <?php esc_html_e('Capture', 'woocommerce'); ?></button>
+            <button type="button" class="button angelleye-ppcp-order-void" <?php echo (isset($this->angelleye_ppcp_order_actions['capture']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>><?php esc_html_e('Void', 'woocommerce'); ?></button>
             <?php
         } catch (Exception $ex) {
             
@@ -855,5 +855,46 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
 
     public function angelleye_ppcp_capture_void_refund_submit() {
         ?><input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited"><input type="hidden" name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action"><button type="button" class="button angelleye-ppcp-order-action-submit button-primary"><?php esc_html_e('Submit', 'woocommerce'); ?></button><?php
+    }
+
+    public function angelleye_ppcp_woocommerce_after_order_itemmeta($item_id, $item, $product) {
+        $ppcp_capture_details = wc_get_order_item_meta($item_id, '_ppcp_capture_details', true);
+        if (empty($ppcp_capture_details)) {
+            return;
+        }
+        ?>
+        <table cellspacing="0" class="display_meta">
+            <?php
+            foreach ($ppcp_capture_details as $index => $meta_array) :
+                ?>
+                <tr>
+                    <td>
+                        <?php
+                        $ppcp_Capture_key_replace = array('_ppcp_transaction_id' => 'Transaction ID', '_ppcp_transaction_date' => 'Date', '_ppcp_transaction_amount' => 'Amount');
+                        echo '<b>' . __('Capture Details', '') . '</b>: ';
+                        $capture_details_html = '';
+                        if (is_array($meta_array) && !empty($meta_array)) {
+                            $total_element = count($meta_array);
+                            $i = 1;
+                            foreach ($meta_array as $key => $value) {
+                                $capture_details_html .= $ppcp_Capture_key_replace[$key] . ': ' . $value;
+                                if($total_element !== $i) {
+                                    $capture_details_html .= ' | ';
+                                }
+                                $i = $i + 1;
+                            }
+                        }
+                        echo $capture_details_html;
+                        ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+        <?php
+    }
+
+    public function woocommerce_hidden_order_itemmeta($order_itemmeta) {
+        $order_itemmeta = array_merge($order_itemmeta, array('_ppcp_transaction_id', '_ppcp_transaction_amount', '_ppcp_transaction_date'));
+        return $order_itemmeta;
     }
 }

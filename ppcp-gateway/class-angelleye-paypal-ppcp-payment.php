@@ -2479,6 +2479,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (strlen($note_to_payer) > 255) {
                 $note_to_payer = substr($note_to_payer, 0, 252) . '...';
             }
+            
             $final_capture = false;
             if (isset($order_data['additionalCapture']) && 'no' === $order_data['additionalCapture']) {
                 $final_capture = true;
@@ -2512,9 +2513,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
             if (!empty($this->api_response['id'])) {
-                // DO not save the paypal order id in the table during auth capture because it will override the original
-                // transaction id created during the initial create_order process
-                // $order->update_meta_data('_paypal_order_id', $this->api_response['id']);
                 $payment_source = $this->api_response['payment_source'] ?? '';
                 if (!empty($payment_source['card'])) {
                     $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
@@ -2564,6 +2562,25 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->add_order_note($payment_advice_code);
                 }
                 $transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
+                if(!empty($order_data['refund_line_total'])) {
+                    foreach ($order_data['refund_line_total'] as $item_id => $item_amount) {
+                        if(!empty($item_amount)) {
+                            $transaction_id = isset($this->api_response['transaction_id']) ? $this->api_response['transaction_id'] : $transaction_id;
+                            $transaction_amount = isset($this->api_response['amount']['value']) ? $this->api_response['amount']['value'] : $item_amount;
+                            $transaction_date = date('m/d/y H:i', strtotime($this->api_response['update_time']));
+                            $ppcp_capture_details[] = array(
+                                '_ppcp_transaction_id' => $transaction_id,
+                                '_ppcp_transaction_date' => $transaction_date,
+                                '_ppcp_transaction_amount' => $transaction_amount
+                            );
+                            $_ppcp_capture_details = wc_get_order_item_meta($item_id, '_ppcp_capture_details', true);
+                            if (!empty($_ppcp_capture_details)) {
+                                $ppcp_capture_details = array_merge($_ppcp_capture_details, $ppcp_capture_details);
+                            }
+                            wc_update_order_item_meta($item_id, '_ppcp_capture_details', $ppcp_capture_details);
+                        }
+                    }
+                }
                 $seller_protection = isset($this->api_response['seller_protection']['status']) ? $this->api_response['seller_protection']['status'] : '';
                 $this->api_response = $this->angelleye_ppcp_get_authorized_payment($authorization_id);
                 $payment_status = isset($this->api_response['status']) ? $this->api_response['status'] : '';
