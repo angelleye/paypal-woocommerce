@@ -336,44 +336,8 @@ apple-pay-button {
 .woocommerce-terms-and-conditions-wrapper {
     margin-bottom: 10px;
 }
-.payment_method_angelleye_ppcp_cc {
-    display: flex;
-    flex-flow: row wrap;
-    align-items: center;
-}
-.payment_method_angelleye_ppcp_cc>label {
-    display: flex !important;
-    flex: 1;
-    align-items: center;
-    margin-left: 4px;
-    gap: 0.3em;
-}
-.payment_method_angelleye_ppcp_cc>label .ppcp-clearfix {
-    margin-right: -0.3em;
-}
-.payment_method_angelleye_ppcp_cc .payment_method_angelleye_ppcp_cc {
-    flex-basis: 100%;
-}
-.payment_box.payment_method_angelleye_ppcp_cc {
-    display: initial;
-}
-.payment_method_angelleye_ppcp_cc .ae-cc-icons-list {
-    display: flex;
-    justify-content: left;
-    margin-left: 0.5em;
-    flex-wrap: wrap;
-    flex: 1;
-}
-.payment_method_angelleye_ppcp_cc .ae-cc-icons-list img {
-    margin: 0 !important;
-    padding: 2px !important;
-}
 .ppcp-clearfix {
     clear: both;
-}
-.flex-break {
-    flex-basis: 100%;
-    width: 0;
 }
 .wc_payment_method.payment_method_angelleye_ppcp_apple_pay, .payment_box.payment_method_angelleye_ppcp_apple_pay {
     display: none;
