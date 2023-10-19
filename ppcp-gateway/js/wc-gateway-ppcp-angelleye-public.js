@@ -72,8 +72,9 @@ function initSmartButtons() {
 	}
 
 	// Hook the function to run on totals, cart or checkout updates
-	angelleyeOrder.hooks.onPaymentMethodChange();
-	angelleyeOrder.hooks.onCartValueUpdate();
+	angelleyeOrder.updateCartTotalsInEnvironment();
+	angelleyeOrder.hooks.onPaymentCancellation();
+	angelleyeOrder.hooks.handleWooEvents();
 
 	// handle the scenario where the cart updated or checkout_updated hook is already triggered before above hooks are bound
 	angelleyeOrder.triggerPendingEvents();
@@ -86,39 +87,59 @@ function initSmartButtons() {
 	'use strict';
 	// queue the woocommerce hook events immediately to trigger those later in case sdk load takes time
 	angelleyeOrder.hooks.handleRaceConditionOnWooHooks();
-	angelleyeLoadPayPalScript({
-		url: angelleye_ppcp_manager.paypal_sdk_url,
-		script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
-	}, function() {
-		if (angelleyeOrder.isApplePayEnabled()) {
-			angelleyeLoadPayPalScript({
-				url: angelleye_ppcp_manager.apple_sdk_url
-			}, function () {
-				console.log('apple pay lib loaded');
-				initSmartButtons();
-			});
-		} else {
-			initSmartButtons();
-		}
-	});
 
-	jQuery(document.body).on('angelleye_paypal_oncancel', function (event) {
-		event.preventDefault();
-		let is_from_product = angelleyeOrder.isProductPage();
-		if (is_from_product) {
-			fetch(angelleye_ppcp_manager.update_cart_oncancel, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
-				body: jQuery('form.cart').serialize()
-			}).then(function (res) {
-				return res.json();
-			}).then(function (data) {
-				window.location.reload();
+	const paypalSdkLoadCallback = () => {
+		console.log('PayPal lib loaded, initialize buttons.')
+		let scriptsToLoad = [];
+		if (angelleyeOrder.isApplePayEnabled()) {
+			let appleResolveOnLoad = new Promise((resolve) => {
+				console.log('apple sdk loaded');
+				resolve();
 			});
-		} else {
-			window.location.reload();
+			scriptsToLoad.push({
+				url: angelleye_ppcp_manager.apple_sdk_url,
+				callback: appleResolveOnLoad
+			});
 		}
-	});
+
+		if (angelleyeOrder.isGooglePayEnabled()) {
+			let googleResolveOnLoad = new Promise((resolve) => {
+				console.log('google sdk loaded');
+				resolve();
+			});
+			scriptsToLoad.push({
+				url: angelleye_ppcp_manager.google_sdk_url,
+				callback: googleResolveOnLoad
+			});
+		}
+
+		if (scriptsToLoad.length === 0){
+			initSmartButtons();
+		} else {
+			let allPromises = []
+			for (let i = 0; i < scriptsToLoad.length; i++) {
+				allPromises.push(scriptsToLoad[i].callback);
+			}
+			Promise.all(allPromises).then((success) => {
+				console.log('all libs loaded');
+				initSmartButtons();
+			}, (error) => {
+				console.log('An error occurred in loading the SDKs.')
+			})
+			for (let i = 0; i < scriptsToLoad.length; i++) {
+				angelleyeLoadPayPalScript(scriptsToLoad[i], scriptsToLoad[i].callback);
+			}
+		}
+	};
+
+	// This method will be invoked by other functions to refresh the PayPal SDK with the different parameters
+	// e.g. currency, intent, etc
+	window.angelleyeLoadAsyncLibs = (callback) => {
+		angelleyeLoadPayPalScript({
+			url: angelleye_ppcp_manager.paypal_sdk_url,
+			script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
+		}, callback);
+	}
+
+	window.angelleyeLoadAsyncLibs(paypalSdkLoadCallback);
 })(jQuery);

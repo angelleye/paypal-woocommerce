@@ -158,6 +158,15 @@ if (!function_exists('angelleye_ppcp_readable')) {
     }
 }
 
+if (!function_exists('angelleye_split_name')) {
+    function angelleye_split_name($fullName) {
+        $parts = explode(' ', $fullName);
+        $lastname = array_pop($parts);
+        $firstname = implode(" ", $parts);
+        return [$firstname, $lastname];
+    }
+}
+
 if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
     function angelleye_ppcp_get_mapped_billing_address($checkout_details, $is_name_only = false) {
         global $woocommerce;
@@ -231,8 +240,13 @@ if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
 
 if (!function_exists('angelleye_ppcp_get_mapped_shipping_address')) {
     function angelleye_ppcp_get_mapped_shipping_address($checkout_details) {
+        $initialData = [];
+        $isOverridden = AngellEye_Session_Manager::get('shipping_address_updated_from_callback');
+        if ($isOverridden) {
+            $initialData = angelleye_ppcp_get_overridden_shipping_address();
+        }
         if (empty($checkout_details->purchase_units[0]) || empty($checkout_details->purchase_units[0]->shipping)) {
-            return array();
+            return $initialData;
         }
         if (!empty($checkout_details->purchase_units[0]->shipping->name->full_name)) {
             $name = explode(' ', $checkout_details->purchase_units[0]->shipping->name->full_name);
@@ -262,7 +276,23 @@ if (!function_exists('angelleye_ppcp_get_mapped_shipping_address')) {
         if (!empty($checkout_details->payer->business_name)) {
             $result['company'] = $checkout_details->payer->business_name;
         }
-        return $result;
+        return array_merge($result, $initialData);
+    }
+}
+
+if (!function_exists('angelleye_ppcp_get_overridden_shipping_address')) {
+    function angelleye_ppcp_get_overridden_shipping_address() {
+        global $woocommerce;
+        return array(
+            'first_name' => $woocommerce->customer->get_shipping_first_name(),
+            'last_name' => $woocommerce->customer->get_shipping_last_name(),
+            'address_1' => $woocommerce->customer->get_shipping_address_1(),
+            'address_2' => $woocommerce->customer->get_shipping_address_2(),
+            'city' => $woocommerce->customer->get_shipping_city(),
+            'state' => $woocommerce->customer->get_shipping_state(),
+            'postcode' => $woocommerce->customer->get_shipping_postcode(),
+            'country' => $woocommerce->customer->get_shipping_country(),
+        );
     }
 }
 
@@ -337,10 +367,10 @@ if (!function_exists('angelleye_ppcp_round')) {
 }
 
 if (!function_exists('angelleye_ppcp_number_format')) {
-    function angelleye_ppcp_number_format($price, $order) {
+    function angelleye_ppcp_number_format($price, $order = null) {
         $decimals = 2;
 
-        if (!angelleye_ppcp_currency_has_decimals($order->get_currency())) {
+        if (!empty($order) && !angelleye_ppcp_currency_has_decimals($order->get_currency())) {
             $decimals = 0;
         }
 
@@ -429,13 +459,10 @@ if (!function_exists('angelleye_ppcp_get_payment_method_title')) {
             'paylater' => __('PayPal Pay Later', 'paypal-for-woocommerce'),
             'paypal' => __('PayPal Checkout', 'paypal-for-woocommerce'),
             'apple_pay' => __('Apple Pay', 'paypal-for-woocommerce'),
+            'google_pay' => __('Google Pay', 'paypal-for-woocommerce'),
         );
         if (!empty($payment_name)) {
-            if (isset($list_payment_method[$payment_name])) {
-                $final_payment_method_name = $list_payment_method[$payment_name];
-            } else {
-                $final_payment_method_name = $payment_name;
-            }
+            $final_payment_method_name = $list_payment_method[$payment_name] ?? $payment_name;
         }
         return apply_filters('angelleye_ppcp_get_payment_method_title', $final_payment_method_name, $payment_name, $list_payment_method);
     }
@@ -525,6 +552,7 @@ if (!function_exists('angelleye_ppcp_add_css_js')) {
     function angelleye_ppcp_add_css_js() {
         wp_enqueue_script('angelleye_ppcp-common-functions');
         wp_enqueue_script('angelleye_ppcp-apple-pay');
+        wp_enqueue_script('angelleye_ppcp-google-pay');
         wp_enqueue_script('angelleye-paypal-checkout-sdk');
         wp_enqueue_script('angelleye_ppcp');
         wp_enqueue_script('angelleye-pay-later-messaging');
@@ -773,13 +801,21 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
             if (class_exists('WC_Subscriptions_Order')) {
                 $is_subscriptions = true;
             }
+            $ppcp_gateway_list = ['angelleye_ppcp', 'angelleye_ppcp_apple_pay', 'angelleye_ppcp_google_pay'];
+            $active_ppcp_gateways = [];
             $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
             $active_classic_gateway_list = array();
             foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
-                if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
-                    $active_classic_gateway_list[$gateway->id] = $gateway->id;
+                if ('yes' === $gateway->enabled && $gateway->is_available() === true) {
+                    if (in_array($gateway->id, $angelleye_classic_gateway_id_list)) {
+                        $active_classic_gateway_list[$gateway->id] = $gateway->id;
+                    }
+                    if (in_array($gateway->id, $ppcp_gateway_list)) {
+                        $active_ppcp_gateways[$gateway->id] = $gateway->id;
+                    }
                 }
             }
+            $notice_type['active_ppcp_gateways'] = $active_ppcp_gateways;
             if (count($active_classic_gateway_list) > 0) {
                 $is_classic = true;
             }
@@ -830,7 +866,7 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
                 $message .= '<h2>' . $response_data->ans_message_title . '</h2>';
             }
             $message .= '<div class="angelleye-notice-message-inner">'
-                    . '<p style="margin-top: 15px !important;line-height: 20px;">' . $response_data->ans_message_description . '</p><div class="angelleye-notice-action">';
+                    . '<p style="line-height: 20px;">' . $response_data->ans_message_description . '</p><div class="angelleye-notice-action">';
             if (!empty($response_data->ans_button_url)) {
                 $message .= '<a href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a>';
             }

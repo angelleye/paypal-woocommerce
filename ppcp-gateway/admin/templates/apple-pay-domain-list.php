@@ -8,6 +8,7 @@ if ($jsonResponse['status']) {
     <h4 style="border-bottom: 0px solid #ccc;margin-bottom: 2px;padding-bottom: 2px;margin-top: 8px;" class="center">
         <?php echo __('Add Domain', 'paypal-for-woocommerce') ?>
     </h4>
+    <?php if (isset($successMessage)) echo '<div style="    margin: 10px 0;" class="updated">' . $successMessage . '</div>'; ?>
     <div class="border-box" style="border: 1px solid #c3c4c7;padding: 8px;">
         <p class="no-padding no-margin">
             <?php echo __('Please ensure that the following link is accessible in order to verify the domain.  When you click the link you should see a separate page load with a bunch of numbers displayed.  This means it is accessible.', 'paypal-for-woocommerce');
