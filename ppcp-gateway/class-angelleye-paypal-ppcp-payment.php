@@ -135,7 +135,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->ppcp_error_handler = AngellEYE_PayPal_PPCP_Error::instance();
             add_filter('angelleye_ppcp_add_payment_source', array($this, 'angelleye_ppcp_add_payment_source'), 10, 2);
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -316,7 +316,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
                     // TODO Confirm about this fix
-                    if(!empty($shipping_address_1) && !empty($shipping_country)) {
+                    if (!empty($shipping_address_1) && !empty($shipping_country)) {
                         AngellEye_Session_Manager::set('is_shipping_added', 'yes');
                         $body_request['purchase_units'][0]['shipping']['address'] = array(
                             'address_line_1' => $shipping_address_1,
@@ -411,7 +411,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 wp_send_json_error(__('We were unable to process your order, please try again with same or other payment method(s).', 'paypal-for-woocommerce'));
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -440,8 +440,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         ];
     }
 
-    public function isSubscriptionRequired($order = null): bool
-    {
+    public function isSubscriptionRequired($order = null): bool {
         if (!empty($order) && class_exists('WC_Subscriptions_Order')) {
             return WC_Subscriptions_Order::order_contains_subscription($order);
         }
@@ -495,7 +494,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             return $this->angelleye_ppcp_get_details($details, $discounts, $rounded_total, $cart_total);
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -565,7 +564,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         try {
             return $this->angelleye_ppcp_is_currency_supports_zero_decimal() ? 0 : 2;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -574,7 +573,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         try {
             return in_array(get_woocommerce_currency(), array('HUF', 'JPY', 'TWD'));
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -589,7 +588,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $rounded_total;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -654,7 +653,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $items;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -690,7 +689,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -754,7 +753,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $details;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -1004,7 +1003,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_log->log("Unable to find the PayPal order: " . $paypal_order_id, 'error');
             $this->api_log->log(print_r($api_response, true), 'error');
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
         return false;
@@ -1042,7 +1041,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             AngellEye_Session_Manager::set('paypal_transaction_details', $this->api_response);
             return $this->api_response;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -1067,7 +1066,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             return;
         }
         return $order->get_payment_method_title();
-        
     }
 
     public function angelleye_ppcp_order_capture_request($woo_order_id, $need_to_update_order = true) {
@@ -1230,7 +1228,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return false;
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -1244,7 +1242,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
             if (empty($paypal_order_id)) {
                 $paypal_order_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_order_id');
-                if(empty($paypal_order_id)) {
+                if (empty($paypal_order_id)) {
                     angelleye_session_expired_exception('_paypal_order_id missing in the update_order call.');
                 }
             }
@@ -1376,7 +1374,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_request->request($this->paypal_order_api . $paypal_order_id, $args, 'update_order');
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
 
             // Redirect the user to the checkout page in case order update fails
@@ -1402,7 +1400,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $details = $this->angelleye_ppcp_get_details($details, $order->get_total_discount(), $rounded_total, $order->get_total());
             return $details;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -1418,7 +1416,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $rounded_total;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -1470,7 +1468,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $items;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -1533,7 +1531,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return true;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
             return new WP_Error('error', $ex->getMessage());
         }
@@ -1707,7 +1705,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return false;
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -1728,7 +1726,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             AngellEye_Session_Manager::set('paypal_transaction_details', $this->api_response);
             return $this->api_response;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -1749,7 +1747,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_response = json_decode(json_encode($this->api_response), FALSE);
             return $this->api_response;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -1886,7 +1884,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return false;
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -2036,7 +2034,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $this->handle_generate_token_error_response($response);
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -2067,14 +2065,13 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $this->handle_generate_token_error_response($response);
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
 
     private function handle_generate_token_error_response($response) {
-        if (isset($response['error'], $response['error_description'])
-            && str_contains(strtolower($response['error_description']), 'no permissions')) {
+        if (isset($response['error'], $response['error_description']) && str_contains(strtolower($response['error_description']), 'no permissions')) {
             // display a notice to the users based on this flag and clear the flag only when call is successful
             update_option('ae_ppcp_account_reconnect_notice', 'generate_token_error');
         }
@@ -2281,7 +2278,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -2311,7 +2308,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $message = $mailer->wrap_message($error_email_notify_subject, $message);
                 $mailer->send(get_option('admin_email'), strip_tags($error_email_notify_subject), $message);
             } catch (Exception $ex) {
-                $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+                $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
                 $this->api_log->log($ex->getMessage(), 'error');
             }
         }
@@ -2410,7 +2407,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_response = json_decode(json_encode($this->api_response), true);
             return $this->api_response;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -2430,7 +2427,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_response = json_decode(json_encode($this->api_response), true);
             return $this->api_response;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -2465,7 +2462,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $this->angelleye_ppcp_update_woo_order_status($order_id, $payment_status, $pending_reason = '');
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -2479,7 +2476,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (strlen($note_to_payer) > 255) {
                 $note_to_payer = substr($note_to_payer, 0, 252) . '...';
             }
-            
+
             $final_capture = false;
             if (isset($order_data['additionalCapture']) && 'no' === $order_data['additionalCapture']) {
                 $final_capture = true;
@@ -2562,9 +2559,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->add_order_note($payment_advice_code);
                 }
                 $transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
-                if(!empty($order_data['refund_line_total'])) {
+                if (!empty($order_data['refund_line_total'])) {
                     foreach ($order_data['refund_line_total'] as $item_id => $item_amount) {
-                        if(!empty($item_amount)) {
+                        if (!empty($item_amount)) {
                             $transaction_id = isset($this->api_response['transaction_id']) ? $this->api_response['transaction_id'] : $transaction_id;
                             $transaction_amount = isset($this->api_response['amount']['value']) ? $this->api_response['amount']['value'] : $item_amount;
                             $transaction_date = date('m/d/y H:i', strtotime($this->api_response['update_time']));
@@ -2614,7 +2611,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -2633,7 +2630,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
             $amount_value = isset($order_data['_angelleye_ppcp_refund_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_refund_price'], $decimals) : '';
-            if(!empty($amount_value) && $amount_value > 0.1) {
+            if (!empty($amount_value) && $amount_value > 0.1) {
                 $body_request['amount'] = array(
                     'value' => $amount_value,
                     'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount_value)
@@ -2667,7 +2664,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return true;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
             return new WP_Error('error', $ex->getMessage());
         }
@@ -2937,7 +2934,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     if ($this->paymentaction === 'capture') {
                         $processor_response = isset($this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response']) ? $this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response'] : '';
                         $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
-                        if(!empty($payment_source['card']['last_digits'])) {
+                        if (!empty($payment_source['card']['last_digits'])) {
                             $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
                             $card_response_order_note .= "\n";
                             $card_response_order_note .= 'Last digits : ' . $payment_source['card']['last_digits'];
@@ -3096,7 +3093,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return false;
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -3415,7 +3412,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $postcode = $customer->get_billing_postcode();
             $country = $customer->get_billing_country();
             $name = $first_name . ' ' . $last_name;
-            if(!empty($name)) {
+            if (!empty($name)) {
                 $body_request['payment_source']['card'] = array(
                     'name' => $name
                 );
@@ -4262,62 +4259,89 @@ class AngellEYE_PayPal_PPCP_Payment {
             return array();
         }
     }
-    
+
     public function angelleye_ppcp_prepare_refund_request_data_for_capture($order, $amount) {
         try {
             $ppcp_refunded_amount = 0;
             $prepare_refund_data = [];
             $refund_amount = isset($_POST['refund_amount']) ? wc_format_decimal(sanitize_text_field(wp_unslash($_POST['refund_amount'])), wc_get_price_decimals()) : 0;
             $line_item_totals = !empty($_POST['line_item_totals']) ? json_decode(sanitize_text_field(wp_unslash($_POST['line_item_totals'])), true) : [];
-            $capture_data_list = $this->angelleye_ppcp_get_capture_data($order);
+            $capture_data_list = $this->angelleye_ppcp_get_capture_data_with_line_item_id($order);
             foreach ($line_item_totals as $item_id => $amount) {
                 if ($amount > 0 && isset($capture_data_list[$item_id])) {
                     foreach ($capture_data_list[$item_id] as $transaction_id => $capture_amount) {
-                        $remaining_refund = $refund_amount - $ppcp_refunded_amount;
-                        if ($remaining_refund <= 0) {
-                            return $prepare_refund_data;
+                        if (!array_key_exists($item_id, $prepare_refund_data)) {
+                            $remaining_refund = $refund_amount - $ppcp_refunded_amount;
+                            if ($remaining_refund <= 0) {
+                                return $prepare_refund_data;
+                            }
+                            $refund_to_add = min($remaining_refund, $amount, $capture_amount);
+                            if ($refund_to_add > 0) {
+                                $transaction_data = array_values($capture_data_list[$item_id]);
+                                sort($transaction_data);
+                                $closest_amount = angelleye_ppcp_binarySearch($transaction_data, $refund_to_add);
+                                if ($closest_amount !== null) {
+                                    $closest_transaction_id = array_search($closest_amount, $transaction_data);
+                                    $prepare_refund_data[$item_id][$closest_transaction_id] = $closest_amount;
+                                    $ppcp_refunded_amount += $closest_amount;
+                                } else {
+                                    $prepare_refund_data[$item_id][$transaction_id] = $refund_to_add;
+                                    $ppcp_refunded_amount += $refund_to_add;
+                                }
+                            }
                         }
-                        $refund_to_add = min($remaining_refund, $capture_amount);
-                        $prepare_refund_data[$item_id][$transaction_id] = $refund_to_add;
-                        $ppcp_refunded_amount += $refund_to_add;
                     }
                 }
             }
-            foreach ($capture_data_list as $item_id => $capture_data) {
-                if (!array_key_exists($item_id, $prepare_refund_data)) {
-                    foreach ($capture_data as $transaction_id => $capture_amount) {
-                        $remaining_refund = $refund_amount - $ppcp_refunded_amount;
-                        if ($remaining_refund <= 0) {
-                            return $prepare_refund_data;
-                        }
-                        $refund_to_add = min($remaining_refund, $capture_amount);
-                        $prepare_refund_data[$item_id][$transaction_id] = $refund_to_add;
-                        $ppcp_refunded_amount += $refund_to_add;
-                    }
-                }
+
+            if ($refund_amount > $ppcp_refunded_amount) {
+                
             }
+
             return $prepare_refund_data;
         } catch (Exception $ex) {
-
+            
         }
     }
-    
-    public function angelleye_ppcp_get_capture_data($order) {
+
+    public function angelleye_ppcp_get_capture_data_with_line_item_id($order) {
         $capture_data_list = array();
         foreach ($order->get_items() as $item) {
             if ($item->meta_exists('_ppcp_capture_details')) {
                 $ppcp_capture_details = $item->get_meta('_ppcp_capture_details');
-                if(!empty($ppcp_capture_details)) {
+                if (!empty($ppcp_capture_details)) {
                     foreach ($ppcp_capture_details as $key => $capture_data) {
                         $capture_data_list[$item->get_id()][$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'];
                     }
                 }
             }
         }
+        if (!empty($capture_data_list)) {
+            foreach ($capture_data_list as &$capture_data) {
+                asort($capture_data);
+            }
+        }
         return $capture_data_list;
     }
-    
-    
+
+    public function angelleye_ppcp_get_capture_data($order) {
+        $capture_data_list = array();
+        foreach ($order->get_items() as $item) {
+            if ($item->meta_exists('_ppcp_capture_details')) {
+                $ppcp_capture_details = $item->get_meta('_ppcp_capture_details');
+                if (!empty($ppcp_capture_details)) {
+                    foreach ($ppcp_capture_details as $key => $capture_data) {
+                        $capture_data_list[$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'];
+                    }
+                }
+            }
+        }
+        if (!empty($capture_data_list)) {
+            asort($capture_data_list);
+        }
+        return $capture_data_list;
+    }
+
     public function angelleye_ppcp_refund_capture_order($order_id, $amount, $note_to_payer, $transaction_id, $item_id) {
         try {
             $order = wc_get_order($order_id);
@@ -4379,7 +4403,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return true;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
             return new WP_Error('error', $ex->getMessage());
         }

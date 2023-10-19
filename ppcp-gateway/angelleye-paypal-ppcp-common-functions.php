@@ -1073,3 +1073,22 @@ if (!function_exists('angelleye_ppcp_order_item_meta_key_exists')) {
         return false;
     }
 }
+
+if (!function_exists('angelleye_ppcp_order_item_meta_key_exists')) {
+    function angelleye_ppcp_binarySearch($array, $target) {
+        $low = 0;
+        $high = count($array) - 1;
+        $closest = null;
+        while ($low <= $high) {
+            $mid = (int)(($low + $high) / 2);
+            $amount = (float)$array[$mid];
+            if ($amount >= $target) {
+                $closest = $array[$mid];
+                $high = $mid - 1;
+            } else {
+                $low = $mid + 1;
+            }
+        }
+        return $closest;
+    }
+}
