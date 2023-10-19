@@ -4316,4 +4316,72 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
         return $capture_data_list;
     }
+    
+    
+    public function angelleye_ppcp_refund_capture_order($order_id, $amount, $note_to_payer, $transaction_id, $item_id) {
+        try {
+            $order = wc_get_order($order_id);
+            if ($order === false) {
+                return false;
+            }
+            if (strlen($note_to_payer) > 255) {
+                $note_to_payer = substr($note_to_payer, 0, 252) . '...';
+            }
+            $order_id = $order->get_id();
+            $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
+            $reason = !empty($reason) ? $reason : 'Refund';
+            $body_request['note_to_payer'] = $reason;
+            if (!empty($amount) && $amount > 0) {
+                $body_request['amount'] = array(
+                    'value' => angelleye_ppcp_round($amount, $decimals),
+                    'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount)
+                );
+            }
+            $body_request = angelleye_ppcp_remove_empty_key($body_request);
+            $args = array(
+                'method' => 'POST',
+                'timeout' => 60,
+                'redirection' => 5,
+                'httpversion' => '1.1',
+                'blocking' => true,
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                'body' => $body_request,
+                'cookies' => array()
+            );
+            $this->api_response = $this->api_request->request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
+            if (isset($this->api_response['status'])) {
+                $gross_amount = $this->api_response['seller_payable_breakdown']['gross_amount']['value'] ?? '';
+                $refund_transaction_id = $this->api_response['id'] ?? '';
+                $order->add_order_note(
+                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
+                );
+                $refund_date = date('m/d/y H:i', strtotime($this->api_response['update_time']));
+                $ppcp_refund_details[] = array(
+                    '_ppcp_refund_id' => $refund_transaction_id,
+                    '_ppcp_refund_date' => $refund_date,
+                    '_ppcp_refund_amount' => $gross_amount
+                );
+                $_ppcp_refund_details = wc_get_order_item_meta($item_id, '_ppcp_refund_details', true);
+                if (!empty($_ppcp_refund_details)) {
+                    $ppcp_refund_details = array_merge($_ppcp_refund_details, $ppcp_refund_details);
+                }
+                wc_update_order_item_meta($item_id, '_ppcp_refund_details', $ppcp_refund_details);
+            } else {
+                $error_email_notification_param = array(
+                    'request' => 'refund_order',
+                    'order_id' => $order_id
+                );
+                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
+                if (!empty($error_message)) {
+                    $order->add_order_note('Error Message : ' . $error_message);
+                }
+                return false;
+            }
+            return true;
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
+            return new WP_Error('error', $ex->getMessage());
+        }
+    }
 }

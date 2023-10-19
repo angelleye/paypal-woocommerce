@@ -82,7 +82,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         add_action('woocommerce_order_item_add_action_buttons', array($this, 'angelleye_ppcp_add_order_action_buttons'), 10, 1);
         add_action('admin_enqueue_scripts', array($this, 'angelleye_ppcp_add_order_action_js'), 10);
         add_action('woocommerce_admin_order_totals_after_total', array($this, 'angelleye_ppcp_add_order_action_item_edit'), 10, 1);
-        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_woocommerce_after_order_itemmeta'), 10, 3);
+        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_capture_details'), 10, 3);
+        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_refund_details'), 11, 3);
         //add_filter('woocommerce_hidden_order_itemmeta', array($this, 'woocommerce_hidden_order_itemmeta'), 10, 1);
     }
 
@@ -857,7 +858,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         ?><input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited"><input type="hidden" name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action"><button type="button" class="button angelleye-ppcp-order-action-submit button-primary"><?php esc_html_e('Submit', 'woocommerce'); ?></button><?php
     }
 
-    public function angelleye_ppcp_woocommerce_after_order_itemmeta($item_id, $item, $product) {
+    public function angelleye_ppcp_display_capture_details($item_id, $item, $product) {
         $ppcp_capture_details = wc_get_order_item_meta($item_id, '_ppcp_capture_details', true);
         if (empty($ppcp_capture_details)) {
             return;
@@ -892,9 +893,45 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         </table>
         <?php
     }
+    
+    public function angelleye_ppcp_display_refund_details($item_id, $item, $product) {
+        $ppcp_refund_details = wc_get_order_item_meta($item_id, '_ppcp_refund_details', true);
+        if (empty($ppcp_refund_details)) {
+            return;
+        }
+        ?>
+        <table cellspacing="0" class="display_meta">
+            <?php
+            foreach ($ppcp_refund_details as $index => $meta_array) :
+                ?>
+                <tr>
+                    <td>
+                        <?php
+                        $ppcp_refund_key_replace = array('_ppcp_refund_id' => 'Refund ID', '_ppcp_refund_date' => 'Date', '_ppcp_refund_amount' => 'Amount');
+                        echo '<b>' . __('Refund Details', '') . '</b>: ';
+                        $refund_details_html = '';
+                        if (is_array($meta_array) && !empty($meta_array)) {
+                            $total_element = count($meta_array);
+                            $i = 1;
+                            foreach ($meta_array as $key => $value) {
+                                $refund_details_html .= $ppcp_refund_key_replace[$key] . ': ' . $value;
+                                if($total_element !== $i) {
+                                    $refund_details_html .= ' | ';
+                                }
+                                $i = $i + 1;
+                            }
+                        }
+                        echo $refund_details_html;
+                        ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+        <?php
+    }
 
     public function woocommerce_hidden_order_itemmeta($order_itemmeta) {
-        $order_itemmeta = array_merge($order_itemmeta, array('_ppcp_transaction_id', '_ppcp_transaction_amount', '_ppcp_transaction_date'));
+        $order_itemmeta = array_merge($order_itemmeta, array('_ppcp_refund_details', '_ppcp_capture_details'));
         return $order_itemmeta;
     }
 }

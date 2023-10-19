@@ -506,8 +506,21 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function process_refund($order_id, $amount = null, $reason = '') {
         $order = wc_get_order($order_id);
         if($order && $this->can_refund_order($order) && angelleye_ppcp_order_item_meta_key_exists($order, '_ppcp_capture_details')) {
-            $refund_data = $this->payment_request->angelleye_ppcp_prepare_refund_request_data_for_capture($order, $amount);
-            
+            $capture_data_list = $this->payment_request->angelleye_ppcp_prepare_refund_request_data_for_capture($order, $amount);
+            if(empty($capture_data_list)) {
+                throw new Exception( __( 'No Capture transactions available for refund.', 'woocommerce' ) );
+            }
+            $failed_result_count = 0;
+            $successful_transaction = 0;
+            foreach ($capture_data_list as $item_id => $capture_data) {
+                foreach ($capture_data as $transaction_id => $amount) {
+                    if ($this->payment_request->angelleye_ppcp_refund_capture_order($order_id, $amount, $reason, $transaction_id, $item_id)) {
+                        $successful_transaction++;
+                    } else {
+                        $failed_result_count++;
+                    }
+                }
+            }
         } else {
             if (!$this->can_refund_order($order)) {
                 return new WP_Error('error', __('Refund failed.', 'paypal-for-woocommerce'));
