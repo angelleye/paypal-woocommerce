@@ -159,7 +159,7 @@ class AngellEYE_Admin_Order_Payment_Process {
                 if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
                     do_action('angelleye_admin_create_reference_order_action_hook', $order);
                 }
-                
+
             }
         }
     }

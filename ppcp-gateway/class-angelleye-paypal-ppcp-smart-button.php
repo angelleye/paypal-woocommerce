@@ -1399,7 +1399,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $order_data['terms'] = 1;
         $order_data['createaccount'] = 0;
         $order_data['ship_to_different_address'] = 0;
-        $order_data['shipping_method'] = ''
+        $order_data['shipping_method'] = '';
 
         // merge post data with the transaction details data during the cc_capture api call
         if (isset($_POST)) {
