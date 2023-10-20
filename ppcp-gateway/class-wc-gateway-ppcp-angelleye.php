@@ -521,6 +521,10 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     }
                 }
             }
+            if($failed_result_count > 0) {
+                return false;
+            }
+            return true;
         } else {
             if (!$this->can_refund_order($order)) {
                 return new WP_Error('error', __('Refund failed.', 'paypal-for-woocommerce'));

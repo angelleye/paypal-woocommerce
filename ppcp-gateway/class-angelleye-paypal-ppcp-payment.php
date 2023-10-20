@@ -2616,60 +2616,6 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_refund_order_admin($order, $order_data) {
-        try {
-            if ($order === false) {
-                return false;
-            }
-            $note_to_payer = $order_data['angelleye_ppcp_note_to_buyer_capture'] ?? '';
-            if (strlen($note_to_payer) > 255) {
-                $note_to_payer = substr($note_to_payer, 0, 252) . '...';
-            }
-            $order_id = $order->get_id();
-            $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
-            $reason = !empty($reason) ? $reason : 'Refund';
-            $body_request['note_to_payer'] = $reason;
-            $amount_value = isset($order_data['_angelleye_ppcp_refund_price']) ? angelleye_ppcp_round($order_data['_angelleye_ppcp_refund_price'], $decimals) : '';
-            if (!empty($amount_value) && $amount_value > 0.1) {
-                $body_request['amount'] = array(
-                    'value' => $amount_value,
-                    'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount_value)
-                );
-            }
-            $body_request = angelleye_ppcp_remove_empty_key($body_request);
-            $transaction_id = $order_data['angelleye_ppcp_refund_data'] ?? '';
-            $args = array(
-                'method' => 'POST',
-                'timeout' => 60,
-                'redirection' => 5,
-                'httpversion' => '1.1',
-                'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                'body' => $body_request,
-                'cookies' => array()
-            );
-            $this->api_response = $this->api_request->request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
-            if (isset($this->api_response['status'])) {
-                
-            } else {
-                $error_email_notification_param = array(
-                    'request' => 'refund_order',
-                    'order_id' => $order_id
-                );
-                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
-                if (!empty($error_message)) {
-                    $order->add_order_note('Error Message : ' . $error_message);
-                }
-                return false;
-            }
-            return true;
-        } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
-            return new WP_Error('error', $ex->getMessage());
-        }
-    }
-
     public function angelleye_ppcp_add_payment_source_parameter($request) {
         try {
             $payment_method_name = '';
@@ -4275,37 +4221,36 @@ class AngellEYE_PayPal_PPCP_Payment {
                         if ($remaining_refund <= 0) {
                             return $prepare_refund_data;
                         }
-                        $refund_to_add = min($remaining_refund, $amount, $capture_amount);
-                        if ($refund_to_add > 0) {
-                            $transaction_data = [];
-                            foreach ($capture_data_list[$item_id] as $temp_transaction_id => $temp_capture_amount) {
-                                if (!array_key_exists($temp_transaction_id, $used_transaction_id)) {
-                                    $transaction_data[] = $temp_capture_amount;
-                                }
+                        $transaction_data = [];
+                        foreach ($capture_data_list[$item_id] as $temp_transaction_id => $temp_capture_amount) {
+                            if (!array_key_exists($temp_transaction_id, $used_transaction_id)) {
+                                $transaction_data[] = $temp_capture_amount;
                             }
-                            if (!empty($transaction_data)) {
-                                sort($transaction_data);
-                                $closest_amount = angelleye_ppcp_binarySearch($transaction_data, $refund_to_add);
-                                if ($closest_amount !== null) {
-                                    foreach ($capture_data_list[$item_id] as $temp_transaction_id => $temp_capture_amount) {
-                                        if (!array_key_exists($temp_transaction_id, $used_transaction_id)) {
-                                            if ($closest_amount == $temp_capture_amount) {
-                                                $closest_transaction_id = $temp_transaction_id;
-                                                break;
-                                            }
+                        }
+                        if (!empty($transaction_data)) {
+                            sort($transaction_data);
+                            $refund_to_add = min($remaining_refund, $amount);
+                            $closest_amount = angelleye_ppcp_binarySearch($transaction_data, $refund_to_add);
+                            if ($closest_amount !== null) {
+                                foreach ($capture_data_list[$item_id] as $temp_transaction_id => $temp_capture_amount) {
+                                    if (!array_key_exists($temp_transaction_id, $used_transaction_id)) {
+                                        if ($closest_amount == $temp_capture_amount) {
+                                            $closest_transaction_id = $temp_transaction_id;
+                                            break;
                                         }
                                     }
-                                    if (!empty($closest_transaction_id)) {
-                                        $refund_to_add = min($remaining_refund, $closest_amount);
-                                        $prepare_refund_data[$item_id][$closest_transaction_id] = $refund_to_add;
-                                        $ppcp_refunded_amount += $refund_to_add;
-                                        $used_transaction_id[$closest_transaction_id] = $refund_to_add;
-                                    }
-                                } else {
-                                    $prepare_refund_data[$item_id][$transaction_id] = $refund_to_add;
-                                    $ppcp_refunded_amount += $refund_to_add;
-                                    $used_transaction_id[$transaction_id] = $refund_to_add;
                                 }
+                                if (!empty($closest_transaction_id)) {
+                                    $refund_to_add = min($remaining_refund, $closest_amount);
+                                    $prepare_refund_data[$item_id][$closest_transaction_id] = $refund_to_add;
+                                    $ppcp_refunded_amount += $refund_to_add;
+                                    $used_transaction_id[$closest_transaction_id] = $refund_to_add;
+                                }
+                            } else {
+                                $refund_to_add = min($remaining_refund, $amount, $capture_amount);
+                                $prepare_refund_data[$item_id][$transaction_id] = $refund_to_add;
+                                $ppcp_refunded_amount += $refund_to_add;
+                                $used_transaction_id[$transaction_id] = $refund_to_add;
                             }
                         }
                     }
@@ -4323,6 +4268,48 @@ class AngellEYE_PayPal_PPCP_Payment {
                                 $prepare_refund_data[$item_id][$transaction_id] = $capture_amount - $used_transaction_id[$transaction_id];
                                 $ppcp_refunded_amount += $capture_amount - $used_transaction_id[$transaction_id];
                                 $used_transaction_id[$closest_transaction_id] = $capture_amount - $used_transaction_id[$transaction_id];
+                            }
+                        }
+                    }
+                }
+            }
+            if ($refund_amount > $ppcp_refunded_amount) {
+                $capture_data_list = $this->angelleye_ppcp_get_capture_data($order);
+                if (!empty($capture_data_list)) {
+                    foreach ($capture_data_list as $transaction_id => $capture_amount) {
+                        $refund_to_add = $refund_amount - $ppcp_refunded_amount;
+                        if ($refund_to_add <= 0) {
+                            return $prepare_refund_data;
+                        }
+                        $transaction_data = [];
+                        foreach ($capture_data_list as $temp_transaction_id => $temp_capture_amount) {
+                            if (!array_key_exists($temp_transaction_id, $used_transaction_id)) {
+                                $transaction_data[] = $temp_capture_amount;
+                            }
+                        }
+                        if (!empty($transaction_data)) {
+                            sort($transaction_data);
+                            $closest_amount = angelleye_ppcp_binarySearch($transaction_data, $refund_to_add);
+                            if ($closest_amount !== null) {
+                                foreach ($capture_data_list as $temp_transaction_id => $temp_capture_amount) {
+                                    if (!array_key_exists($temp_transaction_id, $used_transaction_id)) {
+                                        if ($closest_amount == $temp_capture_amount) {
+                                            $closest_transaction_id = $temp_transaction_id;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (!empty($closest_transaction_id)) {
+                                    $refund_to_add = min($refund_to_add, $closest_amount);
+                                    $prepare_refund_data[$item_id][$closest_transaction_id] = $refund_to_add;
+                                    $ppcp_refunded_amount += $refund_to_add;
+                                    $used_transaction_id[$closest_transaction_id] = $refund_to_add;
+                                }
+                            } else {
+                                $refund_to_add = min($refund_to_add, $capture_amount);
+                                $prepare_refund_data[$item_id][$transaction_id] = $refund_to_add;
+                                $ppcp_refunded_amount += $refund_to_add;
+                                $used_transaction_id[$transaction_id] = $refund_to_add;
                             }
                         }
                     }
