@@ -2561,6 +2561,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
                 if (!empty($order_data['refund_line_total'])) {
                     foreach ($order_data['refund_line_total'] as $item_id => $item_amount) {
+                        $ppcp_capture_details = [];
                         if (!empty($item_amount)) {
                             $transaction_id = isset($this->api_response['transaction_id']) ? $this->api_response['transaction_id'] : $transaction_id;
                             $transaction_amount = isset($this->api_response['amount']['value']) ? $this->api_response['amount']['value'] : $item_amount;
