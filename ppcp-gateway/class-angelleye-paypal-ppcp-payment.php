@@ -4373,12 +4373,31 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
+
             if (!empty($amount) && $amount > 0) {
                 $body_request['amount'] = array(
                     'value' => angelleye_ppcp_round($amount, $decimals),
                     'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount)
                 );
+                /* $fee = angelleye_ppcp_round($amount * 0.001, $decimals);
+                  if ($fee < 0.01) {
+                  $fee = 0.01;
+                  } */
+            } else {
+                /*  $fee = 0; */
             }
+            /* if ($fee > 0) {
+              $body_request['payment_instruction'] = [
+              "platform_fees" => [
+              [
+              "amount" => [
+              "currency_code" => "USD",
+              "value" => $fee
+              ]
+              ]
+              ]
+              ];
+              } */
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $args = array(
                 'method' => 'POST',
@@ -4424,6 +4443,52 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
             return new WP_Error('error', $ex->getMessage());
+        }
+    }
+
+    public function angelleye_ppcp_get_capture_details($capture_id) {
+        try {
+            $args = array(
+                'timeout' => 60,
+                'redirection' => 5,
+                'httpversion' => '1.1',
+                'blocking' => true,
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                //'body' => array(),
+                'cookies' => array()
+            );
+            $api_response = $this->api_request->request($this->paypal_refund_api . $capture_id, $args, 'get_capture');
+            $api_response = json_decode(json_encode($api_response), true);
+            if (isset($api_response['id'])) {
+                return $api_response;
+            }
+            $this->api_log->log("Unable to find the PayPal capture: " . $capture_id, 'error');
+            $this->api_log->log(print_r($api_response, true), 'error');
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
+        }
+    }
+
+    public function angelleye_ppcp_sync_ppcp_capture_details($order_id) {
+        try {
+            $order = wc_get_order($order_id);
+            if ($order === false) {
+                return false;
+            }
+            $capture_data_list = $this->angelleye_ppcp_get_capture_data_with_line_item_id($order);
+            if (!empty($capture_data_list)) {
+                foreach ($capture_data_list as $item_id => $capture) {
+                    foreach ($capture as $capture_id => $capture_amount) {
+                        $capture_details = $this->angelleye_ppcp_get_capture_details($capture_id);
+                        if (!empty($capture_details)) {
+                            
+                        }
+                    }
+                }
+            }
+        } catch (Exception $ex) {
+            
         }
     }
 }

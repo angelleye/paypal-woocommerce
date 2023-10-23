@@ -418,6 +418,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             return;
         }
         $this->angelleye_ppcp_order_action_list($order_id);
+        $this->payment_request->angelleye_ppcp_sync_ppcp_capture_details($order_id);
         $this->angelleye_ppcp_order_meta_auth_capture_html();
     }
 
