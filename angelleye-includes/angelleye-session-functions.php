@@ -75,32 +75,38 @@ if (!function_exists('angelleye_session_init')) {
 }
 
 /**
- * This function creates backup of the PayPal express checkouts sessions before the YITH deposit creates suborder
+ * Stores the PayPal Express Checkout sessions data as backup before the YITH Deposit plugin creates sub-order
  */
-function angelleye_backup_express_checkout_session() {
-    $save_session_keys = [
-        'paypal_express_checkout', 'paypal_express_terms', 'ec_save_to_account', 'post_data',
-        'shiptoname', 'payeremail', 'validate_data', 'angelleye_fraudnet_f'
-    ];
-    $backup_array = [];
-    foreach ($save_session_keys as $session_key) {
-        $backup_array[$session_key] = angelleye_get_session($session_key);
-    }
+if (!function_exists('angelleye_backup_express_checkout_session')) {
+    function angelleye_backup_express_checkout_session()
+    {
+        $save_session_keys = [
+            'paypal_express_checkout', 'paypal_express_terms', 'ec_save_to_account', 'post_data',
+            'shiptoname', 'payeremail', 'validate_data', 'angelleye_fraudnet_f'
+        ];
+        $backup_array = [];
+        foreach ($save_session_keys as $session_key) {
+            $backup_array[$session_key] = angelleye_get_session($session_key);
+        }
 
-    angelleye_set_session("ae_yith_session_backup", $backup_array);
+        angelleye_set_session("ae_yith_session_backup", $backup_array);
+    }
 }
 
 /**
- * This function restores the paypal express checkout sessions after the yith deposit creates suborder
+ * Restores the PayPal Express Checkout sessions after the YITH Deposit plugin creates sub-order
  */
-function angelleye_restore_express_checkout_session() {
-    $ae_yith_session_backup = angelleye_get_session("ae_yith_session_backup");
+if (!function_exists('angelleye_restore_express_checkout_session')) {
+    function angelleye_restore_express_checkout_session()
+    {
+        $ae_yith_session_backup = angelleye_get_session("ae_yith_session_backup");
 
-    if (is_array($ae_yith_session_backup)) {
-        foreach ($ae_yith_session_backup as $session_key => $data) {
-            angelleye_set_session($session_key, $data);
+        if (is_array($ae_yith_session_backup)) {
+            foreach ($ae_yith_session_backup as $session_key => $data) {
+                angelleye_set_session($session_key, $data);
+            }
         }
-    }
 
-    angelleye_unset_session("ae_yith_session_backup");
+        angelleye_unset_session("ae_yith_session_backup");
+    }
 }
