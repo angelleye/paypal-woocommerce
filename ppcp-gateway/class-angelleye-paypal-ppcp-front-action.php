@@ -100,11 +100,17 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     wp_redirect(wc_get_cart_url());
                     exit();
                 case "create_order":
-                    // check if billing and shipping details posted from frontend then update cart
+                    // clear any notices in woocommerce session so that next request can fulfil the updated request
+                    // basically this is an edge case when first request fails due to any issue with error in session
+                    // and a user tries to click place order button again.
+                    wc_clear_notices();
+
                     global $woocommerce;
                     // Remove the shipping address override flag from session so that we can use the
                     // PayPal returned shipping address for other payment methods except google_pay
                     AngellEye_Session_Manager::unset('shipping_address_updated_from_callback');
+
+                    // check if billing and shipping details posted from frontend then update cart
                     if (isset($_REQUEST['billing_address_source'])) {
                         $billing_address = json_decode(stripslashes($_REQUEST['billing_address_source']), true);
                         if (!empty($billing_address)) {
