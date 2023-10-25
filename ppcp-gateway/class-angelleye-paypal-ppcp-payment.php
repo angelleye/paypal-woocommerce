@@ -2009,6 +2009,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $body = [
                         'customer_id' => $paypal_generated_customer_id,
                     ];
+                    $id_token_key .= '_customer_' . $paypal_generated_customer_id;
                 }
             }
             $id_token_data = AngellEye_Session_Manager::get($id_token_key, null);
@@ -2054,7 +2055,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
                 if (!empty($paypal_generated_customer_id)) {
                     $body = ['target_customer_id' => $paypal_generated_customer_id];
-                    $id_token_key .= '_target_' . $paypal_generated_customer_id;
+                    $id_token_key .= '_customer_' . $paypal_generated_customer_id;
                 }
             }
 
