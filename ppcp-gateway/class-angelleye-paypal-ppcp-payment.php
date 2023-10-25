@@ -2014,6 +2014,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $id_token_data = AngellEye_Session_Manager::get($id_token_key, null);
             if (!empty($id_token_data) && isset($id_token_data['expires_in'], $id_token_data['client_token'])) {
+                // Make sure to keep the 15 mins threshold for token expiration, so that a customer has got min
+                // 15 mins time to finish his checkout
                 $next_15_mins = time() + 900;
                 if ($id_token_data['expires_in'] > $next_15_mins) {
                     $this->client_token = $id_token_data['client_token'];
@@ -2061,6 +2063,8 @@ class AngellEYE_PayPal_PPCP_Payment {
 
             $id_token_data = AngellEye_Session_Manager::get($id_token_key, null);
             if (!empty($id_token_data) && isset($id_token_data['expires_in'], $id_token_data['id_token'])) {
+                // Make sure to keep the 15 mins threshold for token expiration, so that a customer has got min
+                // 15 mins time to finish his checkout
                 $next_15_mins = time() + 900;
                 if ($id_token_data['expires_in'] > $next_15_mins) {
                     $this->client_token = $id_token_data['id_token'];
