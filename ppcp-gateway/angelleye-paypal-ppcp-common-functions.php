@@ -193,9 +193,9 @@ if (!function_exists('angelleye_ppcp_readable')) {
 if (!function_exists('angelleye_split_name')) {
     function angelleye_split_name($fullName) {
         $parts = explode(' ', $fullName);
-        $lastname = array_pop($parts);
-        $firstname = implode(" ", $parts);
-        return [$firstname, $lastname];
+        $firstName = array_shift($parts);
+        $lastName = implode(' ', $parts);
+        return [$firstName, $lastName];
     }
 }
 
@@ -281,9 +281,9 @@ if (!function_exists('angelleye_ppcp_get_mapped_shipping_address')) {
             return $initialData;
         }
         if (!empty($checkout_details->purchase_units[0]->shipping->name->full_name)) {
-            $name = explode(' ', $checkout_details->purchase_units[0]->shipping->name->full_name);
-            $first_name = array_shift($name);
-            $last_name = implode(' ', $name);
+            $name = angelleye_split_name($checkout_details->purchase_units[0]->shipping->name->full_name);
+            $first_name = $name[0];
+            $last_name = $name[1];
         } else {
             $first_name = '';
             $last_name = '';
