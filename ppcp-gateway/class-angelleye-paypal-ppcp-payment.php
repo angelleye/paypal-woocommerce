@@ -4224,7 +4224,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $transaction_data = [];
                         foreach ($capture_data_list[$item_id] as $temp_transaction_id => $temp_capture_amount) {
                             if (!array_key_exists($temp_transaction_id, $used_transaction_id)) {
-                                $transaction_data[] = $temp_capture_amount;
+                                if ($temp_capture_amount > 0) {
+                                    $transaction_data[] = $temp_capture_amount;
+                                }
                             }
                         }
                         if (!empty($transaction_data)) {
@@ -4282,20 +4284,24 @@ class AngellEYE_PayPal_PPCP_Payment {
                             return $prepare_refund_data;
                         }
                         $transaction_data = [];
-                        foreach ($capture_data_list as $temp_transaction_id => $temp_capture_amount) {
+                        foreach ($capture_amount as $temp_transaction_id => $temp_capture_amount) {
                             if (!array_key_exists($temp_transaction_id, $used_transaction_id)) {
-                                $transaction_data[] = $temp_capture_amount;
+                                if ($temp_capture_amount > 0) {
+                                    $transaction_data[] = $temp_capture_amount;
+                                }
                             }
                         }
                         if (!empty($transaction_data)) {
                             sort($transaction_data);
                             $closest_amount = angelleye_ppcp_binarySearch($transaction_data, $refund_to_add);
                             if ($closest_amount !== null) {
-                                foreach ($capture_data_list as $temp_transaction_id => $temp_capture_amount) {
-                                    if (!array_key_exists($temp_transaction_id, $used_transaction_id)) {
-                                        if ($closest_amount == $temp_capture_amount) {
-                                            $closest_transaction_id = $temp_transaction_id;
-                                            break;
+                                foreach ($capture_data_list as $inner_item_is => $inner_capture_data) {
+                                    foreach ($inner_capture_data as $inner_transaction_id => $inner_transaction_amount) {
+                                        if (!array_key_exists($inner_transaction_id, $used_transaction_id)) {
+                                            if ($closest_amount == $inner_transaction_amount) {
+                                                $closest_transaction_id = $inner_transaction_id;
+                                                break;
+                                            }
                                         }
                                     }
                                 }
@@ -4328,12 +4334,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $ppcp_capture_details = $item->get_meta('_ppcp_capture_details');
                 if (!empty($ppcp_capture_details)) {
                     foreach ($ppcp_capture_details as $key => $capture_data) {
-                        if(isset($capture_data['total_refund_amount'])) {
+                        if (isset($capture_data['total_refund_amount'])) {
                             $capture_data_list[$item->get_id()][$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'] - $capture_data['total_refund_amount'];
                         } else {
                             $capture_data_list[$item->get_id()][$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'];
                         }
-                        
                     }
                 }
             }
@@ -4353,7 +4358,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $ppcp_capture_details = $item->get_meta('_ppcp_capture_details');
                 if (!empty($ppcp_capture_details)) {
                     foreach ($ppcp_capture_details as $key => $capture_data) {
-                        $capture_data_list[$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'];
+                        if (isset($capture_data['total_refund_amount'])) {
+                            $capture_data_list[$item->get_id()][$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'] - $capture_data['total_refund_amount'];
+                        } else {
+                            $capture_data_list[$item->get_id()][$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'];
+                        }
                     }
                 }
             }
@@ -4504,9 +4513,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return;
             }
             foreach ($ppcp_capture as $key => $ppcp_capture_details) {
-                if($capture_id === $ppcp_capture_details['_ppcp_transaction_id']) {
-                    $ppcp_capture[$key]['refund'][] =  array('refund_id' => $refund_id, 'refund_amount' => $refund_amount);
-                    if(isset($ppcp_capture[$key]['total_refund_amount'])) {
+                if ($capture_id === $ppcp_capture_details['_ppcp_transaction_id']) {
+                    $ppcp_capture[$key]['refund'][] = array('refund_id' => $refund_id, 'refund_amount' => $refund_amount);
+                    if (isset($ppcp_capture[$key]['total_refund_amount'])) {
                         $ppcp_capture[$key]['total_refund_amount'] = $ppcp_capture[$key]['total_refund_amount'] + $refund_amount;
                     } else {
                         $ppcp_capture[$key]['total_refund_amount'] = $refund_amount;
