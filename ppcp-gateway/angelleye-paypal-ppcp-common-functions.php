@@ -3,7 +3,9 @@ if (!function_exists('angelleye_ppcp_remove_empty_key')) {
 
     function angelleye_ppcp_remove_empty_key($data) {
         $original = $data;
-        $data = array_filter($data);
+        $data = array_filter($data, function ($element) {
+            return !empty($element) || is_bool($element);
+        });
         $data = array_map(function ($e) {
             return is_array($e) ? angelleye_ppcp_remove_empty_key($e) : $e;
         }, $data);
@@ -979,7 +981,7 @@ if (!empty($change_proceed_checkout_button_text)) {
             global $change_proceed_checkout_button_text;
             ?>
             <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button alt wc-forward<?php echo esc_attr(wc_wp_theme_get_element_class_name('button') ? ' ' . wc_wp_theme_get_element_class_name('button') : '' ); ?>">
-            <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'woocommerce'); ?>
+                <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'woocommerce'); ?>
             </a>
             <?php
         }

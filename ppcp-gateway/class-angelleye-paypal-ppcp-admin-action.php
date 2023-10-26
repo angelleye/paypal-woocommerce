@@ -539,18 +539,24 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 <tr>
                     <td>
                         <?php
-                        $ppcp_Capture_key_replace = array('_ppcp_transaction_id' => 'Transaction ID', '_ppcp_transaction_date' => 'Date', '_ppcp_transaction_amount' => 'Amount');
+                        $ppcp_Capture_key_replace = array('_ppcp_transaction_id' => 'Transaction ID', '_ppcp_transaction_date' => 'Date', '_ppcp_transaction_amount' => 'Amount', 'total_refund_amount' => 'Total Refund Amount');
                         echo '<b>' . __('Capture Details', '') . '</b>: ';
                         $capture_details_html = '';
                         if (is_array($meta_array) && !empty($meta_array)) {
-                            $total_element = count($meta_array);
+                            if(isset($meta_array['refund'])) {
+                                $total_element = 4;
+                            } else {
+                                $total_element = 3;
+                            }
                             $i = 1;
                             foreach ($meta_array as $key => $value) {
-                                $capture_details_html .= $ppcp_Capture_key_replace[$key] . ': ' . $value;
-                                if($total_element !== $i) {
-                                    $capture_details_html .= ' | ';
+                                if(!is_array($value)) {
+                                    $capture_details_html .= $ppcp_Capture_key_replace[$key] . ': ' . $value;
+                                    if($total_element !== $i) {
+                                        $capture_details_html .= ' | ';
+                                    }
+                                    $i = $i + 1;
                                 }
-                                $i = $i + 1;
                             }
                         }
                         echo $capture_details_html;

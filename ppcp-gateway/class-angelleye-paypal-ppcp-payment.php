@@ -2476,11 +2476,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (strlen($note_to_payer) > 255) {
                 $note_to_payer = substr($note_to_payer, 0, 252) . '...';
             }
-
-            $final_capture = false;
-            if (isset($order_data['additionalCapture']) && 'no' === $order_data['additionalCapture']) {
-                $final_capture = true;
-            }
             $order_id = $order->get_id();
             $angelleye_ppcp_payment_method_title = $this->get_payment_method_title_for_order($order_id);
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
@@ -2493,10 +2488,14 @@ class AngellEYE_PayPal_PPCP_Payment {
                 ),
                 'note_to_payer' => $note_to_payer,
                 'payment_instruction' => array('payee' => array('merchant_id' => $this->merchant_id)),
-                'invoice_id' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number()),
-                'final_capture' => $final_capture,
+                'invoice_id' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number())
             );
+            $final_capture = false;
+            if (isset($order_data['additionalCapture']) && 'no' === $order_data['additionalCapture']) {
+                $final_capture = true;
+            }
             $body_request = angelleye_ppcp_remove_empty_key($capture_arg);
+            $body_request['final_capture'] = $final_capture;
             $authorization_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
             $args = array(
                 'method' => 'POST',
@@ -4329,7 +4328,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $ppcp_capture_details = $item->get_meta('_ppcp_capture_details');
                 if (!empty($ppcp_capture_details)) {
                     foreach ($ppcp_capture_details as $key => $capture_data) {
-                        $capture_data_list[$item->get_id()][$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'];
+                        if(isset($capture_data['total_refund_amount'])) {
+                            $capture_data_list[$item->get_id()][$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'] - $capture_data['total_refund_amount'];
+                        } else {
+                            $capture_data_list[$item->get_id()][$capture_data['_ppcp_transaction_id']] = $capture_data['_ppcp_transaction_amount'];
+                        }
+                        
                     }
                 }
             }
@@ -4427,6 +4431,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $ppcp_refund_details = array_merge($_ppcp_refund_details, $ppcp_refund_details);
                 }
                 wc_update_order_item_meta($item_id, '_ppcp_refund_details', $ppcp_refund_details);
+                $this->angelleye_ppcp_update_capture_details($transaction_id, $refund_transaction_id, $gross_amount, $item_id);
             } else {
                 $error_email_notification_param = array(
                     'request' => 'refund_order',
@@ -4487,6 +4492,28 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_update_capture_details($capture_id, $refund_id, $refund_amount, $item_id) {
+        try {
+            $ppcp_capture = wc_get_order_item_meta($item_id, '_ppcp_capture_details', true);
+            if (empty($ppcp_capture)) {
+                return;
+            }
+            foreach ($ppcp_capture as $key => $ppcp_capture_details) {
+                if($capture_id === $ppcp_capture_details['_ppcp_transaction_id']) {
+                    $ppcp_capture[$key]['refund'][] =  array('refund_id' => $refund_id, 'refund_amount' => $refund_amount);
+                    if(isset($ppcp_capture[$key]['total_refund_amount'])) {
+                        $ppcp_capture[$key]['total_refund_amount'] = $ppcp_capture[$key]['total_refund_amount'] + $refund_amount;
+                    } else {
+                        $ppcp_capture[$key]['total_refund_amount'] = $refund_amount;
+                    }
+                }
+            }
+            wc_update_order_item_meta($item_id, '_ppcp_capture_details', $ppcp_capture);
         } catch (Exception $ex) {
             
         }
