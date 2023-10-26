@@ -343,6 +343,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         // This is utilised on cart page to inform the shipping changes or cart total changes in frontend
         add_action('woocommerce_after_cart_totals', [$this, 'add_cart_data_in_html'], 99);
 
+        // Always load JS script on checkout page - Fixes the compatibility issue with 0 amount
+        // and when shipping config is set to "Hide shipping costs until an address is entered"
+        add_action( 'wp_head', [ $this, 'angelleye_load_js_sdk' ], 100 );
+
         add_filter('wfocu_wc_get_supported_gateways', array($this, 'wfocu_upsell_supported_gateways'), 99, 1);
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
             add_filter('wfocu_subscriptions_get_supported_gateways', array($this, 'wfocu_subscription_supported_gateways'), 99, 1);
@@ -350,6 +354,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
         $asyncJsParams = $this->getClientIdMerchantId();
         self::$jsUrl = add_query_arg($asyncJsParams, 'https://www.paypal.com/sdk/js');
+    }
+
+    public function angelleye_load_js_sdk()
+    {
+        if (is_checkout() || is_checkout_pay_page()) {
+            angelleye_ppcp_add_css_js();
+        }
     }
 
     /*
