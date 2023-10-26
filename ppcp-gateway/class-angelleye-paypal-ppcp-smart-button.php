@@ -1119,11 +1119,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $attributes = ['data-namespace' => 'angelleye_paypal_sdk'];
         if (!isset($_GET['paypal_order_id'])) {
             $ae_ppcp_account_reconnect_notice = get_option('ae_ppcp_account_reconnect_notice');
-            if (empty($ae_ppcp_account_reconnect_notice)) {
-                if ($this->advanced_card_payments && (
-                    is_checkout() || is_checkout_pay_page() ||
-                    ($this->enable_tokenized_payments && is_user_logged_in() && is_add_payment_method_page())
-                    )) {
+            if (empty($ae_ppcp_account_reconnect_notice) && $this->advanced_card_payments) {
+                if (is_checkout() || is_checkout_pay_page() || ($this->enable_tokenized_payments && is_user_logged_in() && is_add_payment_method_page())) {
                     $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
                     if (!empty($this->client_token)) {
                         $attributes['data-client-token'] = $this->client_token;
