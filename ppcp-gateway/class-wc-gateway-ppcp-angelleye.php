@@ -155,7 +155,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (ob_get_length()) {
                 ob_end_clean();
             }
-            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&redirected=true'));
+            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'));
             die;
         }
     }

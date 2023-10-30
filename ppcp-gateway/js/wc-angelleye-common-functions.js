@@ -79,6 +79,11 @@ const angelleyeOrder = {
 	},
 	getWooNoticeAreaSelector: () => {
 		let wooNoticeClass = '.woocommerce-notices-wrapper:first';
+		// On some step checkout pages (e.g CheckoutWC) there are different notice wrappers under each form so this adds support to display in relevant section
+		const checkoutFormSelector = angelleyeOrder.getCheckoutSelectorCss();
+		if (jQuery(checkoutFormSelector).find(wooNoticeClass).length) {
+			return `${checkoutFormSelector} ${wooNoticeClass}`;
+		}
 		if (jQuery(wooNoticeClass).length) {
 			return wooNoticeClass;
 		}
@@ -193,7 +198,9 @@ const angelleyeOrder = {
 					messages = messages.map(function (message) {
 						return '<li>' + message + '</li>';
 					}).join('');
-					messages = '<li>' + angelleye_ppcp_manager.error_message_checkout_validation + '</li>' + messages;
+					if (angelleye_ppcp_manager.error_message_checkout_validation !== "") {
+						messages = '<li>' + angelleye_ppcp_manager.error_message_checkout_validation + '</li>' + messages;
+					}
 				} else {
 					messages = '<li>' + messages + '</li>';
 				}
@@ -240,6 +247,7 @@ const angelleyeOrder = {
 		let errorMessageLocation = angelleyeOrder.getWooNoticeAreaSelector();
 		jQuery(errorMessageLocation).prepend('<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' + errorMessage + '</div>');
 		jQuery(errorMessageLocation).removeClass('processing').unblock();
+		if (!jQuery(errorMessageLocation).is(':visible')) jQuery(errorMessageLocation).css('display', 'block');
 		jQuery(errorMessageLocation).find('.input-text, select, input:checkbox').trigger('validate').trigger('blur');
 		angelleyeOrder.scrollToWooCommerceNoticesSection();
 	},
@@ -263,7 +271,7 @@ const angelleyeOrder = {
 		console.log('create_order_error', error);
 		angelleyeOrder.hideProcessingSpinner();
 		jQuery(document.body).trigger('angelleye_paypal_onerror');
-		let errorMessage = error.message;
+		let errorMessage = error.message ? error.message : error;
 		if ((errorMessage.toLowerCase()).indexOf('expected an order id to be passed') > -1) {
 			if ((errorMessage.toLowerCase()).indexOf('required fields') < 0) {
 				errorMessage = 'Unable to create the order, please contact the support.';
@@ -385,7 +393,8 @@ const angelleyeOrder = {
 				onCancel: function (data, actions) {
 					angelleyeOrder.hideProcessingSpinner();
 					angelleyeOrder.onCancel();
-				}, onClick: function (data, actions) {
+				},
+				onClick: function (data, actions) {
 					angelleyeOrder.setPaymentMethodSelector(data.fundingSource);
 				},
 				onError: function (err) {
@@ -445,40 +454,22 @@ const angelleyeOrder = {
 		if (typeof angelleye_paypal_sdk === 'undefined') {
 			return;
 		}
+		let spinnerSelectors = checkoutSelector;
+		if (jQuery('#customer_details').length && jQuery('.woocommerce-checkout-review-order').length) {
+			spinnerSelectors = '#customer_details, .woocommerce-checkout-review-order';
+		}
 		jQuery(checkoutSelector).addClass('HostedFields');
 		angelleye_paypal_sdk.HostedFields.render({
 			createOrder: function () {
 				jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 				if (jQuery(checkoutSelector).is('.createOrder') === false) {
 					jQuery(checkoutSelector).addClass('createOrder');
-					let data;
-					if (angelleyeOrder.isCheckoutPage()) {
-						data = jQuery(checkoutSelector).serialize();
-					}
-					return fetch(angelleye_ppcp_manager.create_order_url, {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/x-www-form-urlencoded'
-						},
-						body: data
-					}).then(function (res) {
-						return res.json();
-					}).then(function (data) {
-						if (typeof data.success !== 'undefined') {
-							let messages = data.data.messages ? data.data.messages : data.data;
-							if ('string' === typeof messages) {
-								angelleyeOrder.showError(messages);
-							} else {
-								let messageItems = messages.map(function (message) {
-									return '<li>' + message + '</li>';
-								}).join('');
-								angelleyeOrder.showError('<ul>' + messageItems + '</ul>');
-							}
-							return '';
-						} else {
-							return data.orderID;
-						}
-					});
+					return angelleyeOrder.createOrder({}).then(function (data) {
+						return data.orderID;
+					}).catch((error) => {
+						angelleyeOrder.showError(error);
+						return '';
+					})
 				}
 			},
 			onCancel: function (data, actions) {
@@ -545,7 +536,7 @@ const angelleyeOrder = {
 
 			// Unhook previous handlers so that we don't run the same handler(s) again to create the orders
 			jQuery(document.body).off('submit_paypal_cc_form');
-			jQuery(document.body).on('submit_paypal_cc_form', function (event) {
+			jQuery(document.body).on('submit_paypal_cc_form', (event) => {
 				console.log('submit_paypal_cc_form called');
 				event.preventDefault();
 				let state = hf.getState();
@@ -555,7 +546,7 @@ const angelleyeOrder = {
 						if (typeof cardname !== 'undefined' && cardname !== null || cardname.length !== 0) {
 							if (jQuery.inArray(cardname, angelleye_ppcp_manager.disable_cards) !== -1) {
 								jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
-								angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
+								angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
 								jQuery('#angelleye_ppcp_cc-card-number').addClass('ppcp-invalid-cart');
 								jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 								angelleyeOrder.showError(angelleye_ppcp_manager.card_not_supported);
@@ -565,7 +556,7 @@ const angelleyeOrder = {
 					}
 				} else {
 					jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
-					angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
+					angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
 					jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 					angelleyeOrder.showError(angelleye_ppcp_manager.fields_not_valid);
 					return;
@@ -576,19 +567,13 @@ const angelleyeOrder = {
 				if (formValid === false) {
 					jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 					jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
-					angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
+					angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
 					angelleyeOrder.showError(angelleye_ppcp_manager.fields_not_valid);
 					return;
 				}
 				let contingencies = [];
 				contingencies = [angelleye_ppcp_manager.three_d_secure_contingency];
-				jQuery('#customer_details, .woocommerce-checkout-review-order').block({
-					message: null,
-					overlayCSS: {
-						background: '#fff',
-						opacity: 0.6
-					}
-				});
+
 				let firstName;
 				let lastName;
 				if (angelleye_ppcp_manager.is_pay_page === 'yes') {
@@ -598,6 +583,10 @@ const angelleyeOrder = {
 					firstName = document.getElementById('billing_first_name') ? document.getElementById('billing_first_name').value : '';
 					lastName = document.getElementById('billing_last_name') ? document.getElementById('billing_last_name').value : '';
 				}
+				// Remove any existing processing spinner as we don't know if a spinner has been added by woocommerce on
+				// place order button click or any third party button added/not added the spinner
+				angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
+				angelleyeOrder.showProcessingSpinner(spinnerSelectors);
 				hf.submit({
 					contingencies: contingencies,
 					cardholderName: firstName + ' ' + lastName
@@ -607,8 +596,9 @@ const angelleyeOrder = {
 							angelleyeOrder.checkoutFormCapture({checkoutSelector, payPalOrderId: payload.orderId});
 						}
 					}, function (error) {
+						console.log('hf_submit_error_handler', error)
 						jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
-						angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
+						angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
 						let error_message = '';
 						if (Array.isArray(error.details) && error.details[0]['description']) {
 							error_message = error.details[0]['description'];
@@ -623,10 +613,14 @@ const angelleyeOrder = {
 							angelleyeOrder.showError(error_message);
 						}
 					}
-				);
+				).catch((error) => {
+					console.log('hf_submit_exception_handler', error);
+				});
 			});
-		}).catch(function (err) {
-			console.log('error: ', JSON.stringify(err));
+		}).catch(function (error) {
+			// We don't need to display this error to customers as this is unrelated. This usually throws an error like:
+			// {"name":"BraintreeError","code":"HOSTED_FIELDS_TIMEOUT","message":"Hosted Fields timed out when attempting to set up.","type":"UNKNOWN"}
+			console.log('error: ', JSON.stringify(error));
 		});
 	},
 	applePayDataInit: async () => {
@@ -651,6 +645,7 @@ const angelleyeOrder = {
 	},
 	updateCartTotalsInEnvironment: (data) => {
 		let cartTotals;
+		let response = {renderNeeded: true};
 		if (data) {
 			cartTotals = data;
 		} else if (jQuery('#angelleye_cart_totals').length) {
@@ -665,15 +660,21 @@ const angelleyeOrder = {
 			};
 			const cartDetails = angelleyeOrder.getCartDetails();
 			if (cartDetails.currencyCode !== cartTotals.currencyCode) {
-				console.log('Currency changed, refreshing PayPal Lib SDK');
+				console.log(`Currency changed, refreshing PayPal Lib SDK: ${cartDetails.currencyCode} => ${cartTotals.currencyCode}`);
+				let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
+				angelleyeOrder.showProcessingSpinner(checkoutSelector);
 				angelleye_ppcp_manager.paypal_sdk_url = pfwUrlHelper.setQueryParam('currency', cartTotals.currencyCode, angelleye_ppcp_manager.paypal_sdk_url);
 				window.angelleyeLoadAsyncLibs(() => {
 					updateCartTotal();
+					angelleyeOrder.renderPaymentButtons();
+					angelleyeOrder.hideProcessingSpinner(checkoutSelector);
 				});
+				response.renderNeeded = false;
 			} else {
 				updateCartTotal();
 			}
 		}
+		return response;
 	},
     addPaymentMethodAdvancedCreditCard: () => {
         if (typeof angelleye_paypal_sdk === 'undefined') {
@@ -755,37 +756,32 @@ const angelleyeOrder = {
 			}
 		}
 	},
+	renderPaymentButtons: () => {
+		angelleyeOrder.hideShowPlaceOrderButton();
+		angelleyeOrder.renderSmartButton();
+		if (angelleyeOrder.isHostedFieldEligible() === true) {
+			jQuery('#angelleye_ppcp_cc-card-number iframe').length === 0 ? jQuery(angelleyeOrder.getCheckoutSelectorCss()).removeClass('HostedFields') : null;
+			jQuery('.checkout_cc_separator').show();
+			jQuery('#wc-angelleye_ppcp-cc-form').show();
+			angelleyeOrder.renderHostedButtons();
+		}
+	},
 	hooks: {
-		onPaymentMethodChange: () => {
-			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function (event) {
+		handleWooEvents: () => {
+			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function (event, data) {
+				console.log(`hook_received => ${event.type}`, data, angelleyeOrder.getCartDetails());
 				angelleyeOrder.dequeueEvent(event.type);
-				angelleyeOrder.hideShowPlaceOrderButton();
-				setTimeout(function () {
-					angelleyeOrder.renderSmartButton();
-					if (angelleyeOrder.isHostedFieldEligible() === true) {
-						jQuery('#angelleye_ppcp_cc-card-number iframe').length === 0 ? jQuery(angelleyeOrder.getCheckoutSelectorCss()).removeClass('HostedFields') : null;
-						jQuery('.checkout_cc_separator').show();
-						jQuery('#wc-angelleye_ppcp-cc-form').show();
-						angelleyeOrder.renderHostedButtons();
-					}
-				}, 300);
-			});
-			if (angelleyeOrder.isCartPage()) {
-				// jQuery(document.body).on('updated_cart_totals', async function (event) {
-				// 	angelleyeOrder.dequeueEvent(event.type);
-				// 	await angelleyeOrder.applePayDataInit();
-				// });
-			}
-		},
-		onCartValueUpdate: () => {
-			jQuery(document.body).on('updated_cart_totals updated_checkout', function (event, data) {
-				angelleyeOrder.dequeueEvent(event.type);
+
+				let response;
 				if (typeof data !== 'undefined' && typeof data["fragments"] !== 'undefined' && typeof data["fragments"]["angelleye_payments_data"] !== "undefined") {
-					angelleyeOrder.updateCartTotalsInEnvironment(JSON.parse(data["fragments"]["angelleye_payments_data"]));
+					response = angelleyeOrder.updateCartTotalsInEnvironment(JSON.parse(data["fragments"]["angelleye_payments_data"]));
 				} else if (event.type === 'updated_cart_totals') {
-					angelleyeOrder.updateCartTotalsInEnvironment();
+					response = angelleyeOrder.updateCartTotalsInEnvironment();
 				}
-				console.log('cart update hook finished', data, angelleyeOrder.getCartDetails());
+
+				if (!response || response.renderNeeded) {
+					angelleyeOrder.renderPaymentButtons();
+				}
 			});
 		},
 		handleRaceConditionOnWooHooks: () => {

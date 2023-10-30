@@ -74,8 +74,7 @@ function initSmartButtons() {
 	// Hook the function to run on totals, cart or checkout updates
 	angelleyeOrder.updateCartTotalsInEnvironment();
 	angelleyeOrder.hooks.onPaymentCancellation();
-	angelleyeOrder.hooks.onPaymentMethodChange();
-	angelleyeOrder.hooks.onCartValueUpdate();
+	angelleyeOrder.hooks.handleWooEvents();
 
 	// handle the scenario where the cart updated or checkout_updated hook is already triggered before above hooks are bound
 	angelleyeOrder.triggerPendingEvents();
