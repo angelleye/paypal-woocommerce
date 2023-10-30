@@ -63,7 +63,7 @@ if ( wc_tax_enabled() ) {
 				endif;
 				?>
 				<th class="wc-order-edit-line-item" width="1%">&nbsp;</th>
-                                <th class="ppcp_shipment_tracking">Shipment Tracking</th>
+                                <th class="ppcp_shipment_tracking" width="5%" style="display: none;">Shipment Tracking</th>
 			</tr>
 		</thead>
 		<tbody id="order_line_items">
@@ -89,7 +89,7 @@ if ( wc_tax_enabled() ) {
 			<?php
 			$shipping_methods = WC()->shipping() ? WC()->shipping()->load_shipping_methods() : array();
 			foreach ( $line_items_shipping as $item_id => $item ) {
-				include WC_ABSPATH . 'includes/admin/meta-boxes/views/html-order-shipping.php';
+				include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/wc-admin/html-order-shipping.php');
 			}
 			do_action( 'woocommerce_admin_order_items_after_shipping', $order->get_id() );
 			?>

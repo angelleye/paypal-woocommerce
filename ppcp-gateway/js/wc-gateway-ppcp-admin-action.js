@@ -61,6 +61,9 @@ jQuery(function ($) {
                 }
             }
         });
+        $('#woocommerce-order-items').on('click', 'button.angelleye-ppcp-shipment-tracking', function (e) {
+            $('.ppcp_shipment_tracking').show();
+        });
     });
     $('#order_metabox_angelleye_ppcp_payment_action').change(function (e) {
         e.preventDefault();

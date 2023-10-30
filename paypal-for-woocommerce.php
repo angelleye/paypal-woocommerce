@@ -128,7 +128,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_action('init', array($this, 'load_plugin_textdomain'));
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
             
-            add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 30 );
+            add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 32 );
 
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-payment-logger.php';
             
@@ -1652,10 +1652,10 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
         
         public function add_meta_boxes() {
-            $current_screen = get_current_screen();
-            $screen_id = $current_screen->id;
+            $screen = get_current_screen();
+            $screen_id = $screen ? $screen->id : '';
             require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/admin/class-wc-meta-box-order-items-ppcp.php';
-            remove_meta_box('woocommerce-order-items', 'shop_order', 'normal');
+            remove_meta_box('woocommerce-order-items', $screen_id, 'normal');
             add_meta_box( 'woocommerce-order-items', __( 'Items', 'woocommerce' ), 'Custom_WC_Meta_Box_Order_Items::output', $screen_id, 'normal', 'high' );
         }
     }

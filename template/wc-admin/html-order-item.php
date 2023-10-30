@@ -188,5 +188,5 @@ $row_class    = apply_filters( 'woocommerce_admin_html_order_item_class', ! empt
 			<?php endif; ?>
 		</div>
 	</td>
-        <td class="ppcp_shipment_tracking">Shipment Tracking</td>
+        <td class="ppcp_shipment_tracking" width="5%" style="display: none;"><?php do_action('ppcp_angelleye_display_shipment_widget_order_item', absint( $item_id )); ?></td>
 </tr>
