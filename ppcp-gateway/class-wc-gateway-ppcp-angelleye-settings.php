@@ -24,6 +24,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $is_sandbox;
         public $enable_tokenized_payments;
         public $is_multi_account_active;
+        public $is_package_tracking_approved = false;
 
         public static function instance() {
             if (is_null(self::$_instance)) {
@@ -82,7 +83,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 return false;
             }
             $this->setting_obj = get_option($this->gateway_key, array());
-            $defaults = array('enabled' => 'yes',
+            $defaults = array('enabled' => 'no',
                 'title' => __('PayPal', 'paypal-for-woocommerce'),
                 'description' => __(
                         'The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce'
@@ -1797,11 +1798,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
-                'google_pay_authorizations' => array(
-                    'title' => __('Google Pay', 'paypal-for-woocommerce'),
+                'paypal_shipment_tracking' => array(
+                    'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'description' => '',
                     'class' => 'ppcp_separator_heading',
+                ),
+                'google_pay_authorizations' => array(
+                    'title' => __('Google Pay', 'paypal-for-woocommerce'),
                 ),
                 'enable_google_pay' => array(
                     'title' => __('Enable Google Pay', 'paypal-for-woocommerce'),
@@ -1830,6 +1834,15 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('This controls the description which the user sees when they select Google Pay payment method during checkout.', 'paypal-for-woocommerce'),
                     'default' => __('Accept payments using Google Pay.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
+                    ),
+                'enable_paypal_shipment_tracking' => array(
+                    'title' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'label' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'type' => 'paypal_shipment_tracking',
+                    'description' => '',
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'class' => 'enable_package_tracking',
                 ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
