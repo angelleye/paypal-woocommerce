@@ -89,6 +89,7 @@ if (!function_exists('angelleye_queue_update')) {
 }
 require_once( 'angelleye-includes/angelleye-session-functions.php' );
 require_once( 'angelleye-includes/angelleye-conditional-functions.php' );
+
 /**
  * Set global parameters
  */
@@ -126,13 +127,18 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $this->minified_version = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
             add_action('init', array($this, 'load_plugin_textdomain'));
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
+            
+            add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 30 );
 
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-payment-logger.php';
+            
+            
             AngellEYE_PFW_Payment_Logger::instance();
             if (!class_exists('AngellEYE_Utility')) {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
             }
             if( is_admin() ) {
+                
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-admin-order-payment-process.php';
                 $admin_order_payment = new AngellEYE_Admin_Order_Payment_Process();
             }
@@ -380,7 +386,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         //init function
         public function init(){
             if (!class_exists("WC_Payment_Gateway")) return;
-
+            
             if(is_angelleye_multi_account_active()) {
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php';
             } else {
@@ -1644,7 +1650,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
             }
         }
+        
+        public function add_meta_boxes() {
+            $current_screen = get_current_screen();
+            $screen_id = $current_screen->id;
+            require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/admin/class-wc-meta-box-order-items-ppcp.php';
+            remove_meta_box('woocommerce-order-items', 'shop_order', 'normal');
+            add_meta_box( 'woocommerce-order-items', __( 'Items', 'woocommerce' ), 'Custom_WC_Meta_Box_Order_Items::output', $screen_id, 'normal', 'high' );
+        }
     }
+    
+    
 }
 new AngellEYE_Gateway_Paypal();
 
