@@ -1798,14 +1798,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
-                'paypal_shipment_tracking' => array(
-                    'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
-                    'type' => 'title',
-                    'description' => '',
-                    'class' => 'ppcp_separator_heading',
-                ),
                 'google_pay_authorizations' => array(
                     'title' => __('Google Pay', 'paypal-for-woocommerce'),
+                    'class' => 'ppcp_separator_heading',
+                    'type' => 'title',
                 ),
                 'enable_google_pay' => array(
                     'title' => __('Enable Google Pay', 'paypal-for-woocommerce'),
@@ -1835,6 +1831,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => __('Accept payments using Google Pay.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                     ),
+                 'paypal_shipment_tracking' => array(
+                    'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
                 'enable_paypal_shipment_tracking' => array(
                     'title' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
                     'label' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
