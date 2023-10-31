@@ -50,12 +50,27 @@ jQuery(function ($) {
                 $('.angelleye_ppcp_capture_box input[id="refund_amount"]').attr('id', 'ppcp_refund_amount');
                 if ( window.confirm( 'Are you sure you wish to process this? This action cannot be undone.' ) ) {
                     $('#is_ppcp_submited').val('yes');
+                    $('#order_metabox_angelleye_ppcp_payment_action').val('capture');
                     $("#woocommerce-order-items").block({message: null, overlayCSS: {background: "#fff", opacity: .6}});
                     $('form#post, form#order').submit();
                 } else {
                     e.preventDefault();
                     $('.angelleye_ppcp_capture_box input[name="ppcp_refund_amount"]').attr('name', 'refund_amount');
                     $('.angelleye_ppcp_capture_box input[id="ppcp_refund_amount"]').attr('id', 'refund_amount');
+                    $('#is_ppcp_submited').val('no');
+                    $("#woocommerce-order-items").unblock();
+                }
+            }
+        });
+        $('#woocommerce-order-items').on('click', '#send_tracking_number_to_paypal_line', function (e) {
+            if ($('#is_ppcp_submited').val() === 'no') {
+                if ( window.confirm( 'Are you sure you wish to process this? This action cannot be undone.' ) ) {
+                    $('#is_ppcp_submited').val('yes');
+                    $('#order_metabox_angelleye_ppcp_payment_action').val('shipment_tracking');
+                    $("#woocommerce-order-items").block({message: null, overlayCSS: {background: "#fff", opacity: .6}});
+                    $('form#post, form#order').submit();
+                } else {
+                    e.preventDefault();
                     $('#is_ppcp_submited').val('no');
                     $("#woocommerce-order-items").unblock();
                 }

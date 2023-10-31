@@ -198,6 +198,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         case 'capture':
                             $this->angelleye_ppcp_admin_capture_action_handler($order, $order_data);
                             break;
+                        case 'shipment_tracking':
+                            $this->angelleye_ppcp_admin_shipment_tracking_action_handler($order, $order_data);
+                            break;
                         default:
                             break;
                     }
@@ -608,5 +611,13 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public function woocommerce_hidden_order_itemmeta($order_itemmeta) {
         $order_itemmeta = array_merge($order_itemmeta, array('_ppcp_refund_details', '_ppcp_capture_details'));
         return $order_itemmeta;
+    }
+    
+    public function angelleye_ppcp_admin_shipment_tracking_action_handler($order, $order_data) {
+        try {
+            do_action('angelleye_ppcp_send_shipment_tracking_line_item', $order, $order_data);
+        } catch (Exception $ex) {
+
+        }
     }
 }
