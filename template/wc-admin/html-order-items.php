@@ -70,7 +70,7 @@ if ( wc_tax_enabled() ) {
 			<?php
 			foreach ( $line_items as $item_id => $item ) {
 				do_action( 'woocommerce_before_order_item_' . $item->get_type() . '_html', $item_id, $item, $order );
-                                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/wc-admin/html-order-item.php');
+                                include ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/wc-admin/html-order-item.php');
 				do_action( 'woocommerce_order_item_' . $item->get_type() . '_html', $item_id, $item, $order );
 			}
 			do_action( 'woocommerce_admin_order_items_after_line_items', $order->get_id() );
@@ -89,7 +89,7 @@ if ( wc_tax_enabled() ) {
 			<?php
 			$shipping_methods = WC()->shipping() ? WC()->shipping()->load_shipping_methods() : array();
 			foreach ( $line_items_shipping as $item_id => $item ) {
-				include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/wc-admin/html-order-shipping.php');
+				include ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/wc-admin/html-order-shipping.php');
 			}
 			do_action( 'woocommerce_admin_order_items_after_shipping', $order->get_id() );
 			?>
