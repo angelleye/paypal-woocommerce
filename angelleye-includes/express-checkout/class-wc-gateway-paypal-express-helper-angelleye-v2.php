@@ -289,6 +289,9 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     }
                     add_shortcode('aepfw_bnpl_message', array($this, 'aepfw_bnpl_message_shortcode'), 10);
                 }
+                // Compatibility with yith-woocommerce-deposits-and-down-payments
+                add_action("yith_wcdp_before_suborders_create", "angelleye_backup_express_checkout_session");
+                add_action("yith_wcdp_after_suborders_create", "angelleye_restore_express_checkout_session");
             }
         } catch (Exception $ex) {
 

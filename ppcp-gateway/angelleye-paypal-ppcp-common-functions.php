@@ -161,9 +161,9 @@ if (!function_exists('angelleye_ppcp_readable')) {
 if (!function_exists('angelleye_split_name')) {
     function angelleye_split_name($fullName) {
         $parts = explode(' ', $fullName);
-        $lastname = array_pop($parts);
-        $firstname = implode(" ", $parts);
-        return [$firstname, $lastname];
+        $firstName = array_shift($parts);
+        $lastName = implode(' ', $parts);
+        return [$firstName, $lastName];
     }
 }
 
@@ -249,9 +249,9 @@ if (!function_exists('angelleye_ppcp_get_mapped_shipping_address')) {
             return $initialData;
         }
         if (!empty($checkout_details->purchase_units[0]->shipping->name->full_name)) {
-            $name = explode(' ', $checkout_details->purchase_units[0]->shipping->name->full_name);
-            $first_name = array_shift($name);
-            $last_name = implode(' ', $name);
+            $name = angelleye_split_name($checkout_details->purchase_units[0]->shipping->name->full_name);
+            $first_name = $name[0];
+            $last_name = $name[1];
         } else {
             $first_name = '';
             $last_name = '';
@@ -550,13 +550,15 @@ if (!function_exists('angelleye_ppcp_validate_checkout')) {
 
 if (!function_exists('angelleye_ppcp_add_css_js')) {
     function angelleye_ppcp_add_css_js() {
-        wp_enqueue_script('angelleye_ppcp-common-functions');
-        wp_enqueue_script('angelleye_ppcp-apple-pay');
-        wp_enqueue_script('angelleye_ppcp-google-pay');
-        wp_enqueue_script('angelleye-paypal-checkout-sdk');
-        wp_enqueue_script('angelleye_ppcp');
-        wp_enqueue_script('angelleye-pay-later-messaging');
-        wp_enqueue_style('angelleye_ppcp');
+        if (!wp_doing_ajax()) {
+            wp_enqueue_script('angelleye_ppcp-common-functions');
+            wp_enqueue_script('angelleye_ppcp-apple-pay');
+            wp_enqueue_script('angelleye_ppcp-google-pay');
+            wp_enqueue_script('angelleye-paypal-checkout-sdk');
+            wp_enqueue_script('angelleye_ppcp');
+            wp_enqueue_script('angelleye-pay-later-messaging');
+            wp_enqueue_style('angelleye_ppcp');
+        }
     }
 }
 
@@ -1060,5 +1062,18 @@ if (!function_exists('ae_get_checkout_url')) {
             $checkout_page_url = get_permalink($_REQUEST['wfacp_id']);
         }
         return $checkout_page_url;
+    }
+}
+
+if (!function_exists('print_filters_for')) {
+    function print_filters_for($hook = '')
+    {
+        global $wp_filter;
+        if (empty($hook) || !isset($wp_filter[$hook]))
+            return;
+
+        print '<pre>';
+        print_r($wp_filter[$hook]);
+        print '</pre>';
     }
 }

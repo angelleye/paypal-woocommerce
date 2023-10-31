@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.3.2
-Stable tag: 4.3.1
+Stable tag: 4.3.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,15 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.3.3 - 10.26.2023 =
+* Tweak - Fixes smart button & advanced CC display issue on dynamic payment method changes on checkout page. ([PFW-1645](https://github.com/angelleye/paypal-woocommerce/pull/1942))
+* Fix - Resolves the shipping address override issue on checkout page. ([PFW-1644](https://github.com/angelleye/paypal-woocommerce/pull/1940))
+* Tweak - Optimized the ID and Client token API calls. ([PFW-1643](https://github.com/angelleye/paypal-woocommerce/pull/1939))
+
+= 4.3.2 - 10.24.2023 =
+* Tweak - Compatibility fix added for YITH WooCommerce Deposits / Down Payments plugin. ([PFW-1523](https://github.com/angelleye/paypal-woocommerce/pull/1938))
+* Tweak - Adds compatibility fixes for CheckoutWC pages with Advanced CC gateway. ([PFW-1642](https://github.com/angelleye/paypal-woocommerce/pull/1937))
 
 = 4.3.1 - 10.17.2023 =
 * Fix - Resolves the button and hosted fields display issue on currency change. ([PFW-1631](https://github.com/angelleye/paypal-woocommerce/pull/1935))

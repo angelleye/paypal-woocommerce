@@ -343,6 +343,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         // This is utilised on cart page to inform the shipping changes or cart total changes in frontend
         add_action('woocommerce_after_cart_totals', [$this, 'add_cart_data_in_html'], 99);
 
+        // Always load JS script on checkout page - Fixes the compatibility issue with 0 amount
+        // and when shipping config is set to "Hide shipping costs until an address is entered"
+        add_action( 'wp_head', [ $this, 'angelleye_load_js_sdk' ], 100 );
+
         add_filter('wfocu_wc_get_supported_gateways', array($this, 'wfocu_upsell_supported_gateways'), 99, 1);
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
             add_filter('wfocu_subscriptions_get_supported_gateways', array($this, 'wfocu_subscription_supported_gateways'), 99, 1);
@@ -350,6 +354,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
         $asyncJsParams = $this->getClientIdMerchantId();
         self::$jsUrl = add_query_arg($asyncJsParams, 'https://www.paypal.com/sdk/js');
+    }
+
+    public function angelleye_load_js_sdk()
+    {
+        if (is_checkout() || is_checkout_pay_page()) {
+            angelleye_ppcp_add_css_js();
+        }
     }
 
     /*
@@ -897,7 +908,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 </h3>
                 <?php
             }
-            $checkout_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+            $checkout_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, !$this->set_billing_address);
             echo WC()->countries->get_formatted_address($checkout_details);
             echo!empty($checkout_details['email']) ? '<p class="angelleye-woocommerce-customer-details-email">' . $checkout_details['email'] . '</p>' : '';
             echo!empty($checkout_details['phone']) ? '<p class="angelleye-woocommerce-customer-details-phone">' . $checkout_details['phone'] . '</p>' : '';
@@ -1023,7 +1034,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             return;
         }
         $shipping_details = angelleye_ppcp_get_mapped_shipping_address($this->checkout_details);
-        $billing_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+        $billing_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, !$this->set_billing_address);
         angelleye_ppcp_update_customer_addresses_from_paypal($shipping_details, $billing_details);
     }
 
@@ -1145,11 +1156,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $attributes = ['data-namespace' => 'angelleye_paypal_sdk'];
         if (!isset($_GET['paypal_order_id'])) {
             $ae_ppcp_account_reconnect_notice = get_option('ae_ppcp_account_reconnect_notice');
-            if (empty($ae_ppcp_account_reconnect_notice)) {
-                if ($this->advanced_card_payments && (
-                    is_checkout() || is_checkout_pay_page() ||
-                    ($this->enable_tokenized_payments && is_user_logged_in() && is_add_payment_method_page())
-                    )) {
+            if (empty($ae_ppcp_account_reconnect_notice) && $this->advanced_card_payments) {
+                if (is_checkout() || is_checkout_pay_page() || ($this->enable_tokenized_payments && is_user_logged_in() && is_add_payment_method_page())) {
                     $this->client_token = $this->payment_request->angelleye_ppcp_get_generate_token();
                     if (!empty($this->client_token)) {
                         $attributes['data-client-token'] = $this->client_token;
@@ -1222,7 +1230,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     }
                 }
             }
-            $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+            $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, !$this->set_billing_address);
             if (!empty($billing_address)) {
                 foreach ($billing_address as $field => $value) {
                     if (!empty($value)) {
@@ -1363,7 +1371,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     }
                 }
             }
-            $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+            $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, !$this->set_billing_address);
             if (!empty($billing_address) && !empty($fields['billing'])) {
                 foreach ($fields['billing'] as $field => $value) {
                     $address_key = str_replace('billing_', '', $field);
@@ -1395,7 +1403,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $angelleye_ppcp_checkout_post = AngellEye_Session_Manager::get('checkout_post');
         $shipping_address = angelleye_ppcp_get_mapped_shipping_address($this->checkout_details);
-        $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+        $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, !$this->set_billing_address);
         $order_data['terms'] = 1;
         $order_data['createaccount'] = 0;
         $order_data['ship_to_different_address'] = 0;
@@ -1444,10 +1452,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $order_data['billing_postcode'] = $billing_address['postcode'] ?? '';
             $order_data['billing_phone'] = $billing_address['phone'] ?? '';
         }
-        if (!empty($shipping_address)) {
+        // Do not override shipping address, if the ship_to_different_address is checked in frontend
+        $ship_to_different_address = isset($order_data['ship_to_different_address']) && $order_data['ship_to_different_address'];
+        if (!empty($shipping_address) && !$ship_to_different_address) {
             $order_data['shipping_first_name'] = $shipping_address['first_name'] ?? '';
             $order_data['shipping_last_name'] = $shipping_address['last_name'] ?? '';
-            $order_data['shipping_company'] = $shipping_address['company'] ?? '';
+            $order_data['shipping_company'] = $shipping_address['company'] ?? ($order_data['billing_company'] ?? '');
             $order_data['shipping_country'] = $shipping_address['country'] ?? '';
             $order_data['shipping_address_1'] = $shipping_address['address_1'] ?? '';
             $order_data['shipping_address_2'] = $shipping_address['address_2'] ?? '';
@@ -1456,12 +1466,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $order_data['shipping_postcode'] = $shipping_address['postcode'] ?? '';
         }
         if (isset($angelleye_ppcp_checkout_post)) {
+            // Fill the data if it's not available in $order_data
             foreach ($angelleye_ppcp_checkout_post as $key => $value) {
                 if (!isset($order_data[$key])) {
                     $order_data[$key] = $value;
                 }
             }
         }
+
         return array_merge($defaultData, $order_data);
     }
 
@@ -1677,7 +1689,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     }
                 }
             } elseif ($key === 'billing_state' || $key = 'billing_country') {
-                $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, ($this->set_billing_address) ? false : true);
+                $billing_address = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, !$this->set_billing_address);
                 if (!empty($billing_address['state'])) {
                     if (!empty($billing_address['country'])) {
                         if (angelleye_ppcp_validate_checkout($billing_address['country'], $billing_address['state'], 'billing')) {
