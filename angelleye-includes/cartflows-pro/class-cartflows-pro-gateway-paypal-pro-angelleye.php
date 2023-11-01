@@ -40,7 +40,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
      * Constructor
      */
     public function __construct() {
-        
+
     }
 
     /**
@@ -91,7 +91,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
                 'phonenum' => $order->get_billing_phone()
             );
             $ShippingAddress = array(
-                'shiptoname' => $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name(),
+                'shiptoname' => trim($order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name()),
                 'shiptostreet' => $order->get_shipping_address_1(),
                 'shiptostreet2' => $order->get_shipping_address_2(),
                 'shiptocity' => $order->get_shipping_city(),
@@ -152,7 +152,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_AngellEYE {
                     $message .= __('Detailed Error Message: ', 'paypal-for-woocommerce') . $long_message . "\n";
                     $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                     $message .= __('Order ID: ') . $order_id . "\n";
-                    $message .= __('Customer Name: ') . $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() . "\n";
+                    $message .= __('Customer Name: ') . trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()) . "\n";
                     $message .= __('Customer Email: ') . $order->get_billing_email() . "\n";
                     $pc_error_email_message = apply_filters('ae_ppddp_error_email_message', $message, $error_code, $long_message);
                     $pc_error_email_subject = apply_filters('ae_ppddp_error_email_subject', "PayPal Pro Error Notification", $error_code, $long_message);

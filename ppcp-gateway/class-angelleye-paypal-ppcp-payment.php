@@ -206,8 +206,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             if ($woo_order_id != null) {
                 $order = wc_get_order($woo_order_id);
-                $country_code = $order->get_billing_country();
-                $full_name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
                 $body_request['purchase_units'][0]['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
             } else {

@@ -169,7 +169,10 @@ class AngellEYE_Admin_Order_Payment_Process {
 
     public function angelleye_admin_create_reference_order_action($order) {
         $this->payment_method = $order->get_payment_method();
-        if (in_array($this->payment_method, array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc'))) {
+        if (in_array($this->payment_method, [
+            'paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'angelleye_ppcp', 'angelleye_ppcp_cc',
+            'angelleye_ppcp_apple_pay'
+        ])) {
             $this->angelleye_admin_create_new_order($order);
         }
         remove_action('woocommerce_process_shop_order_meta', 'WC_Meta_Box_Order_Data::save', 40, 2);
@@ -255,6 +258,9 @@ class AngellEYE_Admin_Order_Payment_Process {
             'phone' => $order->get_billing_phone(),
         );
         $environment = $order->get_meta('_enviorment');
+
+        // TODO verify this line as add_item is supposed to receive the single item object,
+        // while we are passing an array of Item objects
         $new_order = wc_create_order($args);
         $old_get_items = $order->get_items();
         $new_order->add_item($old_get_items);
@@ -574,7 +580,8 @@ class AngellEYE_Admin_Order_Payment_Process {
             $PaymentDetails['notifyurl'] = $this->gateway_settings['notifyurl'];
         }
         if ($order->needs_shipping_address()) {
-            $ShippingAddress = array('shiptoname' => $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name(),
+            $ShippingAddress = [
+                'shiptoname' => trim($order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name()),
                 'shiptostreet' => $order->get_shipping_address_1(),
                 'shiptostreet2' => $order->get_shipping_address_2(),
                 'shiptocity' => wc_clean(stripslashes($order->get_shipping_city())),
@@ -582,7 +589,7 @@ class AngellEYE_Admin_Order_Payment_Process {
                 'shiptozip' => $order->get_shipping_postcode(),
                 'shiptocountrycode' => $order->get_shipping_country(),
                 'shiptophonenum' => '',
-            );
+            ];
             $PayPalRequestData['ShippingAddress'] = $ShippingAddress;
         }
         $this->send_items = 'yes' === $this->gateway->get_option('send_items', 'yes');

@@ -89,6 +89,7 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
                     $payment_tokens_id = $subscription_parent->get_meta('_payment_tokens_id');
                     if (!empty($payment_tokens_id)) {
                         $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                        $subscription->save();
                     } else {
                         throw new Exception('A "_payment_tokens_id" value is required.');
                     }

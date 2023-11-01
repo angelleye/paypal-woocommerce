@@ -743,9 +743,9 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                         $angelleye_ppcp_used_payment_method = $order->get_meta('_angelleye_ppcp_used_payment_method', true);
                         if (!empty($angelleye_ppcp_used_payment_method)) {
                             $subscription->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                            $subscription->save_meta_data();
                         }
                     }
-                    $subscription->save_meta_data();
                 }
             }
         } catch (Exception $ex) {

@@ -1007,7 +1007,7 @@ class AngellEYE_Utility {
         }
         if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
             $transaction_id = $order->get_transaction_id();
-            return !empty($transaction_id) ? $transaction_id : false;
+            return $transaction_id ?? false;
         }
         return false;
     }
@@ -1084,11 +1084,7 @@ class AngellEYE_Utility {
                         $remain_capture = self::number_format($remain_capture, $order);
                     }
                     ?>
-                    <input type="text" placeholder="Enter amount <?php echo $remain_capture; ?>" id="_regular_price" name="_regular_price" <?php
-            if ($remain_capture > 0) {
-                echo "value='$remain_capture'";
-            }
-                    ?>class="short wc_input_price text-box" style="width: 220px">
+                    <input type="text" placeholder="Enter amount <?php echo $remain_capture; ?>" id="_regular_price" name="_regular_price" <?php echo $remain_capture > 0 ? "value='$remain_capture' " : '';?>class="short wc_input_price text-box" style="width: 220px">
                 </div>
                 <?php $this->angelleye_express_checkout_transaction_capture_dropdownbox($order->get_id()); ?>
                 <input type="hidden" value="no" name="is_submited" id="is_submited">
@@ -1507,10 +1503,7 @@ class AngellEYE_Utility {
         }
 
         public static function currency_has_decimals($currency) {
-            if (in_array($currency, array('HUF', 'JPY', 'TWD'))) {
-                return false;
-            }
-            return true;
+            return !in_array($currency, array('HUF', 'JPY', 'TWD'));
         }
 
         public static function round($price, $order = null) {

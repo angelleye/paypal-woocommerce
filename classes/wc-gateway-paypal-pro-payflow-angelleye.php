@@ -1765,7 +1765,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             'cvv2' => $card->cvc,
             'orderid' => '',
             'orderdesc' => '',
-            'billtoemail' => WC()->customer->get_billing_email(),
+            'billtoemail' => $customer->get_billing_email(),
             'billtophonenum' => $customer->get_billing_phone(),
             'billtofirstname' => $customer->get_billing_first_name(),
             'billtomiddlename' => '',
@@ -2227,7 +2227,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
             }
             $this->PayPal = new Angelleye_PayPal_PayFlow($this->credentials);
         } catch (Exception $ex) {
-            
+
         }
     }
 

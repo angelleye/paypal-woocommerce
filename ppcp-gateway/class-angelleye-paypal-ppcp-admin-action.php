@@ -173,10 +173,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 return;
             }
             $screen = ae_is_active_screen(AE_SHOP_ORDER_SCREENS);
-            if ($screen) {
-                if ($this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id())) {
-                    add_meta_box('angelleye-ppcp-order-action', __('PayPal Transaction Activity', 'paypal-for-woocommerce'), array($this, 'angelleye_ppcp_order_action_callback'), $screen, 'normal', 'high');
-                }
+            if ($screen && $this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id())) {
+                add_meta_box('angelleye-ppcp-order-action', __('PayPal Transaction Activity', 'paypal-for-woocommerce'), array($this, 'angelleye_ppcp_order_action_callback'), $screen, 'normal', 'high');
             }
         } catch (Exception $ex) {
 

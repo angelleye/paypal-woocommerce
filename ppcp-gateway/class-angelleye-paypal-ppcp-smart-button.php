@@ -406,9 +406,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-capture', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-capture.js', array('jquery'), $this->version, false);
         }
 
-        if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
-            return false;
-        }
+        /*
+         * We don't need below condition as it will cause issues with Zero amount product having some shipping amount on checkout page
+         */
+        //if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
+        //    return false;
+        //}
 
         $ae_script_loader_handle = 'angelleye-paypal-checkout-sdk';
 
@@ -432,15 +435,22 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $smart_js_arg['currency'] = in_array($active_currency, $this->angelleye_ppcp_currency_list) ? $active_currency : 'USD';
         /* * *Compatibility with Multicurrency end * * */
 
-        if (!isset($this->disable_funding['venmo'])) {
-            array_push($enable_funding, 'venmo');
-        }
-        if (!isset($this->disable_funding['paylater'])) {
-            array_push($enable_funding, 'paylater');
-        }
-        if (isset($default_country['country']) && $default_country['country'] == 'NL') {
-            array_push($enable_funding, 'ideal');
-        }
+        /**
+         * TODO Handle this scenario later after verification
+         */
+        // if (!isset($this->disable_funding['venmo'])) {
+        //     array_push($enable_funding, 'venmo');
+        // }
+        // if (!isset($this->disable_funding['paylater'])) {
+        //     array_push($enable_funding, 'paylater');
+        // }
+
+        /**
+         * TODO Enable iDeal payments using a separate ticket
+         */
+        // if (isset($default_country['country']) && $default_country['country'] == 'NL') {
+        //     array_push($enable_funding, 'ideal');
+        // }
 
         $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
         wp_register_script($this->angelleye_ppcp_plugin_name . '-common-functions', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-common-functions' . $this->minified_version . '.js', array('jquery',), $script_versions, false);
