@@ -41,7 +41,7 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
-        $payment_tokens_id = $renewal_order->get_meta('_payment_tokens_id');
+        $payment_tokens_id = $renewal_order->get_meta('_payment_tokens_id', true);
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);
         }
@@ -73,7 +73,7 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
         $payment_meta[$this->id] = array(
             'post_meta' => array(
                 '_payment_tokens_id' => array(
-                    'value' => $subscription->get_meta('_payment_tokens_id'),
+                    'value' => $subscription->get_meta('_payment_tokens_id', true),
                     'label' => 'Payment Tokens ID',
                 )
             )
@@ -132,7 +132,7 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
                 foreach ($subscriptions as $subscription) {
                     $subscription_parent = wcs_get_subscription($subscription->get_parent_id());
                     if (is_a($subscription_parent, WC_Subscription::class)) {
-                        $payment_tokens_id = $subscription_parent->get_meta('_payment_tokens_id');
+                        $payment_tokens_id = $subscription_parent->get_meta('_payment_tokens_id', true);
                         if (!empty($payment_tokens_id)) {
                             $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                             $subscription->save();
