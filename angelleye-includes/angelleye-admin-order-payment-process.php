@@ -1,7 +1,5 @@
 <?php
 
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
-
 class AngellEYE_Admin_Order_Payment_Process {
 
     public $gateway;
@@ -25,12 +23,12 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function angelleye_add_meta_box($post_type, $post_or_order_object) {
-        $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
         $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
         if (!is_a($order, 'WC_Order')) {
             return;
         }
-        if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+        $screen = ae_is_active_screen(AE_SHOP_ORDER_SCREENS);
+        if ($screen) {
             add_meta_box('angelleye_admin_order_payment_process', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_payment_process'), $screen, 'side', 'default');
             add_meta_box('angelleye_admin_order_reference_order', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_reference_order'), $screen, 'side', 'default');
         }
@@ -93,20 +91,15 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function admin_order_reference_order($post_or_order_object) {
-        $is_disable_button = false;
-        $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
         $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
         if (!is_a($order, 'WC_Order')) {
             return;
         }
-        if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+        if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
             if ($this->angelleye_is_order_need_payment($order) && $this->angelleye_is_admin_order_payment_method_available($order) == true && $this->angelleye_is_order_created_by_create_new_reference_order($order) == false) {
                 $reason_array = $this->angelleye_get_reason_why_create_reference_transaction_order_button_not_available($order);
-                if (count($reason_array) > 0) {
-                    $is_disable_button = true;
-                }
                 $reason_message = $this->angelleye_reason_array_to_nice_message($reason_array);
-                $this->angelleye_create_order_button($reason_message, $is_disable_button);
+                $this->angelleye_create_order_button($reason_message, count($reason_array) > 0);
                 $this->angelleye_show_reference_order_metabox();
             } else {
                 $this->angelleye_hide_reference_order_metabox();
@@ -154,9 +147,8 @@ class AngellEYE_Admin_Order_Payment_Process {
     public function angelleye_admin_create_reference_order($post_id, $post_or_order_object) {
         if (!empty($_POST['angelleye_create_reference_order_submit_button']) && $_POST['angelleye_create_reference_order_submit_button'] == 'Create Reference Transaction Order') {
             if (wp_verify_nonce($_POST['angelleye_create_reference_order_sec'], 'angelleye_create_reference_order_sec')) {
-                $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
                 $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
-                if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+                if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
                     do_action('angelleye_admin_create_reference_order_action_hook', $order);
                 }
 
@@ -167,9 +159,8 @@ class AngellEYE_Admin_Order_Payment_Process {
     public function angelleye_admin_order_process_payment($post_id, $post_or_order_object) {
         if (!empty($_POST['angelleye_admin_order_payment_process_submit_button']) && $_POST['angelleye_admin_order_payment_process_submit_button'] == 'Process Reference Transaction') {
             if (wp_verify_nonce($_POST['angelleye_admin_order_payment_process_sec'], 'angelleye_admin_order_payment_process_sec')) {
-                $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
                 $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
-                if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+                if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
                     do_action('angelleye_admin_order_process_payment_action_hook', $order);
                 }
             }
