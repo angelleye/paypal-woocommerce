@@ -1215,7 +1215,7 @@ if (!function_exists('print_filters_for')) {
 
 }
 
-if (!function_exists('print_filters_for')) {
+if (!function_exists('angelleye_ppcp_get_platform_fee_refund_amount')) {
     function angelleye_ppcp_get_platform_fee_refund_amount() {
         return 0.00;
     }
