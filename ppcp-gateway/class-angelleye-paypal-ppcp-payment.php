@@ -1387,8 +1387,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                 // during ajax call, and user starts seeing the "unexpected <" error.
                 // and if its not ajax call, then they will be redirected to checkout page with
                 // "session expired message", that creates issue reported in AHD-20796
-                /*wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
-                wp_redirect(wc_get_checkout_url()); */
+                /* wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
+                  wp_redirect(wc_get_checkout_url()); */
             }
         }
     }
@@ -1493,7 +1493,16 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), angelleye_ppcp_round($amount, $decimals))
                 );
             }
-            $body_request = angelleye_ppcp_remove_empty_key($body_request);
+            $body_request['payment_instruction'] = [
+                "platform_fees" => [
+                    [
+                        "amount" => [
+                            "currency_code" => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount),
+                            "value" => angelleye_ppcp_get_platform_fee_refund_amount()
+                        ]
+                    ]
+                ]
+            ];
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -2017,7 +2026,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_get_generate_token() {
         try {
-            $id_token_key = 'client_token' . (is_user_logged_in() ? '_user_'. get_current_user_id() : '');
+            $id_token_key = 'client_token' . (is_user_logged_in() ? '_user_' . get_current_user_id() : '');
             $body = null;
             if ($this->enable_tokenized_payments) {
                 $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
@@ -2068,7 +2077,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_get_generate_id_token() {
         try {
             $body = null;
-            $id_token_key = 'id_token' . (is_user_logged_in() ? '_user_'. get_current_user_id() : '');
+            $id_token_key = 'id_token' . (is_user_logged_in() ? '_user_' . get_current_user_id() : '');
             if ($this->enable_tokenized_payments) {
                 $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
                 if (!empty($paypal_generated_customer_id)) {
@@ -4487,26 +4496,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'value' => angelleye_ppcp_round($amount, $decimals),
                     'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount)
                 );
-                /* $fee = angelleye_ppcp_round($amount * 0.001, $decimals);
-                  if ($fee < 0.01) {
-                  $fee = 0.01;
-                  } */
-            } else {
-                /*  $fee = 0; */
-            }
-            /* if ($fee > 0) {
-              $body_request['payment_instruction'] = [
-              "platform_fees" => [
-              [
-              "amount" => [
-              "currency_code" => "USD",
-              "value" => $fee
-              ]
-              ]
-              ]
-              ];
-              } */
-            $body_request = angelleye_ppcp_remove_empty_key($body_request);
+            } 
+            $body_request['payment_instruction'] = [
+                "platform_fees" => [
+                    [
+                        "amount" => [
+                            "currency_code" => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount),
+                            "value" => angelleye_ppcp_get_platform_fee_refund_amount()
+                        ]
+                    ]
+                ]
+            ];
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -4581,7 +4581,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_sync_ppcp_capture_details($order_id) {
         try {
-             $order = wc_get_order($order_id);
+            $order = wc_get_order($order_id);
             if ($order === false) {
                 return false;
             }
@@ -4595,12 +4595,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                     }
                 }
-            }  
+            }
         } catch (Exception $ex) {
-
+            
         }
     }
-    
+
     public function ppcp_send_paypal_tracking_info($body_request, $request_url) {
         try {
             $args = array(
