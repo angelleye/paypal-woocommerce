@@ -43,6 +43,8 @@ jQuery(function ($) {
             $('.angelleye_ppcp_void_box').slideUp();
             $('.paypal-fee-tr').slideUp();
             $('#angelleye_ppcp_payment_submit_button').val('');
+            $('.ppcp_shipment_tracking').hide();
+            
         });
         $('#woocommerce-order-items').on('click', 'button.angelleye-ppcp-order-action-submit', function (e) {
             if ($('#is_ppcp_submited').val() === 'no') {
