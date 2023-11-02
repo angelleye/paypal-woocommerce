@@ -77,6 +77,10 @@ jQuery(function ($) {
             }
         });
         $('#woocommerce-order-items').on('click', 'button.angelleye-ppcp-shipment-tracking', function (e) {
+            $('.wc-order-data-row.wc-order-bulk-actions.wc-order-data-row-toggle').slideUp();
+            $('div.wc-order-data-row.wc-order-add-item.wc-order-data-row-toggle button').not('.cancel-action').slideUp();
+            $('div.wc-order-data-row.wc-order-add-item.wc-order-data-row-toggle').slideDown();
+            $('div.wc-order-data-row.wc-order-add-item.wc-order-data-row-toggle button .cancel-action').css("float","inline-start");
             $('.ppcp_shipment_tracking').show();
         });
     });

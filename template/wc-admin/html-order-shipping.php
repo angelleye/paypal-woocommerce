@@ -52,7 +52,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<?php do_action( 'woocommerce_before_order_itemmeta', $item_id, $item, null ); ?>
 		<?php WC_ABSPATH . 'includes/admin/meta-boxes/views/html-order-item-meta.php'; ?>
-		<?php do_action( 'woocommerce_after_order_itemmeta', $item_id, $item, null ); ?>
+		<?php do_action( 'woocommerce_after_order_itemmeta', $item_id, $item, null, $order ); ?>
 	</td>
 
 	<?php do_action( 'woocommerce_admin_order_item_values', null, $item, absint( $item_id ) ); ?>

@@ -42,7 +42,7 @@ $row_class    = apply_filters( 'woocommerce_admin_html_order_item_class', ! empt
 
 		<?php do_action( 'woocommerce_before_order_itemmeta', $item_id, $item, $product ); ?>
 		<?php require WC_ABSPATH . 'includes/admin/meta-boxes/views/html-order-item-meta.php'; ?>
-		<?php do_action( 'woocommerce_after_order_itemmeta', $item_id, $item, $product ); 
+		<?php do_action( 'woocommerce_after_order_itemmeta', $item_id, $item, $product, $order ); 
                 
                 
                 ?>

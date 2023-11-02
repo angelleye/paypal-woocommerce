@@ -81,8 +81,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         add_action('woocommerce_order_item_add_action_buttons', array($this, 'angelleye_ppcp_add_order_action_buttons'), 10, 1);
         add_action('admin_enqueue_scripts', array($this, 'angelleye_ppcp_add_order_action_js'), 10);
         add_action('woocommerce_admin_order_totals_after_total', array($this, 'angelleye_ppcp_add_order_action_item_edit'), 10, 1);
-        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_capture_details'), 10, 3);
-        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_refund_details'), 11, 3);
+        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_capture_details'), 10, 4);
+        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_refund_details'), 11, 4);
         add_filter('woocommerce_hidden_order_itemmeta', array($this, 'woocommerce_hidden_order_itemmeta'), 10, 1);
         add_filter('wc_order_is_editable', array($this, 'angelleye_ppcp_remove_add_item_button'), 10, 2);
     }
@@ -418,10 +418,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             }
             wp_enqueue_script('angelleye-ppcp-order-action');
             ?>
-            <button type="button" class="button angelleye-ppcp-order-capture" <?php echo (isset($this->angelleye_ppcp_order_actions['capture']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>> <?php esc_html_e('Capture', 'woocommerce'); ?></button>
-            <button type="button" class="button angelleye-ppcp-order-void" <?php echo (isset($this->angelleye_ppcp_order_actions['void']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>><?php esc_html_e('Void', 'woocommerce'); ?></button>
+            <button type="button" class="button angelleye-ppcp-order-capture" <?php echo (isset($this->angelleye_ppcp_order_actions['capture']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>> <?php esc_html_e('Capture', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip( __( 'Capture payment for the authorized order.', 'paypal-for-woocommerce' ) ); ?></button>
+            <button type="button" class="button angelleye-ppcp-order-void" <?php echo (isset($this->angelleye_ppcp_order_actions['void']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>><?php esc_html_e('Void Authorization', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip( __( 'Void the authorized order to release the hold on the buyer\'s payment source.', 'paypal-for-woocommerce' ) ); ?></button>
             <?php if (in_array($order->get_status(), array('processing', 'completed', 'partial-payment'))) { ?>
-                <button type="button" class="button angelleye-ppcp-shipment-tracking"><?php esc_html_e('PayPal Shipment', 'woocommerce'); ?></button>
+                <button type="button" class="button angelleye-ppcp-shipment-tracking"><?php esc_html_e('PayPal Shipment', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip( __( 'Add shipment tracking details to WooCommerce and PayPal.', 'paypal-for-woocommerce' ) ); ?></button>
             <?php } ?>
             <?php
         } catch (Exception $ex) {
@@ -464,7 +464,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 <td class="label">
                     <label for="refund_amount">
                         <?php echo wc_help_tip(__('This will show the total amount to be capture/void', 'woocommerce')); ?>
-                        <?php esc_html_e('Amount', 'woocommerce'); ?>:
+                        <?php esc_html_e('Amount', 'paypal-for-woocommerce'); ?>:
                     </label>
                 </td>
                 <td width="1%"></td>
@@ -543,10 +543,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     }
 
     public function angelleye_ppcp_capture_void_refund_submit() {
-        ?><input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited"><input type="hidden" name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action"><button type="button" class="button angelleye-ppcp-order-action-submit button-primary"><?php esc_html_e('Submit', 'woocommerce'); ?></button><?php
+        ?><input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited"><input type="hidden" name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action"><button type="button" class="button angelleye-ppcp-order-action-submit button-primary"><?php esc_html_e('Submit', 'paypal-for-woocommerce'); ?></button><?php
     }
 
-    public function angelleye_ppcp_display_capture_details($item_id, $item, $product) {
+    public function angelleye_ppcp_display_capture_details($item_id, $item, $product, $order) {
         $ppcp_capture_details = wc_get_order_item_meta($item_id, '_ppcp_capture_details', true);
         if (empty($ppcp_capture_details)) {
             return;
@@ -571,7 +571,14 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             $i = 1;
                             foreach ($meta_array as $key => $value) {
                                 if(!is_array($value)) {
-                                    $capture_details_html .= $ppcp_Capture_key_replace[$key] . ': ' . $value;
+                                    if($key === '_ppcp_transaction_date') {
+                                        $capture_details_html .= esc_html( sprintf( __( '%1$s at %2$s', 'woocommerce' ), date_i18n(wc_date_format(), strtotime($value)), date_i18n(wc_time_format(), strtotime($value)) ) );
+                                    } elseif($key === '_ppcp_transaction_amount' || 'total_refund_amount' === $key) {
+                                        $capture_details_html .= $ppcp_Capture_key_replace[$key] . ': ' . wc_price( $value, array( 'currency' => $order->get_currency() ) );
+                                    } else {
+                                        $capture_details_html .= $ppcp_Capture_key_replace[$key] . ': ' . $value;
+                                        
+                                    }
                                     if($total_element !== $i) {
                                         $capture_details_html .= ' | ';
                                     }
@@ -588,7 +595,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         <?php
     }
     
-    public function angelleye_ppcp_display_refund_details($item_id, $item, $product) {
+    public function angelleye_ppcp_display_refund_details($item_id, $item, $product, $order) {
         $ppcp_refund_details = wc_get_order_item_meta($item_id, '_ppcp_refund_details', true);
         if (empty($ppcp_refund_details)) {
             return;
@@ -608,7 +615,13 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                             $total_element = count($meta_array);
                             $i = 1;
                             foreach ($meta_array as $key => $value) {
-                                $refund_details_html .= $ppcp_refund_key_replace[$key] . ': ' . $value;
+                                if('_ppcp_refund_amount' === $key) {
+                                    $refund_details_html .= $ppcp_refund_key_replace[$key] . ': ' . wc_price( $value, array( 'currency' => $order->get_currency() ) );
+                                } elseif('_ppcp_refund_date' === $key) {
+                                    $refund_details_html .= esc_html( sprintf( __( '%1$s at %2$s', 'woocommerce' ), date_i18n(wc_date_format(), strtotime($value)), date_i18n(wc_time_format(), strtotime($value)) ) );
+                                } else {
+                                    $refund_details_html .= $ppcp_refund_key_replace[$key] . ': ' . $value;
+                                }
                                 if($total_element !== $i) {
                                     $refund_details_html .= ' | ';
                                 }
