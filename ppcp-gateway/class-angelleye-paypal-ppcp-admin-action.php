@@ -1,6 +1,8 @@
 <?php
 defined('ABSPATH') || exit;
 
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+
 class AngellEYE_PayPal_PPCP_Admin_Action {
     
     private $angelleye_ppcp_plugin_name;
@@ -82,6 +84,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_capture_details'), 10, 3);
         add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_refund_details'), 11, 3);
         add_filter('woocommerce_hidden_order_itemmeta', array($this, 'woocommerce_hidden_order_itemmeta'), 10, 1);
+        add_filter('wc_order_is_editable', array($this, 'angelleye_ppcp_remove_add_item_button'), 10, 2);
     }
 
     public function angelleye_ppcp_admin_void_action_handler($order, $order_data) {
@@ -417,7 +420,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             ?>
             <button type="button" class="button angelleye-ppcp-order-capture" <?php echo (isset($this->angelleye_ppcp_order_actions['capture']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>> <?php esc_html_e('Capture', 'woocommerce'); ?></button>
             <button type="button" class="button angelleye-ppcp-order-void" <?php echo (isset($this->angelleye_ppcp_order_actions['void']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>><?php esc_html_e('Void', 'woocommerce'); ?></button>
-            <button type="button" class="button angelleye-ppcp-shipment-tracking"><?php esc_html_e('PayPal Shipment', 'woocommerce'); ?></button>
+            <?php if (in_array($order->get_status(), array('processing', 'completed', 'partial-payment'))) { ?>
+                <button type="button" class="button angelleye-ppcp-shipment-tracking"><?php esc_html_e('PayPal Shipment', 'woocommerce'); ?></button>
+            <?php } ?>
             <?php
         } catch (Exception $ex) {
             
@@ -630,5 +635,17 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         } catch (Exception $ex) {
 
         }
+    }
+    
+    public function angelleye_ppcp_remove_add_item_button($bool, $order) {
+        if(!$bool) {
+            return false;
+        } else {
+            $payment_method = $order->get_payment_method();
+            if(!empty($payment_method) && strpos(strtolower($payment_method), 'ppcp') !== false) {
+                return false;
+            }
+        }
+        return $bool;
     }
 }
