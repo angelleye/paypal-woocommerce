@@ -407,16 +407,20 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-capture', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-capture.js', array('jquery'), $this->version, false);
         }
 
-        if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
-            return false;
-        }
-
-        /*         
-         * * *Compatibility with Multicurrency start** 
+        /*
+         * We don't need below condition as it will cause issues with Zero amount product having some shipping amount on checkout page
          */
+        //if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
+        //    return false;
+        //}
+
+        $ae_script_loader_handle = 'angelleye-paypal-checkout-sdk';
+        $enable_funding = [];
         $smart_js_arg = array();
         $enable_funding = array();
         $active_currency = get_woocommerce_currency();
+
+        /* * *Compatibility with Multicurrency start * * */
 
         if (function_exists("scd_get_bool_option")) {
             $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
@@ -429,6 +433,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
 
         $smart_js_arg['currency'] = in_array($active_currency, $this->angelleye_ppcp_currency_list) ? $active_currency : 'USD';
+
         /*         
          * * *Compatibility with Multicurrency end** 
          */
@@ -443,6 +448,28 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             array_push($enable_funding, 'ideal');
         }
         $ae_script_loader_handle = 'angelleye-paypal-checkout-sdk';
+
+        
+        /* * *Compatibility with Multicurrency end * * */
+
+        /**
+         * TODO Handle this scenario later after verification
+         */
+        // if (!isset($this->disable_funding['venmo'])) {
+        //     array_push($enable_funding, 'venmo');
+        // }
+        // if (!isset($this->disable_funding['paylater'])) {
+        //     array_push($enable_funding, 'paylater');
+        // }
+
+        /**
+         * TODO Enable iDeal payments using a separate ticket
+         */
+        // if (isset($default_country['country']) && $default_country['country'] == 'NL') {
+        //     array_push($enable_funding, 'ideal');
+        // }
+
+
         $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
         wp_register_script($this->angelleye_ppcp_plugin_name . '-common-functions', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-common-functions' . $this->minified_version . '.js', array('jquery',), $script_versions, false);
         // wp_register_script('angelleye-paypal-checkout-sdk', $js_url, array(), null, false);
@@ -455,10 +482,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $components = ["buttons"];
 
-        $smart_js_arg = ['currency' => $this->angelleye_ppcp_currency];
         $smart_js_arg = array_merge($smart_js_arg, $this->getClientIdMerchantId());
-
-        $enable_funding = [];
 
         $page = '';
         $is_pay_page = 'no';
@@ -1390,7 +1414,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         return $fields;
     }
 
-    public function angelleye_ppcp_prepare_order_data($defaultData = []) {
+    public function angelleye_ppcp_prepare_order_data($defaultData = [])
+    {
         if (empty($this->checkout_details)) {
             $this->checkout_details = AngellEye_Session_Manager::get('paypal_transaction_details');
             if (empty($this->checkout_details)) {
@@ -1410,6 +1435,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $order_data['terms'] = 1;
         $order_data['createaccount'] = 0;
         $order_data['ship_to_different_address'] = 0;
+        $order_data['shipping_method'] = '';
 
         // merge post data with the transaction details data during the cc_capture api call
         if (isset($_POST)) {
@@ -1417,7 +1443,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 'wc-angelleye_ppcp_cc-new-payment-method', 'wc-angelleye_ppcp_cc-payment-token',
                 'wc-angelleye_ppcp-new-payment-method', 'wc-angelleye_ppcp-payment-token',
                 'wc-angelleye_ppcp_apple_pay-new-payment-method', 'wc-angelleye_ppcp_apple_pay-payment-token',
-                'ship_to_different_address'
+                'ship_to_different_address', 'shipping_method'
             ];
             foreach ($_POST as $key => $value) {
                 if (in_array($key, $look_for_keys_post)) {

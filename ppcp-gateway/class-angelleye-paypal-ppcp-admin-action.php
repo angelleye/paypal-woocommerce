@@ -1,10 +1,8 @@
 <?php
 defined('ABSPATH') || exit;
 
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
-
 class AngellEYE_PayPal_PPCP_Admin_Action {
-
+    
     private $angelleye_ppcp_plugin_name;
     public $api_log;
     public ?AngellEYE_PayPal_PPCP_Payment $payment_request;
@@ -156,7 +154,20 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         return false;
     }
 
-    
+    public function angelleye_ppcp_order_action_meta_box($post_type, $post_or_order_object) {
+        try {
+            $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+            if (!is_a($order, 'WC_Order')) {
+                return;
+            }
+            $screen = ae_is_active_screen(AE_SHOP_ORDER_SCREENS);
+            if ($screen && $this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id())) {
+                add_meta_box('angelleye-ppcp-order-action', __('PayPal Transaction Activity', 'paypal-for-woocommerce'), array($this, 'angelleye_ppcp_order_action_callback'), $screen, 'normal', 'high');
+            }
+        } catch (Exception $ex) {
+
+        }
+    }
 
     public function angelleye_ppcp_is_display_paypal_transaction_details($post_id) {
         try {

@@ -1609,17 +1609,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 if (!is_a($order, 'WC_Order')) {
                     return $classes;
                 }
-                $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
-                if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+                if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
                     $order = wc_get_order( absint( $post->ID ) );
                     $payment_method = $order->get_payment_method();
                     if ( !empty($payment_method) ) {
                         $classes .= ' angelleye_'. $payment_method;
                     }
-                    return $classes;
-                } else {
-                    return $classes;
                 }
+                return $classes;
             } catch (Exception $ex) {
                 return $classes;
             }

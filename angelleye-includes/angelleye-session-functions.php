@@ -56,21 +56,6 @@ if (!function_exists('angelleye_unset_session')) {
     }
 }
 
-if (!function_exists('angelleye_session_init')) {
-
-    function angelleye_session_init() {
-        if (is_admin()) {
-            return false;
-        }
-        if (class_exists('WC_Session_Handler')) {
-            $session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
-            $session = new $session_class();
-            $session->init();
-        }
-    }
-
-}
-
 /**
  * Stores the PayPal Express Checkout sessions data as backup before the YITH Deposit plugin creates sub-order
  */

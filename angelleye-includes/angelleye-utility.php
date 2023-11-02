@@ -8,8 +8,6 @@
  * @author      Angell EYE <service@angelleye.com>
  */
 
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
-
 class AngellEYE_Utility {
 
     public $plugin_name;
@@ -771,15 +769,15 @@ class AngellEYE_Utility {
         }
     }
 
+    // TODO check the usage of this function as its not changing anything with return value
     public function angelleye_woocommerce_payment_gateway_supports($boolean, $feature, $current) {
         global $post;
         $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
         if (!is_a($order, 'WC_Order')) {
             return $boolean;
         }
-        $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
-        if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
-            $payment_action = '';
+
+        if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
             if ($current->id == 'paypal_express' || $current->id == 'paypal_pro' || $current->id == 'paypal_pro_payflow' || $current->id == 'braintree') {
                 $payment_action = $order->get_meta( '_payment_action', true);
                 if ($payment_action == 'Sale' || $payment_action == 'DoCapture' || empty($payment_action)) {
@@ -990,12 +988,12 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_paypal_for_woocommerce_order_action_meta_box($post_type, $post_or_order_object) {
-        $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
         $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
         if (!is_a($order, 'WC_Order')) {
             return;
         }
-        if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+        $screen = ae_is_active_screen(AE_SHOP_ORDER_SCREENS);
+        if ($screen) {
             if ($this->angelleye_is_display_paypal_transaction_details($order->get_id())) {
                 add_meta_box('angelleye-pw-order-action', __('PayPal Transaction History', 'paypal-for-woocommerce'), array($this, 'angelleye_paypal_for_woocommerce_order_action_callback'), $screen, 'normal', 'high', null);
             }
@@ -1003,14 +1001,13 @@ class AngellEYE_Utility {
     }
 
     public function angelleye_get_order_transaction_id($post_or_order_object) {
-        $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
         $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
         if (!is_a($order, 'WC_Order')) {
             return;
         }
-        if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+        if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
             $transaction_id = $order->get_transaction_id();
-            return (!empty($transaction_id) ) ? $transaction_id : false;
+            return $transaction_id ?? false;
         }
         return false;
     }
@@ -1087,11 +1084,7 @@ class AngellEYE_Utility {
                         $remain_capture = self::number_format($remain_capture, $order);
                     }
                     ?>
-                    <input type="text" placeholder="Enter amount <?php echo $remain_capture; ?>" id="_regular_price" name="_regular_price" <?php
-            if ($remain_capture > 0) {
-                echo "value='$remain_capture'";
-            }
-                    ?>class="short wc_input_price text-box" style="width: 220px">
+                    <input type="text" placeholder="Enter amount <?php echo $remain_capture; ?>" id="_regular_price" name="_regular_price" <?php echo $remain_capture > 0 ? "value='$remain_capture' " : '';?>class="short wc_input_price text-box" style="width: 220px">
                 </div>
                 <?php $this->angelleye_express_checkout_transaction_capture_dropdownbox($order->get_id()); ?>
                 <input type="hidden" value="no" name="is_submited" id="is_submited">
@@ -1258,12 +1251,11 @@ class AngellEYE_Utility {
 
     public function save($post_id, $post_or_order_object) {
         if (!empty($_POST['save']) && $_POST['save'] == 'Submit') {
-            $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
             $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
             if (!is_a($order, 'WC_Order')) {
                 return;
             }
-            if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+            if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
                 if (empty($this->payment_method)) {
                     $this->payment_method = $order->get_payment_method();
                 }
@@ -1511,10 +1503,7 @@ class AngellEYE_Utility {
         }
 
         public static function currency_has_decimals($currency) {
-            if (in_array($currency, array('HUF', 'JPY', 'TWD'))) {
-                return false;
-            }
-            return true;
+            return !in_array($currency, array('HUF', 'JPY', 'TWD'));
         }
 
         public static function round($price, $order = null) {
@@ -1578,12 +1567,11 @@ class AngellEYE_Utility {
         public function angelleye_set_payment_method() {
             if (empty($this->payment_method) || $this->payment_method == false) {
                 global $post;
-                $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
                 $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
                 if (!is_a($order, 'WC_Order')) {
                     return;
                 }
-                if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+                if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
                     $this->payment_method = $order->get_payment_method();
                 }
             }
@@ -1734,7 +1722,7 @@ class AngellEYE_Utility {
             $PayPalResult = $this->paypal->ProcessTransaction($PayPalRequestData);
             return $PayPalResult;
         } catch (Exception $ex) {
-            
+
         }
     }
 

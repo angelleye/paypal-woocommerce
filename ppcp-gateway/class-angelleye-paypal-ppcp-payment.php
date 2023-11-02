@@ -146,7 +146,8 @@ class AngellEYE_PayPal_PPCP_Payment {
      * @param array $response
      * @return array
      */
-    private function add_nonce_in_response(array $response): array {
+    private function add_nonce_in_response(array $response): array
+    {
         $current_login_status = is_user_logged_in();
         if (AngellEYE_PayPal_PPCP_Front_Action::$is_user_logged_in_before_checkout != $current_login_status) {
             $response['nonce'] = wp_create_nonce('woocommerce-process_checkout');
@@ -205,8 +206,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             if ($woo_order_id != null) {
                 $order = wc_get_order($woo_order_id);
-                $country_code = $order->get_billing_country();
-                $full_name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
                 $body_request['purchase_units'][0]['invoice_id'] = $this->invoice_prefix . str_replace("#", "", $order->get_order_number());
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $this->invoice_prefix . str_replace("#", "", $order->get_order_number()), $order);
             } else {
@@ -279,7 +278,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             if ($woo_order_id != null) {
-
                 $order = wc_get_order($woo_order_id);
                 $order->update_meta_data('_paypal_reference_id', $reference_id);
                 $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title', false);
@@ -395,7 +393,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $return_response['currencyCode'] = $this->api_response['purchase_units'][0]['amount']['currency_code'];
                 $return_response['totalAmount'] = $this->api_response['purchase_units'][0]['amount']['value'];
                 $return_response['orderID'] = $this->api_response['id'];
-                if (!empty(isset($woo_order_id) && !empty($woo_order_id))) {
+                if (!empty($order)) {
                     $order->update_meta_data('_paypal_order_id', $this->api_response['id']);
                     $order->save_meta_data();
                 }
@@ -455,6 +453,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $rounded_total = $this->angelleye_ppcp_get_rounded_total_in_cart();
             $discounts = WC()->cart->get_cart_discount_total();
+
+            // TODO Verify why this has been added here and in HPOS branch??
             $cart_contents_total = WC()->cart->cart_contents_total + $discounts;
             $order_tax = WC()->cart->tax_total + WC()->cart->shipping_tax_total;
             $shipping_total = WC()->cart->shipping_total;
@@ -504,7 +504,8 @@ class AngellEYE_PayPal_PPCP_Payment {
      * @param WC_Order $order
      * @return array
      */
-    public function getOrderLineItems(WC_Order $order): array {
+    public function getOrderLineItems(WC_Order $order): array
+    {
         $lineItems = [];
         $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
         foreach ($order->get_items() as $item) {
@@ -532,7 +533,8 @@ class AngellEYE_PayPal_PPCP_Payment {
         return $lineItems;
     }
 
-    public function getCartLineItems(): array {
+    public function getCartLineItems(): array
+    {
         $lineItems = [];
         $details = $this->angelleye_ppcp_get_details_from_cart();
         $cart = WC()->cart->get_cart();
@@ -768,7 +770,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'amount' => angelleye_ppcp_round($amount, $decimals),
             );
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -848,20 +850,14 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($order->get_billing_last_name())) {
                 $body_request['payer']['name']['surname'] = $order->get_billing_last_name();
             }
-            $address_1 = $order->get_billing_address_1();
-            $address_2 = $order->get_billing_address_2();
-            $city = $order->get_billing_city();
-            $state = $order->get_billing_state();
-            $postcode = $order->get_billing_postcode();
-            $country = strtoupper($order->get_billing_country());
-            if (!empty($address_1) && !empty($city) && !empty($state) && !empty($postcode) && !empty($country)) {
+            if (!empty($order->get_billing_address_1()) && !empty($order->get_billing_city()) && !empty($order->get_billing_state()) && !empty($order->get_billing_postcode()) && !empty($order->get_billing_country())) {
                 $body_request['payer']['address'] = array(
                     'address_line_1' => $order->get_billing_address_1(),
                     'address_line_2' => $order->get_billing_address_2(),
                     'admin_area_2' => $order->get_billing_city(),
                     'admin_area_1' => $order->get_billing_state(),
                     'postal_code' => $order->get_billing_postcode(),
-                    'country_code' => $order->get_billing_country(),
+                    'country_code' => strtoupper($order->get_billing_country()),
                 );
             }
         } else {
@@ -874,7 +870,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $city = $customer->get_billing_city();
                 $state = $customer->get_billing_state();
                 $postcode = $customer->get_billing_postcode();
-                $country = $customer->get_billing_country();
+                $country = strtoupper($customer->get_billing_country());
                 $email_address = $customer->get_billing_email();
                 $billing_phone = $customer->get_billing_phone();
                 if (!empty($first_name)) {
@@ -962,7 +958,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
         }
         if (!empty($message)) {
-            
+
         } else if (!empty($error['message'])) {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
@@ -1014,7 +1010,8 @@ class AngellEYE_PayPal_PPCP_Payment {
      * @param $order_details
      * @return bool
      */
-    public function is_paypal_order_capture_triggered($order_details): bool {
+    public function is_paypal_order_capture_triggered($order_details): bool
+    {
         $purchase_units = $order_details['purchase_units'] ?? [];
         foreach ($purchase_units as $purchase_unit) {
             if (isset($purchase_unit['payments']['captures'])) {
@@ -1387,8 +1384,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                 // during ajax call, and user starts seeing the "unexpected <" error.
                 // and if its not ajax call, then they will be redirected to checkout page with
                 // "session expired message", that creates issue reported in AHD-20796
-                /* wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
-                  wp_redirect(wc_get_checkout_url()); */
+                /*wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
+                wp_redirect(wc_get_checkout_url()); */
             }
         }
     }
@@ -2440,7 +2437,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             endswitch;
             return;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -2632,7 +2629,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
                 $seller_protection = isset($this->api_response['seller_protection']['status']) ? $this->api_response['seller_protection']['status'] : '';
                 $this->api_response = $this->angelleye_ppcp_get_authorized_payment($authorization_id);
-                $payment_status = isset($this->api_response['status']) ? $this->api_response['status'] : '';
+                $payment_status = $this->api_response['status'] ?? '';
                 $order->update_meta_data('_payment_status', $payment_status);
                 $order->save();
                 $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $transaction_id));
@@ -2700,7 +2697,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_response = $this->api_request->request($this->paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
             if (isset($this->api_response['status'])) {
-                
+
             } else {
                 $error_email_notification_param = array(
                     'request' => 'refund_order',
@@ -2809,7 +2806,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $request;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3233,7 +3230,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3293,7 +3290,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3374,7 +3371,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3445,11 +3442,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
-    public function angelleye_ppcp_advanced_credit_card_setup_tokens() {
+    public function angelleye_ppcp_advanced_credit_card_setup_tokens($posted_card) {
         try {
             $body_request = array();
             $customer = WC()->customer;
@@ -3460,9 +3457,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             $city = $customer->get_billing_city();
             $state = $customer->get_billing_state();
             $postcode = $customer->get_billing_postcode();
-            $country = $customer->get_billing_country();
+            $country = strtoupper($customer->get_billing_country());
             $name = $first_name . ' ' . $last_name;
-            if (!empty($name)) {
+            // TODO verify this change
+            if(!empty($name)) {
                 $body_request['payment_source']['card'] = array(
                     'name' => $name
                 );
@@ -3512,7 +3510,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             exit();
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3596,7 +3594,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3688,7 +3686,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3703,7 +3701,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $city = $customer->get_billing_city();
             $state = $customer->get_billing_state();
             $postcode = $customer->get_billing_postcode();
-            $country = $customer->get_billing_country();
+            $country = strtoupper($customer->get_billing_country());
             $name = $first_name . ' ' . $last_name;
             $body_request['payment_source']['card'] = array(
                 'number' => $posted_card->number,
@@ -3780,7 +3778,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3795,7 +3793,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $city = $customer->get_billing_city();
             $state = $customer->get_billing_state();
             $postcode = $customer->get_billing_postcode();
-            $country = $customer->get_billing_country();
+            $country = strtoupper($customer->get_billing_country());
             $name = $first_name . ' ' . $last_name;
             $order = wc_get_order($order_id);
             $body_request['payment_source']['card'] = array(
@@ -3872,7 +3870,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -3956,7 +3954,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -4016,7 +4014,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -4090,7 +4088,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -4114,7 +4112,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response['payment_tokens'];
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -4156,7 +4154,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 return $api_response;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -4257,7 +4255,8 @@ class AngellEYE_PayPal_PPCP_Payment {
         return $body_request;
     }
 
-    private function applyStoredCredentialParameter($paymentMethod, &$bodyRequest) {
+    private function applyStoredCredentialParameter($paymentMethod, &$bodyRequest)
+    {
         $storedCredentials = [];
         switch ($paymentMethod) {
             case 'card':
@@ -4283,7 +4282,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $this->api_request->request($this->payment_tokens_url . '/' . $payment_token, $args, 'delete_payment_token');
         } catch (Exception $ex) {
-            
+
         }
     }
 

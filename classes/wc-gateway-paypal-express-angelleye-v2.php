@@ -2966,13 +2966,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
             }
             WC()->cart->calculate_shipping();
             WC()->customer->set_calculated_shipping(true);
-            if (WC()->cart->cart_contents_total <= 0 && WC()->cart->total <= 0 && AngellEYE_Utility::is_cart_contains_subscription() == false) {
-                if (empty($_GET['pay_for_order'])) {
-                    if (AngellEYE_Utility::is_cart_contains_subscription() == false) {
-                        wc_add_notice(__('your order amount is zero, We were unable to process your order, please try again.', 'paypal-for-woocommerce'), 'error');
-                    }
-                    $paypal_express_request->angelleye_redirect();
-                    exit;
+            if (empty($_GET['pay_for_order']) && WC()->cart->cart_contents_total <= 0 && WC()->cart->total <= 0 && AngellEYE_Utility::is_cart_contains_subscription() == false) {
+                if (AngellEYE_Utility::is_cart_contains_subscription() == false) {
+                    wc_add_notice(__('your order amount is zero, We were unable to process your order, please try again.', 'paypal-for-woocommerce'), 'error');
                 }
                 $paypal_express_request->angelleye_redirect();
                 exit;
@@ -3013,6 +3009,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 }
                             angelleye_set_session('chosen_shipping_methods', $chosen_shipping_methods);
                             if (WC()->cart->needs_shipping()) {
+                                // Validate Shipping Methods
                                 WC()->shipping->get_shipping_methods();
                                 $packages = WC()->shipping->get_packages();
                                 WC()->checkout()->shipping_methods = angelleye_get_session('chosen_shipping_methods');
@@ -3031,6 +3028,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                                 }
                                 $this->posted['payment_method'] = $this->id;
                             }
+
                             $validate_data = angelleye_get_session('validate_data');
                             WC()->cart->calculate_totals();
                             if (!empty($validate_data)) {
@@ -3038,9 +3036,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             } else {
                                 $order_id = WC()->checkout()->create_order($this->posted);
                             }
+
                             if (is_wp_error($order_id)) {
                                 throw new Exception($order_id->get_error_message());
                             }
+
+                            /** Creating Order Object for fresh created order */
                             $order = wc_get_order($order_id);
                             $is_registration_required = WC()->checkout()->is_registration_required();
                             if (!is_user_logged_in() && $is_registration_required) {
@@ -3095,9 +3096,12 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
                             } else {
                                 $order_id = WC()->checkout()->create_order($this->posted);
                             }
+
                             if (is_wp_error($order_id)) {
                                 throw new Exception($order_id->get_error_message());
                             }
+
+                            /** Creating Order Object for fresh created order */
                             $order = wc_get_order($order_id);
                             $is_registration_required = WC()->checkout()->is_registration_required();
                             if (!is_user_logged_in() && $is_registration_required) {
