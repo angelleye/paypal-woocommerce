@@ -693,20 +693,4 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
         }
     }
-    
-    public function ppcp_package_tracking_data() {
-        $testmode = ($this->is_sandbox) ? 'yes' : 'no';
-        return array(
-            'testmode' => $testmode,
-            'return_url' => admin_url(
-                    'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=applepay&testmode=' . $testmode
-            ),
-            'return_url_description' => __(
-                    'Return to your shop.', 'paypal-for-woocommerce'
-            ),
-            'third_party_features' => array('TRACKING_SHIPMENT_READWRITE'),
-            'products' => array(
-                $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT'
-            ));
-    }
 }

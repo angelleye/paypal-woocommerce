@@ -24,7 +24,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $is_sandbox;
         public $enable_tokenized_payments;
         public $is_multi_account_active;
-        public $is_package_tracking_approved = false;
 
         public static function instance() {
             if (is_null(self::$_instance)) {

@@ -1028,9 +1028,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case 'google_pay':
                     $body = $seller_onboarding->ppcp_google_pay_data();
-                case 'package_tracking':
-                    $body = $seller_onboarding->ppcp_package_tracking_data();
-                    break;
                 default:
                     $body = $seller_onboarding->ppcp_vault_data();
                     break;

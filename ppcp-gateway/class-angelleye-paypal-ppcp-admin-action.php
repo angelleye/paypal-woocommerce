@@ -420,7 +420,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             ?>
             <button type="button" class="button angelleye-ppcp-order-capture" <?php echo (isset($this->angelleye_ppcp_order_actions['capture']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>> <?php esc_html_e('Capture', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip( __( 'Capture payment for the authorized order.', 'paypal-for-woocommerce' ) ); ?></button>
             <button type="button" class="button angelleye-ppcp-order-void" <?php echo (isset($this->angelleye_ppcp_order_actions['void']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>><?php esc_html_e('Void Authorization', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip( __( 'Void the authorized order to release the hold on the buyer\'s payment source.', 'paypal-for-woocommerce' ) ); ?></button>
-            <?php if (in_array($order->get_status(), array('processing', 'completed', 'partial-payment'))) { ?>
+            <?php if (in_array($order->get_status(), array('processing', 'completed', 'partial-payment')) && class_exists('Angelleye_Paypal_Woocommerce_Shipment_Tracking_Activator')) { ?>
                 <button type="button" class="button angelleye-ppcp-shipment-tracking"><?php esc_html_e('PayPal Shipment', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip( __( 'Add shipment tracking details to WooCommerce and PayPal.', 'paypal-for-woocommerce' ) ); ?></button>
             <?php } ?>
             <?php
