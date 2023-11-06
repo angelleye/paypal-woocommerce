@@ -433,42 +433,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
 
         $smart_js_arg['currency'] = in_array($active_currency, $this->angelleye_ppcp_currency_list) ? $active_currency : 'USD';
-
-        /*         
-         * * *Compatibility with Multicurrency end** 
-         */
-
-        if (!isset($this->disable_funding['venmo'])) {
-            array_push($enable_funding, 'venmo');
-        }
-        if (!isset($this->disable_funding['paylater'])) {
-            array_push($enable_funding, 'paylater');
-        }
-        if (isset($default_country['country']) && $default_country['country'] == 'NL') {
-            array_push($enable_funding, 'ideal');
-        }
-        $ae_script_loader_handle = 'angelleye-paypal-checkout-sdk';
-
-        
         /* * *Compatibility with Multicurrency end * * */
-
-        /**
-         * TODO Handle this scenario later after verification
-         */
-        // if (!isset($this->disable_funding['venmo'])) {
-        //     array_push($enable_funding, 'venmo');
-        // }
-        // if (!isset($this->disable_funding['paylater'])) {
-        //     array_push($enable_funding, 'paylater');
-        // }
-
-        /**
-         * TODO Enable iDeal payments using a separate ticket
-         */
-        // if (isset($default_country['country']) && $default_country['country'] == 'NL') {
-        //     array_push($enable_funding, 'ideal');
-        // }
-
 
         $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
         wp_register_script($this->angelleye_ppcp_plugin_name . '-common-functions', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-common-functions' . $this->minified_version . '.js', array('jquery',), $script_versions, false);
@@ -1943,7 +1908,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
     }
-    
+
     public function angelleye_ppcp_shipment_tracking_section() {
         try {
             ?>
@@ -1963,7 +1928,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     </tr>
                 </tbody>
             </table>
-            <?php 
+            <?php
         } catch (Exception $ex) {
         }
     }
