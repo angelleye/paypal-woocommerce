@@ -84,9 +84,7 @@ if (!defined('AE_FEE')) {
 /**
  * Required functions
  */
-if (!function_exists('angelleye_queue_update')) {
-    require_once( 'angelleye-includes/angelleye-functions.php' );
-}
+require_once( 'angelleye-includes/angelleye-functions.php' );
 require_once( 'angelleye-includes/angelleye-session-functions.php' );
 require_once( 'angelleye-includes/angelleye-conditional-functions.php' );
 
@@ -137,8 +135,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if (!class_exists('AngellEYE_Utility')) {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
             }
-            if( is_admin() ) {
-                
+            if (is_admin()) {
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-admin-order-payment-process.php';
                 $admin_order_payment = new AngellEYE_Admin_Order_Payment_Process();
             }
@@ -1652,6 +1649,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $screen = get_current_screen();
             $screen_id = $screen ? $screen->id : '';
             require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/admin/class-wc-meta-box-order-items-ppcp.php';
+            // TODO This might cause issues in future so we need to keep this updated with latest woocommerce template
             remove_meta_box('woocommerce-order-items', $screen_id, 'normal');
             add_meta_box( 'woocommerce-order-items', __( 'Items', 'woocommerce' ), 'Custom_WC_Meta_Box_Order_Items::output', $screen_id, 'normal', 'high' );
         }

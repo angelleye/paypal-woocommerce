@@ -2674,7 +2674,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (strlen($note_to_payer) > 255) {
                 $note_to_payer = substr($note_to_payer, 0, 252) . '...';
             }
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
@@ -4336,7 +4336,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         if (!empty($transaction_data)) {
                             sort($transaction_data);
                             $refund_to_add = min($remaining_refund, $amount);
-                            $closest_amount = angelleye_ppcp_binarySearch($transaction_data, $refund_to_add);
+                            $closest_amount = angelleye_ppcp_binary_search($transaction_data, $refund_to_add);
                             if ($closest_amount !== null) {
                                 foreach ($capture_data_list[$item_id] as $temp_transaction_id => $temp_capture_amount) {
                                     if (!array_key_exists($temp_transaction_id, $used_transaction_id)) {
@@ -4397,7 +4397,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                         if (!empty($transaction_data)) {
                             sort($transaction_data);
-                            $closest_amount = angelleye_ppcp_binarySearch($transaction_data, $refund_to_add);
+                            $closest_amount = angelleye_ppcp_binary_search($transaction_data, $refund_to_add);
                             if ($closest_amount !== null) {
                                 foreach ($capture_data_list as $inner_item_is => $inner_capture_data) {
                                     foreach ($inner_capture_data as $inner_transaction_id => $inner_transaction_amount) {

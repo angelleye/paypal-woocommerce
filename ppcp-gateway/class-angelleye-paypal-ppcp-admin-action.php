@@ -1,10 +1,8 @@
 <?php
 defined('ABSPATH') || exit;
 
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
-
 class AngellEYE_PayPal_PPCP_Admin_Action {
-    
+
     private $angelleye_ppcp_plugin_name;
     public $api_log;
     public ?AngellEYE_PayPal_PPCP_Payment $payment_request;
@@ -81,8 +79,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         add_action('woocommerce_order_item_add_action_buttons', array($this, 'angelleye_ppcp_add_order_action_buttons'), 10, 1);
         add_action('admin_enqueue_scripts', array($this, 'angelleye_ppcp_add_order_action_js'), 10);
         add_action('woocommerce_admin_order_totals_after_total', array($this, 'angelleye_ppcp_add_order_action_item_edit'), 10, 1);
-        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_capture_details'), 10, 4);
-        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_refund_details'), 11, 4);
+        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_capture_details'), 10, 3);
+        add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_refund_details'), 11, 3);
         add_filter('woocommerce_hidden_order_itemmeta', array($this, 'woocommerce_hidden_order_itemmeta'), 10, 1);
         add_filter('wc_order_is_editable', array($this, 'angelleye_ppcp_remove_add_item_button'), 10, 2);
     }
@@ -196,12 +194,11 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
    
     public function angelleye_ppcp_save($post_id, $post_or_order_object) {
         if (!empty($_POST['is_ppcp_submited']) && 'yes' === $_POST['is_ppcp_submited']) {
-            $screen = wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id('shop-order') : 'shop_order';
             $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order($post_or_order_object->ID) : $post_or_order_object;
             if (!is_a($order, 'WC_Order')) {
                 return;
             }
-            if ('shop_order' === $screen || 'woocommerce_page_wc-orders' === $screen) {
+            if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
                 if (!empty($_POST['order_metabox_angelleye_ppcp_payment_action'])) {
                     $order_data = wc_clean($_POST);
                     $action = wc_clean($_POST['order_metabox_angelleye_ppcp_payment_action']);
@@ -341,6 +338,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 echo __('PayPal order id does not exist for this order.', 'paypal-for-woocommerce');
                 return;
             }
+
+            //TODO talk about this with Jignesh, are we really using Line items inside the loops
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
             if (isset($this->payment_response) && !empty($this->payment_response) && isset($this->payment_response['intent']) && $this->payment_response['intent'] === 'AUTHORIZE') {
                 if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']) && !empty($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {
@@ -420,7 +419,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             ?>
             <button type="button" class="button angelleye-ppcp-order-capture" <?php echo (isset($this->angelleye_ppcp_order_actions['capture']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>> <?php esc_html_e('Capture', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip( __( 'Capture payment for the authorized order.', 'paypal-for-woocommerce' ) ); ?></button>
             <button type="button" class="button angelleye-ppcp-order-void" <?php echo (isset($this->angelleye_ppcp_order_actions['void']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>><?php esc_html_e('Void Authorization', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip( __( 'Void the authorized order to release the hold on the buyer\'s payment source.', 'paypal-for-woocommerce' ) ); ?></button>
-            <?php if (in_array($order->get_status(), array('processing', 'completed', 'partial-payment')) && class_exists('Angelleye_Paypal_Woocommerce_Shipment_Tracking_Activator')) { ?>
+            <?php if (in_array($order->get_status(), array('processing', 'completed', 'partial-payment')) && defined('ANGELLEYE_PAYPAL_WOOCOMMERCE_SHIPMENT_TRACKING_VERSION')) { ?>
                 <button type="button" class="button angelleye-ppcp-shipment-tracking"><?php esc_html_e('PayPal Shipment', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip( __( 'Add shipment tracking details to WooCommerce and PayPal.', 'paypal-for-woocommerce' ) ); ?></button>
             <?php } ?>
             <?php
@@ -546,11 +545,13 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         ?><input type="hidden" value="no" name="is_ppcp_submited" id="is_ppcp_submited"><input type="hidden" name="order_metabox_angelleye_ppcp_payment_action" id="order_metabox_angelleye_ppcp_payment_action"><button type="button" class="button angelleye-ppcp-order-action-submit button-primary"><?php esc_html_e('Submit', 'paypal-for-woocommerce'); ?></button><?php
     }
 
-    public function angelleye_ppcp_display_capture_details($item_id, $item, $product, $order) {
+    public function angelleye_ppcp_display_capture_details($item_id, $item, $product) {
         $ppcp_capture_details = wc_get_order_item_meta($item_id, '_ppcp_capture_details', true);
         if (empty($ppcp_capture_details)) {
             return;
         }
+        $order_id = wc_get_order_id_by_order_item_id($item_id);
+        $order = wc_get_order($order_id);
         ?>
         <table cellspacing="0" class="display_meta">
             <?php
@@ -594,12 +595,14 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         </table>
         <?php
     }
-    
-    public function angelleye_ppcp_display_refund_details($item_id, $item, $product, $order) {
+
+    public function angelleye_ppcp_display_refund_details($item_id, $item, $product) {
         $ppcp_refund_details = wc_get_order_item_meta($item_id, '_ppcp_refund_details', true);
         if (empty($ppcp_refund_details)) {
             return;
         }
+        $order_id = wc_get_order_id_by_order_item_id($item_id);
+        $order = wc_get_order($order_id);
         ?>
         <table cellspacing="0" class="display_meta">
             <?php
@@ -609,7 +612,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     <td>
                         <?php
                         $ppcp_refund_key_replace = array('_ppcp_refund_id' => 'Refund ID', '_ppcp_refund_date' => 'Date', '_ppcp_refund_amount' => 'Amount');
-                        echo '<b>' . __('Refund Details', '') . '</b>: ';
+                        echo '<b>' . __('Refund Details', 'paypal-for-woocommerce') . '</b>: ';
                         $refund_details_html = '';
                         if (is_array($meta_array) && !empty($meta_array)) {
                             $total_element = count($meta_array);

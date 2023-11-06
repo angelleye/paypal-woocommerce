@@ -1176,9 +1176,9 @@ if (!function_exists('angelleye_ppcp_order_item_meta_key_exists')) {
 
 }
 
-if (!function_exists('angelleye_ppcp_binarySearch')) {
+if (!function_exists('angelleye_ppcp_binary_search')) {
 
-    function angelleye_ppcp_binarySearch($array, $target) {
+    function angelleye_ppcp_binary_search($array, $target) {
         $low = 0;
         $high = count($array) - 1;
         $closest = null;

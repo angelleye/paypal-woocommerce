@@ -52,7 +52,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         add_action("woocommerce_checkout_create_order", array($this, "angelleye_convert_order_prices_to_active_currency"), 9999, 2);
 
         add_action('set_logged_in_cookie', [$this, 'handle_logged_in_cookie_nonce_on_checkout'], 1000, 6);
-        //$this->payment_request->ppcp_send_paypal_tracking();
     }
 
     public function angelleye_ppcp_load_class() {
@@ -765,9 +764,12 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $zipFile = WP_CONTENT_DIR . '/uploads/' . $plugin_folder_name . '.zip';
             $un_zipFile = trailingslashit(WP_CONTENT_DIR . '/uploads/' . $plugin_folder_name);
             $extracted_folder_name = '';
+            // TODO looks like here we need to handle the scenario where a plugin file or extract function fails and
+            // that leaves the user in a position where he won't be able to install the plugin again until he manually
+            // deletes the plugin folder from file manager or tries through upload plugin option.
             if (!file_exists($rename_path) && !file_exists($github_rename_path)) {
                 require_once(ABSPATH . 'wp-admin/includes/file.php');
-                $response = $this->angelleye_ppcp_download_zip_file($github_repo_url, $zipFile);
+                $this->angelleye_ppcp_download_zip_file($github_repo_url, $zipFile);
                 $zip = new ZipArchive;
                 $res = $zip->open($zipFile);
                 if ($res === TRUE) {
@@ -787,15 +789,15 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 }
                 unlink($rename_path . '.zip');
                 if (is_dir($rename_path)) {
-                    $result = activate_plugin($plugin_folder_name . '/' . 'angelleye-paypal-woocommerce-shipment-tracking' . '.php');
+                    $result = activate_plugin($plugin_folder_name . '/angelleye-paypal-woocommerce-shipment-tracking.php');
                     if (is_wp_error($result)) {
-                        
+
                     }
                 }
             } elseif(file_exists($rename_path)) {
-                $result = activate_plugin($plugin_folder_name . '/' . 'angelleye-paypal-woocommerce-shipment-tracking' . '.php');
+                activate_plugin($plugin_folder_name . '/angelleye-paypal-woocommerce-shipment-tracking.php');
             } elseif(file_exists($github_rename_path)) {
-                $result = activate_plugin('paypal-shipment-tracking-for-woocommerce' . '/' . 'angelleye-paypal-woocommerce-shipment-tracking' . '.php');
+                activate_plugin('paypal-shipment-tracking-for-woocommerce' . '/angelleye-paypal-woocommerce-shipment-tracking.php');
             }
             delete_transient('license_key_status_check');
             delete_site_transient( 'update_plugins' );
@@ -803,7 +805,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=paypal_shipment_tracking'));
             exit();
         } catch (Exception $ex) {
-            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=paypal_shipment_tracking'));
+            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=paypal_shipment_tracking&error=' . $ex->getMessage()));
             exit();
         }
     }

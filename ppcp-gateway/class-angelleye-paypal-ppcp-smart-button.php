@@ -417,7 +417,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $ae_script_loader_handle = 'angelleye-paypal-checkout-sdk';
         $enable_funding = [];
         $smart_js_arg = array();
-        $enable_funding = array();
         $active_currency = get_woocommerce_currency();
 
         /* * *Compatibility with Multicurrency start * * */
