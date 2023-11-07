@@ -5879,8 +5879,8 @@ msgstr ""
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:691
 #: ppcp-gateway/js/wc-angelleye-common-functions.js:5
-msgid "Impossibile creare l'ordine a causa dei seguenti errori."
-msgstr ""
+msgid "The order could not be created due to the following errors."
+msgstr "Impossibile creare l'ordine a causa dei seguenti errori."
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php:257
 msgid ""
