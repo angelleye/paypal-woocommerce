@@ -93,7 +93,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
             $this->payment_request->angelleye_ppcp_void_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -105,7 +105,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
             $this->payment_request->angelleye_ppcp_capture_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -166,7 +166,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 add_meta_box('angelleye-ppcp-order-action', __('PayPal Transaction Activity', 'paypal-for-woocommerce'), array($this, 'angelleye_ppcp_order_action_callback'), $screen, 'normal', 'high');
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -188,7 +188,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -316,7 +316,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 angelleye_ppcp_display_notice($notice_data->enable_apple_pay);
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -404,12 +404,16 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
     public function angelleye_ppcp_add_order_action_buttons($order) {
         try {
+            if (!$this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id()) || empty($this->angelleye_ppcp_order_actions)) {
+                return;
+            }
+            wp_enqueue_script('angelleye-ppcp-order-action');
             if ($this->ae_capture_amount === 0) {
                 ?>
                 <style>.button.refund-items {
@@ -417,10 +421,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     }</style>
                     <?php
                 }
-                if (!$this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id()) || empty($this->angelleye_ppcp_order_actions)) {
-                    return;
-                }
-                wp_enqueue_script('angelleye-ppcp-order-action');
                 ?>
             <button type="button" class="button angelleye-ppcp-order-capture" <?php echo (isset($this->angelleye_ppcp_order_actions['capture']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>> <?php esc_html_e('Capture', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip(__('Capture payment for the authorized order.', 'paypal-for-woocommerce')); ?></button>
             <button type="button" class="button angelleye-ppcp-order-void" <?php echo (isset($this->angelleye_ppcp_order_actions['void']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>><?php esc_html_e('Void Authorization', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip(__('Void the authorized order to release the hold on the buyer\'s payment source.', 'paypal-for-woocommerce')); ?></button>
@@ -429,7 +429,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             <?php } ?>
             <?php
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -653,7 +653,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         try {
             do_action('angelleye_ppcp_send_shipment_tracking_line_item', $order, $order_data);
         } catch (Exception $ex) {
-
+            
         }
     }
 
