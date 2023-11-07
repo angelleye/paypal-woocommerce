@@ -3,12 +3,12 @@ class GooglePayCheckoutButton {
     static googlePayConfig;
     static isConfigLoading;
     static configPromise;
-    static googlePayObject;
+    static googlePayObject;    
     static baseRequest = {
         apiVersion: 2,
         apiVersionMinor: 0,
     }
-    constructor() {
+    constructor() {        
 
     }
 
@@ -113,11 +113,11 @@ class GooglePayCheckoutButton {
             let debugID = errorObject.paypalDebugId;
             switch (errorObject.errorName) {
                 case 'ERROR_VALIDATING_MERCHANT':
-                    return 'This merchant is not enabled to process google pay. please contact website owner. [DebugId: ' + debugID + ']';
+                    return __( 'This merchant is not enabled to process google pay. please contact website owner. [DebugId: ', 'paypal-for-woocommerce' ) +''+ debugID + ']';
                 //case 'UNPROCESSABLE_ENTITY':
                 //    return JSON.stringify(errorObject);
                 default:
-                    return 'We are unable to process your request at the moment, please contact website owner. [DebugId: ' + debugID + ']'
+                    return __( 'We are unable to process your request at the moment, please contact website owner. [DebugId: ', 'paypal-for-woocommerce' ) +''+ debugID + ']';
             }
         }
         return errorObject;
@@ -162,14 +162,14 @@ class GooglePayCheckoutButton {
                         angelleyeOrder.updateCartTotalsInEnvironment(response);
                         paymentDataRequestUpdate.newTransactionInfo = additionalData.thisObject.getGoogleTransactionInfo();
                     } else {
-                        throw new Error("Unable to update the shipping amount.");
+                        throw new Error(__( 'Unable to update the shipping amount.', 'paypal-for-woocommerce' ));
                     }
                 } catch (error) {
                     console.log('shipping change error');
                     angelleyeOrder.hideProcessingSpinner();
                     angelleyeOrder.showError(additionalData.thisObject.parseErrorMessage(error));
-                    paymentDataRequestUpdate.error = 'Unable to pull the shipping amount details based on selected address';
-                    reject('Unable to pull the shipping amount details based on selected address');
+                    paymentDataRequestUpdate.error = __( 'Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce' );
+                    reject(__( 'Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce' ));
                 }
             }
 
@@ -311,7 +311,7 @@ class GooglePayCheckoutButton {
         console.log('click event', event, thisObject.containerSelector);
         const cartDetails = angelleyeOrder.getCartDetails();
         if (cartDetails.totalAmount <= 0) {
-            angelleyeOrder.showError("Your shopping cart seems to be empty.");
+            angelleyeOrder.showError(__( 'Your shopping cart seems to be empty.', 'paypal-for-woocommerce' ));
         }
         angelleyeOrder.setPaymentMethodSelector('google_pay');
         const paymentDataRequest = thisObject.getGooglePaymentDataRequest();

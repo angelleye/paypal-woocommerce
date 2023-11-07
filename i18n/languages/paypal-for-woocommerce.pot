@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-11-07T12:52:45+01:00\n"
+"POT-Creation-Date: 2023-11-07T17:55:35+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: paypal-for-woocommerce\n"
@@ -496,8 +496,8 @@ msgstr ""
 #: angelleye-includes/angelleye-utility.php:1021
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:466
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:485
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:868
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:899
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:867
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:898
 msgid "Edit"
 msgstr ""
 
@@ -833,13 +833,13 @@ msgstr ""
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:836
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:885
 #: classes/wc-gateway-braintree-angelleye.php:3149
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:742
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:741
 msgid "OR"
 msgstr ""
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:1007
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:1059
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1238
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1237
 msgid "Cancel order"
 msgstr ""
 
@@ -857,7 +857,7 @@ msgstr ""
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:1191
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:1236
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:899
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:898
 msgid "Shipping details"
 msgstr ""
 
@@ -2106,9 +2106,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:344
 #: classes/wc-gateway-paypal-pro-angelleye.php:1665
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:697
 #: ppcp-gateway/js/wc-angelleye-common-functions.js:6
-#: ppcp-gateway/js/wc-angelleye-common-functions.js:505
 msgid "MM / YY"
 msgstr ""
 
@@ -5148,7 +5146,7 @@ msgid "PayPal Pay Later"
 msgstr ""
 
 #: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:492
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:800
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:799
 #: template/migration/ppcp_paypal_advanced.php:12
 #: template/migration/ppcp_paypal_advanced.php:33
 #: template/migration/ppcp_paypal_credit_card_rest.php:12
@@ -5690,27 +5688,27 @@ msgstr ""
 msgid "Unable to create the order due to the following errors."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:872
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:871
 msgid "Billing &amp; Shipping"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:876
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:875
 msgid "Billing details"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:911
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:910
 msgid "Create an account?"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:918
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:917
 msgid "Create an account by entering the information below. If you are a returning customer please login at the top of the page."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1492
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1491
 msgid "Payment method:"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-apple-pay-angelleye.php:40
+#: ppcp-gateway/class-wc-gateway-apple-pay-angelleye.php:42
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1783
 msgid "Accept payments using Apple Pay."
 msgstr ""
@@ -5772,7 +5770,7 @@ msgstr ""
 msgid "Refund failed."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-google-pay-angelleye.php:40
+#: ppcp-gateway/class-wc-gateway-google-pay-angelleye.php:42
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1831
 msgid "Accept payments using Google Pay."
 msgstr ""
@@ -6915,4 +6913,41 @@ msgstr ""
 
 #: template/ppcp_account_request_form.php:19
 msgid "PPCP Account Request"
+msgstr ""
+
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:150
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:314
+msgid "Your shopping cart seems to be empty."
+msgstr ""
+
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:167
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:238
+msgid "Total Amount"
+msgstr ""
+
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:182
+msgid "An error occurred while initiating the ApplePay payment."
+msgstr ""
+
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:206
+msgid "This merchant is not enabled to process apple pay. please contact website owner. [DebugId: "
+msgstr ""
+
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:208
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:120
+msgid "We are unable to process your request at the moment, please contact website owner. [DebugId: "
+msgstr ""
+
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:261
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:165
+msgid "Unable to update the shipping amount."
+msgstr ""
+
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:116
+msgid "This merchant is not enabled to process google pay. please contact website owner. [DebugId: "
+msgstr ""
+
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:171
+#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:172
+msgid "Unable to pull the shipping amount details based on selected address"
 msgstr ""
