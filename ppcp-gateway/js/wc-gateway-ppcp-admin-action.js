@@ -44,6 +44,7 @@ jQuery(function ($) {
             $('.paypal-fee-tr').slideUp();
             $('#angelleye_ppcp_payment_submit_button').val('');
             $('.ppcp_shipment_tracking').hide();
+            $('#order_metabox_angelleye_ppcp_payment_action').val('');
             
         });
         $('#woocommerce-order-items').on('click', 'button.angelleye-ppcp-order-action-submit', function (e) {
@@ -52,7 +53,6 @@ jQuery(function ($) {
                 $('.angelleye_ppcp_capture_box input[id="refund_amount"]').attr('id', 'ppcp_refund_amount');
                 if ( window.confirm( 'Are you sure you wish to process this? This action cannot be undone.' ) ) {
                     $('#is_ppcp_submited').val('yes');
-                    $('#order_metabox_angelleye_ppcp_payment_action').val('capture');
                     $("#woocommerce-order-items").block({message: null, overlayCSS: {background: "#fff", opacity: .6}});
                     $('form#post, form#order').submit();
                 } else {
