@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/paypal-for-"
 "woocommerce\n"
 "POT-Creation-Date: 2023-04-11 21:28+0530\n"
-"PO-Revision-Date: 2023-04-11 21:35+0530\n"
+"PO-Revision-Date: 2023-11-07 13:21+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.2\n"
+"X-Generator: Poedit 3.4.1\n"
 
 #: angelleye-includes/angelleye-admin-order-payment-process.php:25
 #: angelleye-includes/angelleye-admin-order-payment-process.php:26
@@ -1786,7 +1786,7 @@ msgstr ""
 #: ppcp-gateway/class-wc-gateway-cc-angelleye.php:484
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:260
 msgid "Card number"
-msgstr ""
+msgstr "Numéro de carte"
 
 #: classes/wc-gateway-braintree-angelleye.php:2033
 #: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:330
@@ -2309,17 +2309,19 @@ msgstr ""
 msgid "PayPal for WooCommerce requires PHP version 5.3.0 or higher."
 msgstr ""
 
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:331
-#: classes/wc-gateway-paypal-pro-angelleye.php:1624
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:489
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:344
+#: classes/wc-gateway-paypal-pro-angelleye.php:1665
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:697
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:6
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:505
 msgid "MM / YY"
-msgstr ""
+msgstr "MM / AA"
 
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:335
-#: classes/wc-gateway-paypal-pro-angelleye.php:1620
-#: classes/wc-gateway-paypal-pro-angelleye.php:1637
-#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1728
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:479
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:348
+#: classes/wc-gateway-paypal-pro-angelleye.php:1661
+#: classes/wc-gateway-paypal-pro-angelleye.php:1678
+#: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1772
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:495
 msgid "CVC"
 msgstr ""
 
@@ -2568,9 +2570,9 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:825
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1071
 msgid ""
-"This image requires an SSL host.  Please upload your image to <a target="
-"\"_blank\" href=\"http://www.sslpic.com\">www.sslpic.com</a> and enter the "
-"image URL here."
+"This image requires an SSL host.  Please upload your image to <a "
+"target=\"_blank\" href=\"http://www.sslpic.com\">www.sslpic.com</a> and "
+"enter the image URL here."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:849
@@ -2831,8 +2833,8 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1192
 msgid ""
 "The sandbox is PayPal's test environment and is only for use with sandbox "
-"accounts created within your <a href=\"http://developer.paypal.com\" target="
-"\"_blank\">PayPal developer account</a>."
+"accounts created within your <a href=\"http://developer.paypal.com\" "
+"target=\"_blank\">PayPal developer account</a>."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:953
@@ -2843,8 +2845,8 @@ msgstr ""
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:955
 #: classes/wc-gateway-paypal-express-angelleye-v2.php:1197
 msgid ""
-"Create sandbox accounts and obtain API credentials from within your <a href="
-"\"http://developer.paypal.com\">PayPal developer account</a>."
+"Create sandbox accounts and obtain API credentials from within your <a "
+"href=\"http://developer.paypal.com\">PayPal developer account</a>."
 msgstr ""
 
 #: classes/wc-gateway-paypal-express-angelleye-v1.php:960
@@ -5085,8 +5087,8 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1526
 msgid ""
 "For testing purposes you can use the card number 4000000000000002 with any "
-"CVC and a valid expiration date or check the <a href=\"%s\" target=\"_blank"
-"\">Cardinal Centinel documentation</a> for more card numbers."
+"CVC and a valid expiration date or check the <a href=\"%s\" "
+"target=\"_blank\">Cardinal Centinel documentation</a> for more card numbers."
 msgstr ""
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:640
@@ -5100,7 +5102,7 @@ msgstr ""
 #: ppcp-gateway/class-wc-gateway-cc-angelleye.php:283
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:264
 msgid "Expiration Date"
-msgstr ""
+msgstr "Date d'expiration"
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:676
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1562
@@ -5221,7 +5223,7 @@ msgstr ""
 #: ppcp-gateway/class-wc-gateway-cc-angelleye.php:274
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye.php:255
 msgid "Card Security Code"
-msgstr ""
+msgstr "code de sécurité de la carte"
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:1623
 msgid "Start Date (MM/YY)"
@@ -5875,6 +5877,11 @@ msgstr ""
 msgid "Unable to create order."
 msgstr ""
 
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:691
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:5
+msgid "Unable to create the order due to the following errors."
+msgstr "Impossible de créer la commande en raison des erreurs suivantes."
+
 #: ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php:257
 msgid ""
 "We cannot process your order with the payment information that you provided. "
@@ -6138,17 +6145,16 @@ msgid ""
 "place your order."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:460
-msgid ""
-"Unfortunately, we do not support this credit card type. Please try another "
-"card type."
-msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:461
-msgid ""
-"Unfortunately, your credit card details are not valid. Please review the "
-"card details and try again."
-msgstr ""
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:680
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:3
+msgid "Unfortunately, we do not support this credit card type. Please try another card type."
+msgstr "Malheureusement, nous ne prenons pas en charge ce type de carte de crédit. Veuillez essayer un autre type de carte."
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:681
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:4
+msgid "Unfortunately, your credit card details are not valid. Please review the card details and try again."
+msgstr "Malheureusement, les détails de votre carte de crédit ne sont pas valides. Veuillez vérifier les détails de la carte et réessayer."
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:607
 msgid "Billing &amp; Shipping"

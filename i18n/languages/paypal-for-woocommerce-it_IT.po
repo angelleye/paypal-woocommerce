@@ -2309,11 +2309,13 @@ msgstr ""
 msgid "PayPal for WooCommerce requires PHP version 5.3.0 or higher."
 msgstr ""
 
-#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:331
-#: classes/wc-gateway-paypal-pro-angelleye.php:1624
-#: ppcp-gateway/class-wc-gateway-cc-angelleye.php:489
+#: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:344
+#: classes/wc-gateway-paypal-pro-angelleye.php:1665
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:697
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:6
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:505
 msgid "MM / YY"
-msgstr ""
+msgstr "MM/AA"
 
 #: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:335
 #: classes/wc-gateway-paypal-pro-angelleye.php:1620
@@ -5875,6 +5877,11 @@ msgstr ""
 msgid "Unable to create order."
 msgstr ""
 
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:691
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:5
+msgid "Impossibile creare l'ordine a causa dei seguenti errori."
+msgstr ""
+
 #: ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php:257
 msgid ""
 "We cannot process your order with the payment information that you provided. "
@@ -6138,17 +6145,15 @@ msgid ""
 "place your order."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:460
-msgid ""
-"Unfortunately, we do not support this credit card type. Please try another "
-"card type."
-msgstr ""
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:680
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:3
+msgid "Unfortunately, we do not support this credit card type. Please try another card type."
+msgstr "Purtroppo non supportiamo questo tipo di carta di credito. Prova un altro tipo di carta."
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:461
-msgid ""
-"Unfortunately, your credit card details are not valid. Please review the "
-"card details and try again."
-msgstr ""
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:681
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:4
+msgid "Unfortunately, your credit card details are not valid. Please review the card details and try again."
+msgstr "Purtroppo i dati della tua carta di credito non sono validi. Controlla i dettagli della carta e riprova."
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:607
 msgid "Billing &amp; Shipping"
