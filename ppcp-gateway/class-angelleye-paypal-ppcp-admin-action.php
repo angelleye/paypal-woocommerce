@@ -86,6 +86,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         if (!has_action('woocommerce_admin_order_totals_after_tax', array($this, 'angelleye_ppcp_display_total_capture'))) {
             add_action('woocommerce_admin_order_totals_after_tax', array($this, 'angelleye_ppcp_display_total_capture'), 1, 1);
         }
+        add_action('admin_notices', array($this, 'angelleye_ppcp_display_payment_authorization_notice'));
     }
 
     public function angelleye_ppcp_admin_void_action_handler($order, $order_data) {
@@ -724,5 +725,20 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             </td>
         </tr>
         <?php
+    }
+    
+    public function angelleye_ppcp_display_payment_authorization_notice() {
+        global $post;
+        $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
+        if ('on-hold' != $order->get_status()) {
+            return;
+        }
+        $screen = ae_is_active_screen(['shop_order']);
+        if ($screen && $this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id())) {
+            echo '<div class="updated woocommerce-message"><p>' . __('Capture the authorized order to receive funds in your PayPal account.') . '</p></div>';
+        }
     }
 }
