@@ -552,6 +552,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if ($order->get_status() == 'refunded') {
             return true;
         }
+        if($fee < 0.1) {
+            return;
+        }
         ?>
         <tr class="paypal-fee-tr">
             <td class="label paypal-fee">

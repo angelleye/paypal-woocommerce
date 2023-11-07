@@ -2635,7 +2635,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $order->add_order_note(sprintf(__('%s Capture Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
                 $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                 if ($payment_status === 'COMPLETED' || 'CAPTURED' === $payment_status) {
-                    $order->payment_complete($transaction_id);
+                    $order->payment_complete();
                     $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
                 } elseif ('PARTIALLY_CAPTURED' === $payment_status) {
                     $order->update_status('wc-partial-payment');
@@ -4491,18 +4491,18 @@ class AngellEYE_PayPal_PPCP_Payment {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
-
+            $currency_code = angelleye_ppcp_get_currency($order_id);
             if (!empty($amount) && $amount > 0) {
                 $body_request['amount'] = array(
                     'value' => angelleye_ppcp_round($amount, $decimals),
-                    'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount)
+                    'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', $currency_code, $amount)
                 );
             } 
             $body_request['payment_instruction'] = [
                 "platform_fees" => [
                     [
                         "amount" => [
-                            "currency_code" => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount),
+                            "currency_code" => apply_filters('angelleye_ppcp_woocommerce_currency', $currency_code, $amount),
                             "value" => angelleye_ppcp_get_platform_fee_refund_amount()
                         ]
                     ]
@@ -4523,7 +4523,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $gross_amount = $this->api_response['seller_payable_breakdown']['gross_amount']['value'] ?? '';
                 $refund_transaction_id = $this->api_response['id'] ?? '';
                 $order->add_order_note(
-                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
+                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), wc_price($gross_amount, array('currency' => get_woocommerce_currency())), $refund_transaction_id)
                 );
                 $refund_date = date('m/d/y H:i', strtotime($this->api_response['update_time']));
                 $ppcp_refund_details[] = array(
