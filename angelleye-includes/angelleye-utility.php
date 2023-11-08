@@ -777,7 +777,7 @@ class AngellEYE_Utility {
             return $boolean;
         }
 
-        if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
+        if (ae_is_active_screen(ae_get_shop_order_screen_id())) {
             if ($current->id == 'paypal_express' || $current->id == 'paypal_pro' || $current->id == 'paypal_pro_payflow' || $current->id == 'braintree') {
                 $payment_action = $order->get_meta( '_payment_action', true);
                 if ($payment_action == 'Sale' || $payment_action == 'DoCapture' || empty($payment_action)) {
@@ -992,8 +992,8 @@ class AngellEYE_Utility {
         if (!is_a($order, 'WC_Order')) {
             return;
         }
-        $screen = ae_is_active_screen(AE_SHOP_ORDER_SCREENS);
-        if ($screen) {
+        $screen = ae_get_shop_order_screen_id();
+        if (ae_is_active_screen($screen)) {
             if ($this->angelleye_is_display_paypal_transaction_details($order->get_id())) {
                 add_meta_box('angelleye-pw-order-action', __('PayPal Transaction History', 'paypal-for-woocommerce'), array($this, 'angelleye_paypal_for_woocommerce_order_action_callback'), $screen, 'normal', 'high', null);
             }
@@ -1005,7 +1005,7 @@ class AngellEYE_Utility {
         if (!is_a($order, 'WC_Order')) {
             return;
         }
-        if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
+        if (ae_is_active_screen(ae_get_shop_order_screen_id())) {
             $transaction_id = $order->get_transaction_id();
             return $transaction_id ?? false;
         }
@@ -1255,7 +1255,7 @@ class AngellEYE_Utility {
             if (!is_a($order, 'WC_Order')) {
                 return;
             }
-            if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
+            if (ae_is_active_screen(ae_get_shop_order_screen_id())) {
                 if (empty($this->payment_method)) {
                     $this->payment_method = $order->get_payment_method();
                 }
@@ -1571,7 +1571,7 @@ class AngellEYE_Utility {
                 if (!is_a($order, 'WC_Order')) {
                     return;
                 }
-                if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
+                if (ae_is_active_screen(ae_get_shop_order_screen_id())) {
                     $this->payment_method = $order->get_payment_method();
                 }
             }

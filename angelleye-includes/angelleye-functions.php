@@ -4,10 +4,6 @@ use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableControlle
  * Functions used by plugins
  */
 
-if (!defined('AE_SHOP_ORDER_SCREENS')) {
-    define('AE_SHOP_ORDER_SCREENS', ['shop_order', 'woocommerce_page_wc-orders']);
-}
-
 /**
  * Queue updates for the Angell EYE Updater
  */
@@ -95,16 +91,24 @@ if (!class_exists('AngellEYE_Updater') && !function_exists('angell_updater_notic
     add_action( 'wp_ajax_angelleye_updater_dismissible_admin_notice', 'angelleye_updater_dismissible_admin_notice' );
 }
 
+if (!function_exists('ae_get_shop_order_screen_id')) {
+    function ae_get_shop_order_screen_id()
+    {
+        return wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
+            ? wc_get_page_screen_id('shop-order') : 'shop_order';
+    }
+}
+
 if (!function_exists('ae_is_active_screen')) {
     /**
      * Returns True if the current active screen matches to one of the array elements
-     * @param array $screens A list of screens to check
-     * @return ?string
+     * @param string $screen
+     * @return bool
      */
-    function ae_is_active_screen(array $screens): ?string
+    function ae_is_active_screen(string $screen): bool
     {
-        $screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
-            ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
-        return in_array($screen, $screens) ? $screen : null;
+        $current_screen = get_current_screen();
+        $screen_id = $current_screen ? $current_screen->id : '';
+        return $screen_id == $screen;
     }
 }
