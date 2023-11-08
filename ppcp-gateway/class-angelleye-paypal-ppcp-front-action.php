@@ -410,6 +410,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             wp_redirect($this->angelleye_ppcp_get_return_url($order));
             exit();
         } else {
+            // set this to null so that frontend third party plugin doesn't trigger reload on update_order_review ajax call
+            WC()->session->set('reload_checkout', null);
+
             wp_redirect(wc_get_checkout_url());
             exit();
         }
@@ -491,6 +494,8 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
+                    // set this to null so that frontend third party plugin doesn't trigger reload on update_order_review ajax call
+                    WC()->session->set('reload_checkout', null);
                     if (isset($_GET['is_pay_page']) && 'yes' === $_GET['is_pay_page']) {
                         wp_send_json_success(array(
                             'result' => 'failure',
