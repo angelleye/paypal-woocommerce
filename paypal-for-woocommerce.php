@@ -125,12 +125,12 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $this->minified_version = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
             add_action('init', array($this, 'load_plugin_textdomain'));
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
-            
+
             add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 32 );
 
             include_once plugin_dir_path(__FILE__) . 'angelleye-includes/angelleye-payment-logger.php';
-            
-            
+
+
             AngellEYE_PFW_Payment_Logger::instance();
             if (!class_exists('AngellEYE_Utility')) {
                 require_once( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/angelleye-includes/angelleye-utility.php' );
@@ -383,7 +383,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         //init function
         public function init(){
             if (!class_exists("WC_Payment_Gateway")) return;
-            
+
             if(is_angelleye_multi_account_active()) {
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php';
             } else {
@@ -1606,7 +1606,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 if (!is_a($order, 'WC_Order')) {
                     return $classes;
                 }
-                if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
+                if (ae_is_active_screen(ae_get_shop_order_screen_id())) {
                     $order = wc_get_order( absint( $post->ID ) );
                     $payment_method = $order->get_payment_method();
                     if ( !empty($payment_method) ) {
@@ -1644,18 +1644,17 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
             }
         }
-        
+
         public function add_meta_boxes() {
-            $screen = get_current_screen();
-            $screen_id = $screen ? $screen->id : '';
-            require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/admin/class-wc-meta-box-order-items-ppcp.php';
-            // TODO This might cause issues in future so we need to keep this updated with latest woocommerce template
-            remove_meta_box('woocommerce-order-items', $screen_id, 'normal');
-            add_meta_box( 'woocommerce-order-items', __( 'Items', 'woocommerce' ), 'Custom_WC_Meta_Box_Order_Items::output', $screen_id, 'normal', 'high' );
+            $screen = ae_get_shop_order_screen_id();
+            if (ae_is_active_screen($screen)) {
+                require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/admin/class-wc-meta-box-order-items-ppcp.php';
+                // TODO This might cause issues in future so we need to keep this updated with latest woocommerce template
+                remove_meta_box('woocommerce-order-items', $screen, 'normal');
+                add_meta_box('woocommerce-order-items', __('Items', 'woocommerce'), 'Custom_WC_Meta_Box_Order_Items::output', $screen, 'normal', 'high');
+            }
         }
     }
-    
-    
 }
 new AngellEYE_Gateway_Paypal();
 

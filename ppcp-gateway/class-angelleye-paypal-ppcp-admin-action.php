@@ -97,7 +97,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
             $this->payment_request->angelleye_ppcp_void_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -109,7 +109,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             remove_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
             $this->payment_request->angelleye_ppcp_capture_authorized_payment_admin($order, $order_data);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -165,12 +165,12 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             if (!is_a($order, 'WC_Order')) {
                 return;
             }
-            $screen = ae_is_active_screen(AE_SHOP_ORDER_SCREENS);
-            if ($screen && $this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id())) {
+            $screen = ae_get_shop_order_screen_id();
+            if (ae_is_active_screen($screen) && $this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id())) {
                 add_meta_box('angelleye-ppcp-order-action', __('PayPal Transaction Activity', 'paypal-for-woocommerce'), array($this, 'angelleye_ppcp_order_action_callback'), $screen, 'normal', 'high');
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -192,7 +192,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -202,23 +202,21 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             if (!is_a($order, 'WC_Order')) {
                 return;
             }
-            if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
-                if (!empty($_POST['order_metabox_angelleye_ppcp_payment_action'])) {
-                    $order_data = wc_clean($_POST);
-                    $action = wc_clean($_POST['order_metabox_angelleye_ppcp_payment_action']);
-                    switch ($action) {
-                        case 'void':
-                            $this->angelleye_ppcp_admin_void_action_handler($order, $order_data);
-                            break;
-                        case 'capture':
-                            $this->angelleye_ppcp_admin_capture_action_handler($order, $order_data);
-                            break;
-                        case 'shipment_tracking':
-                            $this->angelleye_ppcp_admin_shipment_tracking_action_handler($order, $order_data);
-                            break;
-                        default:
-                            break;
-                    }
+            if (!empty($_POST['order_metabox_angelleye_ppcp_payment_action'])) {
+                $order_data = wc_clean($_POST);
+                $action = wc_clean($_POST['order_metabox_angelleye_ppcp_payment_action']);
+                switch ($action) {
+                    case 'void':
+                        $this->angelleye_ppcp_admin_void_action_handler($order, $order_data);
+                        break;
+                    case 'capture':
+                        $this->angelleye_ppcp_admin_capture_action_handler($order, $order_data);
+                        break;
+                    case 'shipment_tracking':
+                        $this->angelleye_ppcp_admin_shipment_tracking_action_handler($order, $order_data);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -320,7 +318,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 angelleye_ppcp_display_notice($notice_data->enable_apple_pay);
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -405,7 +403,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -433,7 +431,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             <?php } ?>
             <?php
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -675,7 +673,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         try {
             do_action('angelleye_ppcp_send_shipment_tracking_line_item', $order, $order_data);
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -726,7 +724,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         </tr>
         <?php
     }
-    
+
     public function angelleye_ppcp_display_payment_authorization_notice() {
         global $post;
         $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;

@@ -27,8 +27,8 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!is_a($order, 'WC_Order')) {
             return;
         }
-        $screen = ae_is_active_screen(AE_SHOP_ORDER_SCREENS);
-        if ($screen) {
+        $screen = ae_get_shop_order_screen_id();
+        if (ae_is_active_screen($screen)) {
             add_meta_box('angelleye_admin_order_payment_process', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_payment_process'), $screen, 'side', 'default');
             add_meta_box('angelleye_admin_order_reference_order', __('Reference Transaction', 'paypal-for-woocommerce'), array($this, 'admin_order_reference_order'), $screen, 'side', 'default');
         }
@@ -95,7 +95,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!is_a($order, 'WC_Order')) {
             return;
         }
-        if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
+        if (ae_is_active_screen(ae_get_shop_order_screen_id())) {
             if ($this->angelleye_is_order_need_payment($order) && $this->angelleye_is_admin_order_payment_method_available($order) == true && $this->angelleye_is_order_created_by_create_new_reference_order($order) == false) {
                 $reason_array = $this->angelleye_get_reason_why_create_reference_transaction_order_button_not_available($order);
                 $reason_message = $this->angelleye_reason_array_to_nice_message($reason_array);
@@ -148,7 +148,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!empty($_POST['angelleye_create_reference_order_submit_button']) && $_POST['angelleye_create_reference_order_submit_button'] == 'Create Reference Transaction Order') {
             if (wp_verify_nonce($_POST['angelleye_create_reference_order_sec'], 'angelleye_create_reference_order_sec')) {
                 $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
-                if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
+                if (ae_is_active_screen(ae_get_shop_order_screen_id())) {
                     do_action('angelleye_admin_create_reference_order_action_hook', $order);
                 }
 
@@ -160,7 +160,7 @@ class AngellEYE_Admin_Order_Payment_Process {
         if (!empty($_POST['angelleye_admin_order_payment_process_submit_button']) && $_POST['angelleye_admin_order_payment_process_submit_button'] == 'Process Reference Transaction') {
             if (wp_verify_nonce($_POST['angelleye_admin_order_payment_process_sec'], 'angelleye_admin_order_payment_process_sec')) {
                 $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
-                if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
+                if (ae_is_active_screen(ae_get_shop_order_screen_id())) {
                     do_action('angelleye_admin_order_process_payment_action_hook', $order);
                 }
             }
