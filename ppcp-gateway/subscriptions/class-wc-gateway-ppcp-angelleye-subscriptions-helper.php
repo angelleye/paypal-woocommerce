@@ -39,8 +39,8 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
     }
 
     public function save_payment_token($order, $payment_tokens_id) {
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-        $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+        $order_id = $order->get_id();
+        $angelleye_ppcp_used_payment_method = $order->get_meta('_angelleye_ppcp_used_payment_method', true);
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
             $subscriptions = wcs_get_subscriptions_for_order($order_id);
         } elseif (function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($order_id)) {
@@ -50,16 +50,17 @@ class WC_Gateway_PPCP_AngellEYE_Subscriptions_Helper {
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                $subscription_id = version_compare(WC_VERSION, '3.0', '<') ? $subscription->id : $subscription->get_id();
-                update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
+                $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                 if (!empty($angelleye_ppcp_used_payment_method)) {
-                    update_post_meta($subscription_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                    $subscription->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                    $subscription->save();
                 }
             }
+        } else {
+            $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
         }
-        
-        update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
-        
+        $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+        $order->save();
     }
 
     public function angelleye_ppcp_wc_save_payment_token($order_id, $api_response) {

@@ -281,12 +281,14 @@ class AngellEYE_PayPal_PPCP_Migration {
             if (!empty($subscription_ids)) {
                 foreach ($subscription_ids as $subscription_id) {
                     $user_subscription = wcs_get_subscription($subscription_id);
-                    if ($user_subscription->get_time('next_payment') <= 0 || !$user_subscription->has_status(array('active', 'on-hold'))) {
-                        continue;
+                    if (is_a($user_subscription, WC_Subscription::class)) {
+                        if ($user_subscription->get_time('next_payment') <= 0 || !$user_subscription->has_status(array('active', 'on-hold'))) {
+                            continue;
+                        }
+                        $this->angelleye_ppcp_update_payment_method($user_subscription, $to_payment_method);
+                        $user_subscription->set_requires_manual_renewal(false);
+                        $user_subscription->save();
                     }
-                    $this->angelleye_ppcp_update_payment_method($user_subscription, $to_payment_method);
-                    $user_subscription->set_requires_manual_renewal(false);
-                    $user_subscription->save();
                 }
             }
         } catch (Exception $ex) {

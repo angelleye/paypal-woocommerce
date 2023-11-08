@@ -46,6 +46,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
+
+        add_filter('woocommerce_currency', array($this, 'angelleye_get_scm_current_woocommerce_currency'), 99, 1);
+
+        add_action("woocommerce_checkout_create_order", array($this, "angelleye_convert_order_prices_to_active_currency"), 9999, 2);
+
         add_action('set_logged_in_cookie', [$this, 'handle_logged_in_cookie_nonce_on_checkout'], 1000, 6);
     }
 
@@ -402,8 +407,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         } else {
             $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
         }
-        angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
-        angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+        $order->update_meta_data('_paymentaction', $this->paymentaction);
+        $order->update_meta_data('_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+        $order->save_meta_data();
         AngellEye_Session_Manager::clear();
         if ($is_success) {
             WC()->cart->empty_cart();
@@ -461,7 +467,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 }
                 $liability_shift_result = 1;
                 if ($this->advanced_card_payments) {
-                    $api_response = $this->payment_request->angelleye_ppcp_get_checkout_details($angelleye_ppcp_paypal_order_id);
+                    $api_response = AngellEye_Session_Manager::get('paypal_transaction_details');
+                    if(empty($api_response)) {
+                        $api_response = $this->payment_request->angelleye_ppcp_get_checkout_details($angelleye_ppcp_paypal_order_id);
+                    }
                     $liability_shift_result = $this->angelleye_ppcp_liability_shift($order, $api_response);
                 }
                 if ($liability_shift_result === 1) {
@@ -470,8 +479,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     } else {
                         $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
                     }
-                    angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
-                    angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+                    $order->update_meta_data('_paymentaction', $this->paymentaction);
+                    $order->update_meta_data('_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+                    $order->save_meta_data();
                 } elseif ($liability_shift_result === 2) {
                     $is_success = false;
                     wc_add_notice(__('We cannot process your order with the payment information that you provided. Please use an alternate payment method.', 'paypal-for-woocommerce'), 'error');
@@ -611,33 +621,18 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $customer->set_shipping_city($shipping_city);
             $customer->set_shipping_state($shipping_state);
             $customer->set_shipping_postcode($shipping_postcode);
-            if (version_compare(WC_VERSION, '3.0', '<')) {
-                $customer->shipping_first_name = $shipping_first_name;
-                $customer->shipping_last_name = $shipping_last_name;
-                $customer->billing_first_name = $billing_first_name;
-                $customer->billing_last_name = $billing_last_name;
-                $customer->set_country($billing_country);
-                $customer->set_address($billing_address_1);
-                $customer->set_address_2($billing_address_2);
-                $customer->set_city($billing_city);
-                $customer->set_state($billing_state);
-                $customer->set_postcode($billing_postcode);
-                $customer->billing_phone = $billing_phone;
-                $customer->billing_email = $billing_email;
-            } else {
-                $customer->set_shipping_first_name($shipping_first_name);
-                $customer->set_shipping_last_name($shipping_last_name);
-                $customer->set_billing_first_name($billing_first_name);
-                $customer->set_billing_last_name($billing_last_name);
-                $customer->set_billing_country($billing_country);
-                $customer->set_billing_address_1($billing_address_1);
-                $customer->set_billing_address_2($billing_address_2);
-                $customer->set_billing_city($billing_city);
-                $customer->set_billing_state($billing_state);
-                $customer->set_billing_postcode($billing_postcode);
-                $customer->set_billing_phone($billing_phone);
-                $customer->set_billing_email($billing_email);
-            }
+            $customer->set_shipping_first_name($shipping_first_name);
+            $customer->set_shipping_last_name($shipping_last_name);
+            $customer->set_billing_first_name($billing_first_name);
+            $customer->set_billing_last_name($billing_last_name);
+            $customer->set_billing_country($billing_country);
+            $customer->set_billing_address_1($billing_address_1);
+            $customer->set_billing_address_2($billing_address_2);
+            $customer->set_billing_city($billing_city);
+            $customer->set_billing_state($billing_state);
+            $customer->set_billing_postcode($billing_postcode);
+            $customer->set_billing_phone($billing_phone);
+            $customer->set_billing_email($billing_email);
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -713,5 +708,80 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     private function no_liability_shift(AuthResult $result): int {
 
+    }
+
+    /**
+     * Get current active woocommerce currency by scm multicurrency plugin
+     */
+    public function angelleye_get_scm_current_woocommerce_currency( $currency ) {
+        if(function_exists("scd_get_bool_option")) {
+            $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
+        } else {
+            $scd_option = get_option('scd_general_options');
+            $multicurrency_payment = ( isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true ) ? true : false;
+        }
+        if(function_exists("scd_get_target_currency") && $multicurrency_payment) {
+            $currency = scd_get_target_currency();
+        }
+        return $currency;
+    }
+
+    /**
+     * Convert the order prices to active currency
+     */
+    public function angelleye_convert_order_prices_to_active_currency($order, $data) {
+        if(function_exists("scd_get_bool_option")) {
+            $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
+        } else {
+            $scd_option = get_option('scd_general_options');
+            $multicurrency_payment = ( isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true ) ? true : false;
+        }
+        if(function_exists("scd_get_target_currency") && $multicurrency_payment) {
+            // Get the woocommerce base currency
+            $base_currency = get_option( 'woocommerce_currency');
+
+            // Get the target currency
+            $target_currency = scd_get_target_currency();
+            
+            $rate = scd_get_conversion_rate_origine ($target_currency,$base_currency);
+            
+            $rate_c = scd_get_conversion_rate ($base_currency, $target_currency);
+            foreach( $order->get_items( array( 'line_item', 'tax', 'shipping', 'fee', 'coupon'  ) ) as $item_id => $item ) {
+
+                // Line items types are products. Convert their price.
+                if( $item['type'] === 'line_item' ) {
+                    $product = $item->get_product();
+                    $product_id = $product->get_id();
+                    
+                    $new_price = $item->get_subtotal() * $rate_c;
+                    
+                    $item->set_subtotal( $new_price ); 
+                        
+                    $new_price = $item->get_total() * $rate_c ;
+                        
+                    $item->set_total( $new_price ); 
+
+                } else if( $item['type'] === 'shipping' ) {
+
+                    $new_price = $item->get_total() * $rate_c ;
+                    // Set the shipping total
+                    $item->set_total( $new_price );
+                } elseif( $item['type'] === 'fee' ) {
+                    
+                    $new_price = $item->get_amount() * $rate_c ;
+                    // Set the fee total
+                    $item->set_total( $new_price );
+                } elseif( $item['type'] === 'coupon' ) {
+
+                    $new_price = $item->get_discount() * $rate_c;
+                    // Set the discount price
+                    $item->set_discount( $new_price );
+
+                    $coupons_used = true;
+                }
+                
+            }
+            $order->calculate_totals();
+        }
     }
 }

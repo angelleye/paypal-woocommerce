@@ -289,7 +289,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         function admin_notices() {
-            global $current_user, $pp_settings ;
+            global $current_user, $pp_settings;
             $user_id = $current_user->ID;
             $pp_pro = get_option('woocommerce_paypal_pro_settings', array());
             $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings', array());
@@ -307,8 +307,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             if(isset($_GET['page']) && $_GET['page'] == 'wc-settings' ) {
                 if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || ( !empty($pp_payflow['enabled']) && $pp_payflow['enabled']=='yes' )) {
                     // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
-                    if ( !is_ssl() && !get_user_meta($user_id, 'ignore_pp_ssl'))
-                        echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('WooCommerce PayPal Payments Pro requires that the %s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode.', 'paypal-for-woocommerce'), '<a href="'.admin_url('admin.php?page=wc-settings&tab=advanced#woocommerce_force_ssl_checkout').'">Force secure checkout</a>')  . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_pp_ssl">Dismiss</button></div></div>';
+                    if ( !is_ssl() && !get_user_meta($user_id, 'ignore_pp_ssl')) {
+                            echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('WooCommerce PayPal Payments Pro requires that the %s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode.', 'paypal-for-woocommerce'), '<a href="'.admin_url('admin.php?page=wc-settings&tab=advanced#woocommerce_force_ssl_checkout').'">Force secure checkout</a>')  . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_pp_ssl">Dismiss</button></div></div>';
+                    }
                     if (($pp_pro['testmode']=='yes' || $pp_payflow['testmode']=='yes' || $pp_settings['testmode']=='yes') && !get_user_meta($user_id, 'ignore_pp_sandbox')) {
                         $testmodes = array();
                         if ($pp_pro['enabled']=='yes' && $pp_pro['testmode']=='yes') $testmodes[] = 'PayPal Pro';
@@ -1067,7 +1068,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 	public static function round( $price, $order = null ) {
 		$precision = 2;
                 if (is_object($order)) {
-                    $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+                    $woocommerce_currency = $order->get_currency();
                 } else {
                     $woocommerce_currency = get_woocommerce_currency();
                 }
@@ -1088,7 +1089,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 	public static function number_format( $price, $order = null ) {
 		$decimals = 2;
                 if (is_object($order)) {
-                    $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+                    $woocommerce_currency = $order->get_currency();
                 } else {
                     $woocommerce_currency = get_woocommerce_currency();
                 }
@@ -1266,10 +1267,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         }
 
         public function angelleye_woocommerce_get_checkout_order_received_url($order_received_url, $order) {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-            $lang_code = get_post_meta( $order_id, 'wpml_language', true );
+            $lang_code = $order->get_meta('wpml_language', true );
             if( empty($lang_code) ) {
-                $lang_code = get_post_meta( $order_id, '_wpml_language', true );
+                $lang_code = $order->get_meta('_wpml_language');
             }
             if( !empty($lang_code) ) {
                 $order_received_url = apply_filters( 'wpml_permalink', $order_received_url , $lang_code );
@@ -1587,7 +1587,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          */
         public function angelleye_wcv_save_product( $product_id ) {
             global $pp_settings;
-            $pp_settings = get_option( 'woocommerce_paypal_express_settings' );
+            $pp_settings = get_option( 'woocommerce_paypal_express_settings', array() );
             if(!empty($pp_settings['show_on_product_page']) && $pp_settings['show_on_product_page'] == 'yes' && !empty($pp_settings['enable_newly_products']) && $pp_settings['enable_newly_products'] == 'yes' ) {
                 update_post_meta( $product_id, '_enable_ec_button', 'yes');
             }
@@ -1599,13 +1599,16 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 if(!isset($post->post_type)) {
                     return $classes;
                 }
-                if ( 'shop_order' !== $post->post_type ) {
+                $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
+                if (!is_a($order, 'WC_Order')) {
                     return $classes;
                 }
-                $order = wc_get_order( absint( $post->ID ) );
-                $payment_method = $order->get_payment_method();
-                if ( !empty($payment_method) ) {
-                    $classes .= ' angelleye_'. $payment_method;
+                if (ae_is_active_screen(AE_SHOP_ORDER_SCREENS)) {
+                    $order = wc_get_order( absint( $post->ID ) );
+                    $payment_method = $order->get_payment_method();
+                    if ( !empty($payment_method) ) {
+                        $classes .= ' angelleye_'. $payment_method;
+                    }
                 }
                 return $classes;
             } catch (Exception $ex) {
@@ -1641,3 +1644,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
     }
 }
 new AngellEYE_Gateway_Paypal();
+
+add_action( 'before_woocommerce_init', function() {
+	if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+	}
+} );

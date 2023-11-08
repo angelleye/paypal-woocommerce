@@ -374,16 +374,17 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_payment($woo_order_id) {
         try {
+            $order = wc_get_order($woo_order_id);
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             $order = wc_get_order($woo_order_id);
             $angelleye_ppcp_paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
             $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title');
             $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
-            update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+            $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
             if (!empty($angelleye_ppcp_payment_method_title)) {
-                update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
             }
-
+             $order->save();
             // When a user chooses existing saved card then detect it and process the order payment using that.
             $saved_tokens = ['wc-angelleye_ppcp_apple_pay-payment-token', 'wc-angelleye_ppcp-payment-token'];
             $token_id = null;
@@ -396,12 +397,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (!empty($token_id)) {
                 $token = WC_Payment_Tokens::get($token_id);
                 $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
-                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);
-                update_post_meta($woo_order_id, '_payment_tokens_id', $token->get_token());
+                $order->update_meta_data('_angelleye_ppcp_used_payment_method', $used_payment_method);
+                $order->update_meta_data('_payment_tokens_id', $token->get_token());
                 // CHECKME Here the environment key spelling is wrong, check if we can fix this, though it will break previous shop orders or we run migration
-                angelleye_ppcp_update_post_meta($woo_order_id, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
-
-                angelleye_ppcp_update_post_meta($woo_order_id, '_paymentaction', $this->paymentaction);
+                $order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                $order->update_meta_data('_enviorment', '_paymentaction', $this->paymentaction);
+                $order->save();
                 angelleye_ppcp_add_used_payment_method_name_to_subscription($woo_order_id);
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 $is_success = $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($woo_order_id);
@@ -429,8 +430,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     } else {
                         $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($woo_order_id);
                     }
-                    angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
-                    angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                    $order->update_meta_data('_paymentaction', $this->paymentaction);
+                    $order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                    $order->save();
                     if ($is_success) {
                         WC()->cart->empty_cart();
                         AngellEye_Session_Manager::clear();
@@ -470,7 +472,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (isset($_GET['post'])) {
                 $theorder = wc_get_order($_GET['post']);
                 if ($theorder) {
-                    $payment_method_title = angelleye_ppcp_get_post_meta($theorder, '_payment_method_title', true);
+                    $payment_method_title = $theorder->get_payment_method_title();
                 }
             }
             if (!empty($payment_method_title)) {
@@ -513,7 +515,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public static function angelleye_ppcp_display_order_fee($order_id) {
         $order = wc_get_order($order_id);
-        $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
+        $payment_method = $order->get_payment_method();
         if ('angelleye_ppcp' !== $payment_method) {
             return false;
         }
@@ -606,7 +608,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_subscription_payment($order, $amount_to_charge) {
         try {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
 
@@ -620,7 +622,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
                 $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
-                update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);
+                $order->update_meta_data('_angelleye_ppcp_used_payment_method', $used_payment_method);
+                $order->save();
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 return array(
                     'result' => 'success',

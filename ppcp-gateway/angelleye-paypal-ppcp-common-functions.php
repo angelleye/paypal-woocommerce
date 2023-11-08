@@ -24,24 +24,6 @@ if (!function_exists('angelleye_ppcp_has_active_session')) {
     }
 }
 
-if (!function_exists('angelleye_ppcp_update_post_meta')) {
-    function angelleye_ppcp_update_post_meta($order, $key, $value) {
-        if (!is_object($order)) {
-            $order = wc_get_order($order);
-        }
-        if (!is_a($order, 'WC_Order')) {
-            return;
-        }
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        if ($old_wc) {
-            update_post_meta($order->id, $key, $value);
-        } else {
-            $order->update_meta_data($key, $value);
-            $order->save();
-        }
-    }
-}
-
 if (!function_exists('angelleye_ppcp_get_post_meta')) {
     function angelleye_ppcp_get_post_meta($order, $key, $bool = true) {
         $order_meta_value = false;
@@ -55,30 +37,14 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
         if ($old_wc) {
             $order_meta_value = get_post_meta($order->id, $key, $bool);
         } else {
-            if ('_payment_method_title' === $key) {
-                $order_meta_value = $order->get_payment_method_title();
-            } else {
-                $order_meta_value = $order->get_meta($key, $bool);
-            }
+            $order_meta_value = $order->get_meta($key, $bool);
         }
         if (empty($order_meta_value) && $key === '_paymentaction') {
-            if ($old_wc) {
-                $order_meta_value = get_post_meta($order->id, '_payment_action', $bool);
-            } else {
-                $order_meta_value = $order->get_meta('_payment_action', $bool);
-            }
+            $order_meta_value = $order->get_meta('_payment_action', $bool);
         } elseif (empty($order_meta_value) && $key === '_payment_action') {
-            if ($old_wc) {
-                $order_meta_value = get_post_meta($order->id, '_paymentaction', $bool);
-            } else {
-                $order_meta_value = $order->get_meta('_paymentaction', $bool);
-            }
+            $order_meta_value = $order->get_meta('_paymentaction', $bool);
         } elseif ($key === '_payment_method_title') {
-            if ($old_wc) {
-                $angelleye_ppcp_used_payment_method = get_post_meta($order->id, '_angelleye_ppcp_used_payment_method', $bool);
-            } else {
-                $angelleye_ppcp_used_payment_method = $order->get_meta('_angelleye_ppcp_used_payment_method', $bool);
-            }
+            $angelleye_ppcp_used_payment_method = $order->get_meta('_angelleye_ppcp_used_payment_method', $bool);
             if (!empty($angelleye_ppcp_used_payment_method)) {
                 return angelleye_ppcp_get_payment_method_title($angelleye_ppcp_used_payment_method);
             }
@@ -185,7 +151,9 @@ if (!function_exists('angelleye_ppcp_remove_empty_key')) {
 
 if (!function_exists('angelleye_ppcp_readable')) {
     function angelleye_ppcp_readable($tex) {
-        $tex = ucwords(strtolower(str_replace('_', ' ', $tex)));
+        if(!empty($tex)) {
+            $tex = ucwords(strtolower(str_replace('_', ' ', $tex)));
+        }
         return $tex;
     }
 }
@@ -424,7 +392,7 @@ if (!function_exists('angelleye_ppcp_get_currency')) {
 
         if ($woo_order_id != null) {
             $order = wc_get_order($woo_order_id);
-            $currency_code = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
+            $currency_code = $order->get_currency();
         } else {
             $currency_code = get_woocommerce_currency();
         }
@@ -764,16 +732,16 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
 
 if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscription')) {
     function angelleye_ppcp_add_used_payment_method_name_to_subscription($order_id) {
-        $wc_pre_30 = version_compare(WC_VERSION, '3.0.0', '<');
         try {
             if (function_exists('wcs_get_subscriptions_for_order')) {
                 $subscriptions = wcs_get_subscriptions_for_order($order_id);
                 if (!empty($subscriptions)) {
                     foreach ($subscriptions as $subscription) {
-                        $subscription_id = $wc_pre_30 ? $subscription->id : $subscription->get_id();
-                        $angelleye_ppcp_used_payment_method = get_post_meta($order_id, '_angelleye_ppcp_used_payment_method', true);
+                        $order = wc_get_order($order_id);
+                        $angelleye_ppcp_used_payment_method = $order->get_meta('_angelleye_ppcp_used_payment_method', true);
                         if (!empty($angelleye_ppcp_used_payment_method)) {
-                            update_post_meta($subscription_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                            $subscription->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+                            $subscription->save_meta_data();
                         }
                     }
                 }
