@@ -241,8 +241,10 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (WC()->cart->is_empty() || angelleye_ppcp_has_active_session() || angelleye_ppcp_is_cart_contains_subscription() === true) {
             return false;
         }
-        $this->add_pay_later_script_in_frontend();
-        echo '<div class="angelleye_ppcp_message_payment"></div>';
+        if(is_checkout()) {
+            $this->add_pay_later_script_in_frontend();
+            echo '<div class="angelleye_ppcp_message_payment"></div>';
+        }
     }
 
     public function is_paypal_pay_later_messaging_enable_for_page($page = '') {

@@ -113,9 +113,6 @@ const angelleyeOrder = {
 	},
 	createSmartButtonOrder: ({angelleye_ppcp_button_selector}) => {
 		return angelleyeOrder.createOrder({angelleye_ppcp_button_selector}).then((data) => {
-			if (angelleyeOrder.isCheckoutPage() && typeof data.nonce !== 'undefined') {
-				angelleyeOrder.updateWooCheckoutFormNonce(data.nonce);
-			}
 			return data.orderID;
 		});
 	},
@@ -212,6 +209,11 @@ const angelleyeOrder = {
 			} else {
 				return data;
 			}
+		}).then((data) => {
+			if (angelleyeOrder.isCheckoutPage() && typeof data.nonce !== 'undefined') {
+				angelleyeOrder.updateWooCheckoutFormNonce(data.nonce);
+			}
+			return data;
 		});
 	},
 	approveOrder: ({orderID, payerID}) => {
