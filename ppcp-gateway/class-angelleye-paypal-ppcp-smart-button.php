@@ -286,9 +286,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         if ($this->checkout_disable_smart_button === false) {
-            add_action('woocommerce_pay_order_before_submit', array($this, 'display_paypal_button_checkout_page'));
-            add_action('woocommerce_review_order_before_submit', array($this, 'display_paypal_button_checkout_page'));
+            add_action('woocommerce_pay_order_before_submit', array($this, 'display_paypal_button_checkout_page'), 100);
+            add_action('woocommerce_review_order_before_submit', array($this, 'display_paypal_button_checkout_page'), 100);
         }
+        // Add google and apple pay button on the checkout page
+        add_action('woocommerce_pay_order_before_submit', [$this, 'display_google_apple_pay_button_checkout_page'], 101);
+        add_action('woocommerce_review_order_before_submit', [$this, 'display_google_apple_pay_button_checkout_page'], 101);
+
         add_action('init', array($this, 'init'));
         add_action('admin_init', array($this, 'angelleye_ppcp_admin_init'), 100);
         add_filter('script_loader_tag', array($this, 'angelleye_ppcp_clean_url'), 10, 2);
@@ -854,6 +858,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             } else {
                 echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout" ></div></div>';
             }
+        }
+    }
+
+    public function display_google_apple_pay_button_checkout_page() {
+        if (angelleye_ppcp_get_order_total() === 0) {
+            return false;
+        }
+        if (angelleye_ppcp_has_active_session() === false) {
+            $this->angelleye_ppcp_smart_button_style_properties();
+            angelleye_ppcp_add_css_js();
             if ($this->enable_apple_pay) {
                 echo '<div id="angelleye_ppcp_checkout_apple_pay" class="angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '" style=""></div>';
             }
