@@ -734,7 +734,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         if ('on-hold' != $order->get_status()) {
             return;
         }
-        $screen = ae_is_active_screen(['shop_order']);
+        $screen = ae_is_active_screen(ae_get_shop_order_screen_id());
         if ($screen && $this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id())) {
             echo '<div class="updated woocommerce-message"><p>' . __('Capture the authorized order to receive funds in your PayPal account.') . '</p></div>';
         }
