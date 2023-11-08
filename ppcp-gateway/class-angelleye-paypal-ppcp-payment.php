@@ -1371,8 +1371,14 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($ex->getCode() == 302) {
                 $this->api_log->log('UpdateOrder Request URL: ' . $this->paypal_order_api . $paypal_order_id);
                 $this->api_log->log('UpdateOrder Request Body: ' . wc_print_r($args, true));
-                wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
-                wp_redirect(wc_get_checkout_url());
+                // Commenting this as I've seen this creates an issue when someone starts the checkout process from
+                // product page with Authorize intent, and on complete my order page if due to some reason this update
+                // order function fails then on complete order action this tries to redirect the user to checkout page
+                // during ajax call, and user starts seeing the "unexpected <" error.
+                // and if its not ajax call, then they will be redirected to checkout page with
+                // "session expired message", that creates issue reported in AHD-20796
+                /*wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
+                wp_redirect(wc_get_checkout_url()); */
             }
         }
     }
@@ -1995,26 +2001,45 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_get_generate_token() {
         try {
+            $id_token_key = 'client_token' . (is_user_logged_in() ? '_user_'. get_current_user_id() : '');
+            $body = null;
+            if ($this->enable_tokenized_payments) {
+                $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
+                if (!empty($paypal_generated_customer_id)) {
+                    $body = [
+                        'customer_id' => $paypal_generated_customer_id,
+                    ];
+                    $id_token_key .= '_customer_' . $paypal_generated_customer_id;
+                }
+            }
+            $id_token_data = AngellEye_Session_Manager::get($id_token_key, null);
+            if (!empty($id_token_data) && isset($id_token_data['expires_in'], $id_token_data['client_token'])) {
+                // Make sure to keep the 15 mins threshold for token expiration, so that a customer has got min
+                // 15 mins time to finish his checkout
+                $next_15_mins = time() + 900;
+                if ($id_token_data['expires_in'] > $next_15_mins) {
+                    $this->client_token = $id_token_data['client_token'];
+                    return $this->client_token;
+                } else {
+                    $this->api_log->log('Client token has been expired. ' . $id_token_key, 'error');
+                }
+            }
+
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
                 'redirection' => 5,
                 'httpversion' => '1.1',
                 'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                'cookies' => array()
+                'headers' => ['Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()],
+                'cookies' => [],
+                'body' => $body
             );
-            if ($this->enable_tokenized_payments) {
-                $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
-                if (!empty($paypal_generated_customer_id)) {
-                    $args['body'] = array(
-                        'customer_id' => $paypal_generated_customer_id,
-                    );
-                }
-            }
             $response = $this->api_request->request($this->generate_token_url, $args, 'get_client_token');
             if (!empty($response['client_token'])) {
                 $this->client_token = $response['client_token'];
+                $response['expires_in'] = time() + intval($response['expires_in']);
+                AngellEye_Session_Manager::set($id_token_key, $response);
                 return $this->client_token;
             }
             $this->handle_generate_token_error_response($response);
@@ -2026,6 +2051,28 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_get_generate_id_token() {
         try {
+            $body = null;
+            $id_token_key = 'id_token' . (is_user_logged_in() ? '_user_'. get_current_user_id() : '');
+            if ($this->enable_tokenized_payments) {
+                $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
+                if (!empty($paypal_generated_customer_id)) {
+                    $body = ['target_customer_id' => $paypal_generated_customer_id];
+                    $id_token_key .= '_customer_' . $paypal_generated_customer_id;
+                }
+            }
+
+            $id_token_data = AngellEye_Session_Manager::get($id_token_key, null);
+            if (!empty($id_token_data) && isset($id_token_data['expires_in'], $id_token_data['id_token'])) {
+                // Make sure to keep the 15 mins threshold for token expiration, so that a customer has got min
+                // 15 mins time to finish his checkout
+                $next_15_mins = time() + 900;
+                if ($id_token_data['expires_in'] > $next_15_mins) {
+                    $this->client_token = $id_token_data['id_token'];
+                    return $this->client_token;
+                } else {
+                    $this->api_log->log('ID token has been expired. ' . $id_token_key, 'error');
+                }
+            }
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -2033,18 +2080,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'httpversion' => '1.1',
                 'blocking' => true,
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                'cookies' => array()
+                'cookies' => array(),
+                'body' => $body
             );
-            if ($this->enable_tokenized_payments) {
-                $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
-                if (!empty($paypal_generated_customer_id)) {
-                    $args['body'] = array(
-                        'target_customer_id' => $paypal_generated_customer_id,
-                    );
-                }
-            }
             $response = $this->api_request->request($this->generate_id_token, $args, 'generate_id_token');
             if (!empty($response['id_token'])) {
+                $response['expires_in'] = time() + intval($response['expires_in']);
+                AngellEye_Session_Manager::set($id_token_key, $response);
                 $this->client_token = $response['id_token'];
                 return $this->client_token;
             }
