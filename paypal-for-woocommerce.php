@@ -84,9 +84,11 @@ if (!defined('AE_FEE')) {
 /**
  * Required functions
  */
-if (!function_exists('angelleye_queue_update')) {
-    require_once( 'angelleye-includes/angelleye-functions.php' );
-}
+// Removing the if condition as same functions are defined in other AE plugins
+// and if other plugin loads the same function before this file then other
+// functions defined in this plugin function file will never be loaded which
+// will result in an error
+require_once( 'angelleye-includes/angelleye-functions.php' );
 require_once( 'angelleye-includes/angelleye-session-functions.php' );
 require_once( 'angelleye-includes/angelleye-conditional-functions.php' );
 /**
@@ -137,7 +139,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                 $admin_order_payment = new AngellEYE_Admin_Order_Payment_Process();
             }
             $plugin_admin = new AngellEYE_Utility($this->plugin_slug, VERSION_PFW);
-            add_action( 'plugins_loaded', array($this, 'init'));
+            add_action( 'plugins_loaded', array($this, 'init'), 103);
             add_action('plugins_loaded', array($this, 'load_funnelkit_pro_plugin_compatible_gateways'), 5);
             register_activation_hook( __FILE__, array($this, 'activate_paypal_for_woocommerce' ));
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
