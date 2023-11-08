@@ -7010,38 +7010,19 @@ msgid "http://www.angelleye.com/"
 msgstr ""
 
 
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:116
-msgid "This merchant is not enabled to process google pay. please contact website owner. [DebugId: "
-msgstr "Ce marchand n'est pas autorisé à traiter Google Pay. veuillez contacter le propriétaire du site Web. [ID de débogage : "
 
-
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:208
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:120
-msgid "We are unable to process your request at the moment, please contact website owner. [DebugId: "
-msgstr "Nous ne sommes pas en mesure de traiter votre demande pour le moment, veuillez contacter le propriétaire du site Web. [ID de débogage : "
-
-
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:261
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:165
-msgid "Unable to update the shipping amount."
-msgstr "Impossible de mettre à jour le montant de l'expédition."
 
 #: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:150
 #: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:314
 msgid "Your shopping cart seems to be empty."
 msgstr "Votre panier semble vide."
-
 #: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:167
 #: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:238
 msgid "Total Amount"
 msgstr "Montant total"
-
 #: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:182
 msgid "An error occurred while initiating the ApplePay payment."
 msgstr "Une erreur s'est produite lors du lancement du paiement ApplePay."
-
 #: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:206
 msgid "This merchant is not enabled to process apple pay. please contact website owner. [DebugId: "
 msgstr "Ce commerçant n'est pas autorisé à traiter Apple Pay. veuillez contacter le propriétaire du site Web. [ID de débogage : "
-
-
