@@ -1,3 +1,5 @@
+const { __ } = wp.i18n;
+
 const angelleyeOrder = {
 	productAddToCart: true,
 	isCheckoutPage: () => {
@@ -199,8 +201,8 @@ const angelleyeOrder = {
 					messages = messages.map(function (message) {
 						return '<li>' + message + '</li>';
 					}).join('');
-					if (angelleye_ppcp_manager.error_message_checkout_validation !== "") {
-						messages = '<li>' + angelleye_ppcp_manager.error_message_checkout_validation + '</li>' + messages;
+					if (localizedMessages.error_message_checkout_validation !== "") {
+						messages = '<li>' + localizedMessages.error_message_checkout_validation + '</li>' + messages;
 					}
 				} else {
 					messages = '<li>' + messages + '</li>';
@@ -498,11 +500,11 @@ const angelleyeOrder = {
 				},
 				cvv: {
 					selector: '#angelleye_ppcp_cc-card-cvc',
-					placeholder: 'CVC'
+					placeholder: localizedMessages.cvc_placeholder
 				},
 				expirationDate: {
 					selector: '#angelleye_ppcp_cc-card-expiry',
-					placeholder: 'MM / YY'
+					placeholder: localizedMessages.expiry_date_placeholder
 				}
 			}
 		}).then(function (hf) {
@@ -512,7 +514,7 @@ const angelleyeOrder = {
 					if (jQuery.inArray(cardname, angelleye_ppcp_manager.disable_cards) !== -1) {
 						jQuery('#angelleye_ppcp_cc-card-number').addClass('ppcp-invalid-cart');
 						jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
-						angelleyeOrder.showError(angelleye_ppcp_manager.card_not_supported);
+						angelleyeOrder.showError(localizedMessages.card_not_supported);
 					} else {
 						jQuery('#angelleye_ppcp_cc-card-number').removeClass().addClass(cardname);
 						jQuery('#angelleye_ppcp_cc-card-number').addClass("input-text wc-credit-card-form-card-number hosted-field-braintree braintree-hosted-fields-valid");
@@ -556,7 +558,7 @@ const angelleyeOrder = {
 								angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
 								jQuery('#angelleye_ppcp_cc-card-number').addClass('ppcp-invalid-cart');
 								jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
-								angelleyeOrder.showError(angelleye_ppcp_manager.card_not_supported);
+								angelleyeOrder.showError(localizedMessages.card_not_supported);
 								return;
 							}
 						}
@@ -565,7 +567,7 @@ const angelleyeOrder = {
 					jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
 					angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
 					jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
-					angelleyeOrder.showError(angelleye_ppcp_manager.fields_not_valid);
+					angelleyeOrder.showError(localizedMessages.fields_not_valid);
 					return;
 				}
 				let formValid = Object.keys(state.fields).every(function (key) {
@@ -575,7 +577,7 @@ const angelleyeOrder = {
 					jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 					jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
 					angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
-					angelleyeOrder.showError(angelleye_ppcp_manager.fields_not_valid);
+					angelleyeOrder.showError(localizedMessages.fields_not_valid);
 					return;
 				}
 				let contingencies = [];
@@ -818,6 +820,21 @@ const angelleyeOrder = {
 		}
 	}
 }
+
+const localizedMessages = {
+	card_not_supported: __('Unfortunately, we do not support this credit card type. Please try another card type.', 'paypal-for-woocommerce'),
+	fields_not_valid: __('Unfortunately, your credit card details are not valid. Please review the card details and try again.', 'paypal-for-woocommerce'),
+	error_message_checkout_validation: __('Unable to create the order due to the following errors.', 'paypal-for-woocommerce'),
+	expiry_date_placeholder: __('MM / YY', 'paypal-for-woocommerce'),
+	cvc_placeholder: __('CVC', 'paypal-for-woocommerce', 'paypal-for-woocommerce'),
+	empty_cart_message: __('Your shopping cart seems to be empty.', 'paypal-for-woocommerce'),
+	total_amount_placeholder: __('Total Amount', 'paypal-for-woocommerce'),
+	apple_pay_pay_error: __('An error occurred while initiating the ApplePay payment.', 'paypal-for-woocommerce'),
+	error_validating_merchant: __('This merchant is not enabled to process requested payment method. please contact website owner.', 'paypal-for-woocommerce'),
+	general_error_message: __('We are unable to process your request at the moment, please contact website owner.', 'paypal-for-woocommerce'),
+	shipping_amount_update_error: __('Unable to update the shipping amount.', 'paypal-for-woocommerce'),
+	shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce')
+};
 
 const pfwUrlHelper = {
 	getUrlObject: (url) => {
