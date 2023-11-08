@@ -704,10 +704,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         $this->angelleye_ppcp_create_woo_order();
     }
 
-    private function no_liability_shift(AuthResult $result): int {
-        
-    }
-
     public function angelleye_ppcp_download_zip_file($github_zip_url, $plugin_zip_path) {
         $request_headers = array();
         $request_headers[] = 'Accept: */*';
@@ -778,26 +774,35 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     $extracted_folder_name = $dir;
                     $zip->close();
                 }
+
+                // Delete the zip file
+                unlink($zipFile);
+
+                // Delete the existing plugin folder from wp-content/plugins
                 if (is_dir($rename_path)) {
                     $this->angelleye_ppcp_delete_files($rename_path);
                 }
+
+                // Move the uploads folder to wp-content/plugins/
                 rename($un_zipFile . $plugin_folder_name, $rename_path);
-                $this->angelleye_ppcp_add_zipdata($rename_path, $plugin_folder_name, $rename_path . '.zip');
-                unlink($zipFile);
+
+                // Remove the extracted files from uploads
                 if (is_dir($un_zipFile)) {
                     $this->angelleye_ppcp_delete_files($un_zipFile);
                 }
-                unlink($rename_path . '.zip');
-                if (is_dir($rename_path)) {
-                    $result = activate_plugin($plugin_folder_name . '/angelleye-paypal-woocommerce-shipment-tracking.php');
-                    if (is_wp_error($result)) {
 
+                // Activate the plugin
+                if (is_dir($rename_path)) {
+                    wp_cache_delete('plugins', 'plugins');
+                    $result = activate_plugin($plugin_folder_name . DIRECTORY_SEPARATOR . 'angelleye-paypal-woocommerce-shipment-tracking.php');
+                    if (is_wp_error($result)) {
+                        wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=paypal_shipment_tracking&error=activation_error'));
                     }
                 }
-            } elseif(file_exists($rename_path)) {
-                activate_plugin($plugin_folder_name . '/angelleye-paypal-woocommerce-shipment-tracking.php');
-            } elseif(file_exists($github_rename_path)) {
-                activate_plugin('paypal-shipment-tracking-for-woocommerce' . '/angelleye-paypal-woocommerce-shipment-tracking.php');
+            } elseif (file_exists($rename_path)) {
+                activate_plugin($plugin_folder_name . DIRECTORY_SEPARATOR . 'angelleye-paypal-woocommerce-shipment-tracking.php');
+            } elseif (file_exists($github_rename_path)) {
+                activate_plugin('paypal-shipment-tracking-for-woocommerce' . DIRECTORY_SEPARATOR . 'angelleye-paypal-woocommerce-shipment-tracking.php');
             }
             delete_transient('license_key_status_check');
             delete_site_transient( 'update_plugins' );
@@ -842,9 +847,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
             // Get the target currency
             $target_currency = scd_get_target_currency();
-            
+
             $rate = scd_get_conversion_rate_origine ($target_currency,$base_currency);
-            
+
             $rate_c = scd_get_conversion_rate ($base_currency, $target_currency);
             foreach( $order->get_items( array( 'line_item', 'tax', 'shipping', 'fee', 'coupon'  ) ) as $item_id => $item ) {
 
@@ -852,14 +857,14 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 if( $item['type'] === 'line_item' ) {
                     $product = $item->get_product();
                     $product_id = $product->get_id();
-                    
+
                     $new_price = $item->get_subtotal() * $rate_c;
-                    
-                    $item->set_subtotal( $new_price ); 
-                        
+
+                    $item->set_subtotal( $new_price );
+
                     $new_price = $item->get_total() * $rate_c ;
-                        
-                    $item->set_total( $new_price ); 
+
+                    $item->set_total( $new_price );
 
                 } else if( $item['type'] === 'shipping' ) {
 
@@ -867,7 +872,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     // Set the shipping total
                     $item->set_total( $new_price );
                 } elseif( $item['type'] === 'fee' ) {
-                    
+
                     $new_price = $item->get_amount() * $rate_c ;
                     // Set the fee total
                     $item->set_total( $new_price );
@@ -879,7 +884,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
                     $coupons_used = true;
                 }
-                
+
             }
             $order->calculate_totals();
         }
