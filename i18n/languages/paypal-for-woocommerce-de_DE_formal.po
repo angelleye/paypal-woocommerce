@@ -6142,18 +6142,23 @@ msgstr ""
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:680
 #: ppcp-gateway/js/wc-angelleye-common-functions.js:3
-msgid "Leider unterstützen wir diesen Kreditkartentyp nicht. Bitte versuchen Sie es mit einem anderen Kartentyp."
-msgstr ""
-
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:681
-#: ppcp-gateway/js/wc-angelleye-common-functions.js:4
-msgid "Leider sind Ihre Kreditkartendaten ungültig. Bitte überprüfen Sie die Kartendetails und versuchen Sie es erneut."
-msgstr ""
+msgid "Unfortunately, we do not support this credit card type. Please try another card type."
+msgstr "Leider unterstützen wir diesen Kreditkartentyp nicht. Bitte versuchen Sie es mit einem anderen Kartentyp."
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:691
 #: ppcp-gateway/js/wc-angelleye-common-functions.js:5
-msgid "Aufgrund der folgenden Fehler konnte die Bestellung nicht erstellt werden."
-msgstr ""
+msgid "Unable to create the order due to the following errors."
+msgstr "Aufgrund der folgenden Fehler konnte die Bestellung nicht erstellt werden."
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:681
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:4
+msgid "Unfortunately, your credit card details are not valid. Please review the card details and try again."
+msgstr "Leider sind Ihre Kreditkartendaten ungültig. Bitte überprüfen Sie die Kartendetails und versuchen Sie es erneut."
+
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:691
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:5
+msgid "The order could not be created due to the following errors."
+msgstr "Aufgrund der folgenden Fehler konnte die Bestellung nicht erstellt werden."
 
 #: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:607
 msgid "Billing &amp; Shipping"

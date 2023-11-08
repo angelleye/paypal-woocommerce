@@ -8,9 +8,6 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
     protected bool $enable_apple_pay;
     const PAYMENT_METHOD = 'apple_pay';
     public $sandbox;
-    public $sandbox_merchant_id;    
-    private $angelleye_ppcp_plugin_name;    
-    public $minified_version;
     public $live_merchant_id;
     public $sandbox_client_id;
     public $sandbox_secret_id;
@@ -76,11 +73,6 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             $this->ppcp_enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay'));
             $this->title = $this->setting_obj->get('apple_pay_payments_title', 'Apple Pay');
-            if ($this->enable_apple_pay = 'yes') {
-                $this->angelleye_ppcp_add_hooks();
-            }
-            $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
-            $this->minified_version = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
             $is_domain_added = $this->setting_obj->get('apple_pay_domain_added', 'no') == 'yes';
             $this->enable_apple_pay = $is_domain_added && 'yes' === $this->setting_obj->get('enable_apple_pay', 'no');
             $this->apple_pay_payments_description = $this->setting_obj->get('apple_pay_payments_description', 'Complete your purchase by selecting your saved payment methods or using Apple Pay.');
@@ -91,18 +83,6 @@ class WC_Gateway_Apple_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
 
     public function is_available() {
         return $this->ppcp_enabled === true && $this->enable_apple_pay == true && $this->is_credentials_set();
-    }
-
-    public function angelleye_ppcp_add_hooks() {
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 9);
-    }
-
-
-    public function enqueue_scripts() {
-        $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
-        wp_register_script($this->angelleye_ppcp_plugin_name . '-apple-pay', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay' . $this->minified_version . '.js', array('jquery', 'wp-i18n'), $script_versions, false);
-        $dir_path = dirname( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE ) . '/i18n/languages';
-        wp_set_script_translations( $this->angelleye_ppcp_plugin_name . '-apple-pay', 'paypal-for-woocommerce', $dir_path);
     }
 
     public function payment_fields() {

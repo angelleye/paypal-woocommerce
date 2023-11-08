@@ -1,10 +1,5 @@
 const { __ } = wp.i18n;
-const localizedMessages = {
-	'card_not_supported': __('Unfortunately, we do not support this credit card type. Please try another card type.', 'paypal-for-woocommerce'),
-	'fields_not_valid': __('Unfortunately, your credit card details are not valid. Please review the card details and try again.', 'paypal-for-woocommerce'),
-	'error_message_checkout_validation': __('Unable to create the order due to the following errors.', 'paypal-for-woocommerce'),
-	'expiry_date': __('MM / YY', 'paypal-for-woocommerce'),
-	};
+
 const angelleyeOrder = {
 	productAddToCart: true,
 	isCheckoutPage: () => {
@@ -502,7 +497,7 @@ const angelleyeOrder = {
 				},
 				expirationDate: {
 					selector: '#angelleye_ppcp_cc-card-expiry',
-					placeholder: localizedMessages.expiry_date
+					placeholder: localizedMessages.expiry_date_placeholder
 				}
 			}
 		}).then(function (hf) {
@@ -818,6 +813,24 @@ const angelleyeOrder = {
 		}
 	}
 }
+
+const ___ = (message) => {
+	return __(message, 'paypal-for-woocommerce');
+};
+
+const localizedMessages = {
+	card_not_supported: ___('Unfortunately, we do not support this credit card type. Please try another card type.'),
+	fields_not_valid: ___('Unfortunately, your credit card details are not valid. Please review the card details and try again.'),
+	error_message_checkout_validation: ___('Unable to create the order due to the following errors.'),
+	expiry_date_placeholder: ___('MM / YY'),
+	empty_cart_message: ___('Your shopping cart seems to be empty.'),
+	total_amount_placeholder: ___('Total Amount'),
+	apple_pay_pay_error: ___('An error occurred while initiating the ApplePay payment.'),
+	error_validating_merchant: ___('This merchant is not enabled to process requested payment method. please contact website owner.'),
+	general_error_message: ___('We are unable to process your request at the moment, please contact website owner.'),
+	shipping_amount_update_error: ___('Unable to update the shipping amount.'),
+	shipping_amount_pull_error: ___('Unable to pull the shipping amount details based on selected address')
+};
 
 const pfwUrlHelper = {
 	getUrlObject: (url) => {

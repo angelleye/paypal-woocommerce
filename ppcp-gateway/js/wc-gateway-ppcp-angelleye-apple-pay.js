@@ -147,7 +147,7 @@ class ApplePayCheckoutButton {
         }
 
         if (cartDetails.totalAmount <= 0) {
-            angelleyeOrder.showError(__( 'Your shopping cart seems to be empty.', 'paypal-for-woocommerce' ));
+            angelleyeOrder.showError(localizedMessages.empty_cart_message);
         }
 
         let shippingAddressRequired = [];
@@ -164,7 +164,7 @@ class ApplePayCheckoutButton {
             requiredBillingContactFields: ["name", "phone", "email", "postalAddress"],
             requiredShippingContactFields: shippingAddressRequired,
             total: {
-                label: __( 'Total Amount', 'paypal-for-woocommerce' ),
+                label: localizedMessages.total_amount_placeholder,
                 amount: `${cartDetails.totalAmount}`,
                 type: "final",
             },
@@ -179,7 +179,7 @@ class ApplePayCheckoutButton {
         } catch (e) {
             console.log("ApplePay error session init error: ", e);
             angelleyeOrder.hideProcessingSpinner();
-            angelleyeOrder.showError(__( 'An error occurred while initiating the ApplePay payment.', 'paypal-for-woocommerce' ) + '<br/>Error:' + e);
+            angelleyeOrder.showError(localizedMessages.apple_pay_pay_error + '<br/>Error:' + e);
             return;
         }
 
@@ -203,9 +203,9 @@ class ApplePayCheckoutButton {
                 let debugID = errorObject.paypalDebugId;
                 switch (errorObject.errorName) {
                     case 'ERROR_VALIDATING_MERCHANT':
-                        return __( 'This merchant is not enabled to process apple pay. please contact website owner. [DebugId: ', 'paypal-for-woocommerce' ) + '' + debugID + ']';
+                        return localizedMessages.error_validating_merchant + ' [ApplePay DebugId:' + debugID + ']';
                     default:
-                        return __( 'We are unable to process your request at the moment, please contact website owner. [DebugId: ', 'paypal-for-woocommerce' ) + '' + debugID + ']';
+                        return localizedMessages.general_error_message + ' [ApplePay DebugId:' + debugID + ']';
                 }
             }
             return errorObject;
@@ -235,7 +235,7 @@ class ApplePayCheckoutButton {
             const cartDetails = angelleyeOrder.getCartDetails();
             console.log('on shipping contact selected', event);
             let newTotal = {
-                label: __( 'Total Amount', 'paypal-for-woocommerce' ),
+                label: localizedMessages.total_amount_placeholder,
                 amount: `${cartDetails.totalAmount}`,
                 type: "final",
             };
@@ -258,7 +258,7 @@ class ApplePayCheckoutButton {
                     });
                     session.completeShippingContactSelection(shippingContactUpdate);
                 } else {
-                    throw new Error(__( 'Unable to update the shipping amount.', 'paypal-for-woocommerce' ));
+                    throw new Error(localizedMessages.shipping_amount_update_error);
                 }
             } catch (error) {
                 paymentCancelled(error);
