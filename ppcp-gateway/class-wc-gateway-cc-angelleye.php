@@ -69,9 +69,6 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         foreach ($title_options as $icon_key => $icon_value) {
             if (!in_array($icon_key, $icons)) {
                 if ($this->dcc_applies->can_process_card($icon_key)) {
-                    if ($totalIcons> 0 && $totalIcons % 4 === 0) {
-                        $images[] = '<div class="flex-break"></div>';
-                    }
                     $iconUrl = esc_url(PAYPAL_FOR_WOOCOMMERCE_ASSET_URL) . 'ppcp-gateway/images/' . esc_attr($icon_key) . '.svg';
                     $iconTitle = esc_attr($icon_value);
                     $images[] = sprintf('<img title="%s" src="%s" class="ppcp-card-icon ae-icon-%s" />', $iconTitle, $iconUrl, $iconTitle);
@@ -79,7 +76,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             }
         }
-        return '<div class="ae-cc-icons-list">' . implode('', $images) . '</div><div class="ppcp-clearfix"></div>';
+        return  implode('', $images) . '<div class="ppcp-clearfix"></div>';
     }
 
     private function card_labels(): array {
@@ -287,14 +284,14 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
         }
     }
-    
+
     public function add_payment_method_form() {
         ?>
         <div id='ppcp-my-account-card-number'></div>
         <div id='ppcp-my-account-expiration-date'></div>
         <div id='ppcp-my-account-cvv'></div>
         <div id='ppcp-my-account-card-holder-name'></div>
-        <?php 
+        <?php
     }
 
     public function can_refund_order($order) {
