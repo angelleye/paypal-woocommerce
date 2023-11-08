@@ -47,10 +47,12 @@ function canShowPlaceOrderBtn() {
     // that we need to fix by using a way to identify if its checkout or order review page
     let isOrderCompletePage = angelleyeOrder.isOrderCompletePage();
     // console.log('canShowPlaceOrderBtn', isOrderCompletePage, angelleyeOrder.isAngelleyePaymentMethodSelected());
-    if (!isOrderCompletePage && angelleyeOrder.isAngelleyePaymentMethodSelected() && !angelleyeOrder.isSavedPaymentMethodSelected()) {
-        return false;
+    if (angelleyeOrder.isPpcpPaymentMethodSelected() && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'yes') {
+        return true;
     }
-    return true;
+    return !(!isOrderCompletePage
+        && angelleyeOrder.isAngelleyePaymentMethodSelected()
+        && !angelleyeOrder.isSavedPaymentMethodSelected());
 }
 
 function showHidePlaceOrderBtn() {

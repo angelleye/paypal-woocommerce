@@ -42,6 +42,10 @@ const angelleyeOrder = {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
 		return paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay' || paymentMethod === 'angelleye_ppcp_google_pay';
 	},
+	isAngelleyePpcpAdditionalPaymentMethodSelected: () => {
+		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
+		return paymentMethod === 'angelleye_ppcp_apple_pay' || paymentMethod === 'angelleye_ppcp_google_pay';
+	},
 	isAngelleyePaymentMethodSelected: () => {
 		let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
 		return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay' || paymentMethod === 'angelleye_ppcp_google_pay';
@@ -111,9 +115,6 @@ const angelleyeOrder = {
 	},
 	createSmartButtonOrder: ({angelleye_ppcp_button_selector}) => {
 		return angelleyeOrder.createOrder({angelleye_ppcp_button_selector}).then((data) => {
-			if (angelleyeOrder.isCheckoutPage() && typeof data.nonce !== 'undefined') {
-				angelleyeOrder.updateWooCheckoutFormNonce(data.nonce);
-			}
 			return data.orderID;
 		});
 	},
@@ -210,6 +211,11 @@ const angelleyeOrder = {
 			} else {
 				return data;
 			}
+		}).then((data) => {
+			if (angelleyeOrder.isCheckoutPage() && typeof data.nonce !== 'undefined') {
+				angelleyeOrder.updateWooCheckoutFormNonce(data.nonce);
+			}
+			return data;
 		});
 	},
 	approveOrder: ({orderID, payerID}) => {
@@ -319,7 +325,8 @@ const angelleyeOrder = {
 		if (angelleyeOrder.isHostedFieldEligible() === false) {
 			jQuery('.payment_method_angelleye_ppcp_cc').hide();
 		}
-		if (isAePpcpMethodSelected === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') {
+		if ((isAePpcpMethodSelected === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') ||
+			angelleyeOrder.isAngelleyePpcpAdditionalPaymentMethodSelected()) {
 			showHidePlaceOrderBtn();
 			angelleyeOrder.showPpcpPaymentMethods();
 		} else {

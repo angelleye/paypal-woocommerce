@@ -82,7 +82,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 return false;
             }
             $this->setting_obj = get_option($this->gateway_key, array());
-            $defaults = array('enabled' => 'yes',
+            $defaults = array('enabled' => 'no',
                 'title' => __('PayPal', 'paypal-for-woocommerce'),
                 'description' => __(
                         'The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce'
@@ -1799,9 +1799,8 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'google_pay_authorizations' => array(
                     'title' => __('Google Pay', 'paypal-for-woocommerce'),
-                    'type' => 'title',
-                    'description' => '',
                     'class' => 'ppcp_separator_heading',
+                    'type' => 'title',
                 ),
                 'enable_google_pay' => array(
                     'title' => __('Enable Google Pay', 'paypal-for-woocommerce'),
@@ -1830,6 +1829,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('This controls the description which the user sees when they select Google Pay payment method during checkout.', 'paypal-for-woocommerce'),
                     'default' => __('Accept payments using Google Pay.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
+                    ),
+                 'paypal_shipment_tracking' => array(
+                    'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'enable_paypal_shipment_tracking' => array(
+                    'title' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'label' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'type' => 'paypal_shipment_tracking',
+                    'description' => '',
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'class' => 'enable_package_tracking',
                 ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
