@@ -408,14 +408,13 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         if ($is_success) {
             WC()->cart->empty_cart();
             wp_redirect($this->angelleye_ppcp_get_return_url($order));
-            exit();
         } else {
             // set this to null so that frontend third party plugin doesn't trigger reload on update_order_review ajax call
             WC()->session->set('reload_checkout', null);
 
             wp_redirect(wc_get_checkout_url());
-            exit();
         }
+        exit();
     }
 
     public function angelleye_ppcp_get_return_url($order = null) {
