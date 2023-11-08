@@ -76,8 +76,6 @@ class WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE extends WC_Gateway_PayP
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
-                $subscription->save();
                 $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
                 $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
                 $parent_order = wc_get_order($subscription_parent_id);
