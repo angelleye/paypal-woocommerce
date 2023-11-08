@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-11-08T07:59:01+01:00\n"
+"POT-Creation-Date: 2023-11-08T19:43:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: paypal-for-woocommerce\n"
@@ -496,8 +496,8 @@ msgstr ""
 #: angelleye-includes/angelleye-utility.php:1021
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:466
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:485
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:867
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:898
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:864
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:895
 msgid "Edit"
 msgstr ""
 
@@ -833,13 +833,13 @@ msgstr ""
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:836
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:885
 #: classes/wc-gateway-braintree-angelleye.php:3149
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:741
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:738
 msgid "OR"
 msgstr ""
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:1007
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:1059
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1237
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1234
 msgid "Cancel order"
 msgstr ""
 
@@ -857,7 +857,7 @@ msgstr ""
 
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v1.php:1191
 #: angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php:1236
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:898
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:895
 msgid "Shipping details"
 msgstr ""
 
@@ -2106,7 +2106,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-credit-cards-rest-angelleye.php:344
 #: classes/wc-gateway-paypal-pro-angelleye.php:1665
-#: ppcp-gateway/js/wc-angelleye-common-functions.js:6
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:821
 msgid "MM / YY"
 msgstr ""
 
@@ -2114,7 +2114,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-angelleye.php:1661
 #: classes/wc-gateway-paypal-pro-angelleye.php:1678
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:1772
-#: ppcp-gateway/js/wc-angelleye-common-functions.js:501
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:822
 msgid "CVC"
 msgstr ""
 
@@ -4456,7 +4456,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:275
 msgid ""
-"Create sandbox accounts and obtain API credentials from within your\r\n"
+"Create sandbox accounts and obtain API credentials from within your\n"
 "\t\t\t\t\t\t\t\t\t<a href=\"http://developer.paypal.com\">PayPal developer account</a>."
 msgstr ""
 
@@ -4466,7 +4466,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-pro-angelleye.php:295
 msgid ""
-"Get your live account API credentials from your PayPal account profile <br />or by using\r\n"
+"Get your live account API credentials from your PayPal account profile <br />or by using\n"
 "\t\t\t\t\t\t\t\t\t<a target=\"_blank\" href=\"https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run\">this tool</a>."
 msgstr ""
 
@@ -4542,7 +4542,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-angelleye.php:414
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:488
 msgid ""
-"Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details\r\n"
+"Detailed displays actual errors returned from PayPal.  Generic displays general errors that do not reveal details\n"
 "\t\t\t\t\t\t\t\t\tand helps to prevent fraudulant activity on your site."
 msgstr ""
 
@@ -4856,7 +4856,7 @@ msgstr ""
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:309
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:339
 msgid ""
-"If you set up one or more additional users on the account, this value is the ID\r\n"
+"If you set up one or more additional users on the account, this value is the ID\n"
 "of the user authorized to process transactions. Otherwise, leave this field blank."
 msgstr ""
 
@@ -4867,7 +4867,7 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:324
 msgid ""
-"The ID provided to you by the authorized PayPal Reseller who registered you\r\n"
+"The ID provided to you by the authorized PayPal Reseller who registered you\n"
 "for the Payflow SDK. If you purchased your account directly from PayPal, use PayPal or leave blank."
 msgstr ""
 
@@ -4933,12 +4933,12 @@ msgstr ""
 
 #: classes/wc-gateway-paypal-pro-payflow-angelleye.php:624
 msgid ""
-"<h3>Default PayFlow Sandbox Credentials</h3>\r\n"
-"                <p>These values have been auto-filled into the sandbox credential fields so that you can quickly run test orders. If you have your own PayPal Manager test account you can update the values accordingly.</p>\r\n"
-"                <strong>Partner:</strong> PayPal<br/>\r\n"
-"                <strong>Merchant Login:</strong> angelleye<br/>\r\n"
-"                <strong>Username:</strong> paypalwoocommerce<br/>\r\n"
-"                <strong>Password:</strong> @x92hlhIP8lp<br/> \r\n"
+"<h3>Default PayFlow Sandbox Credentials</h3>\n"
+"                <p>These values have been auto-filled into the sandbox credential fields so that you can quickly run test orders. If you have your own PayPal Manager test account you can update the values accordingly.</p>\n"
+"                <strong>Partner:</strong> PayPal<br/>\n"
+"                <strong>Merchant Login:</strong> angelleye<br/>\n"
+"                <strong>Username:</strong> paypalwoocommerce<br/>\n"
+"                <strong>Password:</strong> @x92hlhIP8lp<br/> \n"
 "                <br /><a href=%s>%s</a>"
 msgstr ""
 
@@ -5146,7 +5146,7 @@ msgid "PayPal Pay Later"
 msgstr ""
 
 #: ppcp-gateway/angelleye-paypal-ppcp-common-functions.php:492
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:799
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:796
 #: template/migration/ppcp_paypal_advanced.php:12
 #: template/migration/ppcp_paypal_advanced.php:33
 #: template/migration/ppcp_paypal_credit_card_rest.php:12
@@ -5673,42 +5673,27 @@ msgstr ""
 msgid "<strong>You're almost done!</strong><br>Review your information before you place your order."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:680
-#: ppcp-gateway/js/wc-angelleye-common-functions.js:3
-msgid "Unfortunately, we do not support this credit card type. Please try another card type."
-msgstr ""
-
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:681
-#: ppcp-gateway/js/wc-angelleye-common-functions.js:4
-msgid "Unfortunately, your credit card details are not valid. Please review the card details and try again."
-msgstr ""
-
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:691
-#: ppcp-gateway/js/wc-angelleye-common-functions.js:5
-msgid "Unable to create the order due to the following errors."
-msgstr ""
-
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:871
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:868
 msgid "Billing &amp; Shipping"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:875
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:872
 msgid "Billing details"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:910
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:907
 msgid "Create an account?"
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:917
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:914
 msgid "Create an account by entering the information below. If you are a returning customer please login at the top of the page."
 msgstr ""
 
-#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1491
+#: ppcp-gateway/class-angelleye-paypal-ppcp-smart-button.php:1488
 msgid "Payment method:"
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-apple-pay-angelleye.php:42
+#: ppcp-gateway/class-wc-gateway-apple-pay-angelleye.php:40
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1783
 msgid "Accept payments using Apple Pay."
 msgstr ""
@@ -5770,7 +5755,7 @@ msgstr ""
 msgid "Refund failed."
 msgstr ""
 
-#: ppcp-gateway/class-wc-gateway-google-pay-angelleye.php:42
+#: ppcp-gateway/class-wc-gateway-google-pay-angelleye.php:40
 #: ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php:1831
 msgid "Accept payments using Google Pay."
 msgstr ""
@@ -6915,39 +6900,42 @@ msgstr ""
 msgid "PPCP Account Request"
 msgstr ""
 
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:150
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:314
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:818
+msgid "Unfortunately, we do not support this credit card type. Please try another card type."
+msgstr ""
+
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:819
+msgid "Unfortunately, your credit card details are not valid. Please review the card details and try again."
+msgstr ""
+
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:820
+msgid "Unable to create the order due to the following errors."
+msgstr ""
+
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:823
 msgid "Your shopping cart seems to be empty."
 msgstr ""
 
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:167
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:238
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:824
 msgid "Total Amount"
 msgstr ""
 
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:182
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:825
 msgid "An error occurred while initiating the ApplePay payment."
 msgstr ""
 
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:206
-msgid "This merchant is not enabled to process apple pay. please contact website owner. [DebugId: "
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:826
+msgid "This merchant is not enabled to process requested payment method. please contact website owner."
 msgstr ""
 
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:208
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:120
-msgid "We are unable to process your request at the moment, please contact website owner. [DebugId: "
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:827
+msgid "We are unable to process your request at the moment, please contact website owner."
 msgstr ""
 
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-apple-pay.js:261
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:165
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:828
 msgid "Unable to update the shipping amount."
 msgstr ""
 
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:116
-msgid "This merchant is not enabled to process google pay. please contact website owner. [DebugId: "
-msgstr ""
-
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:171
-#: ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay.js:172
+#: ppcp-gateway/js/wc-angelleye-common-functions.js:829
 msgid "Unable to pull the shipping amount details based on selected address"
 msgstr ""

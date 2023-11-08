@@ -41,6 +41,7 @@ class WC_Gateway_Google_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             $this->has_fields = true;
             $this->angelleye_ppcp_load_class();
             $this->setGatewaySupports();
+
             $this->ppcp_enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
             $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('google_pay_payments_title', 'Google Pay'));
             $this->title = $this->setting_obj->get('google_pay_payments_title', 'Google Pay');
