@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.4
-Stable tag: 4.3.4
+Stable tag: 4.4.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,7 +127,16 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.3.3 - 10.26.2023 =
+= 4.4.0 - 11.09.2023 =
+* Feature - Added functionality for Auth/Capture & Refund, along with Shipment tracking on a Line Item level basis. ([PFW-1616](https://github.com/angelleye/paypal-woocommerce/pull/1951))
+* Feature - High Performance Order Storage Compatibility. ([PFW-1483](https://github.com/angelleye/paypal-woocommerce/pull/1904))
+* Feature - Added JS Internationalization support in frontend & French translations. ([PFW-1651](https://github.com/angelleye/paypal-woocommerce/pull/1952))
+* Tweak - Fixes CheckoutWC compatibility and general billing address validations issues. ([PFW-1650](https://github.com/angelleye/paypal-woocommerce/pull/1947))
+* Tweak - Fixes Place Order button display issue with PPCP payment method when disable smart button setting is ON. ([PFW-1646](https://github.com/angelleye/paypal-woocommerce/pull/1944))
+* Tweak - CSS spacing issue between buttons and CC icons on checkout page. ([PFW-1500](https://github.com/angelleye/paypal-woocommerce/pull/1945))
+* Tweak - Remove PayLater Messaging from Add Payment Method page. ([PFW-1653](https://github.com/angelleye/paypal-woocommerce/pull/1950))
+
+= 4.3.4 - 11.09.2023 =
 * Fix - Resolves Tokens Expired issue on PayPal Classic Subscription Profiles. ([PFW-1647](https://github.com/angelleye/paypal-woocommerce/pull/1946))
 
 = 4.3.3 - 10.26.2023 =
