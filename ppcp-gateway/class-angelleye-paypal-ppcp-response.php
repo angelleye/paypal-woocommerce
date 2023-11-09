@@ -84,18 +84,15 @@ class AngellEYE_PayPal_PPCP_Response {
                 return $response;
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
 
     public function angelleye_ppcp_write_log($url, $request, $response, $action_name = 'Exception') {
         global $wp_version;
-        if($action_name === 'list_all_payment_tokens') {
-           return false;
-        }
-        if($action_name === 'seller_onboarding_status' && !isset($_GET['merchantIdInPayPal'])) {
-            return false;
+        if(in_array($action_name, array('list_all_payment_tokens', 'get_order', 'get_capture'))) {
+            return;
         }
         $environment = ($this->is_sandbox === true) ? 'SANDBOX' : 'LIVE';
         $this->api_log->log('PayPal Environment: ' . $environment);
@@ -138,7 +135,7 @@ class AngellEYE_PayPal_PPCP_Response {
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -176,7 +173,7 @@ class AngellEYE_PayPal_PPCP_Response {
                 }
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }

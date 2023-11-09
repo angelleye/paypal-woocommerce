@@ -67,25 +67,18 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
     public function process_offer_payment($order, $product) {
         try {
             $gateway = $this->get_wc_gateway();
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             do_action('angelleye_paypal_for_woocommerce_product_level_payment_action', $gateway, '', $order_id);
             $gateway->angelleye_load_paypal_payflow_class(null, $this, $order);
             $description = sprintf(__('%1$s - Order %2$s - One Time offer', 'paypal-for-woocommerce'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES), $order->get_order_number());
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $billing_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_address_1 : $order->get_billing_address_1();
-            $billing_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_address_2 : $order->get_billing_address_2();
-            $billing_city = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_city : $order->get_billing_city();
-            $billing_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_postcode : $order->get_billing_postcode();
-            $billing_country = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_country : $order->get_billing_country();
-            $billing_state = version_compare(WC_VERSION, '3.0', '<') ? $order->billing_state : $order->get_billing_state();
-            $billing_email = version_compare(WC_VERSION, '3.0', '<') ? $billing_email : $order->get_billing_email();
-            $customer_note_value = version_compare(WC_VERSION, '3.0', '<') ? wptexturize($order->customer_note) : wptexturize($order->get_customer_note());
+            $billing_email = $order->get_billing_email();
+            $customer_note_value = wptexturize($order->get_customer_note());
             $customer_note = $customer_note_value ? substr(preg_replace("/[^A-Za-z0-9 ]/", "", $customer_note_value), 0, 256) : '';
             $PayPalRequestData = array(
                 'tender' => 'C',
                 'trxtype' => $gateway->payment_action,
                 'amt' => AngellEYE_Gateway_Paypal::number_format($product['price'], $order),
-                'currency' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency(),
+                'currency' => $order->get_currency(),
                 'comment1' => apply_filters('ae_pppf_custom_parameter', $customer_note, $order),
                 'comment2' => apply_filters('ae_pppf_comment2_parameter', '', $order),
                 'recurring' => '',
@@ -94,11 +87,11 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                 'orderdesc' => $description,
                 'billtoemail' => $billing_email,
                 'billtophonenum' => '',
-                'billtostreet' => $billing_address_1 . ' ' . $billing_address_2,
-                'billtocity' => $billing_city,
-                'billtostate' => $billing_state,
-                'billtozip' => $billing_postcode,
-                'billtocountry' => $billing_country,
+                'billtostreet' => $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(),
+                'billtocity' => $order->get_billing_city(),
+                'billtostate' => $order->get_billing_state(),
+                'billtozip' => $order->get_billing_postcode(),
+                'billtocountry' => $order->get_billing_country(),
                 'origid' => '',
                 'custref' => '',
                 'custcode' => '',
@@ -111,46 +104,30 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                 'partialauth' => '',
                 'authcode' => ''
             );
-
-            /**
-             * Shipping info
-             */
-            $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
-            $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
-            $shipping_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_1 : $order->get_shipping_address_1();
-            $shipping_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_2 : $order->get_shipping_address_2();
-            $shipping_city = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_city : $order->get_shipping_city();
-            $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
-            $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
-            $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
-
+            $shipping_address_1 = $order->get_shipping_address_1();
             if ($shipping_address_1) {
-                $PayPalRequestData['SHIPTOFIRSTNAME'] = $shipping_first_name;
-                $PayPalRequestData['SHIPTOLASTNAME'] = $shipping_last_name;
-                $PayPalRequestData['SHIPTOSTREET'] = $shipping_address_1 . ' ' . $shipping_address_2;
-                $PayPalRequestData['SHIPTOCITY'] = $shipping_city;
-                $PayPalRequestData['SHIPTOSTATE'] = $shipping_state;
-                $PayPalRequestData['SHIPTOCOUNTRY'] = $shipping_country;
-                $PayPalRequestData['SHIPTOZIP'] = $shipping_postcode;
+                $PayPalRequestData['SHIPTOFIRSTNAME'] = $order->get_shipping_first_name();
+                $PayPalRequestData['SHIPTOLASTNAME'] = $order->get_shipping_last_name();
+                $PayPalRequestData['SHIPTOSTREET'] = $order->get_shipping_address_1() . ' ' . $order->get_shipping_address_2();
+                $PayPalRequestData['SHIPTOCITY'] = $order->get_shipping_city();
+                $PayPalRequestData['SHIPTOSTATE'] = $order->get_shipping_state();
+                $PayPalRequestData['SHIPTOCOUNTRY'] = $order->get_shipping_country();
+                $PayPalRequestData['SHIPTOZIP'] = $order->get_shipping_postcode();
             }
-
             $PayPalRequestData['origid'] = $order->get_transaction_id();
             $PayPalResult = $gateway->PayPal->ProcessTransaction($PayPalRequestData);
-
             wcf()->logger->log('PayFlow Endpoint: ' . $gateway->PayPal->APIEndPoint);
             wcf()->logger->log('PayFlow Response: ' . print_r($PayPalResult, true));
-
             if (empty($PayPalResult['RAWRESPONSE'])) {
                 return false;
             }
-
             if (isset($PayPalResult['RESULT']) && ( $PayPalResult['RESULT'] == 0 || in_array($PayPalResult['RESULT'], $gateway->fraud_warning_codes))) {
                 if (isset($PayPalResult['DUPLICATE']) && '2' == $PayPalResult['DUPLICATE']) {
                     $order->add_order_note(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                     throw new Exception(__('Payment failed due to duplicate order ID', 'paypal-for-woocommerce'));
                 }
                 if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
-                    add_post_meta($order_id, 'PPREF', $PayPalResult['PPREF']);
+                    $order->update_meta_data('PPREF', $PayPalResult['PPREF']);
                     $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
                 } else {
                     $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF']));
@@ -166,15 +143,10 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                 $avs_response_order_note .= '<li>' . sprintf(__('Postal Match: %s', 'paypal-for-woocommerce'), $avs_zip_response_code) . '</li>';
                 $avs_response_order_note .= "<ul>";
                 $avs_response_order_note .= '</ul>';
-                if ($old_wc) {
-                    update_post_meta($order_id, '_AVSADDR', $avs_address_response_code);
-                    update_post_meta($order_id, '_AVSZIP', $avs_zip_response_code);
-                    update_post_meta($order_id, '_PROCAVS', $avs_zip_response_code);
-                } else {
-                    update_post_meta($order->get_id(), '_AVSADDR', $avs_address_response_code);
-                    update_post_meta($order->get_id(), '_AVSZIP', $avs_zip_response_code);
-                    update_post_meta($order->get_id(), '_PROCAVS', $avs_zip_response_code);
-                }
+                $order->update_meta_data('_AVSADDR', $avs_address_response_code);
+                $order->update_meta_data('_AVSZIP', $avs_zip_response_code);
+                $order->update_meta_data('_PROCAVS', $avs_zip_response_code);
+                $order->save();
                 $order->add_order_note($avs_response_order_note);
                 $cvv2_response_code = isset($PayPalResult['CVV2MATCH']) ? $PayPalResult['CVV2MATCH'] : '';
                 $cvv2_response_order_note = __('Card Security Code Result', 'paypal-for-woocommerce');
@@ -182,15 +154,8 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                 $cvv2_response_order_note .= sprintf(__('CVV2 Match: %s', 'paypal-for-woocommerce'), $cvv2_response_code);
                 $order->add_order_note($cvv2_response_order_note);
                 if ($gateway->fraud_management_filters == 'place_order_on_hold_for_further_review' && in_array($PayPalResult['RESULT'], $gateway->fraud_warning_codes)) {
-                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                    $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
-                    if ($old_wc) {
-                        if (!get_post_meta($order_id, '_order_stock_reduced', true)) {
-                            $order->reduce_order_stock();
-                        }
-                    } else {
-                        wc_maybe_reduce_stock_levels($order_id);
-                    }
+                    $order_id = $order->get_id();
+                    wc_maybe_reduce_stock_levels($order_id);
                 } else {
                     if (isset($PayPalResult['PPREF']) && !empty($PayPalResult['PPREF'])) {
                         $order->add_order_note(sprintf(__('PayPal Pro Payflow payment completed (PNREF: %s) (PPREF: %s)', 'paypal-for-woocommerce'), $PayPalResult['PNREF'], $PayPalResult['PPREF']));
@@ -210,7 +175,6 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
                     $message .= isset($PayPalResult['PREFPSMSG']) && $PayPalResult['PREFPSMSG'] != '' ? ' - ' . $PayPalResult['PREFPSMSG'] . "\n" : "\n";
                     $message .= __('User IP: ', 'paypal-for-woocommerce') . WC_Geolocation::get_ip_address() . "\n";
                     $message .= __('Order ID: ') . $order_id . "\n";
-                    $message .= __('Customer Name: ') . $firstname . ' ' . $lastname . "\n";
                     $message .= __('Customer Email: ') . $billing_email . "\n";
                     $message = apply_filters('ae_pppf_error_email_message', $message);
                     $subject = apply_filters('ae_pppf_error_email_subject', "PayPal Pro Payflow Error Notification");
@@ -243,7 +207,7 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
             'TRXTYPE' => 'C',
             'ORIGID' => $transaction_id,
             'AMT' => $amount,
-            'CURRENCY' => version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency()
+            'CURRENCY' => $order->get_currency()
         );
         $PayPalResult = $gateway->PayPal->ProcessTransaction($PayPalRequestData);
         $PayPalResponse = isset($PayPalResult['RAWRESPONSE']) ? $PayPalResult['RAWRESPONSE'] : '';
@@ -252,7 +216,8 @@ class Cartflows_Pro_Gateway_PayPal_Pro_PayFlow_AngellEYE {
         AngellEYE_Gateway_Paypal::angelleye_paypal_for_woocommerce_curl_error_handler($PayPalResult, $methos_name = 'Refund Request', 'PayPal Payments Pro 2.0 (PayFlow)', $this->error_email_notify);
         do_action('angelleye_after_refund', $PayPalResult, $order, $amount, $reason);
         if (isset($PayPalResult['RESULT']) && $PayPalResult['RESULT'] == 0) {
-            update_post_meta($order_id, 'Refund Transaction ID', $PayPalResult['PNREF']);
+            $order->update_meta_data('Refund Transaction ID', $PayPalResult['PNREF']);
+            $order->save();
             $order->add_order_note('Refund Transaction ID:' . $PayPalResult['PNREF']);
             $response_id = $PayPalResult['PNREF'];
         } else {

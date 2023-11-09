@@ -48,7 +48,6 @@ class AngellEYE_PayPal_PPCP_Request {
     public $api_password;
     public $api_signature;
     public $Force_tls_one_point_two;
-    
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -109,6 +108,10 @@ class AngellEYE_PayPal_PPCP_Request {
             }
         }
         $this->basicAuth = base64_encode($this->client_id . ":" . $this->secret_id);
+        // TODO Include this file from a better place, not a good place to include it.
+        if(!function_exists('is_angelleye_aws_down')) {
+            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/angelleye-paypal-ppcp-common-functions.php');
+        }
         if (is_angelleye_aws_down() == false) {
             $this->ppcp_host = PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE;
         } else {
@@ -158,7 +161,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public function request($url, $args, $action_name = 'default') {
         try {
             $this->angelleye_get_settings();
-            if (strpos($url, 'paypal.com') === false) {
+            if (!str_contains($url, 'paypal.com')) {
                 $args['timeout'] = '60';
                 $args['user-agent'] = 'PFW_PPCP';
                 $this->result = wp_remote_get($url, $args);
@@ -179,7 +182,7 @@ class AngellEYE_PayPal_PPCP_Request {
 
             return $this->api_response->parse_response($this->result, $url, $args, $action_name);
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -209,7 +212,7 @@ class AngellEYE_PayPal_PPCP_Request {
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_response = AngellEYE_PayPal_PPCP_Response::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -252,7 +255,7 @@ class AngellEYE_PayPal_PPCP_Request {
         }
 
         $capabilitiesToCheck = ['advanced_cc' => 'CUSTOM_CARD_PROCESSING', 'vaulting_advanced' => 'PAYPAL_WALLET_VAULTING_ADVANCED',
-            'apple_pay' => 'APPLE_PAY'];
+            'apple_pay' => 'APPLE_PAY', 'google_pay' => 'GOOGLE_PAY'];
 
         if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
             foreach ($result['products'] as $key => $product) {

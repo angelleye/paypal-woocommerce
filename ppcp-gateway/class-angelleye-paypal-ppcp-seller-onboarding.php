@@ -49,7 +49,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             add_action('wp_ajax_angelleye_ppcp_onboard_email_sendy_subscription', array($this, 'angelleye_ppcp_onboard_email_sendy_subscription'));
             $this->ppcp_paypal_country = $this->dcc_applies->country();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -81,7 +81,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -250,6 +250,26 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         ));
     }
 
+    public function ppcp_google_pay_data() {
+        $testmode = ($this->is_sandbox) ? 'yes' : 'no';
+        return array(
+            'testmode' => $testmode,
+            'return_url' => admin_url(
+                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=googlepay&testmode=' . $testmode
+            ),
+            'return_url_description' => __(
+                'Return to your shop.', 'paypal-for-woocommerce'
+            ),
+            'capabilities' => array(
+                'GOOGLE_PAY'
+            ),
+            'third_party_features' => array('VAULT', 'BILLING_AGREEMENT'),
+            'products' => array(
+                $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
+                'PAYMENT_METHODS'
+            ));
+    }
+
     public function ppcp_vault_data() {
         $testmode = ($this->is_sandbox) ? 'yes' : 'no';
         return array(
@@ -281,7 +301,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $data = json_decode($posted_raw, true);
             $this->angelleye_ppcp_get_credentials($data);
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -304,7 +324,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -339,6 +359,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
             // Delete the transient so that system fetches the latest status after connecting the account
             delete_transient('ae_seller_onboarding_status');
+            delete_option('ae_ppcp_account_reconnect_notice');
 
             $move_to_location = 'tokenization_subscriptions';
             if (isset($_GET['feature_activated'])) {
@@ -346,7 +367,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     case 'applepay':
                         set_transient('angelleye_ppcp_applepay_onboarding_done', 'yes', 29000);
                         delete_transient('angelleye_apple_pay_domain_list_cache');
-                        $move_to_location = 'additional_authorizations';
+                        $move_to_location = 'apple_pay_authorizations';
+                        break;
+                    case 'googlepay':
+                        set_transient('angelleye_ppcp_googlepay_onboarding_done', 'yes', 29000);
+                        $move_to_location = 'google_pay_authorizations';
                         break;
                 }
             }
@@ -408,9 +433,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                 case 'paypal_pro':
                                     $existing_paypal_account_details = angelleye_ppcp_get_classic_paypal_details($product);
                                     if (isset($_GET['do_not_check_diffrent_account']) || (!empty($existing_paypal_account_details) && $existing_paypal_account_details === $merchant_id) || empty($existing_paypal_account_details)) {
-                                        $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
-                                        if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
-                                            $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp');
+                                        if (angelleye_is_acdc_payments_enable($seller_onboarding_status)) {
+                                            $this->ppcp_migration->angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status);
+                                            if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
+                                                $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro', 'angelleye_ppcp_cc');
+                                            }
                                         }
                                     } else {
                                         if ($this->is_sandbox) {
@@ -428,19 +455,25 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                     }
                                     break;
                                 case 'paypal_pro_payflow':
-                                    $this->ppcp_migration->angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status);
-                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
-                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro_payflow', 'angelleye_ppcp');
+                                    if (angelleye_is_acdc_payments_enable($seller_onboarding_status)) {
+                                        $this->ppcp_migration->angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status);
+                                        if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
+                                            $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro_payflow', 'angelleye_ppcp');
+                                        }
                                     }
                                     break;
                                 case 'paypal_advanced':
-                                    $this->ppcp_migration->angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status);
-                                    if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
-                                        $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_advanced', 'angelleye_ppcp');
+                                    if (angelleye_is_acdc_payments_enable($seller_onboarding_status)) {
+                                        $this->ppcp_migration->angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status);
+                                        if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
+                                            $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_advanced', 'angelleye_ppcp');
+                                        }
                                     }
                                     break;
                                 case 'paypal_credit_card_rest':
-                                    $this->ppcp_migration->angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status);
+                                    if (angelleye_is_acdc_payments_enable($seller_onboarding_status)) {
+                                        $this->ppcp_migration->angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status);
+                                    }
                                     break;
                                 case 'paypal':
                                     $this->ppcp_migration->angelleye_ppcp_paypal_to_ppcp();
@@ -485,7 +518,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             wp_safe_redirect($redirect_url, 302);
             exit();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -587,10 +620,21 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 } else {
                     $this->setting_obj->set('enable_tokenized_payments', 'no');
                 }
-                if ($this->angelleye_is_apple_pay_approved($this->result)) {
-                    $this->setting_obj->set('enable_apple_pay', 'yes');
-                } else {
-                    $this->setting_obj->set('enable_apple_pay', 'no');
+
+                // Enable these features only when someone returns from on-boarding, otherwise if someone will enable
+                // any other feature then these will be activated based on on-boarding status, while user may don't want
+                // to enable these
+                if (isset($_GET['feature_activated'])) {
+                    if ($this->angelleye_is_apple_pay_approved($this->result)) {
+                        $_GET['feature_activated'] == 'applepay' && $this->setting_obj->set('enable_apple_pay', 'yes');
+                    } else {
+                        $this->setting_obj->set('enable_apple_pay', 'no');
+                    }
+                    if ($this->angelleye_is_google_pay_approved($this->result)) {
+                        $_GET['feature_activated'] == 'googlepay' && $this->setting_obj->set('enable_google_pay', 'yes');
+                    } else {
+                        $this->setting_obj->set('enable_google_pay', 'no');
+                    }
                 }
                 $this->setting_obj->persist();
                 if ($this->angelleye_ppcp_is_fee_enable($this->result)) {
@@ -600,7 +644,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 }
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
             return false;
         }
@@ -635,12 +679,12 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->result = $this->api_request->request($url, $args, 'seller_onboarding_status');
                 $seller_onboarding_status_transient = $this->result;
             } catch (Exception $ex) {
-                $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+                $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
                 $this->api_log->log($ex->getMessage(), 'error');
                 $seller_onboarding_status_transient = [];
             }
         }
-        set_transient('ae_seller_onboarding_status', $seller_onboarding_status_transient, HOUR_IN_SECONDS);
+        set_transient('ae_seller_onboarding_status', $seller_onboarding_status_transient, DAY_IN_SECONDS);
         return $seller_onboarding_status_transient;
     }
 
@@ -659,11 +703,26 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     }
 
     public function angelleye_is_apple_pay_approved($result) {
-        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
-            foreach ($result['products'] as $key => $product) {
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products'])) {
+            foreach ($result['products'] as $product) {
                 if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status']) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('APPLE_PAY', $product['capabilities'])) {
                     foreach ($result['capabilities'] as $key => $capabilities) {
                         if (isset($capabilities['name']) && 'APPLE_PAY' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public function angelleye_is_google_pay_approved($result) {
+        if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products'])) {
+            foreach ($result['products'] as $key => $product) {
+                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status']) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('GOOGLE_PAY', $product['capabilities'])) {
+                    foreach ($result['capabilities'] as $capabilities) {
+                        if (isset($capabilities['name']) && 'GOOGLE_PAY' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
                             return true;
                         }
                     }

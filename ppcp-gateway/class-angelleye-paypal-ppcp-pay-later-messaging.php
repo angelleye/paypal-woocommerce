@@ -28,7 +28,6 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     public $pay_later_messaging_cart_shortcode;
     public $pay_later_messaging_payment_shortcode;
 
-
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
@@ -55,7 +54,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
             $this->settings = $this->setting_obj->get_load();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -109,7 +108,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                 add_action('woocommerce_single_product_summary', array($this, 'angelleye_ppcp_pay_later_messaging_product_page'), 11);
             }
             if ($this->is_paypal_pay_later_messaging_enable_for_page($page = 'cart') && $this->pay_later_messaging_cart_shortcode === false) {
-                add_action('woocommerce_before_cart_table', array($this, 'angelleye_ppcp_pay_later_messaging_cart_page'), 9);
+                add_action('woocommerce_before_cart_table', array($this, 'angelleye_ppcp_pay_later_messaging_cart_table'), 9);
                 add_action('woocommerce_proceed_to_checkout', array($this, 'angelleye_ppcp_pay_later_messaging_cart_page'), 10);
             }
             if ($this->is_paypal_pay_later_messaging_enable_for_page($page = 'payment') && $this->pay_later_messaging_payment_shortcode === false) {
@@ -117,6 +116,18 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                 add_action('angelleye_ppcp_display_paypal_button_checkout_page', array($this, 'angelleye_ppcp_pay_later_messaging_payment_page'), 9);
             }
             add_shortcode('aepfw_bnpl_message', array($this, 'aepfw_bnpl_message_shortcode'), 10);
+            add_action('woocommerce_review_order_before_submit', array($this, 'ppcp_payment_fields'));
+        }
+    }
+
+    public function ppcp_payment_fields($bool = true) {
+        if (apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
+            echo '<div id="ppcp_payment_field_bottom">';
+            $gateway = WC_Gateway_PPCP_AngellEYE::$_instance;
+            if ($gateway->checkout_disable_smart_button === false) {
+                do_action('angelleye_ppcp_display_paypal_button_checkout_page');
+            }
+            echo '</div>';
         }
     }
 
@@ -130,90 +141,110 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         return false;
     }
 
-    public function angelleye_ppcp_pay_later_messaging_home_page_content($content) {
-        if (angelleye_ppcp_is_cart_contains_subscription() === true) {
-            return $content;
+    private function add_pay_later_script_in_frontend() {
+        $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
+        wp_register_script('angelleye-pay-later-messaging', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging' . $this->minified_version . '.js', array('jquery', 'angelleye-paypal-checkout-sdk'), $script_versions, true);
+
+        $finalArray = [];
+        $placements = [
+            'home' => '.angelleye_ppcp_message_home',
+            'category' => '.angelleye_ppcp_message_category',
+            'cart' => '.angelleye_ppcp_message_cart',
+            'payment' => '.angelleye_ppcp_message_payment',
+            'product' => '.angelleye_ppcp_message_product',
+        ];
+        foreach ($placements as $placement => $cssId) {
+            $required_keys = array(
+                'pay_later_messaging_' . $placement . '_layout_type' => 'text',
+                'pay_later_messaging_' . $placement . '_text_layout_logo_type' => 'primary',
+                'pay_later_messaging_' . $placement . '_text_layout_logo_position' => 'left',
+                'pay_later_messaging_' . $placement . '_text_layout_text_size' => '12',
+                'pay_later_messaging_' . $placement . '_text_layout_text_color' => 'black',
+                'pay_later_messaging_' . $placement . '_flex_layout_color' => 'blue',
+                'pay_later_messaging_' . $placement . '_flex_layout_ratio' => '8x1',
+                'css_selector' => $cssId
+            );
+            if ($placement == 'home') {
+                $required_keys['pay_later_messaging_' . $placement . '_layout_type'] = 'flex';
+            }
+            foreach ($required_keys as $key => $value) {
+                $onlyKey = str_replace('pay_later_messaging_' . $placement . '_', '', $key);
+                $finalArray[$placement][$onlyKey] = $this->settings[$key] ?? $value;
+            }
         }
-        if ((is_home() || is_front_page())) {
-            angelleye_ppcp_add_css_js();
-            wp_enqueue_script('angelleye-pay-later-messaging-home', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/home.js', array('jquery'), VERSION_PFW, true);
-            $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'home');
-            $content = '<div class="angelleye_ppcp_message_home"></div>' . $content;
-            return $content;
+        wp_localize_script('angelleye-pay-later-messaging', 'angelleye_pay_later_messaging', ['placements' => $finalArray, 'amount' => angelleye_ppcp_number_format(angelleye_ppcp_get_order_total()),
+            'currencyCode' => angelleye_ppcp_get_currency()]);
+        angelleye_ppcp_add_css_js();
+    }
+
+    public function add_pay_later_script_in_ajax() {
+        $this->angelleye_pay_later_messaging = ['updated_amount' => angelleye_ppcp_get_order_total()];
+        wp_send_json(['pay_later_data' => $this->angelleye_pay_later_messaging]);
+    }
+
+    public function angelleye_ppcp_pay_later_messaging_home_page_content($content) {
+        if (angelleye_ppcp_is_cart_contains_subscription() !== true && (is_home() || is_front_page())) {
+            $this->add_pay_later_script_in_frontend();
+            return '<div class="angelleye_ppcp_message_home"></div>' . $content;
         }
         return $content;
     }
 
     public function angelleye_ppcp_pay_later_messaging_home_page() {
-        if (angelleye_ppcp_is_cart_contains_subscription() === true) {
-            return false;
-        }
-        if (is_shop()) {
-            angelleye_ppcp_add_css_js();
-            wp_enqueue_script('angelleye-pay-later-messaging-home', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/home.js', array('jquery'), VERSION_PFW, true);
-            $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'home');
+        if (angelleye_ppcp_is_cart_contains_subscription() !== true && is_shop()) {
+            $this->add_pay_later_script_in_frontend();
             echo '<div class="angelleye_ppcp_message_home"></div>';
         }
+        return false;
     }
 
     public function angelleye_ppcp_pay_later_messaging_category_page() {
-        if (angelleye_ppcp_is_cart_contains_subscription() === true) {
-            return false;
-        }
-        if (is_shop() === false && $this->pay_later_messaging_category_shortcode === false) {
-            angelleye_ppcp_add_css_js();
-            wp_enqueue_script('angelleye-pay-later-messaging-category', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/category.js', array('jquery'), VERSION_PFW, true);
-            $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'category');
+        if (angelleye_ppcp_is_cart_contains_subscription() !== true && is_shop() === false && $this->pay_later_messaging_category_shortcode === false) {
+            $this->add_pay_later_script_in_frontend();
             echo '<div class="angelleye_ppcp_message_category"></div>';
         }
+        return false;
     }
 
     public function angelleye_ppcp_pay_later_messaging_product_page() {
         try {
             global $product;
-            if (angelleye_ppcp_is_cart_contains_subscription() === true) {
+            if ($product->is_type(array('subscription', 'subscription_variation', 'variable-subscription'))) {
                 return false;
             }
-            if (angelleye_ppcp_is_product_purchasable($product, $this->enable_tokenized_payments) === true) {
-                angelleye_ppcp_add_css_js();
-                wp_enqueue_script('angelleye-pay-later-messaging-product', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/product.js', array('jquery'), VERSION_PFW, true);
-                $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'product');
+            if (angelleye_ppcp_is_cart_contains_subscription() !== true && angelleye_ppcp_is_product_purchasable($product, $this->enable_tokenized_payments) === true) {
+                $this->add_pay_later_script_in_frontend();
                 echo '<div class="angelleye_ppcp_message_product"></div>';
             }
         } catch (Exception $ex) {
-            
+
         }
+        return false;
+    }
+
+    public function angelleye_ppcp_pay_later_messaging_cart_table() {
+        if (!WC()->cart->is_empty() && angelleye_ppcp_is_cart_contains_subscription() !== true && WC()->cart->needs_payment()) {
+            echo '<div class="angelleye_ppcp_message_cart"></div>';
+        }
+        return false;
     }
 
     public function angelleye_ppcp_pay_later_messaging_cart_page() {
-        if (WC()->cart->is_empty()) {
-            return false;
-        }
-        if (angelleye_ppcp_is_cart_contains_subscription() === true) {
-            return false;
-        }
-        if (WC()->cart->needs_payment()) {
-            angelleye_ppcp_add_css_js();
-            wp_enqueue_script('angelleye-pay-later-messaging-cart', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/cart.js', array('jquery'), VERSION_PFW, true);
-            $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'cart');
+        if (!WC()->cart->is_empty() && angelleye_ppcp_is_cart_contains_subscription() !== true && WC()->cart->needs_payment()) {
+            $this->add_pay_later_script_in_frontend();
             echo '<div class="angelleye_ppcp_message_cart"></div>';
         }
+        return false;
     }
 
     public function angelleye_ppcp_pay_later_messaging_payment_page() {
-        if (WC()->cart->is_empty()) {
+        if (WC()->cart->is_empty() || angelleye_ppcp_has_active_session() || angelleye_ppcp_is_cart_contains_subscription() === true) {
             return false;
         }
-        if (angelleye_ppcp_has_active_session()) {
-            return false;
+        if(is_checkout()) {
+            $this->add_pay_later_script_in_frontend();
+            echo '<div class="angelleye_ppcp_message_payment"></div>';
         }
-        if (angelleye_ppcp_is_cart_contains_subscription() === true) {
-            return false;
-        }
-        angelleye_ppcp_add_css_js();
-        wp_enqueue_script('angelleye-pay-later-messaging-payment', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/payment.js', array('jquery'), VERSION_PFW, true);
-        $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement = 'payment');
-        echo '<div class="angelleye_ppcp_message_payment"></div>';
     }
 
     public function is_paypal_pay_later_messaging_enable_for_page($page = '') {
@@ -224,96 +255,6 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
             return true;
         }
         return false;
-    }
-
-    public function angelleye_paypal_pay_later_messaging_js_enqueue($placement = '', $atts = null) {
-        if (!empty($placement)) {
-            $enqueue_script_param = array();
-            $enqueue_script_param['amount'] = angelleye_ppcp_get_order_total();
-            switch ($placement) {
-                case 'home':
-                    $required_keys = array(
-                        'pay_later_messaging_home_layout_type' => 'flex',
-                        'pay_later_messaging_home_text_layout_logo_type' => 'primary',
-                        'pay_later_messaging_home_text_layout_logo_position' => 'left',
-                        'pay_later_messaging_home_text_layout_text_size' => '12',
-                        'pay_later_messaging_home_text_layout_text_color' => 'black',
-                        'pay_later_messaging_home_flex_layout_color' => 'blue',
-                        'pay_later_messaging_home_flex_layout_ratio' => '8x1'
-                    );
-                    foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
-                    }
-                    wp_localize_script('angelleye-pay-later-messaging-home', 'angelleye_pay_later_messaging', $enqueue_script_param);
-                    break;
-                case 'category':
-                    $required_keys = array(
-                        'pay_later_messaging_category_layout_type' => 'flex',
-                        'pay_later_messaging_category_text_layout_logo_type' => 'primary',
-                        'pay_later_messaging_category_text_layout_logo_position' => 'left',
-                        'pay_later_messaging_category_text_layout_text_size' => '12',
-                        'pay_later_messaging_category_text_layout_text_color' => 'black',
-                        'pay_later_messaging_category_flex_layout_color' => 'blue',
-                        'pay_later_messaging_category_flex_layout_ratio' => '8x1'
-                    );
-                    foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
-                    }
-                    wp_localize_script('angelleye-pay-later-messaging-category', 'angelleye_pay_later_messaging', $enqueue_script_param);
-                    break;
-                case 'product':
-                    $required_keys = array(
-                        'pay_later_messaging_product_layout_type' => 'text',
-                        'pay_later_messaging_product_text_layout_logo_type' => 'primary',
-                        'pay_later_messaging_product_text_layout_logo_position' => 'left',
-                        'pay_later_messaging_product_text_layout_text_size' => '12',
-                        'pay_later_messaging_product_text_layout_text_color' => 'black',
-                        'pay_later_messaging_product_flex_layout_color' => 'blue',
-                        'pay_later_messaging_product_flex_layout_ratio' => '8x1'
-                    );
-                    foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
-                    }
-                    wp_localize_script('angelleye-pay-later-messaging-product', 'angelleye_pay_later_messaging', $enqueue_script_param);
-                    break;
-                case 'cart':
-                    $required_keys = array(
-                        'pay_later_messaging_cart_layout_type' => 'text',
-                        'pay_later_messaging_cart_text_layout_logo_type' => 'primary',
-                        'pay_later_messaging_cart_text_layout_logo_position' => 'left',
-                        'pay_later_messaging_cart_text_layout_text_size' => '12',
-                        'pay_later_messaging_cart_text_layout_text_color' => 'black',
-                        'pay_later_messaging_cart_flex_layout_color' => 'blue',
-                        'pay_later_messaging_cart_flex_layout_ratio' => '8x1'
-                    );
-                    foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
-                    }
-                    wp_localize_script('angelleye-pay-later-messaging-cart', 'angelleye_pay_later_messaging', $enqueue_script_param);
-                    break;
-                case 'payment':
-                    $required_keys = array(
-                        'pay_later_messaging_payment_layout_type' => 'text',
-                        'pay_later_messaging_payment_text_layout_logo_type' => 'primary',
-                        'pay_later_messaging_payment_text_layout_logo_position' => 'left',
-                        'pay_later_messaging_payment_text_layout_text_size' => '12',
-                        'pay_later_messaging_payment_text_layout_text_color' => 'black',
-                        'pay_later_messaging_payment_flex_layout_color' => 'blue',
-                        'pay_later_messaging_payment_flex_layout_ratio' => '8x1'
-                    );
-                    foreach ($required_keys as $key => $value) {
-                        $enqueue_script_param[$key] = isset($this->settings[$key]) ? $this->settings[$key] : $value;
-                    }
-                    wp_localize_script('angelleye-pay-later-messaging-payment', 'angelleye_pay_later_messaging', $enqueue_script_param);
-                    break;
-                case 'shortcode':
-                    $atts['amount'] = $enqueue_script_param['amount'];
-                    wp_localize_script('angelleye-pay-later-messaging-shortcode', 'angelleye_pay_later_messaging', $atts);
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 
     public function angelleye_get_default_attribute_pay_later_messaging($placement = '') {
@@ -434,10 +375,23 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $atts = array_merge(
                 $default_array, (array) $atts
         );
-        angelleye_ppcp_add_css_js();
-        wp_enqueue_script('angelleye-pay-later-messaging-shortcode', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging/shortcode.js', array('jquery'), VERSION_PFW, true);
-        $this->angelleye_paypal_pay_later_messaging_js_enqueue($placement_default = 'shortcode', $atts);
-        return '<div class="angelleye_ppcp_message_shortcode"></div>';
+
+        $finalParams = [
+            'placement' => $atts['placement'],
+            'layout_type' => $atts['style'],
+            'text_layout_logo_type' => $atts['logotype'] ?? '',
+            'text_layout_logo_position' => $atts['logoposition'] ?? '',
+            'text_layout_text_size' => $atts['textsize'] ?? '',
+            'text_layout_text_color' => $atts['textcolor'] ?? '',
+            'flex_layout_color' => $atts['color'] ?? '',
+            'flex_layout_ratio' => $atts['ratio'] ?? '',
+            'css_selector' => '.angelleye_ppcp_message_shortcode'
+        ];
+
+        $uniqueShortcodeKey = wp_unique_id('angelleye_pay_later_messaging_');
+        $this->add_pay_later_script_in_frontend();
+        wp_localize_script('angelleye-pay-later-messaging', $uniqueShortcodeKey, $finalParams);
+        return '<div class="angelleye_ppcp_message_shortcode" data-key="' . $uniqueShortcodeKey . '"></div>';
     }
 
     public function angelleye_pay_later_messaging_get_default_value($key, $placement) {

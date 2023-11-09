@@ -2,6 +2,8 @@
 
 class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     use WC_Gateway_Base_AngellEYE;
+    const PAYMENT_METHOD = 'angelleye_ppcp';
+    public static $_instance;
     public $settings_fields;
     public $advanced_card_payments;
     public $checkout_disable_smart_button;
@@ -28,20 +30,21 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function __construct() {
         try {
+            self::$_instance = $this;
             $this->id = 'angelleye_ppcp';
             $this->setup_properties();
             $this->angelleye_ppcp_load_class(true);
             $this->init_form_fields();
             $this->init_settings();
             $this->angelleye_get_settings();
-            $this->angelleye_defind_hooks();
+            $this->angelleye_defined_hooks();
             if (angelleye_ppcp_has_active_session()) {
                 $this->order_button_text = apply_filters('angelleye_ppcp_order_review_page_place_order_button_text', __('Complete Order Payment', 'paypal-for-woocommerce'));
             }
 
             $this->setGatewaySupports();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -110,14 +113,11 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         return $this->is_enabled == true && $this->is_credentials_set();
     }
 
-    public function angelleye_defind_hooks() {
+    public function angelleye_defined_hooks() {
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         if (!has_action('woocommerce_admin_order_totals_after_total', array('WC_Gateway_PPCP_AngellEYE', 'angelleye_ppcp_display_order_fee'))) {
             add_action('woocommerce_admin_order_totals_after_total', array('WC_Gateway_PPCP_AngellEYE', 'angelleye_ppcp_display_order_fee'));
-        }
-        if (apply_filters('woocommerce_checkout_show_terms', true) && function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
-            add_action('woocommerce_review_order_before_submit', array($this, 'ppcp_payment_fields'));
         }
         if ($this->enable_tokenized_payments === false) {
             add_filter('woocommerce_payment_gateways_renewal_support_status_html', array($this, 'payment_gateways_support_tooltip'), 10, 1);
@@ -126,12 +126,38 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_admin_options() {
         delete_transient(AE_FEE);
+        $cacheCleared = false;
+        $clearCache = function () {
+            delete_option('ae_apple_pay_domain_reg_retries');
+            delete_transient('ae_seller_onboarding_status');
+            delete_transient('angelleye_apple_pay_domain_list_cache');
+            return true;
+        };
         if (!isset($_POST['woocommerce_angelleye_ppcp_enabled']) || $_POST['woocommerce_angelleye_ppcp_enabled'] == "0") {
             // run the automatic domain remove feature
-            AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoUnRegisterDomain();
-            delete_transient('ae_seller_onboarding_status');
+            try {
+                AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoUnRegisterDomain();
+            } catch (Exception $exception) {
+                $this->api_log->log("The exception was created on line: " . $exception->getFile() . ' ' .$exception->getLine(), 'error');
+                $this->api_log->log($exception->getMessage(), 'error');
+            }
+            $cacheCleared = $clearCache();
+        } else {
+            $oldSandboxMode = $this->get_option('testmode', 'no') == 'yes';
+            $newSandboxMode = isset($_POST['woocommerce_angelleye_ppcp_testmode']);
+            if ($oldSandboxMode != $newSandboxMode) {
+                $cacheCleared = $clearCache();
+            }
         }
         parent::process_admin_options();
+        if ($cacheCleared) {
+            // reload the page so that all the initialized classes are able to load the new config changes
+            if (ob_get_length()) {
+                ob_end_clean();
+            }
+            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'));
+            die;
+        }
     }
 
     public function admin_options() {
@@ -148,7 +174,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         try {
             $this->form_fields = $this->setting_obj_fields;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -157,6 +183,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if ($this->supports('tokenization')) {
             $this->tokenization_script();
         }
+        angelleye_ppcp_add_css_js();
         $description = $this->get_description();
         if ($description) {
             echo wpautop(wp_kses_post($description));
@@ -184,14 +211,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 }
             }
         }
-    }
-
-    public function ppcp_payment_fields($bool = true) {
-        echo '<div id="ppcp_payment_field_bottom">';
-        if ($this->checkout_disable_smart_button === false) {
-            do_action('angelleye_ppcp_display_paypal_button_checkout_page');
-        }
-        echo '</div>';
     }
 
     public function form() {
@@ -355,15 +374,17 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_payment($woo_order_id) {
         try {
+            $order = wc_get_order($woo_order_id);
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
-            $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
-            $angelleye_ppcp_payment_method_title = angelleye_ppcp_get_session('angelleye_ppcp_payment_method_title');
-            $angelleye_ppcp_used_payment_method = angelleye_ppcp_get_session('angelleye_ppcp_used_payment_method');
-            update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+            $order = wc_get_order($woo_order_id);
+            $angelleye_ppcp_paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
+            $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title');
+            $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
+            $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
             if (!empty($angelleye_ppcp_payment_method_title)) {
-                update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
             }
-
+             $order->save();
             // When a user chooses existing saved card then detect it and process the order payment using that.
             $saved_tokens = ['wc-angelleye_ppcp_apple_pay-payment-token', 'wc-angelleye_ppcp-payment-token'];
             $token_id = null;
@@ -374,21 +395,20 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             }
 
             if (!empty($token_id)) {
-                $order = wc_get_order($woo_order_id);
                 $token = WC_Payment_Tokens::get($token_id);
                 $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
-                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);
-                update_post_meta($woo_order_id, '_payment_tokens_id', $token->get_token());
+                $order->update_meta_data('_angelleye_ppcp_used_payment_method', $used_payment_method);
+                $order->update_meta_data('_payment_tokens_id', $token->get_token());
                 // CHECKME Here the environment key spelling is wrong, check if we can fix this, though it will break previous shop orders or we run migration
-                angelleye_ppcp_update_post_meta($woo_order_id, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
-
-                angelleye_ppcp_update_post_meta($woo_order_id, '_paymentaction', $this->paymentaction);
+                $order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                $order->update_meta_data('_enviorment', '_paymentaction', $this->paymentaction);
+                $order->save();
                 angelleye_ppcp_add_used_payment_method_name_to_subscription($woo_order_id);
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 $is_success = $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($woo_order_id);
                 if ($is_success) {
                     WC()->cart->empty_cart();
-                    unset(WC()->session->angelleye_ppcp_session);
+                    AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
@@ -400,7 +420,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 exit();
             } else {
                 if (isset($_GET['from']) && 'checkout' === $_GET['from']) {
-                    angelleye_ppcp_set_session('angelleye_ppcp_checkout_post', isset($_POST) ? wc_clean($_POST) : false);
+                    AngellEye_Session_Manager::set('checkout_post', isset($_POST) ? $_POST : false);
                     $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
                     exit();
                 } elseif (!empty($angelleye_ppcp_paypal_order_id)) {
@@ -410,11 +430,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     } else {
                         $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($woo_order_id);
                     }
-                    angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
-                    angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                    $order->update_meta_data('_paymentaction', $this->paymentaction);
+                    $order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                    $order->save();
                     if ($is_success) {
                         WC()->cart->empty_cart();
-                        unset(WC()->session->angelleye_ppcp_session);
+                        AngellEye_Session_Manager::clear();
                         if (ob_get_length()) {
                             ob_end_clean();
                         }
@@ -423,7 +444,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                             'redirect' => $this->get_return_url($order),
                         );
                     } else {
-                        unset(WC()->session->angelleye_ppcp_session);
+                        AngellEye_Session_Manager::clear();
                         if (ob_get_length()) {
                             ob_end_clean();
                         }
@@ -451,7 +472,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (isset($_GET['post'])) {
                 $theorder = wc_get_order($_GET['post']);
                 if ($theorder) {
-                    $payment_method_title = angelleye_ppcp_get_post_meta($theorder, '_payment_method_title', true);
+                    $payment_method_title = $theorder->get_payment_method_title();
                 }
             }
             if (!empty($payment_method_title)) {
@@ -488,8 +509,33 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_refund($order_id, $amount = null, $reason = '') {
         $order = wc_get_order($order_id);
-        if (!$this->can_refund_order($order)) {
-            return new WP_Error('error', __('Refund failed.', 'paypal-for-woocommerce'));
+        if($order && $this->can_refund_order($order) && angelleye_ppcp_order_item_meta_key_exists($order, '_ppcp_capture_details')) {
+            $capture_data_list = $this->payment_request->angelleye_ppcp_prepare_refund_request_data_for_capture($order, $amount);
+            if(empty($capture_data_list)) {
+                throw new Exception( __( 'No Capture transactions available for refund.', 'woocommerce' ) );
+            }
+            $failed_result_count = 0;
+            $successful_transaction = 0;
+            foreach ($capture_data_list as $item_id => $capture_data) {
+                foreach ($capture_data as $transaction_id => $amount) {
+                    if ($this->payment_request->angelleye_ppcp_refund_capture_order($order_id, $amount, $reason, $transaction_id, $item_id)) {
+                        $successful_transaction++;
+                    } else {
+                        $failed_result_count++;
+                    }
+                }
+            }
+            if($failed_result_count > 0) {
+                return false;
+            }
+            return true;
+        } else {
+            if (!$this->can_refund_order($order)) {
+                return new WP_Error('error', __('Refund failed.', 'paypal-for-woocommerce'));
+            }
+            $transaction_id = $order->get_transaction_id();
+            $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
+            return $bool;
         }
         if (apply_filters('angelleye_is_ppcp_parallel_payment_not_used', true, $order_id)) {
             $transaction_id = $order->get_transaction_id();
@@ -502,18 +548,26 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public static function angelleye_ppcp_display_order_fee($order_id) {
         $order = wc_get_order($order_id);
-        $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
+        $payment_method = $order->get_payment_method();
         if ('angelleye_ppcp' !== $payment_method) {
             return false;
         }
+        $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
+        if ('on-hold' === $order->get_status()) {
+            return false;
+        }
+        
         $fee = angelleye_ppcp_get_post_meta($order, '_paypal_fee', true);
         $currency = angelleye_ppcp_get_post_meta($order, '_paypal_fee_currency_code', true);
         if ($order->get_status() == 'refunded') {
             return true;
         }
+        if($fee < 0.1) {
+            return;
+        }
         ?>
-        <tr>
-            <td class="label stripe-fee">
+        <tr class="paypal-fee-tr">
+            <td class="label paypal-fee">
                 <?php echo wc_help_tip(__('This represents the fee PayPal collects for the transaction.', 'paypal-for-woocommerce')); ?>
                 <?php esc_html_e('PayPal Fee:', 'paypal-for-woocommerce'); ?>
             </td>
@@ -546,6 +600,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             $is_saller_onboarding_done = true;
             $onboarding_success_message = "Apple Pay feature has been enabled successfully.";
             delete_transient('angelleye_ppcp_applepay_onboarding_done');
+        }
+
+        if (false !== get_transient('angelleye_ppcp_googlepay_onboarding_done')) {
+            $is_saller_onboarding_done = true;
+            $onboarding_success_message = "Google Pay feature has been enabled successfully.";
+            delete_transient('angelleye_ppcp_googlepay_onboarding_done');
         }
 
         if ($is_saller_onboarding_done) {
@@ -589,7 +649,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_subscription_payment($order, $amount_to_charge) {
         try {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
 
@@ -603,7 +663,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
                 $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
-                update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);
+                $order->update_meta_data('_angelleye_ppcp_used_payment_method', $used_payment_method);
+                $order->save();
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 return array(
                     'result' => 'success',
@@ -789,13 +850,26 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (!$data['label']) {
                 $data['label'] = $data['title'];
             }
+            $is_enabled = $this->get_option($key);
+            $is_domain_added_new = false;
+            $is_domain_added = $this->get_option('apple_pay_domain_added', null) == 'yes';
             $is_apple_pay_approved = $data['is_apple_pay_approved'] ?? false;
             $is_apple_pay_enabled = $data['is_apple_pay_enable'] ?? false;
             $is_ppcp_connected = $data['is_ppcp_connected'] ?? false;
             $need_to_display_apple_pay_button = $data['need_to_display_apple_pay_button'] ?? false;
-            $is_domain_added = false;
             if ($is_apple_pay_approved && $is_apple_pay_enabled) {
-                $is_domain_added = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoRegisterDomain();
+                $is_domain_added_new = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoRegisterDomain($is_domain_added);
+            }
+            $is_disabled = $data['disabled'] || isset($data['custom_attributes']['disabled']) || !$is_domain_added_new || !$is_apple_pay_approved;
+
+            if ($is_domain_added == null || $is_domain_added_new != $is_domain_added) {
+                if ($is_domain_added_new) {
+                    $is_domain_added = true;
+                    $this->update_option('apple_pay_domain_added', 'yes');
+                } else {
+                    $is_domain_added = false;
+                    $this->update_option('apple_pay_domain_added', 'no');
+                }
             }
             ob_start();
             ?>
@@ -804,15 +878,16 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
                 </th>
                 <td class="forminp">
+                    <?php //var_dump($data, $is_enabled, $is_apple_pay_approved, $is_apple_pay_enabled, $need_to_display_apple_pay_button, $is_domain_added, $is_domain_added_new); ?>
                     <fieldset>
                         <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
                         <label for="<?php echo esc_attr($field_key); ?>">
-                            <input <?php disabled($data['disabled'], true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
+                            <input <?php disabled($is_disabled, true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php !$is_disabled && checked($is_enabled, 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
                             <?php
                             if ($is_apple_pay_enabled && $is_apple_pay_approved) {
                                 ?>
                                 <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/' . ($is_domain_added ? 'ppcp_check_mark_status.png' : 'ppcp_info_icon.png'); ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
-                                <b><?php echo __(($is_domain_added ? 'Apple Pay is active in your account!' : 'Register your domain to activate Apple Pay.'), 'paypal-for-woocommerce'); ?></b>
+                                <b><?php echo __(($is_domain_added ? 'Apple Pay is connected!' : 'Register your domain to activate Apple Pay.'), 'paypal-for-woocommerce'); ?></b>
                             <?php } else if ($is_ppcp_connected && !$is_apple_pay_approved && !$need_to_display_apple_pay_button) {
                                 ?>
                                 <br><br><b style="color:red"><?php echo __('Apple Pay is only currently available in the United States. PayPal is working to expand this to other countries as quickly as possible.', 'paypal-for-woocommerce'); ?></b>
@@ -866,6 +941,93 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
+    public function generate_checkbox_enable_paypal_google_pay_html($key, $data) {
+        if (isset($data['type']) && $data['type'] === 'checkbox_enable_paypal_google_pay') {
+            $testmode = $this->sandbox ? 'yes' : 'no';
+            $field_key = $this->get_field_key($key);
+            $defaults = array(
+                'title' => '',
+                'label' => '',
+                'disabled' => false,
+                'class' => '',
+                'css' => '',
+                'type' => 'text',
+                'desc_tip' => false,
+                'description' => '',
+                'custom_attributes' => array(),
+            );
+            $data = wp_parse_args($data, $defaults);
+            if (!$data['label']) {
+                $data['label'] = $data['title'];
+            }
+            $is_google_pay_approved = $data['is_google_pay_approved'] ?? false;
+            $is_google_pay_enabled = $data['is_google_pay_enable'] ?? false;
+            $is_ppcp_connected = $data['is_ppcp_connected'] ?? false;
+            $need_to_display_google_pay_button = $data['need_to_display_google_pay_button'] ?? false;
+            $is_disabled = $data['disabled'] || isset($data['custom_attributes']['disabled']) || !$is_google_pay_approved;
+            ob_start();
+            ?>
+            <tr valign="top">
+                <th scope="row" class="titledesc">
+                    <?php //var_dump($data['disabled'], $is_google_pay_approved, $is_disabled); ?>
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
+                </th>
+                <td class="forminp">
+                    <fieldset>
+                        <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
+                        <label for="<?php echo esc_attr($field_key); ?>">
+                            <input <?php disabled($is_disabled, true); ?> class="<?php echo esc_attr($data['class']); ?>" type="checkbox" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" style="<?php echo esc_attr($data['css']); ?>" value="1" <?php !$is_disabled && checked($this->get_option($key), 'yes'); ?> <?php echo $this->get_custom_attribute_html($data); // WPCS: XSS ok.          ?> /> <?php echo wp_kses_post($data['label']); ?>
+                            <?php
+                            if ($is_google_pay_enabled && $is_google_pay_approved) {
+                                ?>
+                                <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
+                                <b><?php echo __('Google Pay is connected!', 'paypal-for-woocommerce'); ?></b>
+                            <?php } else if ($is_ppcp_connected && !$is_google_pay_approved && !$need_to_display_google_pay_button) {
+                                ?>
+                                <br><br><b style="color:red"><?php echo __('Google Pay is currently available in the United States only. PayPal is working to expand this to other countries as quickly as possible.', 'paypal-for-woocommerce'); ?></b>
+                                <?php
+                            }?>
+                        </label>
+                        <?php
+                        echo $this->get_description_html($data);
+                        ?>
+                        <?php
+                        if ($need_to_display_google_pay_button) {
+                            $signup_link = $this->angelleye_get_signup_link($testmode, 'google_pay');
+                            if ($signup_link) {
+                                $args = array(
+                                    'displayMode' => 'minibrowser',
+                                );
+                                $url = add_query_arg($args, $signup_link);
+                                ?>
+                                <br>
+                                <a target="_blank" class="wplk-button button-primary" id="<?php echo esc_attr('wplk-button'); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo __('Activate Google Pay', 'paypal-for-woocommerce'); ?></a>
+                            <?php
+                            $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
+                            ?>
+                                <script type="text/javascript">
+									document.querySelectorAll('[data-paypal-onboard-complete=onboardingCallback]').forEach((element) => {
+										element.addEventListener('click', (e) => {
+											if ('undefined' === typeof PAYPAL) {
+												e.preventDefault();
+												alert('PayPal');
+											}
+										});
+									});</script>
+                                <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
+                            } else {
+                                echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
+                            }
+                        }
+                        ?>
+                    </fieldset>
+                </td>
+            </tr>
+            <?php
+            return ob_get_clean();
+        }
+    }
+
     public function angelleye_get_signup_link($testmode, $featureName = 'tokenized_payments') {
         try {
             if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
@@ -877,6 +1039,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 case 'apple_pay':
                     $body = $seller_onboarding->ppcp_apple_pay_data();
                     break;
+                case 'google_pay':
+                    $body = $seller_onboarding->ppcp_google_pay_data();
                 default:
                     $body = $seller_onboarding->ppcp_vault_data();
                     break;
@@ -885,7 +1049,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (isset($seller_onboarding_result['links'])) {
                 foreach ($seller_onboarding_result['links'] as $link) {
                     if (isset($link['rel']) && 'action_url' === $link['rel']) {
-                        return isset($link['href']) ? $link['href'] : false;
+                        return $link['href'] ?? false;
                     }
                 }
             } else {
@@ -910,6 +1074,53 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function validate_checkbox_enable_paypal_apple_pay_field($key, $value) {
+        return ! is_null( $value ) ? 'yes' : 'no';
+    }
+    
+    public function generate_paypal_shipment_tracking_html($key, $data) {
+        if (isset($data['type']) && $data['type'] === 'paypal_shipment_tracking') {
+            $testmode = $this->sandbox ? 'yes' : 'no';
+            $field_key = $this->get_field_key($key);
+            $defaults = array(
+                'title' => '',
+                'label' => '',
+                'disabled' => false,
+                'class' => '',
+                'css' => '',
+                'type' => 'text',
+                'desc_tip' => false,
+                'description' => '',
+                'custom_attributes' => array(),
+            );
+            $data = wp_parse_args($data, $defaults);
+            if (!$data['label']) {
+                $data['label'] = $data['title'];
+            }
+            ob_start();
+            ?>
+            <tr valign="top">
+                <th scope="row" class="titledesc">
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
+                </th>
+                <td class="forminp">
+                    <fieldset>
+                        <?php if (!is_plugin_active('angelleye-paypal-shipment-tracking-woocommerce/angelleye-paypal-woocommerce-shipment-tracking.php') && !is_plugin_active('paypal-shipment-tracking-for-woocommerce/angelleye-paypal-woocommerce-shipment-tracking.php')) { ?>
+                            <p class="description">When using our PayPal integration for payment processing you get access to our premium add-on plugins for free.  This includes our PayPal Shipment Tracking plugin which will allow you to send tracking numbers from WooCommerce orders to PayPal which can help avoid payment holds.  <a target="_blank" href="https://www.angelleye.com/product/paypal-shipment-tracking-numbers-woocommerce/">Learn More</a></p>
+                            <a class="wplk-button button-primary" href="<?php echo add_query_arg(array('angelleye_ppcp_action' => 'install_plugin', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))); ?>">Activate Shipment Tracking</a>
+                        <?php } else { ?>
+                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
+                            <b><?php echo __('PayPal Shipment Tracking is enabled!', 'paypal-for-woocommerce'); ?></b>
+                            <div style="font-size: smaller; display: inline-block"><a href="<?php echo admin_url('admin.php?page=wc-settings&tab=angelleye_shipment_tracking'); ?>" style="display: inline-block;margin: 0 5px -10px 10px;">View Shipment Tracking Settings</a></div>
+                        <?php } ?>
+                    </fieldset>
+                </td>
+            </tr>
+            <?php
+            return ob_get_clean();
+        }
+    }
+
+    public function validate_checkbox_enable_paypal_google_pay_field($key, $value) {
         return ! is_null( $value ) ? 'yes' : 'no';
     }
 

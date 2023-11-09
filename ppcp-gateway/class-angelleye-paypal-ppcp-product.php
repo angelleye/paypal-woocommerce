@@ -11,12 +11,20 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_Product extends WC_Form_Handler {
 
     protected static $_instance = null;
+    private static ?AngellEYE_PayPal_PPCP_Log $api_log;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
         }
         return self::$_instance;
+    }
+
+    public function __construct() {
+        if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
+            include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
+        }
+        self::$api_log = AngellEYE_PayPal_PPCP_Log::instance();
     }
 
     public static function angelleye_ppcp_add_to_cart_action($url = null) {
@@ -44,8 +52,8 @@ class AngellEYE_PayPal_PPCP_Product extends WC_Form_Handler {
                 $was_added_to_cart = self::angelleye_ppcp_add_to_cart_handler_simple($product_id);
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
+            self::$api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            self::$api_log->log($ex->getMessage(), 'error');
         }
     }
 
@@ -60,8 +68,8 @@ class AngellEYE_PayPal_PPCP_Product extends WC_Form_Handler {
             }
             return false;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
+            self::$api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            self::$api_log->log($ex->getMessage(), 'error');
         }
     }
 
@@ -97,8 +105,8 @@ class AngellEYE_PayPal_PPCP_Product extends WC_Form_Handler {
             }
             return false;
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
+            self::$api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            self::$api_log->log($ex->getMessage(), 'error');
         }
     }
 

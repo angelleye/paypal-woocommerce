@@ -310,8 +310,7 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
     public function get_transaction_url($order) {
         $sandbox_transaction_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
         $live_transaction_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_view-a-trans&id=%s';
-        $old_wc = version_compare( WC_VERSION, '3.0', '<' );
-        $is_sandbox = $old_wc ? get_post_meta( $order->id, 'is_sandbox', true ) : get_post_meta($order->get_id(), 'is_sandbox', true);
+        $is_sandbox = $order->get_meta( 'is_sandbox', true);
         if ($is_sandbox == true) {
             $this->view_transaction_url = $sandbox_transaction_url;
         } else {
@@ -377,9 +376,9 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
 
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+            $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+            $order->save();
         }
     }
 
@@ -397,10 +396,10 @@ class WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE extends WC_Payment_Gateway_CC
 
     public function angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order) {
         if( $this->testmode == false ) {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             if( $this->is_subscription($order_id) ) {
                 foreach ($order->get_items() as $cart_item_key => $values) {
-                    $product = version_compare( WC_VERSION, '3.0', '<' ) ? $order->get_product_from_item( $values ) : $values->get_product();
+                    $product = $values->get_product();
                     $product_id = $product->get_id();
                     if( !empty($product_id) ) {
                         $product_type = get_post_type($product_id);

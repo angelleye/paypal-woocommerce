@@ -92,5 +92,28 @@ class WC_AngellEYE_PayPal_PPCP_Payment_Token {
             return false;
         }
     }
+    
+    public function angelleye_ppcp_get_paypal_generated_customer_id_by_user_id($is_sandbox, $user_id) {
+        try {
+            if (!empty($user_id)) {
+                $angelleye_ppcp_paypal_customer_id = '';
+                $prefix_ppcp_paypal_customer_id = ($is_sandbox === true) ? 'sandbox_' : '';
+                if (!get_user_meta($user_id, $prefix_ppcp_paypal_customer_id . 'angelleye_ppcp_paypal_customer_id')) {
+                    return false;
+                } else {
+                    $angelleye_ppcp_paypal_customer_id = get_user_meta($user_id, $prefix_ppcp_paypal_customer_id . 'angelleye_ppcp_paypal_customer_id', true);
+                }
+                if (!empty($angelleye_ppcp_paypal_customer_id)) {
+                    return $angelleye_ppcp_paypal_customer_id;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception $ex) {
+            return false;
+        }
+    }
 
 }

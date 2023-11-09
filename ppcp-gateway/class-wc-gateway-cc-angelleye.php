@@ -19,6 +19,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     public $client_id;
     public $secret_id;
     public $enable_tokenized_payments;
+    public $paymentaction;
+    public $checkout_disable_smart_button;
 
     public function __construct() {
         try {
@@ -39,7 +41,12 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->sandbox_secret_id = $this->setting_obj->get('sandbox_api_secret', '');
             $this->live_client_id = $this->setting_obj->get('api_client_id', '');
             $this->live_secret_id = $this->setting_obj->get('api_secret', '');
+            $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
             $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
+             $this->enabled = $this->setting_obj->get('enabled', 'no');
+            if ($this->dcc_applies->for_country_currency() === false) {
+                $this->advanced_card_payments = false;
+            }
             if ($this->sandbox) {
                 $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
                 $this->client_id = $this->sandbox_client_id;
@@ -62,9 +69,6 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         foreach ($title_options as $icon_key => $icon_value) {
             if (!in_array($icon_key, $icons)) {
                 if ($this->dcc_applies->can_process_card($icon_key)) {
-                    if ($totalIcons> 0 && $totalIcons % 4 === 0) {
-                        $images[] = '<div class="flex-break"></div>';
-                    }
                     $iconUrl = esc_url(PAYPAL_FOR_WOOCOMMERCE_ASSET_URL) . 'ppcp-gateway/images/' . esc_attr($icon_key) . '.svg';
                     $iconTitle = esc_attr($icon_value);
                     $images[] = sprintf('<img title="%s" src="%s" class="ppcp-card-icon ae-icon-%s" />', $iconTitle, $iconUrl, $iconTitle);
@@ -72,7 +76,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             }
         }
-        return '<div class="ae-cc-icons-list">' . implode('', $images) . '</div><div class="clearfix"></div>';
+        return  implode('', $images) . '<div class="ppcp-clearfix"></div>';
     }
 
     private function card_labels(): array {
@@ -126,16 +130,16 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $order = wc_get_order($woo_order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
-                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', 'card');
+                $order->update_meta_data('_angelleye_ppcp_used_payment_method', 'card');
                 angelleye_ppcp_add_used_payment_method_name_to_subscription($woo_order_id);
-                update_post_meta($woo_order_id, '_payment_tokens_id', $token->get_token());
-                angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
-
+                $order->update_meta_data('_payment_tokens_id', $token->get_token());
+                $order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                $order->save();
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 $is_success = $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($woo_order_id);
                 if ($is_success) {
                     WC()->cart->empty_cart();
-                    unset(WC()->session->angelleye_ppcp_session);
+                    AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
@@ -144,7 +148,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                         'redirect' => $this->get_return_url($order),
                     );
                 } else {
-                    unset(WC()->session->angelleye_ppcp_session);
+                    AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
@@ -154,10 +158,10 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     );
                 }
             }
-            $angelleye_ppcp_paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
+            $angelleye_ppcp_paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
             $is_success = false;
             if (isset($_GET['from']) && 'checkout' === $_GET['from']) {
-                angelleye_ppcp_set_session('angelleye_ppcp_checkout_post', isset($_POST) ? wc_clean($_POST) : false);
+                AngellEye_Session_Manager::set('checkout_post', isset($_POST) ? wc_clean($_POST) : false);
                 $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
                 exit();
             } elseif (!empty($angelleye_ppcp_paypal_order_id)) {
@@ -167,11 +171,12 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($woo_order_id);
                 }
-                angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
-                angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                $order->update_meta_data('_paymentaction', $this->paymentaction);
+                $order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                $order->save();
                 if ($is_success) {
                     WC()->cart->empty_cart();
-                    unset(WC()->session->angelleye_ppcp_session);
+                    AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
@@ -180,7 +185,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                         'redirect' => $this->get_return_url($order),
                     );
                 } else {
-                    unset(WC()->session->angelleye_ppcp_session);
+                    AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
@@ -190,9 +195,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     );
                 }
             } elseif ($this->checkout_disable_smart_button === true && $this->advanced_card_payments === false) {
-                $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
-                return $result;
-                exit();
+                return $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
             }
         } catch (Exception $ex) {
 
@@ -208,6 +211,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             if ($this->supports('tokenization')) {
                 $this->tokenization_script();
             }
+            angelleye_ppcp_add_css_js();
             if (angelleye_ppcp_is_subs_change_payment() === true) {
                 if (count($this->get_tokens()) > 0) {
                     $this->saved_payment_methods();
@@ -230,6 +234,10 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 } elseif (angelleye_ppcp_get_order_total() === 0) {
                     $this->angelleye_ppcp_cc_form();
                 }
+            } elseif(is_add_payment_method_page()) {
+                wp_enqueue_script('angelleye_ppcp-add-payment-method');
+                $this->add_payment_method_form();
+                echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
         } catch (Exception $ex) {
 
@@ -278,6 +286,15 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         }
     }
 
+    public function add_payment_method_form() {
+        ?>
+        <div id='ppcp-my-account-card-number'></div>
+        <div id='ppcp-my-account-expiration-date'></div>
+        <div id='ppcp-my-account-cvv'></div>
+        <div id='ppcp-my-account-card-holder-name'></div>
+        <?php
+    }
+
     public function can_refund_order($order) {
         try {
             return $order && $order->get_transaction_id();
@@ -311,7 +328,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function process_subscription_payment($order, $amount_to_charge) {
         try {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
 
@@ -324,7 +341,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $order = wc_get_order($order_id);
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp_cc-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
-                update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', 'card');
+                $order->update_meta_data('_angelleye_ppcp_used_payment_method', 'card');
+                $order->save();
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 return array(
                     'result' => 'success',
@@ -381,8 +399,6 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 
     public function add_payment_method() {
         try {
-            $posted_card = $this->get_posted_card();
-            return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens($posted_card);
         } catch (Exception $ex) {
 
         }

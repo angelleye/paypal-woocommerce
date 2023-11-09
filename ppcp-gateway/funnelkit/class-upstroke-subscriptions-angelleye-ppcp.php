@@ -22,8 +22,8 @@ class UpStroke_Subscriptions_AngellEYE_PPCP extends WFOCU_Paypal_For_WC_Gateway_
             if ($this->get_key() !== $order->get_payment_method()) {
                 return;
             }
-            $subscription_id = $subscription->get_id();
-            update_post_meta($subscription_id, '_paypal_order_id', $order->get_meta('_paypal_order_id', true));
+            $subscription->update_meta_data('_paypal_order_id', $order->get_meta('_paypal_order_id', true));
+            $subscription->save();
         } catch (Exception $ex) {
             
         }
