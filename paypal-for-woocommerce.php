@@ -1152,27 +1152,6 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             return round($price, $precision);
         }
 
-
-        /**
-         * @since    1.1.8.1
-         * Non-decimal currency bug..?? #384
-         * Round prices
-         * @param type $price
-         * @return type
-         */
-        public static function number_format($price, $order = null) {
-            $decimals = 2;
-            if (is_object($order)) {
-                $woocommerce_currency = version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency();
-            } else {
-                $woocommerce_currency = get_woocommerce_currency();
-            }
-            if (!self::currency_has_decimals($woocommerce_currency)) {
-                $decimals = 0;
-            }
-            return number_format($price, $decimals, '.', '');
-        }
-        
         public function http_api_curl_ec_add_curl_parameter($handle, $r, $url ) {
             $Force_tls_one_point_two = get_option('Force_tls_one_point_two', 'no');
             if ( (strstr( $url, 'https://' ) && strstr( $url, '.paypal.com' )) && isset($Force_tls_one_point_two) && $Force_tls_one_point_two == 'yes' ) {
