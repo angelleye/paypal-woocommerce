@@ -160,8 +160,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
             if (!is_a($order, 'WC_Order')) {
                 return false;
             }
-            $get_id = $order->get_id();
-            $this->token = get_post_meta($get_id, '_payment_tokens_id', true);
+            $this->token = angelleye_ppcp_get_post_meta($order, '_payment_tokens_id', true);
             if (!empty($this->token)) {
                 return true;
             }
@@ -202,7 +201,8 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                 if (isset($resp_body->status) && 'COMPLETED' === $resp_body->status) {
                     if (isset($resp_body->payment_source->paypal->attributes->vault->id) && isset($resp_body->payment_source->paypal->attributes->vault->status) && 'CREATED' === $resp_body->payment_source->paypal->attributes->vault->status) {
                         $txn_id = $resp_body->payment_source->paypal->attributes->vault->id;
-                        update_post_meta(WFOCU_WC_Compatibility::get_order_id($get_order), 'wfocu_ppcp_renewal_payment_token', $txn_id);
+                        $get_order->update_meta_data('wfocu_ppcp_renewal_payment_token', $txn_id);
+                        $get_order->save();
                         WFOCU_Core()->log->log('Order #' . WFOCU_WC_Compatibility::get_order_id($get_order) . ': vault token created');
                     } else {
                         $txn_id = $resp_body->purchase_units[0]->payments->captures[0]->id;
@@ -374,8 +374,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
 
     public function get_token($order) {
         try {
-            $get_id = $order->get_id();
-            $this->token = get_post_meta($get_id, '_payment_tokens_id', true);
+            $this->token = angelleye_ppcp_get_post_meta($order, '_payment_tokens_id', true);
             if (empty($this->token)) {
                 $payment_tokens_list = $this->payment_request->angelleye_ppcp_get_all_payment_tokens();
                 $payment_method = $order->get_payment_method();
@@ -473,7 +472,8 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                         $is_successful = false;
                         WFOCU_Core()->log->log('Order #' . WFOCU_WC_Compatibility::get_order_id($get_order) . ': Unable to create paypal Order refer error below' . print_r($ppcp_resp, true));
                     } else {
-                        angelleye_ppcp_update_post_meta($order, '_paypal_order_id', $ppcp_resp['id']);
+                        $order->update_meta_data('_paypal_order_id', $ppcp_resp['id']);
+                        $order->save();
                         $this->payal_order_id = $ppcp_resp['id'];
                         if ('COMPLETED' == $ppcp_resp['status']) {
                             $get_order->update_meta_data('wfocu_ppcp_order_current', $ppcp_resp['id']);

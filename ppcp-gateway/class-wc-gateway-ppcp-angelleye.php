@@ -374,16 +374,17 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_payment($woo_order_id) {
         try {
+            $order = wc_get_order($woo_order_id);
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             $order = wc_get_order($woo_order_id);
             $angelleye_ppcp_paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
             $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title');
             $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
-            update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+            $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
             if (!empty($angelleye_ppcp_payment_method_title)) {
-                update_post_meta($woo_order_id, '_payment_method_title', $angelleye_ppcp_payment_method_title);
+                $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
             }
-
+             $order->save();
             // When a user chooses existing saved card then detect it and process the order payment using that.
             $saved_tokens = ['wc-angelleye_ppcp_apple_pay-payment-token', 'wc-angelleye_ppcp-payment-token'];
             $token_id = null;
@@ -396,12 +397,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (!empty($token_id)) {
                 $token = WC_Payment_Tokens::get($token_id);
                 $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
-                update_post_meta($woo_order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);
-                update_post_meta($woo_order_id, '_payment_tokens_id', $token->get_token());
+                $order->update_meta_data('_angelleye_ppcp_used_payment_method', $used_payment_method);
+                $order->update_meta_data('_payment_tokens_id', $token->get_token());
                 // CHECKME Here the environment key spelling is wrong, check if we can fix this, though it will break previous shop orders or we run migration
-                angelleye_ppcp_update_post_meta($woo_order_id, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
-
-                angelleye_ppcp_update_post_meta($woo_order_id, '_paymentaction', $this->paymentaction);
+                $order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                $order->update_meta_data('_enviorment', '_paymentaction', $this->paymentaction);
+                $order->save();
                 angelleye_ppcp_add_used_payment_method_name_to_subscription($woo_order_id);
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 $is_success = $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($woo_order_id);
@@ -429,8 +430,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     } else {
                         $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($woo_order_id);
                     }
-                    angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
-                    angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                    $order->update_meta_data('_paymentaction', $this->paymentaction);
+                    $order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
+                    $order->save();
                     if ($is_success) {
                         WC()->cart->empty_cart();
                         AngellEye_Session_Manager::clear();
@@ -470,7 +472,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (isset($_GET['post'])) {
                 $theorder = wc_get_order($_GET['post']);
                 if ($theorder) {
-                    $payment_method_title = angelleye_ppcp_get_post_meta($theorder, '_payment_method_title', true);
+                    $payment_method_title = $theorder->get_payment_method_title();
                 }
             }
             if (!empty($payment_method_title)) {
@@ -503,28 +505,59 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_refund($order_id, $amount = null, $reason = '') {
         $order = wc_get_order($order_id);
-        if (!$this->can_refund_order($order)) {
-            return new WP_Error('error', __('Refund failed.', 'paypal-for-woocommerce'));
+        if($order && $this->can_refund_order($order) && angelleye_ppcp_order_item_meta_key_exists($order, '_ppcp_capture_details')) {
+            $capture_data_list = $this->payment_request->angelleye_ppcp_prepare_refund_request_data_for_capture($order, $amount);
+            if(empty($capture_data_list)) {
+                throw new Exception( __( 'No Capture transactions available for refund.', 'woocommerce' ) );
+            }
+            $failed_result_count = 0;
+            $successful_transaction = 0;
+            foreach ($capture_data_list as $item_id => $capture_data) {
+                foreach ($capture_data as $transaction_id => $amount) {
+                    if ($this->payment_request->angelleye_ppcp_refund_capture_order($order_id, $amount, $reason, $transaction_id, $item_id)) {
+                        $successful_transaction++;
+                    } else {
+                        $failed_result_count++;
+                    }
+                }
+            }
+            if($failed_result_count > 0) {
+                return false;
+            }
+            return true;
+        } else {
+            if (!$this->can_refund_order($order)) {
+                return new WP_Error('error', __('Refund failed.', 'paypal-for-woocommerce'));
+            }
+            $transaction_id = $order->get_transaction_id();
+            $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
+            return $bool;
         }
-        $transaction_id = $order->get_transaction_id();
-        $bool = $this->payment_request->angelleye_ppcp_refund_order($order_id, $amount, $reason, $transaction_id);
-        return $bool;
+        
     }
 
     public static function angelleye_ppcp_display_order_fee($order_id) {
         $order = wc_get_order($order_id);
-        $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
+        $payment_method = $order->get_payment_method();
         if ('angelleye_ppcp' !== $payment_method) {
             return false;
         }
+        $payment_method = version_compare(WC_VERSION, '3.0', '<') ? $order->payment_method : $order->get_payment_method();
+        if ('on-hold' === $order->get_status()) {
+            return false;
+        }
+        
         $fee = angelleye_ppcp_get_post_meta($order, '_paypal_fee', true);
         $currency = angelleye_ppcp_get_post_meta($order, '_paypal_fee_currency_code', true);
         if ($order->get_status() == 'refunded') {
             return true;
         }
+        if($fee < 0.1) {
+            return;
+        }
         ?>
-        <tr>
-            <td class="label stripe-fee">
+        <tr class="paypal-fee-tr">
+            <td class="label paypal-fee">
                 <?php echo wc_help_tip(__('This represents the fee PayPal collects for the transaction.', 'paypal-for-woocommerce')); ?>
                 <?php esc_html_e('PayPal Fee:', 'paypal-for-woocommerce'); ?>
             </td>
@@ -606,7 +639,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_subscription_payment($order, $amount_to_charge) {
         try {
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
 
@@ -620,7 +653,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 $token_id = wc_clean($_POST['wc-angelleye_ppcp-payment-token']);
                 $token = WC_Payment_Tokens::get($token_id);
                 $used_payment_method = get_metadata('payment_token', $token_id, '_angelleye_ppcp_used_payment_method', true);
-                update_post_meta($order_id, '_angelleye_ppcp_used_payment_method', $used_payment_method);
+                $order->update_meta_data('_angelleye_ppcp_used_payment_method', $used_payment_method);
+                $order->save();
                 $this->payment_request->save_payment_token($order, $token->get_token());
                 return array(
                     'result' => 'success',
@@ -997,7 +1031,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     break;
                 case 'google_pay':
                     $body = $seller_onboarding->ppcp_google_pay_data();
-                    break;
                 default:
                     $body = $seller_onboarding->ppcp_vault_data();
                     break;
@@ -1032,6 +1065,49 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function validate_checkbox_enable_paypal_apple_pay_field($key, $value) {
         return ! is_null( $value ) ? 'yes' : 'no';
+    }
+    
+    public function generate_paypal_shipment_tracking_html($key, $data) {
+        if (isset($data['type']) && $data['type'] === 'paypal_shipment_tracking') {
+            $testmode = $this->sandbox ? 'yes' : 'no';
+            $field_key = $this->get_field_key($key);
+            $defaults = array(
+                'title' => '',
+                'label' => '',
+                'disabled' => false,
+                'class' => '',
+                'css' => '',
+                'type' => 'text',
+                'desc_tip' => false,
+                'description' => '',
+                'custom_attributes' => array(),
+            );
+            $data = wp_parse_args($data, $defaults);
+            if (!$data['label']) {
+                $data['label'] = $data['title'];
+            }
+            ob_start();
+            ?>
+            <tr valign="top">
+                <th scope="row" class="titledesc">
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
+                </th>
+                <td class="forminp">
+                    <fieldset>
+                        <?php if (!is_plugin_active('angelleye-paypal-shipment-tracking-woocommerce/angelleye-paypal-woocommerce-shipment-tracking.php') && !is_plugin_active('paypal-shipment-tracking-for-woocommerce/angelleye-paypal-woocommerce-shipment-tracking.php')) { ?>
+                            <p class="description">When using our PayPal integration for payment processing you get access to our premium add-on plugins for free.  This includes our PayPal Shipment Tracking plugin which will allow you to send tracking numbers from WooCommerce orders to PayPal which can help avoid payment holds.  <a target="_blank" href="https://www.angelleye.com/product/paypal-shipment-tracking-numbers-woocommerce/">Learn More</a></p>
+                            <a class="wplk-button button-primary" href="<?php echo add_query_arg(array('angelleye_ppcp_action' => 'install_plugin', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))); ?>">Activate Shipment Tracking</a>
+                        <?php } else { ?>
+                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
+                            <b><?php echo __('PayPal Shipment Tracking is enabled!', 'paypal-for-woocommerce'); ?></b>
+                            <div style="font-size: smaller; display: inline-block"><a href="<?php echo admin_url('admin.php?page=wc-settings&tab=angelleye_shipment_tracking'); ?>" style="display: inline-block;margin: 0 5px -10px 10px;">View Shipment Tracking Settings</a></div>
+                        <?php } ?>
+                    </fieldset>
+                </td>
+            </tr>
+            <?php
+            return ob_get_clean();
+        }
     }
 
     public function validate_checkbox_enable_paypal_google_pay_field($key, $value) {

@@ -84,8 +84,7 @@ class PayPal_Rest_API_Utility {
      */
     public function create_payment($order, $card_data) {
         global $woocommerce;
-        $old_wc = version_compare(WC_VERSION, '3.0', '<');
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         $card = $this->get_posted_card();
         if (AngellEYE_Utility::angelleye_is_save_payment_token($this->gateway, $order_id)) {
             if ($card->type == 'maestro') {
@@ -178,11 +177,8 @@ class PayPal_Rest_API_Utility {
                 $order->payment_complete($transaction_id);
                 do_action('ae_add_custom_order_note', $order, $card, $token, $transactions);
                 $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-                if ($old_wc) {
-                    update_post_meta($order->id, 'is_sandbox', $is_sandbox);
-                } else {
-                    update_post_meta($order->get_id(), 'is_sandbox', $is_sandbox);
-                }
+                $order->update_meta_data('is_sandbox', $is_sandbox);
+                $order->save();
                 if ($this->is_renewal($order_id)) {
                     return true;
                 }
@@ -245,7 +241,7 @@ class PayPal_Rest_API_Utility {
      * @param type $card_data
      */
     public function set_trnsaction_obj_value($order, $card_data) {
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         $this->payment_data = $this->calculation_angelleye->order_calculation($order_id);
         if (!empty($_POST['wc-paypal_credit_card_rest-payment-token']) && $_POST['wc-paypal_credit_card_rest-payment-token'] != 'new') {
             $token_id = wc_clean($_POST['wc-paypal_credit_card_rest-payment-token']);
@@ -256,7 +252,7 @@ class PayPal_Rest_API_Utility {
             $this->fundingInstrument->setCreditCardToken($this->CreditCardToken);
             $this->save_payment_token($order, $token->get_token());
         } else if ($this->is_renewal($order_id)) {
-            $payment_tokens = get_post_meta($order_id, '_payment_tokens_id', true);
+            $payment_tokens = $order->get_meta( '_payment_tokens_id', true);
             $this->CreditCardToken = new CreditCardToken();
             $this->CreditCardToken->setCreditCardId($payment_tokens);
             $this->fundingInstrument = new FundingInstrument();
@@ -292,12 +288,12 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_item($order) {
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         $this->payment_data = $this->calculation_angelleye->order_calculation($order_id);
         foreach ($this->payment_data['order_items'] as $item) {
             $this->item = new Item();
             $this->item->setName($item['name']);
-            $this->item->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
+            $this->item->setCurrency($order->get_currency());
             $this->item->setQuantity($item['qty']);
             $this->item->setPrice($item['amt']);
             array_push($this->order_item, $this->item);
@@ -334,7 +330,7 @@ class PayPal_Rest_API_Utility {
      */
     public function set_amount_values($order) {
         $this->amount = new Amount();
-        $this->amount->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
+        $this->amount->setCurrency($order->get_currency());
         $this->amount->setTotal($this->number_format($order->get_total(), $order));
         $this->amount->setDetails($this->details);
     }
@@ -348,7 +344,7 @@ class PayPal_Rest_API_Utility {
         $this->transaction->setItemList($this->item_list);
         $this->transaction->setDescription("Payment description");
         $this->transaction->setInvoiceNumber(uniqid());
-        $this->transaction->setCustom(json_encode(array('order_id' => version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id(), 'order_key' => version_compare(WC_VERSION, '3.0', '<') ? $order->order_key : $order->get_order_key())));
+        $this->transaction->setCustom(json_encode(array('order_id' => $order->get_id(), 'order_key' => $order->get_order_key())));
         if (!empty($this->softdescriptor)) {
             $this->transaction->setSoftDescriptor($this->softdescriptor);
         }
@@ -437,7 +433,7 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_card_first_name($order) {
-        $this->card->setFirstName(version_compare(WC_VERSION, '3.0', '<') ? $order->billing_first_name : $order->get_billing_first_name());
+        $this->card->setFirstName($order->get_billing_first_name());
     }
 
     /**
@@ -445,7 +441,7 @@ class PayPal_Rest_API_Utility {
      * @param type $order
      */
     public function set_card_set_last_name($order) {
-        $this->card->setLastName(version_compare(WC_VERSION, '3.0', '<') ? $order->billing_last_name : $order->get_billing_last_name());
+        $this->card->setLastName($order->get_billing_last_name());
     }
 
     /**
@@ -575,7 +571,7 @@ class PayPal_Rest_API_Utility {
         }
 
         $this->amount = new Amount();
-        $this->amount->setCurrency(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency());
+        $this->amount->setCurrency($order->get_currency());
         $this->amount->setTotal($this->number_format($amount, $order));
         $refund = new Refund();
         $refund->setAmount($this->amount);
@@ -586,7 +582,8 @@ class PayPal_Rest_API_Utility {
                 if ($refundedSale->state == 'completed') {
                     do_action('angelleye_paypal_response_data', $refundedSale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
                     $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
-                    update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
+                    $order->update_meta_data('Refund Transaction ID', $refundedSale->getId());
+                    $order->save();
                     if (isset($reason) && !empty($reason)) {
                         $order->add_order_note('Reason for Refund :' . $reason);
                     }
@@ -597,7 +594,8 @@ class PayPal_Rest_API_Utility {
                 if ($refundedSale->state == 'voided') {
                     do_action('angelleye_paypal_response_data', $refundedSale, array(), '1', $this->testmode, false, 'paypal_credit_card_rest');
                     $order->add_order_note('Refund Transaction ID:' . $refundedSale->getId());
-                    update_post_meta($order_id, 'Refund Transaction ID', $refundedSale->getId());
+                    $order->update_meta_data('Refund Transaction ID', $refundedSale->getId());
+                    $order->save();
                     if (isset($reason) && !empty($reason)) {
                         $order->add_order_note('Reason for Refund :' . $reason);
                     }
@@ -639,7 +637,7 @@ class PayPal_Rest_API_Utility {
      */
     public function round($price, $order) {
         $precision = 2;
-        if (!$this->currency_has_decimals(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency())) {
+        if (!$this->currency_has_decimals($order->get_currency())) {
             $precision = 0;
         }
         return round($price, $precision);
@@ -653,7 +651,7 @@ class PayPal_Rest_API_Utility {
      */
     public function number_format($price, $order) {
         $decimals = 2;
-        if (!$this->currency_has_decimals(version_compare(WC_VERSION, '3.0', '<') ? $order->get_order_currency() : $order->get_currency())) {
+        if (!$this->currency_has_decimals($order->get_currency())) {
             $decimals = 0;
         }
         return number_format($price, $decimals, '.', '');
@@ -724,9 +722,9 @@ class PayPal_Rest_API_Utility {
 
     public function save_payment_token($order, $payment_tokens_id) {
         // Store source in the order
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         if (!empty($payment_tokens_id)) {
-            update_post_meta($order_id, '_payment_tokens_id', $payment_tokens_id);
+            $order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
         }
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
             $subscriptions = wcs_get_subscriptions_for_order($order_id);
@@ -737,15 +735,16 @@ class PayPal_Rest_API_Utility {
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                $subscription_id = version_compare(WC_VERSION, '3.0', '<') ? $subscription->id : $subscription->get_id();
-                update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
+                $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                $subscription->save();
             }
         }
+        $order->save();
     }
 
     public function create_payment_with_zero_amount($order, $card_data) {
         global $woocommerce;
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         try {
             $this->set_trnsaction_obj_value($order, $card_data);
             try {
@@ -786,7 +785,8 @@ class PayPal_Rest_API_Utility {
             }
             $order->payment_complete($creditcard_id);
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-            update_post_meta($order_id, 'is_sandbox', $is_sandbox);
+            $order->update_meta_data('is_sandbox', $is_sandbox);
+            $order->save();
             if ($this->is_renewal($order_id)) {
                 return true;
             }
@@ -843,8 +843,7 @@ class PayPal_Rest_API_Utility {
 
     public function admin_process_payment($order, $token_id) {
         try {
-            $old_wc = version_compare(WC_VERSION, '3.0', '<');
-            $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+            $order_id = $order->get_id();
             $this->payment_data = $this->calculation_angelleye->order_calculation($order_id);
             $this->CreditCardToken = new CreditCardToken();
             $this->CreditCardToken->setCreditCardId($token_id);
@@ -895,11 +894,8 @@ class PayPal_Rest_API_Utility {
             $order->add_order_note(__('PayPal Credit Card (REST) payment completed', 'paypal-for-woocommerce'));
             $order->payment_complete($transaction_id);
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-            if ($old_wc) {
-                update_post_meta($order->id, 'is_sandbox', $is_sandbox);
-            } else {
-                update_post_meta($order->get_id(), 'is_sandbox', $is_sandbox);
-            }
+            $order->update_meta_data('is_sandbox', $is_sandbox);
+            $order->save();
         } else {
             $this->send_failed_order_email($order_id);
             $this->add_log(__('Error Payment state:' . $this->payment->state, 'paypal-for-woocommerce'));
@@ -908,21 +904,13 @@ class PayPal_Rest_API_Utility {
 
     public function angelleye_set_shipping_address($order) {
         if ($order->needs_shipping_address()) {
-            $shipping_first_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_first_name : $order->get_shipping_first_name();
-            $shipping_last_name = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_last_name : $order->get_shipping_last_name();
-            $shipping_address_1 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_1 : $order->get_shipping_address_1();
-            $shipping_address_2 = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_address_2 : $order->get_shipping_address_2();
-            $shipping_city = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_city : $order->get_shipping_city();
-            $shipping_state = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_state : $order->get_shipping_state();
-            $shipping_postcode = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_postcode : $order->get_shipping_postcode();
-            $shipping_country = version_compare(WC_VERSION, '3.0', '<') ? $order->shipping_country : $order->get_shipping_country();
-            $shipping_address_array = array('recipient_name' => $shipping_first_name . $shipping_last_name,
-                'line1' => $shipping_address_1,
-                'line2' => $shipping_address_2,
-                'city' => $shipping_city,
-                'state' => $shipping_state,
-                'postal_code' => $shipping_postcode,
-                'country_code' => $shipping_country
+            $shipping_address_array = array('recipient_name' => $order->get_shipping_first_name() . $order->get_shipping_last_name(),
+                'line1' => $order->get_shipping_address_1(),
+                'line2' => $order->get_shipping_address_2(),
+                'city' => $order->get_shipping_city(),
+                'state' => $order->get_shipping_state(),
+                'postal_code' => $order->get_shipping_postcode(),
+                'country_code' => $order->get_shipping_country()
             );
             $this->item_list->setShippingAddress($shipping_address_array);
         }
@@ -930,7 +918,7 @@ class PayPal_Rest_API_Utility {
 
     public function create_payment_for_subscription_change_payment($order, $card_data) {
         global $woocommerce;
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         try {
             $this->set_trnsaction_obj_value($order, $card_data);
             try {
@@ -970,7 +958,8 @@ class PayPal_Rest_API_Utility {
                 
             }
             $is_sandbox = $this->mode == 'SANDBOX' ? true : false;
-            update_post_meta($order_id, 'is_sandbox', $is_sandbox);
+            $order->update_meta_data('is_sandbox', $is_sandbox);
+            $order->save();
             if ($this->is_renewal($order_id)) {
                 return true;
             }

@@ -316,7 +316,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 $_product = wc_get_product($product->get_id());
                 $_allowed_product_type = apply_filters('angelleye_ec_product_type_allowed', array('variation', 'variable', 'simple'));
                 if (in_array($_product->get_type(), $_allowed_product_type, true)) {
-                    if ($_product->is_type('simple') && (version_compare(WC_VERSION, '3.0', '<') == false)) {
+                    if ($_product->is_type('simple')) {
                         ?>
                         <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
                         <?php
@@ -1144,12 +1144,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     if (!empty($_POST['variation_id'])) {
                         $variation_id = absint(wp_unslash($_POST['variation_id']));
                     } else {
-                        if (version_compare(WC_VERSION, '3.0', '<')) {
-                            $variation_id = $product->get_matching_variation($attributes);
-                        } else {
-                            $data_store = WC_Data_Store::load('product');
-                            $variation_id = $data_store->find_matching_product_variation($product, $attributes);
-                        }
+                        $data_store = WC_Data_Store::load('product');
+                        $variation_id = $data_store->find_matching_product_variation($product, $attributes);
                     }
                     $bool = $this->angelleye_is_product_already_in_cart($product->get_id(), $qty, $variation_id, $attributes);
                     if ($bool == false) {
