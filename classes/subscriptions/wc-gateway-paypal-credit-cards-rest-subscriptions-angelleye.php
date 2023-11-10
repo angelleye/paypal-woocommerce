@@ -76,7 +76,6 @@ class WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE extends WC_Gate
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
                 $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
                 $parent_order = wc_get_order($subscription_parent_id);
                 $payment_tokens = $parent_order->get_meta( '_payment_tokens', true);
@@ -87,7 +86,8 @@ class WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE extends WC_Gate
                         $token->save();
                     }
                 }
-                update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
+                $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                $subscription->save_meta_data();
             }
         }
     }
