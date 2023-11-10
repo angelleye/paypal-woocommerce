@@ -1189,7 +1189,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $this->paypal_transaction = $this->paypal_transaction + $value;
                         }
                         $transaction_id = isset($this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['id']) ? $this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['id'] : '';
-                        update_post_meta($order->get_id(), '_transaction_id', wc_clean($transaction_id));
                         $seller_protection = isset($this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['seller_protection']['status']) ? $this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['seller_protection']['status'] : '';
                         $payment_status = isset($this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['status']) ? $this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['status'] : '';
                         $order->update_meta_data('_payment_status', $payment_status);
