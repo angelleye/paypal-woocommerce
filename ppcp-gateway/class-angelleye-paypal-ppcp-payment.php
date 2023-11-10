@@ -1435,7 +1435,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'path' => "/intent",
                 'value' => $intent
             );
-            $paypal_order_id = angelleye_ppcp_get_session('angelleye_ppcp_paypal_order_id');
             $patch_request = apply_filters('angelleye_ppcp_request_args', $patch_request, 'update_order', $order_id);
             $args = array(
                 'timeout' => 70,
