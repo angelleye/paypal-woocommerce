@@ -1490,16 +1490,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), angelleye_ppcp_round($amount, $decimals))
                 );
             }
-            $body_request['payment_instruction'] = [
-                "platform_fees" => [
-                    [
-                        "amount" => [
-                            "currency_code" => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount),
-                            "value" => angelleye_ppcp_get_platform_fee_refund_amount()
-                        ]
-                    ]
-                ]
-            ];
+
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -4493,17 +4484,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'value' => angelleye_ppcp_round($amount, $decimals),
                     'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', $currency_code, $amount)
                 );
-            } 
-            $body_request['payment_instruction'] = [
-                "platform_fees" => [
-                    [
-                        "amount" => [
-                            "currency_code" => apply_filters('angelleye_ppcp_woocommerce_currency', $currency_code, $amount),
-                            "value" => angelleye_ppcp_get_platform_fee_refund_amount()
-                        ]
-                    ]
-                ]
-            ];
+            }
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
