@@ -129,6 +129,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 4.4.3 - 11.14.2023 =
 * Fix - Resolves the warning with express checkout gateway on product pages. ([PFW-1660](https://github.com/angelleye/paypal-woocommerce/pull/1955))
+* Tweak - Disables the Flexible Partner Refund feature at PayPal to allow refunds directly from PayPal. ([PFW-1664](https://github.com/angelleye/paypal-woocommerce/pull/1958))
 
 = 4.4.2 - 11.10.2023 =
 * Tweak - Implemented a few adjustments for HPOS compatibility. ([PFW-1661](https://github.com/angelleye/paypal-woocommerce/pull/1956))
