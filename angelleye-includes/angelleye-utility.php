@@ -1632,7 +1632,6 @@ class AngellEYE_Utility {
     public static function angelleye_paypal_for_woocommerce_is_set_sandbox_product($order_id = null) {
         global $product, $wp_query, $post;
         $is_sandbox_set = false;
-        $order = wc_get_order($order_id);
         if (did_action('wp_loaded') && isset(WC()->cart) && sizeof(WC()->cart->get_cart()) > 0) {
             foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
                 $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
@@ -1642,8 +1641,7 @@ class AngellEYE_Utility {
                 }
                 $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
                 if ($_enable_sandbox_mode == 'yes') {
-                    $is_sandbox_set = true;
-                    return $is_sandbox_set;
+                    return true;
                 }
             }
         } elseif (isset($wp_query) && is_product()) {
@@ -1653,14 +1651,15 @@ class AngellEYE_Utility {
             if ($product_type == 'product_variation') {
                 $product_id = wp_get_post_parent_id($product_id);
             }
-            $_enable_sandbox_mode = get_post_meta($product->get_id(), '_enable_sandbox_mode', true);
+            $_enable_sandbox_mode = get_post_meta($product_id, '_enable_sandbox_mode', true);
             if ($_enable_sandbox_mode == 'yes') {
-                $is_sandbox_set = true;
-                return $is_sandbox_set;
+                return true;
             }
-        } elseif (isset($order_id) && !empty($order_id)) {
-            $is_sandbox = $order->get_meta( 'is_sandbox', true);
-            return $is_sandbox;
+        } elseif (!empty($order_id)) {
+            $order = wc_get_order($order_id);
+            if ($order) {
+                return $order->get_meta('is_sandbox', true);
+            }
         }
         return $is_sandbox_set;
     }
