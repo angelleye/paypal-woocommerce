@@ -17,7 +17,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $vault_supported_payment_method = array('card', 'venmo');
     public $vault_not_supported_payment_method = array('credit', 'paylater', 'bancontact', 'blik', 'eps', 'giropay', 'ideal', 'mercadopago', 'mybank', 'p24', 'sepa', 'sofort');
     public $is_multi_account_active;
-    public static $jsUrl = '';
     public $title;
     public $enabled;
     public $is_sandbox;
@@ -394,9 +393,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
             add_filter('wfocu_subscriptions_get_supported_gateways', array($this, 'wfocu_subscription_supported_gateways'), 99, 1);
         }
-
-        $asyncJsParams = $this->getClientIdMerchantId();
-        self::$jsUrl = add_query_arg($asyncJsParams, 'https://www.paypal.com/sdk/js');
     }
 
     public function angelleye_load_js_sdk()
