@@ -1242,7 +1242,7 @@ if (!function_exists('ae_get_checkout_url')) {
 if (!function_exists('angelleye_ppcp_order_item_meta_key_exists')) {
 
     function angelleye_ppcp_order_item_meta_key_exists($order, $key) {
-        foreach ($order->get_items() as $item) {
+        foreach ($order->get_items(array( 'line_item', 'tax', 'shipping', 'fee', 'coupon'  )) as $item) {
             if ($item->meta_exists($key)) {
                 return true;
             }

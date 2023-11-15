@@ -4685,7 +4685,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_get_capture_data_with_line_item_id($order) {
         $capture_data_list = array();
-        foreach ($order->get_items() as $item) {
+        foreach ($order->get_items(array( 'line_item', 'tax', 'shipping', 'fee', 'coupon'  )) as $item) {
             if ($item->meta_exists('_ppcp_capture_details')) {
                 $ppcp_capture_details = $item->get_meta('_ppcp_capture_details');
                 if (!empty($ppcp_capture_details)) {
@@ -4709,7 +4709,7 @@ class AngellEYE_PayPal_PPCP_Payment {
 
     public function angelleye_ppcp_get_capture_data($order) {
         $capture_data_list = array();
-        foreach ($order->get_items() as $item) {
+        foreach ($order->get_items(array( 'line_item', 'tax', 'shipping', 'fee', 'coupon'  )) as $item) {
             if ($item->meta_exists('_ppcp_capture_details')) {
                 $ppcp_capture_details = $item->get_meta('_ppcp_capture_details');
                 if (!empty($ppcp_capture_details)) {
