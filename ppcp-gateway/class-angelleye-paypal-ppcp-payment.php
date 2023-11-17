@@ -186,6 +186,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $this->angelleye_ppcp_used_payment_method = 'card';
             }
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
+            $currency_code = apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['order_total']);
             $body_request = array(
                 'intent' => $intent,
                 'application_context' => $this->angelleye_ppcp_application_context(),
@@ -197,7 +198,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         'reference_id' => $reference_id,
                         'amount' =>
                         array(
-                            'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['order_total']),
+                            'currency_code' => $currency_code,
                             'value' => $cart['order_total'],
                             'breakdown' => array()
                         )
@@ -406,7 +407,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
                 $errorMessage = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 !empty($order) && $order->add_order_note($errorMessage);
-                wp_send_json_error(__('We were unable to process your order, please try again with same or other payment method(s).', 'paypal-for-woocommerce'));
+                if (str_contains($errorMessage, 'CURRENCY_NOT_SUPPORTED')) {
+                    wp_send_json_error(sprintf(__('Currency code (%s) is not currently supported.', 'paypal-for-woocommerce'), $currency_code));
+                } else {
+                    wp_send_json_error(__('We were unable to process your order, please try again with same or other payment method(s).', 'paypal-for-woocommerce'));
+                }
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
@@ -4415,7 +4420,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $prepare_refund_data;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -4569,13 +4574,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                     foreach ($capture as $capture_id => $capture_amount) {
                         $capture_details = $this->angelleye_ppcp_get_capture_details($capture_id);
                         if (!empty($capture_details)) {
-                            
+
                         }
                     }
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -4592,7 +4597,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             return $this->api_response;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -4614,7 +4619,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             wc_update_order_item_meta($item_id, '_ppcp_capture_details', $ppcp_capture);
         } catch (Exception $ex) {
-            
+
         }
     }
 }
