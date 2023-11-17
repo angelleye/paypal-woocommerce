@@ -202,7 +202,7 @@ class AngellEYE_Utility {
                                         unset($paypal_payment_action['DoReauthorization']);
                                     }
                                     if ($this->total_DoCapture < ($order->get_total() - $order->get_total_refunded() - $this->total_DoVoid)) {
-                                        if ($this->has_authorization_expired($order->get_id())) {
+                                        if ($this->has_authorization_expired($order)) {
                                             $paypal_payment_action['DoReauthorization'] = 'Authorization';
                                             unset($paypal_payment_action['DoCapture']);
                                             unset($paypal_payment_action['DoVoid']);
@@ -240,7 +240,7 @@ class AngellEYE_Utility {
                                         unset($paypal_payment_action['DoReauthorization']);
                                     }
                                     if ($this->total_DoCapture < ($order->get_total() - $order->get_total_refunded() - $this->total_DoVoid)) {
-                                        if ($this->has_authorization_expired($order->get_id())) {
+                                        if ($this->has_authorization_expired($order)) {
                                             $paypal_payment_action['DoReauthorization'] = 'Authorization';
                                             unset($paypal_payment_action['DoCapture']);
                                             unset($paypal_payment_action['DoVoid']);
@@ -278,7 +278,7 @@ class AngellEYE_Utility {
                                         unset($paypal_payment_action['DoReauthorization']);
                                     }
                                     if ($this->total_DoCapture < ($order->get_total() - $order->get_total_refunded() - $this->total_DoVoid)) {
-                                        if ($this->has_authorization_expired($order->get_id())) {
+                                        if ($this->has_authorization_expired($order)) {
                                             $paypal_payment_action['DoReauthorization'] = 'Authorization';
                                             unset($paypal_payment_action['DoCapture']);
                                             unset($paypal_payment_action['DoVoid']);
@@ -350,10 +350,15 @@ class AngellEYE_Utility {
     /**
      *
      * @param type $order_id
-     * @return type
+     * @return bool
      */
-    public function has_authorization_expired($order_id) {
-        $order = wc_get_order($order_id);
+    public function has_authorization_expired($order) {
+        if (!is_object($order)) {
+            $order = wc_get_order($order);
+        }
+        if (!is_a($order, 'WC_Order')) {
+            return true;
+        }
         $transaction_time = $order->get_meta( '_trans_date', true);
         return floor(( time() - strtotime($transaction_time) ) / 3600) >= 720;
     }
@@ -375,7 +380,7 @@ class AngellEYE_Utility {
         // ensure the authorization is still valid for capture
 
         $this->order_id = $order->get_id();
-        if ($this->has_authorization_expired($order->get_id())) {
+        if ($this->has_authorization_expired($order)) {
             return;
         }
         if (isset($_POST['angelleye_paypal_capture_transaction_dropdown']) && !empty($_POST['angelleye_paypal_capture_transaction_dropdown'])) {
@@ -396,7 +401,7 @@ class AngellEYE_Utility {
         if (!is_object($order)) {
             $order = wc_get_order($order);
         }
-        if ($this->has_authorization_expired($order->get_id())) {
+        if ($this->has_authorization_expired($order)) {
             return;
         }
         $this->order_id = $order->get_id();
@@ -492,7 +497,7 @@ class AngellEYE_Utility {
         }
         $this->order_id = $order->get_id();
         $this->add_ec_angelleye_paypal_php_library();
-        if ($this->has_authorization_expired($this->order_id)) {
+        if ($this->has_authorization_expired($order)) {
             return;
         }
         remove_action('woocommerce_order_action_wc_paypal_express_dovoid', array($this, 'angelleye_wc_paypal_express_dovoid'));
@@ -510,7 +515,7 @@ class AngellEYE_Utility {
         }
         $this->order_id = $order->get_id();
         $this->add_ec_angelleye_paypal_php_library();
-        if ($this->has_authorization_expired($this->order_id)) {
+        if ($this->has_authorization_expired($order)) {
             return;
         }
         remove_action('woocommerce_order_action_wc_paypal_express_dovoid', array($this, 'angelleye_wc_paypal_express_dovoid'));
@@ -1731,7 +1736,7 @@ class AngellEYE_Utility {
         }
         $this->order_id = $order->get_id();
         $this->add_ec_angelleye_paypal_php_library();
-        if ($this->has_authorization_expired($this->order_id)) {
+        if ($this->has_authorization_expired($order)) {
             return;
         }
         remove_action('woocommerce_order_action_wc_paypal_pro_payflow_dovoid', array($this, 'angelleye_wc_paypal_pro_payflow_dovoid'));
@@ -1745,7 +1750,7 @@ class AngellEYE_Utility {
         }
         // ensure the authorization is still valid for capture
 
-        if ($this->has_authorization_expired($order_id)) {
+        if ($this->has_authorization_expired($order)) {
             return;
         }
 
