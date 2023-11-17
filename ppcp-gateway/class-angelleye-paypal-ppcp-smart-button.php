@@ -1271,6 +1271,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_exclude_javascript($excluded_handles) {
         $excluded_handles[] = 'jquery-core';
+        $excluded_handles[] = 'wp-i18n';
         $excluded_handles[] = 'angelleye_ppcp-common-functions';
         $excluded_handles[] = 'angelleye_ppcp-apple-pay';
         $excluded_handles[] = 'angelleye_ppcp-google-pay';
