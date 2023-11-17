@@ -1553,7 +1553,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
          * @return array|mixed|string|string[]
          */
         public function angelleye_pfw_clean_script_tag($tag, $handle, $src) {
-            if (in_array($handle, ['jquery', 'wp-i18n'])) {
+            if (in_array($handle, ['jquery', 'wp-i18n', 'wp-hooks'])) {
                 $tag = str_replace(['defer="defer"', "defer='defer'", " defer", " async"], '', $tag);
             }
             return $tag;
