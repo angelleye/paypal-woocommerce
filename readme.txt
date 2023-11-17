@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.4
-Stable tag: 4.4.3
+Stable tag: 4.4.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.4.4 - 11.17.2023 =
+* Tweak - Handle unsupported currency error in frontend and display user-friendly message. ([PFW-1672](https://github.com/angelleye/paypal-woocommerce/pull/1962))
+* Tweak - Removes defer or async tags for jQuery and WP Translation JS libraries. ([PFW-1676](https://github.com/angelleye/paypal-woocommerce/pull/1961))
+* Fix - Resolved the translation script dependency issue with express checkout. ([PFW-1674](https://github.com/angelleye/paypal-woocommerce/pull/1960))
+* Fix - Resolved the has_authorization_expired method warning issue. ([PFW-1666](https://github.com/angelleye/paypal-woocommerce/pull/1959))
 
 = 4.4.3 - 11.14.2023 =
 * Fix - Resolves the warning with express checkout gateway on product pages. ([PFW-1660](https://github.com/angelleye/paypal-woocommerce/pull/1955))
