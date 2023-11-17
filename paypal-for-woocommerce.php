@@ -154,6 +154,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             add_filter( 'woocommerce_product_title' , array($this, 'woocommerce_product_title') );
 
             add_action('wp_enqueue_scripts', array($this, 'angelleye_cc_ui_style'), 100);
+            add_filter('script_loader_tag', [$this, 'angelleye_pfw_clean_script_tag'], 10000, 3);
             // To load the deferred PPCP JS SDK async
             add_filter('script_loader_tag', function ( $tag, $handle ) {
                 if ('angelleye_ppcp' !== $handle) {
@@ -1542,6 +1543,20 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
         public function angelleye_cc_ui_style() {
             wp_register_style('angelleye-cc-ui', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/angelleye-cc-ui.css', array(), VERSION_PFW);
+        }
+
+        /**
+         * Removes the defer / async tags for jQuery and i18n libs
+         * @param $tag
+         * @param $handle
+         * @param $src
+         * @return array|mixed|string|string[]
+         */
+        public function angelleye_pfw_clean_script_tag($tag, $handle, $src) {
+            if (in_array($handle, ['jquery', 'wp-i18n'])) {
+                $tag = str_replace(['defer="defer"', "defer='defer'", " defer", " async"], '', $tag);
+            }
+            return $tag;
         }
 
         public function angelleye_wc_order_statuses($order_statuses) {
