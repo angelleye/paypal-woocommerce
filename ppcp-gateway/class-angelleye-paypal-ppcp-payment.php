@@ -2084,6 +2084,25 @@ class AngellEYE_PayPal_PPCP_Payment {
         $returnData .= base64_encode(json_encode($temp)) . '.';
         return $returnData;
     }
+    
+    public function angelleye_ppcp_multi_account_paypalauthassertion($value) {
+        if(!empty($value['merchant_id'])) {
+            $merchant_id = $value['merchant_id'];
+        } else {
+            $merchant_id = $this->merchant_id;
+        }
+        
+        $temp = array(
+            "alg" => "none"
+        );
+        $returnData = base64_encode(json_encode($temp)) . '.';
+        $temp = array(
+            "iss" => $this->partner_client_id,
+            "payer_id" => $merchant_id
+        );
+        $returnData .= base64_encode(json_encode($temp)) . '.';
+        return $returnData;
+    }
 
     public function angelleye_ppcp_get_generate_token() {
         try {
@@ -2651,8 +2670,12 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_multi_account_refund_order_third_party($order_id, $transaction_id, $testmode) {
+    public function angelleye_ppcp_multi_account_refund_order_third_party($order_id, $value, $testmode) {
         try {
+            if(!isset($value['transaction_id'])) {
+                return;
+            }
+            $transaction_id = $value['transaction_id'];
             if ($testmode) {
                 $paypal_refund_api = 'https://api-m.sandbox.paypal.com/v2/payments/captures/';
             } else {
@@ -2667,7 +2690,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'redirection' => 5,
                 'httpversion' => '1.1',
                 'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_multi_account_paypalauthassertion($value)),
                 'body' => wp_json_encode($body_request),
                 'cookies' => array()
             );
@@ -2697,7 +2720,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
                 return false;
             }
-            return true;
+            return $this->api_response;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
