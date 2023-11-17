@@ -406,7 +406,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         global $post, $wp, $product;
         $this->angelleye_ppcp_smart_button_style_properties();
         $default_country = wc_get_base_location();
-        $this->angelleye_ppcp_currency = in_array(get_woocommerce_currency(), $this->angelleye_ppcp_currency_list) ? get_woocommerce_currency() : 'USD';
         if (is_checkout() && angelleye_ppcp_has_active_session() === true) {
             wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-capture', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-capture.js', array('jquery'), $this->version, false);
         }
@@ -429,13 +428,19 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
         } else {
             $scd_option = get_option('scd_general_options');
-            $multicurrency_payment = ( isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true ) ? true : false;
+            $multicurrency_payment = isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true;
         }
         if (function_exists("scd_get_target_currency") && $multicurrency_payment) {
             $active_currency = scd_get_target_currency();
         }
 
-        $smart_js_arg['currency'] = in_array($active_currency, $this->angelleye_ppcp_currency_list) ? $active_currency : 'USD';
+        if (in_array($active_currency, $this->angelleye_ppcp_currency_list)) {
+            $this->angelleye_ppcp_currency = $active_currency;
+        } else {
+            // wc_add_notice($active_currency . ' ' . __('currency is not supported.', 'paypal-for-woocommerce'));
+            $this->angelleye_ppcp_currency = 'USD';
+        }
+        $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
         /* * *Compatibility with Multicurrency end * * */
 
         $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
