@@ -214,7 +214,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
         $order_id = isset($_POST['order_id']) ? sanitize_text_field(wp_unslash($_POST['order_id'])) : 0;
         $order = wc_get_order($order_id);
         $paypal_order_id = $order->get_meta('cartflows_paypal_order_id_' . $order->get_id());
-        $environment = ($this->is_sandbox) ? 'sandbox' : '';
+        $environment = ($this->is_sandbox) ? 'sandbox.' : '';
         $capture_args = array(
             'method' => 'POST',
             'headers' => array(
@@ -223,7 +223,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
                 'Prefer' => 'return=representation'
             ),
         );
-        $capture_url = 'https://api-m.' . $environment . '.paypal.com/v2/checkout/orders/' . $paypal_order_id . '/capture';
+        $capture_url = 'https://api-m.' . $environment . 'paypal.com/v2/checkout/orders/' . $paypal_order_id . '/capture';
         $resp_body = $this->api_request->request($capture_url, $capture_args, 'capture_order');
         if (is_wp_error($resp_body)) {
             $json_response = array(
