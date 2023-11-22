@@ -338,6 +338,21 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 return;
             }
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
+
+            if (isset($this->payment_response['name']) && $this->payment_response['name'] == 'RESOURCE_NOT_FOUND') {
+                $auth_transaction_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
+                // This condition is to fix the old orders where paypal_order_id has been replaced with authorization_id when capture was processed during order complete status change
+                if (!empty($auth_transaction_id)) {
+                    $auth_response = $this->payment_request->angelleye_ppcp_get_authorized_payment($auth_transaction_id);
+                    $paypal_txn_id = $auth_response['supplementary_data']['related_ids']['order_id'] ?? '';
+                    if (!empty($paypal_txn_id)) {
+                        $paypal_order_id = $paypal_txn_id;
+                        $order->update_meta_data('_paypal_order_id', $paypal_txn_id);
+                        $order->save();
+                        $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
+                    }
+                }
+            }
             if (isset($this->payment_response) && !empty($this->payment_response) && isset($this->payment_response['intent']) && $this->payment_response['intent'] === 'AUTHORIZE') {
                 if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']) && !empty($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {
                     if (isset($this->payment_response['purchase_units']['0']['payments']['refunds'])) {
@@ -415,9 +430,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             wp_enqueue_script('angelleye-ppcp-order-action');
             if ($this->ae_capture_amount === 0) {
                 ?>
-                <style>.button.refund-items {
-                        display:none;
-                    }</style>
+                <style>.button.refund-items {display:none;}</style>
                     <?php
                 }
                 if (empty($this->angelleye_ppcp_order_actions)) {

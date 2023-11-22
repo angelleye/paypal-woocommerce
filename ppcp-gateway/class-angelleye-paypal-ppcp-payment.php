@@ -1489,10 +1489,11 @@ class AngellEYE_PayPal_PPCP_Payment {
             $angelleye_ppcp_payment_method_title = $this->get_payment_method_title_for_order($order_id);
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
+            $currency_code = apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), angelleye_ppcp_round($amount, $decimals));
             if (!empty($amount) && $amount > 0) {
                 $body_request['amount'] = array(
                     'value' => angelleye_ppcp_round($amount, $decimals),
-                    'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), angelleye_ppcp_round($amount, $decimals))
+                    'currency_code' => $currency_code
                 );
             }
 
@@ -1511,7 +1512,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $gross_amount = $this->api_response['seller_payable_breakdown']['gross_amount']['value'] ?? '';
                 $refund_transaction_id = $this->api_response['id'] ?? '';
                 $order->add_order_note(
-                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
+                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), wc_price($gross_amount, array('currency' => $currency_code)), $refund_transaction_id)
                 );
             } else if (isset($this->api_response['status']) && $this->api_response['status'] == "PENDING") {
                 $gross_amount = $this->api_response['seller_payable_breakdown']['gross_amount']['value'] ?? '';
@@ -1519,7 +1520,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $pending_reason_text = $this->api_response['status_details']['reason'] ?? '';
                 $order->add_order_note(sprintf(__('Payment via %s Pending. Pending reason: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $pending_reason_text));
                 $order->add_order_note(
-                        sprintf(__('Refund Amount %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
+                        sprintf(__('Refund Amount %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), wc_price($gross_amount, array('currency' => $currency_code)), $refund_transaction_id)
                 );
             } else {
                 $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
@@ -1800,8 +1801,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $order->save();
             if (!empty($this->api_response['id'])) {
-                $order->update_meta_data('_paypal_order_id', $this->api_response['id']);
-                $payment_source = isset($this->api_response['payment_source']) ? $this->api_response['payment_source'] : '';
+                // We don't need to override original transaction id as that will be used to fetch authorized order details via API
+                // $order->update_meta_data('_paypal_order_id', $this->api_response['id']);
+                $payment_source = $this->api_response['payment_source'] ?? '';
                 if (!empty($payment_source['card'])) {
                     $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
                     $card_response_order_note .= "\n";
@@ -1840,14 +1842,14 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                     $order->add_order_note($response_code);
                 }
-                $currency_code = isset($this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code']) ? $this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code'] : '';
-                $value = isset($this->api_response['seller_receivable_breakdown']['paypal_fee']['value']) ? $this->api_response['seller_receivable_breakdown']['paypal_fee']['value'] : '';
+                $currency_code = $this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code'] ?? '';
+                $value = $this->api_response['seller_receivable_breakdown']['paypal_fee']['value'] ?? '';
                 $order->update_meta_data('_paypal_fee', $value);
                 $order->update_meta_data('_paypal_transaction_fee', $value);
                 $order->update_meta_data('_paypal_fee_currency_code', $currency_code);
-                $transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
-                $seller_protection = isset($this->api_response['seller_protection']['status']) ? $this->api_response['seller_protection']['status'] : '';
-                $payment_status = isset($this->api_response['status']) ? $this->api_response['status'] : '';
+                $transaction_id = $this->api_response['id'] ?? '';
+                $seller_protection = $this->api_response['seller_protection']['status'] ?? '';
+                $payment_status = $this->api_response['status'] ?? '';
                 $order->update_meta_data('_payment_status', $payment_status);
                 if (!empty($processor_response['payment_advice_code'])) {
                     $payment_advice_code = __('Payment Advice Codes Result', 'paypal-for-woocommerce');
@@ -1874,7 +1876,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $payment_status_reason = $this->api_response['status_details']['reason'] ?? '';
                     $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
                 }
-                $order->set_transaction_id($transaction_id);
+                // $order->set_transaction_id($transaction_id);
                 $order->save();
                 return true;
             } else {
@@ -2619,7 +2621,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                     }
                 }
-                $seller_protection = isset($this->api_response['seller_protection']['status']) ? $this->api_response['seller_protection']['status'] : '';
+                $seller_protection = $this->api_response['seller_protection']['status'] ?? '';
                 $this->api_response = $this->angelleye_ppcp_get_authorized_payment($authorization_id);
                 $payment_status = $this->api_response['status'] ?? '';
                 $order->update_meta_data('_payment_status', $payment_status);
@@ -4505,7 +4507,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $gross_amount = $this->api_response['seller_payable_breakdown']['gross_amount']['value'] ?? '';
                 $refund_transaction_id = $this->api_response['id'] ?? '';
                 $order->add_order_note(
-                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), wc_price($gross_amount, array('currency' => get_woocommerce_currency())), $refund_transaction_id)
+                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), wc_price($gross_amount, array('currency' => $currency_code)), $refund_transaction_id)
                 );
                 $refund_date = date('m/d/y H:i', strtotime($this->api_response['update_time']));
                 $ppcp_refund_details[] = array(
