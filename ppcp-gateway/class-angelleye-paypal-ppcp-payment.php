@@ -3438,7 +3438,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_advanced_credit_card_setup_tokens($posted_card) {
+    public function angelleye_ppcp_advanced_credit_card_setup_tokens() {
         try {
             $body_request = array();
             $customer = WC()->customer;
