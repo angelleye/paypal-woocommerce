@@ -424,16 +424,18 @@ class AngellEYE_PayPal_PPCP_Payment {
      * @return array
      */
     public function ae_get_updated_checkout_payment_data($order = null) {
+        $details = [];
+        $totalAmount = 0;
+        $shippingRequired = false;
         if (!empty($order)) {
             $details = $this->getOrderLineItems($order);
             $totalAmount = $order->get_total('');
             $shippingRequired = $order->needs_shipping_address();
-        } else {
+        } elseif(isset(WC()->cart)) {
             $totalAmount = WC()->cart->get_total('');
             $shippingRequired = WC()->cart->needs_shipping();
             $details = $this->getCartLineItems();
-        }
-
+        } 
         return [
             'currencyCode' => get_woocommerce_currency(),
             'totalAmount' => $totalAmount,
