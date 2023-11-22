@@ -72,7 +72,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_CC_AngellEYE extends Cartflows_Pro_Paypa
     public function get_ppcp_meta() {
         $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
         return array(
-            'environment' => ($this->is_sandbox) ? 'sandbox' : '',
+            'environment' => ($this->is_sandbox) ? 'sandbox.' : '',
             'intent' => ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE',
             'merchant_id' => $this->merchant_id,
             'invoice_prefix' => $this->invoice_prefix,
