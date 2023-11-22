@@ -383,6 +383,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     exit();
                 case "angelleye_ppcp_cc_setup_tokens":
                     $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens();
+                    exit();
                 case "install_plugin":
                     $this->install_shipment_tracking_plugin();
                     exit();
