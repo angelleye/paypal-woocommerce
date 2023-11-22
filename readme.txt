@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.4
-Stable tag: 4.4.4
+Stable tag: 4.4.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.4.5 - 11.22.2023 =
+* Fix - Fixed the refund option display issue with Authorizated Captured orders. ([PFW-1681](https://github.com/angelleye/paypal-woocommerce/pull/1967))
+* Fix - Resolved the Cartflow Upsells issue with PPCP. ([PFW-1679](https://github.com/angelleye/paypal-woocommerce/pull/1966))
+* Fix - Fixed the credit card token setup function parameter issue. ([PFW-1682](https://github.com/angelleye/paypal-woocommerce/pull/1965))
+* Tweak - Translation added for the create order error message. ([PFW-1598](https://github.com/angelleye/paypal-woocommerce/pull/1964))
+* Fix - Auto-populate the address in PayPal Guest checkout. ([PFW-1677](https://github.com/angelleye/paypal-woocommerce/pull/1963))
 
 = 4.4.4 - 11.17.2023 =
 * Tweak - Handle unsupported currency error in frontend and display user-friendly message. ([PFW-1672](https://github.com/angelleye/paypal-woocommerce/pull/1962))
