@@ -72,7 +72,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
     public function get_ppcp_meta() {
         $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
         return array(
-            'environment' => ($this->is_sandbox) ? 'sandbox' : '',
+            'environment' => ($this->is_sandbox) ? 'sandbox.' : '',
             'intent' => ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE',
             'merchant_id' => $this->merchant_id,
             'invoice_prefix' => $this->invoice_prefix,
@@ -164,7 +164,7 @@ class Cartflows_Pro_Gateway_PayPal_PPCP_AngellEYE extends Cartflows_Pro_Paypal_G
                 ),
                 'body' => $data,
             );
-            $url = 'https://api-m.' . $args['ppcp_data']['environment'] . '.paypal.com/v2/checkout/orders';
+            $url = 'https://api-m.' . $args['ppcp_data']['environment'] . 'paypal.com/v2/checkout/orders';
             $response = $this->api_request->request($url, $arguments, 'create_order');
             if (ob_get_length()) {
                 ob_end_clean();
