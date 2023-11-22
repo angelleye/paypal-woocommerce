@@ -866,50 +866,48 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             }
         } else {
-            if (is_user_logged_in()) {
-                $customer = WC()->customer;
-                $first_name = $customer->get_billing_first_name();
-                $last_name = $customer->get_billing_last_name();
-                $address_1 = $customer->get_billing_address_1();
-                $address_2 = $customer->get_billing_address_2();
-                $city = $customer->get_billing_city();
-                $state = $customer->get_billing_state();
-                $postcode = $customer->get_billing_postcode();
-                $country = strtoupper($customer->get_billing_country());
-                $email_address = $customer->get_billing_email();
-                $billing_phone = $customer->get_billing_phone();
-                if (!empty($first_name)) {
-                    $body_request['payer']['name']['given_name'] = $first_name;
+            $customer = WC()->customer;
+            $first_name = $customer->get_billing_first_name();
+            $last_name = $customer->get_billing_last_name();
+            $address_1 = $customer->get_billing_address_1();
+            $address_2 = $customer->get_billing_address_2();
+            $city = $customer->get_billing_city();
+            $state = $customer->get_billing_state();
+            $postcode = $customer->get_billing_postcode();
+            $country = strtoupper($customer->get_billing_country());
+            $email_address = $customer->get_billing_email();
+            $billing_phone = $customer->get_billing_phone();
+            if (!empty($first_name)) {
+                $body_request['payer']['name']['given_name'] = $first_name;
+            }
+            if (!empty($last_name)) {
+                $body_request['payer']['name']['surname'] = $last_name;
+            }
+            if (!empty($email_address)) {
+                $body_request['payer']['email_address'] = $email_address;
+            }
+            if (!empty($billing_phone)) {
+                $billing_phone = preg_replace('/[^0-9]/', '', $billing_phone);
+                if (strlen($billing_phone) > 15) {
+                    $billing_phone = preg_replace('/^0+/', '', $billing_phone);
+                } elseif (strlen($billing_phone) > 14) {
+                    $billing_phone = preg_replace('/^0/', '', $billing_phone);
                 }
-                if (!empty($last_name)) {
-                    $body_request['payer']['name']['surname'] = $last_name;
-                }
-                if (!empty($email_address)) {
-                    $body_request['payer']['email_address'] = $email_address;
-                }
+                $billing_phone = substr($billing_phone, 0, 14);
                 if (!empty($billing_phone)) {
-                    $billing_phone = preg_replace('/[^0-9]/', '', $billing_phone);
-                    if (strlen($billing_phone) > 15) {
-                        $billing_phone = preg_replace('/^0+/', '', $billing_phone);
-                    } elseif (strlen($billing_phone) > 14) {
-                        $billing_phone = preg_replace('/^0/', '', $billing_phone);
-                    }
-                    $billing_phone = substr($billing_phone, 0, 14);
-                    if (!empty($billing_phone)) {
-                        $body_request['payer']['phone']['phone_type'] = 'HOME';
-                        $body_request['payer']['phone']['phone_number']['national_number'] = $billing_phone;
-                    }
+                    $body_request['payer']['phone']['phone_type'] = 'HOME';
+                    $body_request['payer']['phone']['phone_number']['national_number'] = $billing_phone;
                 }
-                if (!empty($address_1) && !empty($city) && !empty($state) && !empty($postcode) && !empty($country)) {
-                    $body_request['payer']['address'] = array(
-                        'address_line_1' => $address_1,
-                        'address_line_2' => $address_2,
-                        'admin_area_2' => $city,
-                        'admin_area_1' => $state,
-                        'postal_code' => $postcode,
-                        'country_code' => $country,
-                    );
-                }
+            }
+            if (!empty($address_1) && !empty($city) && !empty($state) && !empty($postcode) && !empty($country)) {
+                $body_request['payer']['address'] = array(
+                    'address_line_1' => $address_1,
+                    'address_line_2' => $address_2,
+                    'admin_area_2' => $city,
+                    'admin_area_1' => $state,
+                    'postal_code' => $postcode,
+                    'country_code' => $country,
+                );
             }
         }
         return $body_request;
