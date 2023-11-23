@@ -435,7 +435,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $totalAmount = WC()->cart->get_total('');
             $shippingRequired = WC()->cart->needs_shipping();
             $details = $this->getCartLineItems();
-        } 
+        }
         return [
             'currencyCode' => get_woocommerce_currency(),
             'totalAmount' => $totalAmount,
@@ -1524,10 +1524,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
             } else {
                 $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
-                if ($this->paymentaction === 'authorize' && !empty($this->api_response['details'][0]['issue']) && 'INVALID_RESOURCE_ID' === $this->api_response['details'][0]['issue']) {
-                    $this->angelleye_ppcp_void_authorized_payment($transaction_id);
-                    return true;
-                }
                 $error_email_notification_param = array(
                     'request' => 'refund_order',
                     'order_id' => $order_id
@@ -1741,7 +1737,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_void_authorized_payment($authorization_id) {
+    public function angelleye_ppcp_void_authorized_payment($authorization_id, $note_to_payer = null) {
         try {
             $args = array(
                 'method' => 'POST',
@@ -1753,12 +1749,24 @@ class AngellEYE_PayPal_PPCP_Payment {
                 //'body' => array(),
                 'cookies' => array()
             );
+            if (!empty($note_to_payer)) {
+                $void_arg = array(
+                    'note_to_payer' => $note_to_payer,
+                );
+                $args['body'] = $void_arg;
+            }
             $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/void', $args, 'void_authorized');
-            $this->api_response = json_decode(json_encode($this->api_response), FALSE);
-            return $this->api_response;
+            $this->api_response = json_decode(json_encode($this->api_response), true);
+            if (isset($this->api_response['status']) && strtolower($this->api_response['status']) == 'voided') {
+                return $this->api_response;
+            } else {
+                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response);
+                return new WP_Error('auth_void_error', $error_message);
+            }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
+            return new WP_Error('auth_void_exception', $ex->getMessage());
         }
     }
 
@@ -1768,132 +1776,24 @@ class AngellEYE_PayPal_PPCP_Payment {
             if ($order === false) {
                 return false;
             }
-            $capture_arg = array(
-                'amount' =>
-                array(
-                    'value' => $order->get_total(),
-                    'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $order->get_total()),
-                ),
-                'invoice_id' => $this->invoice_prefix . str_replace("#", "", $order->get_order_number()),
-                'payment_instruction' => array('payee' => array('merchant_id' => $this->merchant_id)),
-                'final_capture' => true,
-            );
-            $body_request = angelleye_ppcp_remove_empty_key($capture_arg);
-            $authorization_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
-            $args = array(
-                'method' => 'POST',
-                'timeout' => 60,
-                'redirection' => 5,
-                'httpversion' => '1.1',
-                'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                'body' => $body_request,
-                'cookies' => array()
-            );
-            $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/capture', $args, 'capture_authorized');
-            $angelleye_ppcp_payment_method_title = $this->get_set_payment_method_title_from_session($woo_order_id);
-            if (!empty($angelleye_ppcp_payment_method_title)) {
-                $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
+            $order_data = [
+                'ppcp_refund_amount' => $order->get_total(''),
+                'refund_line_total' => []
+            ];
+            $line_items = $order->get_items( apply_filters( 'woocommerce_admin_order_item_types', 'line_item' ) );
+            foreach($line_items as $single_item) {
+                $order_data['refund_line_total'][$single_item->get_id()] = $single_item->get_total();
             }
-            $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
-            if (!empty($angelleye_ppcp_used_payment_method)) {
-                $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
+
+            $line_items_shipping = $order->get_items('shipping');
+            if ($line_items_shipping) {
+                foreach ($line_items_shipping as $single_item) {
+                    $order_data['refund_line_total'][$single_item->get_id()] = $single_item->get_total();
+                }
             }
-            $order->save();
-            if (!empty($this->api_response['id'])) {
-                // We don't need to override original transaction id as that will be used to fetch authorized order details via API
-                // $order->update_meta_data('_paypal_order_id', $this->api_response['id']);
-                $payment_source = $this->api_response['payment_source'] ?? '';
-                if (!empty($payment_source['card'])) {
-                    $card_response_order_note = __('Card Details', 'paypal-for-woocommerce');
-                    $card_response_order_note .= "\n";
-                    $card_response_order_note .= 'Last digits : ' . $payment_source['card']['last_digits'];
-                    $card_response_order_note .= "\n";
-                    $card_response_order_note .= 'Brand : ' . $payment_source['card']['brand'];
-                    $card_response_order_note .= "\n";
-                    $card_response_order_note .= 'Card type : ' . $payment_source['card']['type'];
-                    $order->add_order_note($card_response_order_note);
-                }
-                $processor_response = $this->api_response['purchase_units']['0']['payments']['captures']['0']['processor_response'] ?? '';
-                if (!empty($processor_response['avs_code'])) {
-                    $avs_response_order_note = __('Address Verification Result', 'paypal-for-woocommerce');
-                    $avs_response_order_note .= "\n";
-                    $avs_response_order_note .= $processor_response['avs_code'];
-                    if (isset($this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']])) {
-                        $avs_response_order_note .= ' : ' . $this->avs_code[$processor_response['avs_code']][$payment_source['card']['brand']];
-                    }
-                    $order->add_order_note($avs_response_order_note);
-                }
-                if (!empty($processor_response['cvv_code'])) {
-                    $cvv2_response_code = __('Card Security Code Result', 'paypal-for-woocommerce');
-                    $cvv2_response_code .= "\n";
-                    $cvv2_response_code .= $processor_response['cvv_code'];
-                    if (isset($this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']])) {
-                        $cvv2_response_code .= ' : ' . $this->cvv_code[$processor_response['cvv_code']][$payment_source['card']['brand']];
-                    }
-                    $order->add_order_note($cvv2_response_code);
-                }
-                if (!empty($processor_response['response_code'])) {
-                    $response_code = __('Processor response code Result', 'paypal-for-woocommerce');
-                    $response_code .= "\n";
-                    $response_code .= $processor_response['response_code'];
-                    if (isset($this->response_code[$processor_response['response_code']])) {
-                        $response_code .= ' : ' . $this->response_code[$processor_response['response_code']];
-                    }
-                    $order->add_order_note($response_code);
-                }
-                $currency_code = $this->api_response['seller_receivable_breakdown']['paypal_fee']['currency_code'] ?? '';
-                $value = $this->api_response['seller_receivable_breakdown']['paypal_fee']['value'] ?? '';
-                $order->update_meta_data('_paypal_fee', $value);
-                $order->update_meta_data('_paypal_transaction_fee', $value);
-                $order->update_meta_data('_paypal_fee_currency_code', $currency_code);
-                $transaction_id = $this->api_response['id'] ?? '';
-                $seller_protection = $this->api_response['seller_protection']['status'] ?? '';
-                $payment_status = $this->api_response['status'] ?? '';
-                $order->update_meta_data('_payment_status', $payment_status);
-                if (!empty($processor_response['payment_advice_code'])) {
-                    $payment_advice_code = __('Payment Advice Codes Result', 'paypal-for-woocommerce');
-                    $payment_advice_code .= "\n";
-                    $payment_advice_code .= $processor_response['payment_advice_code'];
-                    if (isset($this->payment_advice_code[$processor_response['payment_advice_code']])) {
-                        $payment_advice_code .= ' : ' . $this->payment_advice_code[$processor_response['payment_advice_code']];
-                    }
-                    $order->add_order_note($payment_advice_code);
-                }
-                $order->add_order_note(sprintf(__('%s Capture Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
-                $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-                $order->save();
-                if ($payment_status === 'COMPLETED') {
-                    $order->payment_complete($transaction_id);
-                    $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
-                } elseif ($payment_status === 'DECLINED') {
-                    $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title));
-                    if (function_exists('wc_add_notice')) {
-                        wc_add_notice(__('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.', 'paypal-for-woocommerce'), 'error');
-                    }
-                    return false;
-                } else {
-                    $payment_status_reason = $this->api_response['status_details']['reason'] ?? '';
-                    $this->angelleye_ppcp_update_woo_order_status($woo_order_id, $payment_status, $payment_status_reason);
-                }
-                // $order->set_transaction_id($transaction_id);
-                $order->save();
-                return true;
-            } else {
-                $error_email_notification_param = array(
-                    'request' => 'capture_authorized',
-                    'order_id' => $woo_order_id
-                );
-                $error_message = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
-                if (function_exists('wc_add_notice')) {
-                    wc_add_notice(__('This payment was unable to be processed successfully. Please try again with another payment method.', 'paypal-for-woocommerce'), 'error');
-                }
-                if (!empty($error_message)) {
-                    $order->add_order_note('Error Message : ' . $error_message);
-                    throw new Exception($error_message);
-                }
-                return false;
-            }
+
+            $this->angelleye_ppcp_capture_authorized_payment_admin($order, $order_data);
+
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -1914,7 +1814,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $order_id = (int) WC()->session->get('order_awaiting_payment');
         $order = wc_get_order($order_id);
         $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
-        $this->get_set_payment_method_title_from_session($order_id);
+        $angelleye_ppcp_payment_method_title = $this->get_set_payment_method_title_from_session($order_id);
         if ($this->paymentaction === 'capture' && !empty($this->checkout_details->status) && $this->checkout_details->status == 'COMPLETED' && $order !== false) {
             $transaction_id = isset($this->checkout_details->purchase_units[0]->payments->captures[0]->id) ? $this->checkout_details->purchase_units['0']->payments->captures[0]->id : '';
             $seller_protection = $this->checkout_details->purchase_units[0]->payments->captures[0]->seller_protection->status ?? '';
@@ -2367,6 +2267,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             switch (strtoupper($payment_status)) :
                 case 'DECLINED' :
                     $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title));
+                    break;
                 case 'PENDING' :
                     switch (strtoupper($pending_reason)) {
                         case 'BUYER_COMPLAINT':
@@ -2417,9 +2318,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 case 'PARTIALLY_REFUNDED' :
                     $order->update_status('on-hold');
                     $order->add_order_note(sprintf(__('Payment via %s partially refunded. PayPal reason: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $pending_reason));
+                    break;
                 case 'REFUNDED' :
                     $order->update_status('refunded');
                     $order->add_order_note(sprintf(__('Payment via %s refunded. PayPal reason: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $pending_reason));
+                    break;
                 case 'FAILED' :
                     $order->update_status('failed', sprintf(__('Payment via %s failed. PayPal reason: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $pending_reason));
                     break;
@@ -2483,26 +2386,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $note_to_payer = substr($note_to_payer, 0, 252) . '...';
             }
             $authorization_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
-            $args = array(
-                'method' => 'POST',
-                'timeout' => 60,
-                'redirection' => 5,
-                'httpversion' => '1.1',
-                'blocking' => true,
-                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                'cookies' => array()
-            );
-            if (!empty($note_to_payer)) {
-                $void_arg = array(
-                    'note_to_payer' => $note_to_payer,
-                );
-                $args['body'] = $void_arg;
-            }
-            $this->api_response = $this->api_request->request($this->auth . $authorization_id . '/void', $args, 'void_authorized');
-            $this->api_response = json_decode(json_encode($this->api_response), true);
-            if (!empty($this->api_response['id'])) {
-                $payment_status = $this->api_response['status'] ?? '';
+            $response = $this->angelleye_ppcp_void_authorized_payment($authorization_id, $note_to_payer);
+            if (!is_wp_error($response)) {
+                $payment_status = $response['status'] ?? '';
                 $this->angelleye_ppcp_update_woo_order_status($order_id, $payment_status, $pending_reason = '');
+            } else {
+                $order->add_order_note(__("Void Authorization Failed:", 'paypal-for-woocommerce') . ': ' . $response->get_error_message());
             }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');

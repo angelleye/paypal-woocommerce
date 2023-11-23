@@ -138,10 +138,17 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         $payment_method = $order->get_payment_method();
         $transaction_id = $order->get_transaction_id();
         $paymentaction = angelleye_ppcp_get_post_meta($order, '_paymentaction');
-        if (in_array($payment_method, ['angelleye_ppcp_cc', 'angelleye_ppcp', 'angelleye_ppcp_apple_pay']) && $transaction_id && $paymentaction === 'authorize') {
+
+        if (in_array($payment_method, ['angelleye_ppcp_cc', 'angelleye_ppcp', 'angelleye_ppcp_apple_pay', 'angelleye_ppcp_google_pay']) && $transaction_id && $paymentaction === 'authorize') {
             $trans_details = $this->payment_request->angelleye_ppcp_show_details_authorized_payment($transaction_id);
             if ($this->angelleye_ppcp_is_authorized_only($trans_details)) {
-                $this->payment_request->angelleye_ppcp_void_authorized_payment($transaction_id);
+                $response = $this->payment_request->angelleye_ppcp_void_authorized_payment($transaction_id);
+                if (!is_wp_error($response)) {
+                    $note = __("Authorization Voided", 'paypal-for-woocommerce');
+                } else {
+                    $note = __("Void Authorization Failed:", 'paypal-for-woocommerce') . ': ' . $response->get_error_message();
+                }
+                $order->add_order_note($note);
             }
         }
     }
@@ -691,13 +698,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     }
 
     public function angelleye_ppcp_remove_add_item_button($bool, $order) {
-        if (!$bool) {
-            return false;
-        } else {
-            $payment_method = $order->get_payment_method();
-            if (!empty($payment_method) && strpos(strtolower($payment_method), 'ppcp') !== false) {
-                return false;
-            }
+        $payment_method = $order->get_payment_method();
+        if (!empty($payment_method) && strpos(strtolower($payment_method), 'ppcp') !== false) {
+             $bool = false;
         }
         return $bool;
     }
