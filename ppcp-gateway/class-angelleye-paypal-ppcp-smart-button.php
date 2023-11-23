@@ -198,27 +198,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->apple_pay_button_props = [
             'buttonStyle' => 'black', 'buttonType' => 'plain', 'height' => ''
         ];
-        if (is_product()) {
-            $this->disable_funding = $this->setting_obj->get('product_disallowed_funding_methods', array());
-            $this->style_layout = $this->setting_obj->get('product_button_layout', 'horizontal');
-            $this->style_color = $this->setting_obj->get('product_style_color', 'gold');
-            $this->style_shape = $this->setting_obj->get('product_style_shape', 'rect');
-            $this->style_size = $this->setting_obj->get('product_button_size', 'responsive');
-            $this->style_height = $this->setting_obj->get('product_button_height', '');
-            $this->style_label = $this->setting_obj->get('product_button_label', 'paypal');
-            $this->style_tagline = $this->setting_obj->get('product_button_tagline', 'yes');
-            $this->google_pay_button_props = [
-                'buttonColor' => $this->setting_obj->get('product_google_style_color', 'default'),
-                'buttonType' => $this->setting_obj->get('product_google_button_type', 'plain'),
-                'height' => $this->setting_obj->get('product_google_button_height', ''),
-            ];
-            $this->apple_pay_button_props = [
-                'buttonColor' => $this->setting_obj->get('product_apple_style_color', 'black'),
-                'buttonType' => $this->setting_obj->get('product_apple_button_type', 'plain'),
-                'height' => $this->setting_obj->get('product_apple_button_height', ''),
-            ];
-            $this->common_button_props['width'] = $this->setting_obj->get('product_button_width', '');
-        } elseif (is_cart()) {
+
+        if (is_cart()) {
             $this->disable_funding = $this->setting_obj->get('cart_disallowed_funding_methods', array());
             $this->style_layout = $this->setting_obj->get('cart_button_layout', 'vertical');
             $this->style_color = $this->setting_obj->get('cart_style_color', 'gold');
@@ -258,6 +239,27 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 'height' => $this->setting_obj->get('cart_apple_button_height', ''),
             ];
             $this->common_button_props['width'] = $this->setting_obj->get('checkout_button_width', '');
+        } else {
+            // Make the product style settings as default styled property
+            $this->disable_funding = $this->setting_obj->get('product_disallowed_funding_methods', array());
+            $this->style_layout = $this->setting_obj->get('product_button_layout', 'horizontal');
+            $this->style_color = $this->setting_obj->get('product_style_color', 'gold');
+            $this->style_shape = $this->setting_obj->get('product_style_shape', 'rect');
+            $this->style_size = $this->setting_obj->get('product_button_size', 'responsive');
+            $this->style_height = $this->setting_obj->get('product_button_height', '');
+            $this->style_label = $this->setting_obj->get('product_button_label', 'paypal');
+            $this->style_tagline = $this->setting_obj->get('product_button_tagline', 'yes');
+            $this->google_pay_button_props = [
+                'buttonColor' => $this->setting_obj->get('product_google_style_color', 'default'),
+                'buttonType' => $this->setting_obj->get('product_google_button_type', 'plain'),
+                'height' => $this->setting_obj->get('product_google_button_height', ''),
+            ];
+            $this->apple_pay_button_props = [
+                'buttonColor' => $this->setting_obj->get('product_apple_style_color', 'black'),
+                'buttonType' => $this->setting_obj->get('product_apple_button_type', 'plain'),
+                'height' => $this->setting_obj->get('product_apple_button_height', ''),
+            ];
+            $this->common_button_props['width'] = $this->setting_obj->get('product_button_width', '');
         }
         $this->mini_cart_disable_funding = $this->setting_obj->get('mini_cart_disallowed_funding_methods', array());
         $this->mini_cart_style_layout = $this->setting_obj->get('mini_cart_button_layout', 'vertical');
@@ -499,41 +501,27 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $product_cart_amounts = $this->payment_request->ae_get_updated_checkout_payment_data();
 
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
-            
-            // Adds a button selector when the product_page shortcode is added to a non-WooCommerce page.
-            
-            if (!empty($post) && isset($post->post_content) && has_shortcode($post->post_content, 'product_page')) {
-                $this->disable_funding = $this->setting_obj->get('product_disallowed_funding_methods', array());
-                $this->style_layout = $this->setting_obj->get('product_button_layout', 'horizontal');
-                $this->style_color = $this->setting_obj->get('product_style_color', 'gold');
-                $this->style_shape = $this->setting_obj->get('product_style_shape', 'rect');
-                $this->style_size = $this->setting_obj->get('product_button_size', 'responsive');
-                $this->style_height = $this->setting_obj->get('product_button_height', '');
-                $this->style_label = $this->setting_obj->get('product_button_label', 'paypal');
-                $this->style_tagline = $this->setting_obj->get('product_button_tagline', 'yes');
-                $this->google_pay_button_props = [
-                    'buttonColor' => $this->setting_obj->get('product_google_style_color', 'default'),
-                    'buttonType' => $this->setting_obj->get('product_google_button_type', 'plain'),
-                    'height' => $this->setting_obj->get('product_google_button_height', ''),
-                ];
-                $this->apple_pay_button_props = [
-                    'buttonColor' => $this->setting_obj->get('product_apple_style_color', 'black'),
-                    'buttonType' => $this->setting_obj->get('product_apple_button_type', 'plain'),
-                    'height' => $this->setting_obj->get('product_apple_button_height', ''),
-                ];
-                $this->common_button_props['width'] = $this->setting_obj->get('product_button_width', '');
-                $page = 'product';
-                $button_selector['angelleye_ppcp_product'] = '#angelleye_ppcp_product';
-                $button_selector['angelleye_ppcp_product_shortcode'] = '#angelleye_ppcp_product_shortcode';
-                $apple_pay_btn_selector['angelleye_ppcp_product_shortcode_apple_pay'] = '#angelleye_ppcp_product_shortcode_apple_pay';
-                $apple_pay_btn_selector['angelleye_ppcp_product_apple_pay'] = '#angelleye_ppcp_product_apple_pay';
-                $google_pay_btn_selector['angelleye_ppcp_product_shortcode_google_pay'] = '#angelleye_ppcp_product_shortcode_google_pay';
-                $google_pay_btn_selector['angelleye_ppcp_product_google_pay'] = '#angelleye_ppcp_product_google_pay';
+
+            // Adds a button selector when the product_page shortcode is added to a Non-WooCommerce page. Currently this supports single product_page shortcode if a page contains multiple shortcodes
+            $is_product_page_shortcode_used = !empty($post) && isset($post->post_content) && has_shortcode($post->post_content, 'product_page');
+            if ($is_product_page_shortcode_used) {
+                $shortcodes = angelleye_get_matched_shortcode_attributes('product_page', $post->post_content);
+                if (count($shortcodes)) {
+                    foreach ($shortcodes as $shortcode) {
+                        if (!empty($shortcode['id'])) {
+                            $product_id = $shortcode['id'];
+                            break;
+                        }
+                    }
+                }
+                if (empty($product_id)) {
+                    $is_product_page_shortcode_used = false;
+                }
             }
-            
-            if (is_product()) {
+
+            if (is_product() || $is_product_page_shortcode_used) {
                 $page = 'product';
-                $product_id = $post->ID;
+                $product_id = $is_product_page_shortcode_used ? $product_id : $post->ID;
                 $product = wc_get_product($product_id);
                 if (class_exists('WC_Subscriptions_Product') && WC_Subscriptions_Product::is_subscription($product)) {
                     $product_cart_amounts['isSubscriptionRequired'] = true;
@@ -628,8 +616,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             } elseif (is_add_payment_method_page()) {
                 $page = 'add_payment_method';
             }
-            
-            
+
             $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
             $smart_js_arg['intent'] = ($this->paymentaction === 'capture') ? 'capture' : 'authorize';
             $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
@@ -1982,14 +1969,5 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             <?php
         } catch (Exception $ex) {
         }
-    }
-    
-    public function angelleye_ppcp_display_smart_button_for_product_shortcode() {
-        try {
-            
-        } catch (Exception $ex) {
-
-        }
-        
     }
 }
