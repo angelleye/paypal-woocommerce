@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.4
-Stable tag: 4.4.6
+Stable tag: 4.4.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,11 +127,17 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 4.4.7 - 11.23.2023 =
+* Tweak - Removed the order edit disable feature. ([PFW-1684](https://github.com/angelleye/paypal-woocommerce/pull/1972))
+* Tweak - Resolved the Auth, Capture & Refund issues during order status change. ([PFW-1686](https://github.com/angelleye/paypal-woocommerce/pull/1971))
+* Tweak - Added WooCommerce Fee support with Payment gateways. ([PFW-1683](https://github.com/angelleye/paypal-woocommerce/pull/1970))
+* Feature - Add smart button support for product_page shortcode. ([PFW-1668](https://github.com/angelleye/paypal-woocommerce/pull/1969))
+
 = 4.4.6 - 11.23.2023 =
 * Fix - Fixed the translation function error in frontend. ([PFW-1685](https://github.com/angelleye/paypal-woocommerce/pull/1968))
 
 = 4.4.5 - 11.22.2023 =
-* Fix - Fixed the refund option display issue with Authorizated Captured orders. ([PFW-1681](https://github.com/angelleye/paypal-woocommerce/pull/1967))
+* Fix - Fixed the refund option display issue with Authorized Captured orders. ([PFW-1681](https://github.com/angelleye/paypal-woocommerce/pull/1967))
 * Fix - Resolved the Cartflow Upsells issue with PPCP. ([PFW-1679](https://github.com/angelleye/paypal-woocommerce/pull/1966))
 * Fix - Fixed the credit card token setup function parameter issue. ([PFW-1682](https://github.com/angelleye/paypal-woocommerce/pull/1965))
 * Tweak - Translation added for the create order error message. ([PFW-1598](https://github.com/angelleye/paypal-woocommerce/pull/1964))
