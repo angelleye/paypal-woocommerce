@@ -839,7 +839,7 @@ const localizedMessages = {
 	shipping_amount_update_error: __('Unable to update the shipping amount.', 'paypal-for-woocommerce'),
 	shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce'),
 	currency_change_js_load_error: __('We encountered an issue loading the updated currency. Please refresh the page or contact support for assistance.', 'paypal-for-woocommerce'),
-        create_order_error: _('Unable to create the order, please contact the support.', 'paypal-for-woocommerce')
+    create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce')
 };
 
 const pfwUrlHelper = {
