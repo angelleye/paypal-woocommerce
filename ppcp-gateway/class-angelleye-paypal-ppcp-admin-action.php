@@ -82,7 +82,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_capture_details'), 10, 3);
         add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_refund_details'), 11, 3);
         add_filter('woocommerce_hidden_order_itemmeta', array($this, 'woocommerce_hidden_order_itemmeta'), 10, 1);
-        add_filter('wc_order_is_editable', array($this, 'angelleye_ppcp_remove_add_item_button'), 10, 2);
         if (!has_action('woocommerce_admin_order_totals_after_tax', array($this, 'angelleye_ppcp_display_total_capture'))) {
             add_action('woocommerce_admin_order_totals_after_tax', array($this, 'angelleye_ppcp_display_total_capture'), 1, 1);
         }
@@ -695,14 +694,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         } catch (Exception $ex) {
 
         }
-    }
-
-    public function angelleye_ppcp_remove_add_item_button($bool, $order) {
-        $payment_method = $order->get_payment_method();
-        if (!empty($payment_method) && strpos(strtolower($payment_method), 'ppcp') !== false) {
-             $bool = false;
-        }
-        return $bool;
     }
 
     public function angelleye_ppcp_display_total_capture($order_id) {
