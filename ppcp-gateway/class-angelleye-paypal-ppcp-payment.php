@@ -518,7 +518,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         foreach ($order->get_items() as $item) {
             $lineItems[] = [
                 'label' => $item->get_name(''),
-                'amount' => angelleye_ppcp_round($item['total'], $decimals)
+                'amount' => angelleye_ppcp_round($order->get_line_total($item), $decimals)
             ];
         }
 
@@ -526,6 +526,14 @@ class AngellEYE_PayPal_PPCP_Payment {
             $lineItems[] = [
                 'label' => 'Shipping',
                 'amount' => angelleye_ppcp_round($order->get_shipping_total(''), $decimals)
+            ];
+        }
+
+        foreach ($order->get_fees() as $item) {
+            $amount = $order->get_line_total($item);
+            $lineItems[] = [
+                'label' => $item->get_name(''),
+                'amount' => angelleye_ppcp_round($amount, $decimals)
             ];
         }
 
@@ -544,6 +552,8 @@ class AngellEYE_PayPal_PPCP_Payment {
     {
         $lineItems = [];
         $details = $this->angelleye_ppcp_get_details_from_cart();
+        // Trigger this call so that hooked cart action/filters are executed before calculating the line items etc
+        WC()->cart->calculate_totals();
         $cart = WC()->cart->get_cart();
         $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
         foreach ($cart as $cart_item) {
@@ -559,6 +569,14 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'amount' => angelleye_ppcp_round($details['shipping'], $decimals)
             ];
         }
+
+        foreach (WC()->cart->get_fees() as $item) {
+            $lineItems[] = [
+                'label' => html_entity_decode(wc_trim_string($item->name ?: __('Fee', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
+                'amount' => angelleye_ppcp_round($item->amount, $decimals)
+            ];
+        }
+
         $tax = WC()->cart->get_total_tax();
         if ($tax > 0) {
             $lineItems[] = [
