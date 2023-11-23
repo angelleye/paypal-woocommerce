@@ -237,6 +237,8 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'soft_descriptor' => 'PPCP',
                 'error_email_notification' => 'yes',
                 'debug' => 'everything',
+                'enable_google_pay' => 'no',
+                'enable_apple_pay' => 'no'
             );
             foreach ($defaults as $key => $value) {
                 if (isset($this->setting_obj[$key])) {
