@@ -63,7 +63,7 @@ if ( wc_tax_enabled() ) {
 				endif;
 				?>
 				<th class="wc-order-edit-line-item" width="1%">&nbsp;</th>
-                                <th class="ppcp_shipment_tracking" width="5%" style="display: none;">Shipment Tracking</th>
+                <th class="ppcp_shipment_tracking" width="5%" style="display: none;">Shipment Tracking</th>
 			</tr>
 		</thead>
 		<tbody id="order_line_items">
@@ -75,7 +75,6 @@ if ( wc_tax_enabled() ) {
 			}
 			do_action( 'woocommerce_admin_order_items_after_line_items', $order->get_id() );
 			?>
-                
 		</tbody>
 		<tbody id="order_fee_line_items">
 			<?php
