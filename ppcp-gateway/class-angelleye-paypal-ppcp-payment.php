@@ -462,7 +462,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $discounts = WC()->cart->get_cart_discount_total();
 
             // TODO Verify why this has been added here and in HPOS branch??
-            $cart_contents_total = WC()->cart->cart_contents_total + $discounts;
+            $cart_contents_total = $rounded_total + $discounts;
             $order_tax = WC()->cart->tax_total + WC()->cart->shipping_tax_total;
             $shipping_total = WC()->cart->shipping_total;
             $cart_total = WC()->cart->total;
@@ -595,6 +595,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['quantity'], $decimals);
                 $rounded_total += angelleye_ppcp_round($amount * $values['quantity'], $decimals);
             }
+            foreach (WC()->cart->get_fees() as $cart_item_key => $fee_values) {
+                 $rounded_total += angelleye_ppcp_round($fee_values->amount * 1, $decimals);
+            }
             return $rounded_total;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
@@ -659,6 +662,15 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'amount' => $amount,
                 );
                 $items[] = $item;
+            }
+            foreach (WC()->cart->get_fees() as $cart_item_key => $fee_values) {
+                $fee_item = array(
+                    'name' => html_entity_decode(wc_trim_string($fee_values->name ? $fee_values->name : __('Fee', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
+                    'description' => '',
+                    'quantity' => 1,
+                    'amount' => AngellEYE_Gateway_Paypal::number_format($fee_values->amount),
+                );
+                $items[] = $fee_item;
             }
             return $items;
         } catch (Exception $ex) {
@@ -1423,6 +1435,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['qty'], $decimals);
                 $rounded_total += angelleye_ppcp_round($amount * $values['qty'], $decimals);
             }
+            foreach ($order->get_fees() as $cart_item_key => $fee_values) {
+                $amount = $order->get_line_total($fee_values);
+                $rounded_total += angelleye_ppcp_round($amount * 1, $decimals);
+            }
             return $rounded_total;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
@@ -1472,6 +1488,18 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'category' => $category,
                     'quantity' => $values['quantity'],
                     'amount' => $amount,
+                );
+                $items[] = $item;
+            }
+            foreach ($order->get_fees() as $cart_item_key => $fee_values) {
+                $fee_item_name = $fee_values->get_name();
+                $amount = $order->get_line_total($fee_values);
+                $item = array(
+                    'name' => html_entity_decode(wc_trim_string($fee_item_name ? $fee_item_name : __('Fee', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
+                    'desc' => '',
+                    'qty' => 1,
+                    'amt' => AngellEYE_Gateway_Paypal::number_format($amount, $order),
+                    'number' => ''
                 );
                 $items[] = $item;
             }
