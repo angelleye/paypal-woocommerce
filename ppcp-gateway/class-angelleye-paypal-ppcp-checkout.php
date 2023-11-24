@@ -85,7 +85,7 @@ if (class_exists('WC_Checkout')) {
             if (WC()->cart->is_empty()) {
                 throw new Exception(sprintf(__('Sorry, your session has expired. <a href="%s" class="wc-backward">Return to shop</a>', 'paypal-for-woocommerce'), esc_url(wc_get_page_permalink('shop'))));
             }
-            do_action('woocommerce_checkout_process');
+           
             $errors = new WP_Error();
             /**
              * @var AngellEYE_PayPal_PPCP_Smart_Button $smart_button
