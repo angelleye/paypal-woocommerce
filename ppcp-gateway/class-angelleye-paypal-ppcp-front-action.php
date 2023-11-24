@@ -114,6 +114,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     // Remove the shipping address override flag from session so that we can use the
                     // PayPal returned shipping address for other payment methods except google_pay
                     AngellEye_Session_Manager::unset('shipping_address_updated_from_callback');
+                    
 
                     // check if billing and shipping details posted from frontend then update cart
                     if (isset($_REQUEST['billing_address_source'])) {
@@ -186,7 +187,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 wp_send_json_error(array('messages' => $error_messages));
                             }
                         } else {
-                            $_GET['from'] = 'cart';
+                            $_GET['from'] = 'checkout_top';
+                            if(isset($_GET['from'])) {
+                                AngellEye_Session_Manager::set('from', wc_clean($_GET['from']));
+                            }
                             $this->payment_request->angelleye_ppcp_create_order_request();
                         }
                         exit();
