@@ -340,7 +340,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $this->angelleye_ppcp_order_actions = array();
             $paypal_order_id = angelleye_ppcp_get_post_meta($order, '_paypal_order_id');
             if (empty($paypal_order_id)) {
-                echo __('PayPal order id does not exist for this order.', 'paypal-for-woocommerce');
+                //echo __('PayPal order id does not exist for this order.', 'paypal-for-woocommerce');
                 return;
             }
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
