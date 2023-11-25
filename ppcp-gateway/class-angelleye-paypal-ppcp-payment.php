@@ -454,13 +454,29 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
         return false;
     }
+    
+    public function angelleye_ppcp_get_discount_amount_from_cart_item() {
+        $cart_item_discount_amount = 0;
+        foreach (WC()->cart->cart_contents as $cart_item_key => $values) {
+            $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['quantity'], $decimals);
+            if($amount < 0) {
+                $cart_item_discount_amount += angelleye_ppcp_round($amount * $values['quantity'], $decimals);
+            }
+        }
+        foreach (WC()->cart->get_fees() as $cart_item_key => $fee_values) {
+            if($fee_values->amount < 0) {
+                $cart_item_discount_amount += angelleye_ppcp_round($fee_values->amount * 1, $decimals);
+            }
+        }
+    }
 
     public function angelleye_ppcp_get_details_from_cart() {
         try {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $rounded_total = $this->angelleye_ppcp_get_rounded_total_in_cart();
             $discounts = WC()->cart->get_cart_discount_total();
-
+            $cart_item_discount_amount = $this->angelleye_ppcp_get_discount_amount_from_cart_item();
+            $cart_item_discount_amount + $discounts;
             // TODO Verify why this has been added here and in HPOS branch??
             $cart_contents_total = $rounded_total + $discounts;
             $order_tax = WC()->cart->tax_total + WC()->cart->shipping_tax_total;
@@ -616,7 +632,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             foreach (WC()->cart->get_fees() as $cart_item_key => $fee_values) {
-                if($fee_values->amount) {
+                if($fee_values->amount > 0) {
                     $rounded_total += angelleye_ppcp_round($fee_values->amount * 1, $decimals);
                 }
             }
