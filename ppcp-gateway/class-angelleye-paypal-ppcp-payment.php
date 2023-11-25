@@ -611,10 +611,14 @@ class AngellEYE_PayPal_PPCP_Payment {
             $rounded_total = 0;
             foreach (WC()->cart->cart_contents as $cart_item_key => $values) {
                 $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['quantity'], $decimals);
-                $rounded_total += angelleye_ppcp_round($amount * $values['quantity'], $decimals);
+                if($amount > 0) {
+                    $rounded_total += angelleye_ppcp_round($amount * $values['quantity'], $decimals);
+                }
             }
             foreach (WC()->cart->get_fees() as $cart_item_key => $fee_values) {
-                 $rounded_total += angelleye_ppcp_round($fee_values->amount * 1, $decimals);
+                if($fee_values->amount) {
+                    $rounded_total += angelleye_ppcp_round($fee_values->amount * 1, $decimals);
+                }
             }
             return angelleye_ppcp_round($rounded_total, $decimals);
         } catch (Exception $ex) {
@@ -671,24 +675,29 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $desc = strip_shortcodes($desc);
                 $desc = str_replace("\n", " ", $desc);
                 $desc = preg_replace('/\s+/', ' ', $desc);
-                $item = array(
-                    'name' => $product_name,
-                    'description' => apply_filters('angelleye_ppcp_product_description', $desc),
-                    'sku' => $sku,
-                    'category' => $category,
-                    'quantity' => $values['quantity'],
-                    'amount' => $amount,
-                );
-                $items[] = $item;
+                if($amount > 0) {
+                    $item = array(
+                        'name' => $product_name,
+                        'description' => apply_filters('angelleye_ppcp_product_description', $desc),
+                        'sku' => $sku,
+                        'category' => $category,
+                        'quantity' => $values['quantity'],
+                        'amount' => $amount,
+                    );
+                    $items[] = $item;
+                }
             }
             foreach (WC()->cart->get_fees() as $cart_item_key => $fee_values) {
-                $fee_item = array(
-                    'name' => html_entity_decode(wc_trim_string($fee_values->name ? $fee_values->name : __('Fee', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
-                    'description' => '',
-                    'quantity' => 1,
-                    'amount' => AngellEYE_Gateway_Paypal::number_format($fee_values->amount),
-                );
-                $items[] = $fee_item;
+                $amount = AngellEYE_Gateway_Paypal::number_format($fee_values->amount);
+                if($amount > 0) {
+                    $fee_item = array(
+                        'name' => html_entity_decode(wc_trim_string($fee_values->name ? $fee_values->name : __('Fee', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
+                        'description' => '',
+                        'quantity' => 1,
+                        'amount' => AngellEYE_Gateway_Paypal::number_format($fee_values->amount),
+                    );
+                    $items[] = $fee_item;
+                }
             }
             return $items;
         } catch (Exception $ex) {
@@ -1451,11 +1460,15 @@ class AngellEYE_PayPal_PPCP_Payment {
             $rounded_total = 0;
             foreach ($order->get_items() as $cart_item_key => $values) {
                 $amount = angelleye_ppcp_round($values['line_subtotal'] / $values['qty'], $decimals);
-                $rounded_total += angelleye_ppcp_round($amount * $values['qty'], $decimals);
+                if($amount > 0) {
+                    $rounded_total += angelleye_ppcp_round($amount * $values['qty'], $decimals);
+                }
             }
             foreach ($order->get_fees() as $cart_item_key => $fee_values) {
                 $amount = $order->get_line_total($fee_values);
-                $rounded_total += angelleye_ppcp_round($amount * 1, $decimals);
+                if($amount > 0) {
+                    $rounded_total += angelleye_ppcp_round($amount * 1, $decimals);
+                }
             }
             return $rounded_total;
         } catch (Exception $ex) {
