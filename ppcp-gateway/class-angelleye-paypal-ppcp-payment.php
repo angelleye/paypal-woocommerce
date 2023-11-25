@@ -468,6 +468,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $cart_item_discount_amount += angelleye_ppcp_round($fee_values->amount * 1, $decimals);
             }
         }
+        return $cart_item_discount_amount;
     }
 
     public function angelleye_ppcp_get_details_from_cart() {
@@ -515,6 +516,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'shipping_address' => $this->angelleye_ppcp_get_address_from_customer(),
                 'email' => WC()->customer->get_billing_email(),
             );
+            if((float) $details['total_item_amount'] == 0) {
+                $details['total_item_amount'] = WC()->cart->fee_total;
+            }
             return $this->angelleye_ppcp_get_details($details, $discounts, $rounded_total, $cart_total);
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
@@ -765,10 +769,11 @@ class AngellEYE_PayPal_PPCP_Payment {
             $details['order_total'] = angelleye_ppcp_round(
                     $details['total_item_amount'] + $details['order_tax'] + $details['shipping'] - $discounts, $decimals
             );
+            
             $diff = 0;
             if ($details['total_item_amount'] != $rounded_total) {
                 $diff = round($details['total_item_amount'] + $discounts - $rounded_total, $decimals);
-                if (abs($diff) > 0.000001 && 0.0 !== (float) $diff) {
+                if ($diff > 0.000001 && 0.0 !== (float) $diff) {
                     $extra_line_item = $this->angelleye_ppcp_get_extra_offset_line_item($diff);
                     $details['items'][] = $extra_line_item;
                     $details['total_item_amount'] += $extra_line_item['amount'];
@@ -1461,6 +1466,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'shipping' => angelleye_ppcp_round($order->get_shipping_total(), $decimals),
                 'items' => $this->angelleye_ppcp_get_paypal_line_items_from_order($order),
             );
+            if((float) $details['total_item_amount'] == 0) {
+                $details['total_item_amount'] = $order->get_total_fees();
+            }
             $details = $this->angelleye_ppcp_get_details($details, $order->get_total_discount(), $rounded_total, $order->get_total());
             return $details;
         } catch (Exception $ex) {
@@ -1546,10 +1554,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if($amount > 0) {
                     $item = array(
                         'name' => html_entity_decode(wc_trim_string($fee_item_name ? $fee_item_name : __('Fee', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
-                        'desc' => '',
-                        'qty' => 1,
-                        'amt' => angelleye_ppcp_round($order->get_line_total($fee_values), $decimals),
-                        'number' => ''
+                        'description' => '',
+                        'quantity' => 1,
+                        'amount' => angelleye_ppcp_round($order->get_line_total($fee_values), $decimals)
                     );
                     $items[] = $item;
                 }
