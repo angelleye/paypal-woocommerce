@@ -1499,26 +1499,31 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $desc = strip_shortcodes($desc);
                 $desc = str_replace("\n", " ", $desc);
                 $desc = preg_replace('/\s+/', ' ', $desc);
-                $item = array(
-                    'name' => $product_name,
-                    'description' => apply_filters('angelleye_ppcp_product_description', $desc),
-                    'sku' => $sku,
-                    'category' => $category,
-                    'quantity' => $values['quantity'],
-                    'amount' => $amount,
-                );
-                $items[] = $item;
+                if($amount > 0) {
+                    $item = array(
+                        'name' => $product_name,
+                        'description' => apply_filters('angelleye_ppcp_product_description', $desc),
+                        'sku' => $sku,
+                        'category' => $category,
+                        'quantity' => $values['quantity'],
+                        'amount' => $amount,
+                    );
+                    $items[] = $item;
+                }
             }
             foreach ($order->get_fees() as $fee_values) {
                 $fee_item_name = $fee_values->get_name();
-                $item = array(
-                    'name' => html_entity_decode(wc_trim_string($fee_item_name ? $fee_item_name : __('Fee', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
-                    'desc' => '',
-                    'qty' => 1,
-                    'amt' => angelleye_ppcp_round($order->get_line_total($fee_values), $decimals),
-                    'number' => ''
-                );
-                $items[] = $item;
+                $amount = $order->get_line_total($fee_values);
+                if($amount > 0) {
+                    $item = array(
+                        'name' => html_entity_decode(wc_trim_string($fee_item_name ? $fee_item_name : __('Fee', 'paypal-for-woocommerce'), 127), ENT_NOQUOTES, 'UTF-8'),
+                        'desc' => '',
+                        'qty' => 1,
+                        'amt' => angelleye_ppcp_round($order->get_line_total($fee_values), $decimals),
+                        'number' => ''
+                    );
+                    $items[] = $item;
+                }
             }
             return $items;
         } catch (Exception $ex) {
