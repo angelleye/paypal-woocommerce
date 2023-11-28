@@ -428,7 +428,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             AngellEYE_PayPal_PPCP_Front_Action::instance();
             AngellEye_PayPal_PPCP_Apple_Domain_Validation::instance();
             AngellEye_Session_Manager::instance();
-            add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
+            // Set to low priority so that gateways are added before WPML plugin runs the task to add the translations
+            // in the DB, WPML default priority is set to 10
+            add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'), 3 );
         }
 
 
