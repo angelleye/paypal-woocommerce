@@ -587,6 +587,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 global $wp;
                 $order_id = $wp->query_vars['order-pay'];
                 $order = wc_get_order($order_id);
+                // If the order is not retrieved then do not enqueue the JS
+                if (!is_a($order, 'WC_Order')) {
+                    return;
+                }
                 $product_cart_amounts['totalAmount'] = $order->get_total('');
                 $product_cart_amounts['shippingRequired'] = $order->needs_shipping_address();
                 $recurring_items = 0;
@@ -595,6 +599,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
                 $product_cart_amounts['isSubscriptionRequired'] = $recurring_items > 0;
                 $product_cart_amounts['lineItems'] = $this->payment_request->getOrderLineItems($order);
+
                 $is_pay_page = 'yes';
             } elseif (is_checkout()) {
                 $page = 'checkout';
