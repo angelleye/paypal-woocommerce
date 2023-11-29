@@ -30,8 +30,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->has_fields = true;
             $this->angelleye_ppcp_load_class();
             $this->setGatewaySupports();
-            $this->title = __($this->setting_obj->get('advanced_card_payments_title', 'Credit Card'), 'woocommerce');
-            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit Card'));
+            $this->title = __($this->setting_obj->get('advanced_card_payments_title', 'Credit Card'), 'paypal-for-woocommerce');
+            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->title);
             $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
             $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');
             $this->sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
