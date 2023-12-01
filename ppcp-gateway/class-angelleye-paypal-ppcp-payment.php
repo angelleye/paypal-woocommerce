@@ -502,6 +502,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $shipping_total = $shipping_total * $rate_c;
                 $cart_total = $cart_total * $rate_c;
                 $rounded_total = angelleye_ppcp_round($rounded_total * $rate_c, $decimals);
+                $discounts = $discounts * $rate_c;
                 foreach ($items as $key => $item) {
                     $items[$key]['amount'] = angelleye_ppcp_round($item['amount'] * $rate_c, $decimals);
                 }
