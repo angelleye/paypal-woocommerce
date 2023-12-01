@@ -1901,6 +1901,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
 
+            $line_items_shipping = $order->get_items('fee');
+            if ($line_items_shipping) {
+                foreach ($line_items_shipping as $single_item) {
+                    $order_data['refund_line_total'][$single_item->get_id()] = $single_item->get_total();
+                }
+            }
+
             $this->angelleye_ppcp_capture_authorized_payment_admin($order, $order_data);
 
         } catch (Exception $ex) {
