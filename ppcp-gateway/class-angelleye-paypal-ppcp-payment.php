@@ -478,9 +478,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             $rounded_total = $this->angelleye_ppcp_get_rounded_total_in_cart();
             $discounts = WC()->cart->get_cart_discount_total();
             $cart_item_discount_amount = $this->angelleye_ppcp_get_discount_amount_from_cart_item();
-            $cart_item_discount_amount + $discounts;
+            $discounts = $cart_item_discount_amount + $discounts;
             // TODO Verify why this has been added here and in HPOS branch??
-            $cart_contents_total = $rounded_total + $discounts;
+            $cart_contents_total = $rounded_total;
             $order_tax = WC()->cart->tax_total + WC()->cart->shipping_tax_total;
             $shipping_total = WC()->cart->shipping_total;
             $cart_total = WC()->cart->total;
