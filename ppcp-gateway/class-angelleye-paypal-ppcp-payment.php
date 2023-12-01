@@ -174,6 +174,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             $reference_id = wc_generate_order_key();
             AngellEye_Session_Manager::set('reference_id', $reference_id);
             $payment_method = wc_clean(!empty($_POST['angelleye_ppcp_payment_method_title']) ? $_POST['angelleye_ppcp_payment_method_title'] : '');
+            $payment_method_id = wc_clean(!empty($_POST['payment_method']) ? $_POST['payment_method'] : '');
+            if(!empty($payment_method_id)) {
+                AngellEye_Session_Manager::set('payment_method_id', $payment_method_id);
+            }
             if (!empty($payment_method)) {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method);
                 AngellEye_Session_Manager::set('payment_method_title', $payment_method_title);
@@ -284,6 +288,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title', false);
                 if (!empty($angelleye_ppcp_payment_method_title)) {
                     $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
+                }
+                $payment_method_id = AngellEye_Session_Manager::get('payment_method_id', false);
+                if (!empty($payment_method_id)) {
+                    $order->set_payment_method($payment_method_id);
                 }
                 $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method', false);
                 if (!empty($angelleye_ppcp_used_payment_method)) {
@@ -1112,6 +1120,11 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function get_set_payment_method_title_from_session($woo_order_id = null) {
         $order = wc_get_order($woo_order_id);
         $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title');
+        $payment_method_id = AngellEye_Session_Manager::get('payment_method_id');
+        if(!empty($payment_method_id)) {
+            $order->set_payment_method($payment_method_id);
+            $order->save();
+        }
         if (!empty($angelleye_ppcp_payment_method_title) && !empty($woo_order_id)) {
             $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
             $order->save();
@@ -1150,6 +1163,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             $angelleye_ppcp_payment_method_title = $this->get_set_payment_method_title_from_session($woo_order_id);
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
+            }
+            $payment_method_id = AngellEye_Session_Manager::get('payment_method_id', false);
+            if (!empty($payment_method_id)) {
+                $order->set_payment_method($payment_method_id);
             }
             $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
             if (!empty($angelleye_ppcp_used_payment_method)) {
@@ -1648,6 +1665,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             $angelleye_ppcp_payment_method_title = $this->get_set_payment_method_title_from_session($woo_order_id);
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
+            }
+            $payment_method_id = AngellEye_Session_Manager::get('payment_method_id', false);
+            if (!empty($payment_method_id)) {
+                $order->set_payment_method($payment_method_id);
             }
             $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
             if (!empty($angelleye_ppcp_used_payment_method)) {
