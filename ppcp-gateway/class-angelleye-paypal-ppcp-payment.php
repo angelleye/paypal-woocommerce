@@ -486,9 +486,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             $rounded_total = $this->angelleye_ppcp_get_rounded_total_in_cart();
             $discounts = WC()->cart->get_cart_discount_total();
             $cart_item_discount_amount = $this->angelleye_ppcp_get_discount_amount_from_cart_item();
-            $cart_item_discount_amount + $discounts;
+            $discounts = $cart_item_discount_amount + $discounts;
             // TODO Verify why this has been added here and in HPOS branch??
-            $cart_contents_total = $rounded_total + $discounts;
+            $cart_contents_total = $rounded_total;
             $order_tax = WC()->cart->tax_total + WC()->cart->shipping_tax_total;
             $shipping_total = WC()->cart->shipping_total;
             $cart_total = WC()->cart->total;
@@ -510,6 +510,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $shipping_total = $shipping_total * $rate_c;
                 $cart_total = $cart_total * $rate_c;
                 $rounded_total = angelleye_ppcp_round($rounded_total * $rate_c, $decimals);
+                $discounts = $discounts * $rate_c;
                 foreach ($items as $key => $item) {
                     $items[$key]['amount'] = angelleye_ppcp_round($item['amount'] * $rate_c, $decimals);
                 }
