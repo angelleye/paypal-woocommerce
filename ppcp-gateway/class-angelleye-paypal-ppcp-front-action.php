@@ -466,14 +466,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         ));
                         exit();
                     }
-                    $this->payment_request->angelleye_ppcp_update_order($order);
-                } else {
-                    // PFW-1688 - For the existing orders (Customer Order Pay page) save the selected payment method for the Authorized orders so that we can use same method to capture the amount
-                    $payment_method = $_POST['payment_method'] ?? null;
-                    if (!empty($payment_method)) {
-                        $order->set_payment_method($payment_method);
-                        $order->save();
-                    }
                 }
                 $liability_shift_result = 1;
                 if ($this->advanced_card_payments) {
@@ -485,7 +477,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 }
                 if ($liability_shift_result === 1) {
                     if ($this->paymentaction === 'capture') {
-                        $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($order_id, false);
+                        $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($order_id, true);
                     } else {
                         $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
                     }
