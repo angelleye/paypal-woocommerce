@@ -576,7 +576,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 exit;
             }
             if (is_used_save_payment_token() === false) {
-                $this->payment_request->angelleye_ppcp_create_order_request();
+                // check if an existing failed order is being processed.
+                $order_id = absint( WC()->session->get( 'order_awaiting_payment' ) );
+                $this->payment_request->angelleye_ppcp_create_order_request($order_id > 0 ? $order_id : null);
                 exit();
             }
         } catch (Exception $ex) {
