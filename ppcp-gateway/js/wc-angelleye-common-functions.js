@@ -91,7 +91,7 @@ const angelleyeOrder = {
 		if (jQuery(wooNoticeClass).length) {
 			return wooNoticeClass;
 		}
-		return this.getCheckoutSelectorCss();
+		return angelleyeOrder.getCheckoutSelectorCss();
 	},
 	scrollToWooCommerceNoticesSection: () => {
 		let scrollElement = jQuery('.woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout');
