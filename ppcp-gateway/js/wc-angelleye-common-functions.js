@@ -1,5 +1,3 @@
-const { __ } = wp.i18n;
-
 const angelleyeOrder = {
 	productAddToCart: true,
 	isCheckoutPage: () => {
@@ -87,13 +85,13 @@ const angelleyeOrder = {
 		let wooNoticeClass = '.woocommerce-notices-wrapper:first';
 		// On some step checkout pages (e.g CheckoutWC) there are different notice wrappers under each form so this adds support to display in relevant section
 		const checkoutFormSelector = angelleyeOrder.getCheckoutSelectorCss();
-		if (jQuery(checkoutFormSelector).find(wooNoticeClass).length) {
+		if (jQuery(checkoutFormSelector).find(wooNoticeClass).length && jQuery(checkoutFormSelector).find(wooNoticeClass).is(':visible')) {
 			return `${checkoutFormSelector} ${wooNoticeClass}`;
 		}
 		if (jQuery(wooNoticeClass).length) {
 			return wooNoticeClass;
 		}
-		return this.getCheckoutSelectorCss();
+		return angelleyeOrder.getCheckoutSelectorCss();
 	},
 	scrollToWooCommerceNoticesSection: () => {
 		let scrollElement = jQuery('.woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout');
@@ -825,6 +823,7 @@ const angelleyeOrder = {
 	}
 }
 
+__ = wp.i18n.__;
 const localizedMessages = {
 	card_not_supported: __('Unfortunately, we do not support this credit card type. Please try another card type.', 'paypal-for-woocommerce'),
 	fields_not_valid: __('Unfortunately, your credit card details are not valid. Please review the card details and try again.', 'paypal-for-woocommerce'),
@@ -839,7 +838,7 @@ const localizedMessages = {
 	shipping_amount_update_error: __('Unable to update the shipping amount.', 'paypal-for-woocommerce'),
 	shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce'),
 	currency_change_js_load_error: __('We encountered an issue loading the updated currency. Please refresh the page or contact support for assistance.', 'paypal-for-woocommerce'),
-    create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce')
+	create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce')
 };
 
 const pfwUrlHelper = {

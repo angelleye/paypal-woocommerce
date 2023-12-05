@@ -292,6 +292,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $payment_method_id = AngellEye_Session_Manager::get('payment_method_id', false);
                 if (!empty($payment_method_id)) {
                     $order->set_payment_method($payment_method_id);
+                    // set transaction id as blank as previous checkout request with
+                    // other payment gateway might have added a transaction id
+                    $order->set_transaction_id('');
                 }
                 $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method', false);
                 if (!empty($angelleye_ppcp_used_payment_method)) {
