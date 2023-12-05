@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.4
-Stable tag: 4.4.10
+Stable tag: 4.4.11
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.4.11 - 12.05.2023 =
+* Tweak - Resolved the checkout error message display issue and translation function issue. ([PFW-1699](https://github.com/angelleye/paypal-woocommerce/pull/1984))
 
 = 4.4.10 - 12.01.2023 =
 * Fix - Fixed the Capture issue with existing Authorized orders from Order Pay page. ([PFW-1688](https://github.com/angelleye/paypal-woocommerce/pull/1983))
