@@ -384,7 +384,11 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             if (!empty($angelleye_ppcp_payment_method_title)) {
                 $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
             }
-             $order->save();
+            $payment_method_id = AngellEye_Session_Manager::get('payment_method_id', false);
+            if (!empty($payment_method_id)) {
+                $order->set_payment_method($payment_method_id);
+            }
+            $order->save();
             // When a user chooses existing saved card then detect it and process the order payment using that.
             $saved_tokens = ['wc-angelleye_ppcp_apple_pay-payment-token', 'wc-angelleye_ppcp-payment-token'];
             $token_id = null;
@@ -553,7 +557,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if ('on-hold' === $order->get_status()) {
             return false;
         }
-        
+
         $fee = angelleye_ppcp_get_post_meta($order, '_paypal_fee', true);
         $currency = angelleye_ppcp_get_post_meta($order, '_paypal_fee_currency_code', true);
         if ($order->get_status() == 'refunded') {
@@ -1073,7 +1077,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function validate_checkbox_enable_paypal_apple_pay_field($key, $value) {
         return ! is_null( $value ) ? 'yes' : 'no';
     }
-    
+
     public function generate_paypal_shipment_tracking_html($key, $data) {
         if (isset($data['type']) && $data['type'] === 'paypal_shipment_tracking') {
             $testmode = $this->sandbox ? 'yes' : 'no';

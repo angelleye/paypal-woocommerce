@@ -42,9 +42,9 @@ $row_class    = apply_filters( 'woocommerce_admin_html_order_item_class', ! empt
 
 		<?php do_action( 'woocommerce_before_order_itemmeta', $item_id, $item, $product ); ?>
 		<?php require WC_ABSPATH . 'includes/admin/meta-boxes/views/html-order-item-meta.php'; ?>
-		<?php do_action( 'woocommerce_after_order_itemmeta', $item_id, $item, $product, $order ); 
-                
-                
+		<?php do_action( 'woocommerce_after_order_itemmeta', $item_id, $item, $product, $order );
+
+
                 ?>
 	</td>
 
@@ -188,5 +188,5 @@ $row_class    = apply_filters( 'woocommerce_admin_html_order_item_class', ! empt
 			<?php endif; ?>
 		</div>
 	</td>
-        <td class="ppcp_shipment_tracking" width="5%" style="display: none;"><?php do_action('ppcp_angelleye_display_shipment_widget_order_item', absint( $item_id ), $order); ?></td>
+    <td class="ppcp_shipment_tracking" width="5%" style="display: none;"><?php do_action('ppcp_angelleye_display_shipment_widget_order_item', absint( $item_id ), $order); ?></td>
 </tr>

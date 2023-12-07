@@ -383,6 +383,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     exit();
                 case "angelleye_ppcp_cc_setup_tokens":
                     $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens();
+                    exit();
                 case "install_plugin":
                     $this->install_shipment_tracking_plugin();
                     exit();
@@ -465,7 +466,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         ));
                         exit();
                     }
-                    $this->payment_request->angelleye_ppcp_update_order($order);
                 }
                 $liability_shift_result = 1;
                 if ($this->advanced_card_payments) {
@@ -477,7 +477,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 }
                 if ($liability_shift_result === 1) {
                     if ($this->paymentaction === 'capture') {
-                        $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($order_id, false);
+                        $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($order_id, true);
                     } else {
                         $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
                     }
@@ -576,7 +576,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 exit;
             }
             if (is_used_save_payment_token() === false) {
-                $this->payment_request->angelleye_ppcp_create_order_request();
+                // check if an existing failed order is being processed.
+                $order_id = absint( WC()->session->get( 'order_awaiting_payment' ) );
+                $this->payment_request->angelleye_ppcp_create_order_request($order_id > 0 ? $order_id : null);
                 exit();
             }
         } catch (Exception $ex) {

@@ -1,5 +1,3 @@
-const { __ } = wp.i18n;
-
 const angelleyeOrder = {
 	productAddToCart: true,
 	isCheckoutPage: () => {
@@ -87,13 +85,13 @@ const angelleyeOrder = {
 		let wooNoticeClass = '.woocommerce-notices-wrapper:first';
 		// On some step checkout pages (e.g CheckoutWC) there are different notice wrappers under each form so this adds support to display in relevant section
 		const checkoutFormSelector = angelleyeOrder.getCheckoutSelectorCss();
-		if (jQuery(checkoutFormSelector).find(wooNoticeClass).length) {
+		if (jQuery(checkoutFormSelector).find(wooNoticeClass).length && jQuery(checkoutFormSelector).find(wooNoticeClass).is(':visible')) {
 			return `${checkoutFormSelector} ${wooNoticeClass}`;
 		}
 		if (jQuery(wooNoticeClass).length) {
 			return wooNoticeClass;
 		}
-		return this.getCheckoutSelectorCss();
+		return angelleyeOrder.getCheckoutSelectorCss();
 	},
 	scrollToWooCommerceNoticesSection: () => {
 		let scrollElement = jQuery('.woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout');
@@ -282,7 +280,7 @@ const angelleyeOrder = {
 		let errorMessage = error.message ? error.message : error;
 		if ((errorMessage.toLowerCase()).indexOf('expected an order id to be passed') > -1) {
 			if ((errorMessage.toLowerCase()).indexOf('required fields') < 0) {
-				errorMessage = 'Unable to create the order, please contact the support.';
+				errorMessage = localizedMessages.create_order_error;
 			}
 		}
 		if (errorMessage !== '') {
@@ -677,6 +675,10 @@ const angelleyeOrder = {
 					updateCartTotal();
 					angelleyeOrder.renderPaymentButtons();
 					angelleyeOrder.hideProcessingSpinner(checkoutSelector);
+				}, () => {
+					console.log('Unable to refresh the PayPal Lib');
+					angelleyeOrder.showError('<li>' + localizedMessages.currency_change_js_load_error + '</li>');
+					angelleyeOrder.hideProcessingSpinner(checkoutSelector);
 				});
 				response.renderNeeded = false;
 			} else {
@@ -821,6 +823,7 @@ const angelleyeOrder = {
 	}
 }
 
+__ = wp.i18n.__;
 const localizedMessages = {
 	card_not_supported: __('Unfortunately, we do not support this credit card type. Please try another card type.', 'paypal-for-woocommerce'),
 	fields_not_valid: __('Unfortunately, your credit card details are not valid. Please review the card details and try again.', 'paypal-for-woocommerce'),
@@ -833,7 +836,9 @@ const localizedMessages = {
 	error_validating_merchant: __('This merchant is not enabled to process requested payment method. please contact website owner.', 'paypal-for-woocommerce'),
 	general_error_message: __('We are unable to process your request at the moment, please contact website owner.', 'paypal-for-woocommerce'),
 	shipping_amount_update_error: __('Unable to update the shipping amount.', 'paypal-for-woocommerce'),
-	shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce')
+	shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce'),
+	currency_change_js_load_error: __('We encountered an issue loading the updated currency. Please refresh the page or contact support for assistance.', 'paypal-for-woocommerce'),
+	create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce')
 };
 
 const pfwUrlHelper = {

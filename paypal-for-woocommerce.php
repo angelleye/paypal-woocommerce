@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily add the PayPal Commerce Platform including PayPal Checkout, Pay Later, Venmo, Direct Credit Processing, and alternative payment methods like Apple Pay, Google Pay, and more! Also fully supports Braintree Payments.
- * Version:           4.4.3
+ * Version:           4.4.11
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -15,7 +15,7 @@
  * Requires at least: 5.8
  * Tested up to: 6.4
  * WC requires at least: 3.0.0
- * WC tested up to: 8.2.1
+ * WC tested up to: 8.3.1
  *
  * ************
  * Attribution
@@ -37,7 +37,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '4.4.3');
+    define('VERSION_PFW', '4.4.11');
 }
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__);
@@ -161,6 +161,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_filter('woocommerce_product_title', array($this, 'woocommerce_product_title'));
 
             add_action('wp_enqueue_scripts', array($this, 'angelleye_cc_ui_style'), 100);
+            add_filter('script_loader_tag', [$this, 'angelleye_pfw_clean_script_tag'], 10000, 3);
             // To load the deferred PPCP JS SDK async
             add_filter('script_loader_tag', function ( $tag, $handle ) {
                 if ('angelleye_ppcp' !== $handle) {
@@ -1610,6 +1611,20 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
 
         public function angelleye_cc_ui_style() {
             wp_register_style('angelleye-cc-ui', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/css/angelleye-cc-ui.css', array(), VERSION_PFW);
+        }
+
+        /**
+         * Removes the defer / async tags for jQuery and i18n libs
+         * @param $tag
+         * @param $handle
+         * @param $src
+         * @return array|mixed|string|string[]
+         */
+        public function angelleye_pfw_clean_script_tag($tag, $handle, $src) {
+            if (in_array($handle, ['jquery', 'wp-i18n', 'wp-hooks'])) {
+                $tag = str_replace(['defer="defer"', "defer='defer'", " defer", " async"], '', $tag);
+            }
+            return $tag;
         }
 
         public function angelleye_wc_order_statuses($order_statuses) {

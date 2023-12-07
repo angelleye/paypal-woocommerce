@@ -82,7 +82,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_capture_details'), 10, 3);
         add_action('woocommerce_after_order_itemmeta', array($this, 'angelleye_ppcp_display_refund_details'), 11, 3);
         add_filter('woocommerce_hidden_order_itemmeta', array($this, 'woocommerce_hidden_order_itemmeta'), 10, 1);
-        add_filter('wc_order_is_editable', array($this, 'angelleye_ppcp_remove_add_item_button'), 10, 2);
         if (!has_action('woocommerce_admin_order_totals_after_tax', array($this, 'angelleye_ppcp_display_total_capture'))) {
             add_action('woocommerce_admin_order_totals_after_tax', array($this, 'angelleye_ppcp_display_total_capture'), 1, 1);
         }
@@ -121,7 +120,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         $payment_method = $order->get_payment_method();
         $paymentaction = angelleye_ppcp_get_post_meta($order, '_paymentaction');
         $auth_transaction_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
-        $auto_capture_payment_support_gateways = ['angelleye_ppcp', 'angelleye_ppcp_google_pay', 'angelleye_ppcp_apple_pay'];
+        $auto_capture_payment_support_gateways = ['angelleye_ppcp', 'angelleye_ppcp_cc', 'angelleye_ppcp_google_pay', 'angelleye_ppcp_apple_pay'];
+
         if (in_array($payment_method, $auto_capture_payment_support_gateways) && $paymentaction === 'authorize' && !empty($auth_transaction_id)) {
             $trans_details = $this->payment_request->angelleye_ppcp_show_details_authorized_payment($auth_transaction_id);
             if ($this->angelleye_ppcp_is_authorized_only($trans_details)) {
@@ -138,10 +138,17 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         $payment_method = $order->get_payment_method();
         $transaction_id = $order->get_transaction_id();
         $paymentaction = angelleye_ppcp_get_post_meta($order, '_paymentaction');
-        if (in_array($payment_method, ['angelleye_ppcp_cc', 'angelleye_ppcp', 'angelleye_ppcp_apple_pay']) && $transaction_id && $paymentaction === 'authorize') {
+
+        if (in_array($payment_method, ['angelleye_ppcp_cc', 'angelleye_ppcp', 'angelleye_ppcp_apple_pay', 'angelleye_ppcp_google_pay']) && $transaction_id && $paymentaction === 'authorize') {
             $trans_details = $this->payment_request->angelleye_ppcp_show_details_authorized_payment($transaction_id);
             if ($this->angelleye_ppcp_is_authorized_only($trans_details)) {
-                $this->payment_request->angelleye_ppcp_void_authorized_payment($transaction_id);
+                $response = $this->payment_request->angelleye_ppcp_void_authorized_payment($transaction_id);
+                if (!is_wp_error($response)) {
+                    $note = __("Authorization Voided", 'paypal-for-woocommerce');
+                } else {
+                    $note = __("Void Authorization Failed:", 'paypal-for-woocommerce') . ': ' . $response->get_error_message();
+                }
+                $order->add_order_note($note);
             }
         }
     }
@@ -334,10 +341,25 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $this->angelleye_ppcp_order_actions = array();
             $paypal_order_id = angelleye_ppcp_get_post_meta($order, '_paypal_order_id');
             if (empty($paypal_order_id)) {
-                echo __('PayPal order id does not exist for this order.', 'paypal-for-woocommerce');
+                //echo __('PayPal order id does not exist for this order.', 'paypal-for-woocommerce');
                 return;
             }
             $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
+
+            if (isset($this->payment_response['name']) && $this->payment_response['name'] == 'RESOURCE_NOT_FOUND') {
+                $auth_transaction_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
+                // This condition is to fix the old orders where paypal_order_id has been replaced with authorization_id when capture was processed during order complete status change
+                if (!empty($auth_transaction_id)) {
+                    $auth_response = $this->payment_request->angelleye_ppcp_get_authorized_payment($auth_transaction_id);
+                    $paypal_txn_id = $auth_response['supplementary_data']['related_ids']['order_id'] ?? '';
+                    if (!empty($paypal_txn_id)) {
+                        $paypal_order_id = $paypal_txn_id;
+                        $order->update_meta_data('_paypal_order_id', $paypal_txn_id);
+                        $order->save();
+                        $this->payment_response = $this->payment_request->angelleye_ppcp_get_paypal_order_details($paypal_order_id);
+                    }
+                }
+            }
             if (isset($this->payment_response) && !empty($this->payment_response) && isset($this->payment_response['intent']) && $this->payment_response['intent'] === 'AUTHORIZE') {
                 if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']) && !empty($this->payment_response['purchase_units']['0']['payments']['authorizations'])) {
                     if (isset($this->payment_response['purchase_units']['0']['payments']['refunds'])) {
@@ -415,9 +437,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             wp_enqueue_script('angelleye-ppcp-order-action');
             if ($this->ae_capture_amount === 0) {
                 ?>
-                <style>.button.refund-items {
-                        display:none;
-                    }</style>
+                <style>.button.refund-items {display:none;}</style>
                     <?php
                 }
                 if (empty($this->angelleye_ppcp_order_actions)) {
@@ -675,18 +695,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         } catch (Exception $ex) {
 
         }
-    }
-
-    public function angelleye_ppcp_remove_add_item_button($bool, $order) {
-        if (!$bool) {
-            return false;
-        } else {
-            $payment_method = $order->get_payment_method();
-            if (!empty($payment_method) && strpos(strtolower($payment_method), 'ppcp') !== false) {
-                return false;
-            }
-        }
-        return $bool;
     }
 
     public function angelleye_ppcp_display_total_capture($order_id) {

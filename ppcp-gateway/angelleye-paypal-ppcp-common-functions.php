@@ -148,7 +148,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -392,7 +392,7 @@ if (!function_exists('angelleye_ppcp_round')) {
             $round_price = round($price, $precision);
             $price = number_format($round_price, $precision, '.', '');
         } catch (Exception $ex) {
-            
+
         }
 
         return $price;
@@ -520,7 +520,7 @@ if (!function_exists('angelleye_ppcp_is_product_purchasable')) {
         if ($enable_tokenized_payments === false && $product->is_type('subscription')) {
             return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
         }
-        if (!is_product() || !$product->is_in_stock() || $product->is_type('external') || ($product->get_price() == '' || $product->get_price() == 0)) {
+        if (!$product->is_in_stock() || $product->is_type('external') || ($product->get_price() == '' || $product->get_price() == 0)) {
             return apply_filters('angelleye_ppcp_is_product_purchasable', false, $product);
         }
         return apply_filters('angelleye_ppcp_is_product_purchasable', true, $product);
@@ -785,7 +785,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -810,7 +810,7 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1111,7 +1111,7 @@ if (!function_exists('angelleye_ppcp_get_paypal_details')) {
             }
             return '';
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1150,7 +1150,7 @@ if (!function_exists('angelleye_ppcp_get_classic_paypal_details')) {
                 }
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -1294,5 +1294,20 @@ if (!function_exists('print_filters_for')) {
 if (!function_exists('angelleye_ppcp_get_platform_fee_refund_amount')) {
     function angelleye_ppcp_get_platform_fee_refund_amount() {
         return 0.00;
+    }
+}
+
+if (!function_exists('angelleye_get_matched_shortcode_attributes')) {
+    function angelleye_get_matched_shortcode_attributes($tag, $text)
+    {
+        preg_match_all('/' . get_shortcode_regex() . '/s', $text, $matches);
+        $out = array();
+        if (isset($matches[2])) {
+            foreach ((array)$matches[2] as $key => $value) {
+                if ($tag === $value)
+                    $out[] = shortcode_parse_atts($matches[3][$key]);
+            }
+        }
+        return $out;
     }
 }
