@@ -1282,6 +1282,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $transaction_id = $this->api_response['purchase_units']['0']['payments']['captures']['0']['id'] ?? '';
                     $seller_protection = $this->api_response['purchase_units']['0']['payments']['captures']['0']['seller_protection']['status'] ?? '';
                     $payment_status = $this->api_response['purchase_units']['0']['payments']['captures']['0']['status'] ?? '';
+                    // Update the transaction id for the order, For pending orders we need to save transaction id as well
+                    $order->set_transaction_id($transaction_id);
                     if ($payment_status == 'COMPLETED') {
                         $order->payment_complete($transaction_id);
                         $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
