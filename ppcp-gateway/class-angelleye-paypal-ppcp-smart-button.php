@@ -312,6 +312,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('woocommerce_coupons_enabled', array($this, 'angelleye_ppcp_woocommerce_coupons_enabled'), 999, 1);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_order_review_page_description'), 9);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_update_checkout_field_details'));
+        add_action('wfacp_before_form', array($this, 'angelleye_ppcp_update_checkout_field_details'), 1000);
         add_filter('woocommerce_checkout_get_value', array($this, 'angelleye_ppcp_woocommerce_checkout_get_value'), 999, 2);
 
         add_action('woocommerce_review_order_before_submit', array($this, 'angelleye_ppcp_cancel_button'), 999);
@@ -1491,6 +1492,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         // Do not override shipping address, if the ship_to_different_address is checked in frontend
         $ship_to_different_address = isset($order_data['ship_to_different_address']) && $order_data['ship_to_different_address'];
         if (!empty($shipping_address) && !$ship_to_different_address) {
+            $order_data['shipping_first_name'] = $shipping_address['first_name'] ?? '';
+            $order_data['shipping_last_name'] = $shipping_address['last_name'] ?? '';
+            $order_data['shipping_company'] = $shipping_address['company'] ?? ($order_data['billing_company'] ?? '');
+            $order_data['shipping_country'] = $shipping_address['country'] ?? '';
+            $order_data['shipping_address_1'] = $shipping_address['address_1'] ?? '';
+            $order_data['shipping_address_2'] = $shipping_address['address_2'] ?? '';
+            $order_data['shipping_city'] = $shipping_address['city'] ?? '';
+            $order_data['shipping_state'] = $shipping_address['state'] ?? '';
+            $order_data['shipping_postcode'] = $shipping_address['postcode'] ?? '';
+        } elseif(!empty($shipping_address) && isset($defaultData['shipping_address_1']) && empty ($defaultData['shipping_address_1'])) {
             $order_data['shipping_first_name'] = $shipping_address['first_name'] ?? '';
             $order_data['shipping_last_name'] = $shipping_address['last_name'] ?? '';
             $order_data['shipping_company'] = $shipping_address['company'] ?? ($order_data['billing_company'] ?? '');
