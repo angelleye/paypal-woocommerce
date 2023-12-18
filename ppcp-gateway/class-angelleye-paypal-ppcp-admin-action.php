@@ -21,6 +21,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public ?AngellEYE_PayPal_PPCP_Seller_Onboarding $seller_onboarding;
     public $is_sandbox;
     public $merchant_id;
+    public $paymentaction;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -60,7 +61,11 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     }
 
     public function angelleye_ppcp_add_hooks() {
-        $this->is_auto_capture_auth = 'yes' === $this->setting_obj->get('auto_capture_auth', 'yes');
+        $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
+        $this->is_auto_capture_auth = false;
+        if($this->paymentaction === 'capture') {
+            $this->is_auto_capture_auth = 'yes' === $this->setting_obj->get('auto_capture_auth', 'yes');
+        }
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         if ($this->is_sandbox) {
             $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
