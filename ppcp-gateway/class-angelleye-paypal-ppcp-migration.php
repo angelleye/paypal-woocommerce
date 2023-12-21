@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 /**
  * @since      1.0.0
  * @package    AngellEYE_PayPal_PPCP_Migration
@@ -19,7 +21,7 @@ class AngellEYE_PayPal_PPCP_Migration {
         }
         return self::$_instance;
     }
-    
+
     public function __construct() {
         $this->angelleye_ppcp_load_class();
     }
@@ -316,7 +318,20 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_get_subscription_order_list($payment_method_id) {
         try {
-            if (function_exists('wcs_get_orders_with_meta_query')) {
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                $args = array(
+                    'type' => 'shop_subscription',
+                    'limit' => -1,
+                    'return' => 'ids',
+                    'status' => array('wc-active', 'wc-on-hold'),
+                    'payment_method' => $payment_method_id,
+                    'orderby' => 'date',
+                    'order' => 'DESC',
+                    'orderby' => 'ID',
+                    'order' => 'DESC'
+                );
+                return wc_get_orders($args);
+            } elseif (function_exists('wcs_get_orders_with_meta_query')) {
                 $args = array('type' => 'shop_subscription',
                     'limit' => -1,
                     'status' => 'any',
@@ -326,9 +341,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                             'key' => '_payment_method',
                             'value' => $payment_method_id,
                         ),
-                    ),
-                    'orderby' => 'ID',
-                    'order' => 'DESC',);
+                ));
                 return wcs_get_orders_with_meta_query($args);
             }
             return array();
