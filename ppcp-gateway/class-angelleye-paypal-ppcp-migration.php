@@ -11,12 +11,28 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_Migration {
 
     protected static $_instance = null;
+    public $setting_obj;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
         }
         return self::$_instance;
+    }
+    
+    public function __construct() {
+        $this->angelleye_ppcp_load_class();
+    }
+
+    public function angelleye_ppcp_load_class() {
+        try {
+            if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
+            }
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+        } catch (Exception $ex) {
+            
+        }
     }
 
     public function angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status) {
@@ -285,9 +301,11 @@ class AngellEYE_PayPal_PPCP_Migration {
                         if ($user_subscription->get_time('next_payment') <= 0 || !$user_subscription->has_status(array('active', 'on-hold'))) {
                             continue;
                         }
-                        $this->angelleye_ppcp_update_payment_method($user_subscription, $to_payment_method);
-                        $user_subscription->set_requires_manual_renewal(false);
-                        $user_subscription->save();
+                        if ($this->is_angelleye_ppcp_old_payment_token_exist($user_subscription)) {
+                            $this->angelleye_ppcp_update_payment_method($user_subscription, $to_payment_method);
+                            $user_subscription->set_requires_manual_renewal(false);
+                            $user_subscription->save();
+                        }
                     }
                 }
             }
@@ -319,18 +337,13 @@ class AngellEYE_PayPal_PPCP_Migration {
         }
     }
 
-    public static function angelleye_ppcp_update_payment_method($subscription, $new_payment_method) {
+    public function angelleye_ppcp_update_payment_method($subscription, $new_payment_method) {
         $old_payment_method = $subscription->get_payment_method();
         $old_payment_method_title = $subscription->get_payment_method_title();
-        $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+        $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
         $payment_gateways_handler = WC_Subscriptions_Core_Plugin::instance()->get_gateways_handler_class();
         do_action('woocommerce_subscriptions_pre_update_payment_method', $subscription, $new_payment_method, $old_payment_method);
         $payment_gateways_handler::trigger_gateway_status_updated_hook($subscription, 'cancelled');
-        if (isset($available_gateways[$new_payment_method])) {
-            $new_payment_method_title = $available_gateways[$new_payment_method]->get_title();
-        } else {
-            $new_payment_method_title = 'PayPal';
-        }
         if (empty($old_payment_method_title)) {
             $old_payment_method_title = $old_payment_method;
         }
@@ -362,6 +375,27 @@ class AngellEYE_PayPal_PPCP_Migration {
             );
             $subscription->add_order_note($error_message);
             $subscription->add_order_note($message);
+        }
+    }
+
+    public function is_angelleye_ppcp_old_payment_token_exist($user_subscription) {
+        try {
+            $payment_tokens_id = $user_subscription->get_meta('_payment_tokens_id');
+            if (empty($payment_tokens_id)) {
+                $payment_tokens_id = $user_subscription->get_meta('payment_token_id');
+            }
+            if (empty($payment_tokens_id)) {
+                $payment_tokens_id = $user_subscription->get_meta('_ppec_billing_agreement_id');
+            }
+            if (empty($payment_tokens_id)) {
+                $payment_tokens_id = $user_subscription->get_meta('_paypal_subscription_id');
+            }
+            if (empty($payment_tokens_id)) {
+                return false;
+            }
+            return true;
+        } catch (Exception $ex) {
+            
         }
     }
 }
