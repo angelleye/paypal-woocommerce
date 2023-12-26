@@ -1,4 +1,7 @@
 <?php
+
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 defined('ABSPATH') || exit;
 
 class AngellEYE_PayPal_PPCP_Admin_Onboarding {
@@ -215,7 +218,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -233,7 +236,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -261,7 +264,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -360,23 +363,28 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
     public function angelleye_ppcp_get_other_payment_methods() {
         try {
             global $wpdb;
-            $payment_methods = $wpdb->get_col("SELECT DISTINCT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' AND post_id IN (
-                    SELECT ID
-                    FROM {$wpdb->posts}
-                    WHERE post_type = 'shop_subscription'
-                    AND post_status IN ('wc-active', 'wc-on-hold')
-                )
-            ");
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                $payment_methods = $wpdb->get_col("SELECT DISTINCT payment_method FROM {$wpdb->prefix}wc_orders WHERE status IN ('wc-active', 'wc-on-hold') AND type = 'shop_subscription';");
+            } else {
+                $payment_methods = $wpdb->get_col("SELECT DISTINCT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_payment_method' AND post_id IN (
+                        SELECT ID
+                        FROM {$wpdb->posts}
+                        WHERE post_type = 'shop_subscription'
+                        AND post_status IN ('wc-active', 'wc-on-hold')
+                    )
+                ");
+            }
+
             return $payment_methods;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -440,9 +448,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     <?php
                 endif;
             }
-
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -685,12 +692,11 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             </div>
             <?php
         } catch (Exception $ex) {
-
+            
         }
     }
 
-    public function print_general_reconnect_paypal_account_section($testmode)
-    {
+    public function print_general_reconnect_paypal_account_section($testmode) {
         $signup_link = $this->angelleye_get_signup_link($testmode, 'admin_settings_onboarding');
         if ($signup_link) {
             $args = array(
@@ -703,14 +709,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             $script_url = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
             ?>
             <script type="text/javascript">
-				document.querySelectorAll('[data-paypal-onboard-complete=generalOnboardingCallback]').forEach((element) => {
-					element.addEventListener('click', (e) => {
-						if ('undefined' === typeof PAYPAL) {
-							e.preventDefault();
-							alert('PayPal error');
-						}
-					});
-				});</script>
+                                        document.querySelectorAll('[data-paypal-onboard-complete=generalOnboardingCallback]').forEach((element) => {
+                                            element.addEventListener('click', (e) => {
+                                                if ('undefined' === typeof PAYPAL) {
+                                                    e.preventDefault();
+                                                    alert('PayPal error');
+                                                }
+                                            });
+                                        });</script>
             <script id="paypal-js" src="<?php echo esc_url($script_url); ?>"></script> <?php
         } else {
             echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
@@ -725,7 +731,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 return $this->paypal_fee_structure['default'][$product];
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -762,7 +768,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 echo __('We could not properly connect to PayPal', 'paypal-for-woocommerce');
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -797,7 +803,17 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
     public function angelleye_ppcp_get_result_migrate_to_ppcp() {
         global $wpdb;
         try {
-            $payment_methods = $wpdb->get_results("SELECT pm2.meta_value AS 'Old Payment Method', pm.meta_value AS 'New Payment Method', COUNT(DISTINCT p.ID) AS 'Total Subscription'
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                $payment_methods = $wpdb->get_results("SELECT pm2.meta_value AS 'Old Payment Method', p.payment_method AS 'New Payment Method', COUNT(DISTINCT p.id) AS 'Total Subscription'
+                FROM {$wpdb->prefix}wc_orders p
+                JOIN {$wpdb->prefix}wc_orders_meta pm2 ON p.id = pm2.order_id AND pm2.meta_key = '_old_payment_method'
+                JOIN {$wpdb->prefix}wc_orders_meta pm3 ON p.id = pm3.order_id AND pm3.meta_key = '_angelleye_ppcp_old_payment_method'
+                WHERE p.status IN ('wc-active', 'wc-on-hold')
+                AND p.payment_method != pm2.meta_value
+                GROUP BY pm2.meta_value, p.payment_method;", ARRAY_A);
+                return $payment_methods;
+            } else {
+                $payment_methods = $wpdb->get_results("SELECT pm2.meta_value AS 'Old Payment Method', pm.meta_value AS 'New Payment Method', COUNT(DISTINCT p.ID) AS 'Total Subscription'
                 FROM {$wpdb->posts} p
                 JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_payment_method'
                 JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_old_payment_method'
@@ -805,16 +821,31 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 WHERE p.post_type = 'shop_subscription'
                 AND pm.meta_value != pm2.meta_value
                 GROUP BY pm2.meta_value, pm.meta_value;", ARRAY_A);
-            return $payment_methods;
+                return $payment_methods;
+            }
         } catch (Exception $ex) {
-
+            
         }
     }
 
     public function angelleye_ppcp_revert_back_to_original_payment_method() {
         global $wpdb;
         try {
-            $wpdb->query("UPDATE {$wpdb->postmeta} AS pm1
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                $wpdb->query("UPDATE {$wpdb->prefix}wc_orders AS orders
+                    LEFT JOIN {$wpdb->prefix}wc_orders_meta AS pm1 ON orders.id = pm1.order_id AND pm1.meta_key = '_old_payment_method'
+                    LEFT JOIN {$wpdb->prefix}wc_orders_meta AS pm2 ON orders.id = pm2.order_id AND pm2.meta_key = '_old_payment_method_title'
+                    INNER JOIN (
+                        SELECT order_id
+                        FROM {$wpdb->prefix}wc_orders_meta
+                        WHERE meta_key = '_angelleye_ppcp_old_payment_method'
+                    ) AS subquery1 ON orders.id = subquery1.order_id
+                    SET orders.payment_method = IFNULL(pm1.meta_value, orders.payment_method),
+                        orders.payment_method_title = IFNULL(pm2.meta_value, orders.payment_method_title)
+                    WHERE orders.payment_method IS NOT NULL OR orders.payment_method_title IS NOT NULL;");
+                $wpdb->query("DELETE FROM {$wpdb->prefix}wc_orders_meta WHERE meta_key = '_angelleye_ppcp_old_payment_method';");
+            } else {
+                $wpdb->query("UPDATE {$wpdb->postmeta} AS pm1
                 LEFT JOIN {$wpdb->postmeta} AS pm2 ON pm1.post_id = pm2.post_id AND pm2.meta_key = '_old_payment_method'
                 LEFT JOIN {$wpdb->postmeta} AS pm3 ON pm1.post_id = pm3.post_id AND pm3.meta_key = '_old_payment_method_title'
                 INNER JOIN (
@@ -833,7 +864,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         WHEN '_payment_method_title' THEN IFNULL(pm3.meta_value, pm1.meta_value)
                     END
                 WHERE pm1.meta_key IN ('_payment_method', '_payment_method_title')");
-            $wpdb->query("DELETE FROM {$wpdb->postmeta}
+                $wpdb->query("DELETE FROM {$wpdb->postmeta}
                 WHERE meta_key = '_angelleye_ppcp_old_payment_method'
                 AND post_id IN (
                     SELECT post_id
@@ -843,8 +874,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         WHERE meta_key = '_payment_method' OR meta_key = '_payment_method_title'
                     ) AS subquery
                 )");
+            }
         } catch (Exception $ex) {
-
+            
         }
     }
 }
