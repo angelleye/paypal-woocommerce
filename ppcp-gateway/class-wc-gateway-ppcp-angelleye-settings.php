@@ -223,6 +223,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'pay_later_messaging_payment_preview_shortcode' => '[aepfw_bnpl_message placement="payment"]',
                 'advanced_settings' => '',
                 'paymentaction' => 'capture',
+                'paymentstatus' => 'processing',
                 'invoice_prefix' => 'WC-PPCP',
                 'skip_final_review' => 'no',
                 'brand_name' => 'PPCP',
@@ -1847,6 +1848,17 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'options' => array(
                         'capture' => __('Capture', 'paypal-for-woocommerce'),
                         'authorize' => __('Authorize', 'paypal-for-woocommerce'),
+                    ),
+                ),
+                'paymentstatus' => array(
+                    'title' => __('Payment Status', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'default' => 'processing',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'processing' => __('Processing', 'paypal-for-woocommerce'),
+                        'on-hold' => __('On Hold', 'paypal-for-woocommerce'),
                     ),
                 ),
                 'auto_capture_auth' => array(

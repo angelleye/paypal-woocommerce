@@ -30,6 +30,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public $title;
     public $brand_name;
     public $paymentaction;
+    public $paymentstatus;
     public $landing_page;
     public $payee_preferred;
     public $invoice_prefix;
@@ -86,6 +87,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->title = $this->setting_obj->get('title', 'PayPal Commerce - Built by Angelleye');
         $this->brand_name = $this->setting_obj->get('brand_name', get_bloginfo('name'));
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
+        $this->paymentstatus = $this->setting_obj->get('paymentstatus', 'processing');
         $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->setting_obj->get('payee_preferred', 'no');
         $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
@@ -1683,7 +1685,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     angelleye_ppcp_update_post_meta($order, '_paymentaction', 'authorize');
                     $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-                    $order->update_status('on-hold');
+                    $order->update_status($this->paymentstatus);
                     if ($this->is_auto_capture_auth) {
                         $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                     }
@@ -1981,7 +1983,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
             $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $transaction_id));
             $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-            $order->update_status('on-hold');
+            $order->update_status($this->paymentstatus);
             $order->add_order_note(__('Payment authorized. Change order status to processing or complete for capture funds.', 'paypal-for-woocommerce'));
         }
     }
@@ -3078,7 +3080,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         angelleye_ppcp_update_post_meta($order, '_paymentaction', 'authorize');
                         $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
                         $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-                        $order->update_status('on-hold');
+                        $order->update_status($this->paymentstatus);
                         if ($this->is_auto_capture_auth) {
                             $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                         }
