@@ -223,7 +223,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'pay_later_messaging_payment_preview_shortcode' => '[aepfw_bnpl_message placement="payment"]',
                 'advanced_settings' => '',
                 'paymentaction' => 'capture',
-                'paymentstatus' => 'processing',
+                'paymentstatus' => 'wc-default',
                 'invoice_prefix' => 'WC-PPCP',
                 'skip_final_review' => 'no',
                 'brand_name' => 'PPCP',
@@ -1854,12 +1854,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('Payment Status', 'paypal-for-woocommerce'),
                     'type' => 'select',
                     'class' => 'wc-enhanced-select',
-                    'default' => 'processing',
+                    'default' => 'wc-default',
                     'desc_tip' => true,
-                    'options' => array(
-                        'processing' => __('Processing', 'paypal-for-woocommerce'),
-                        'on-hold' => __('On Hold', 'paypal-for-woocommerce'),
-                    ),
+                    'options' => wc_get_order_statuses(),
                 ),
                 'auto_capture_auth' => array(
                     'title' => __('Automatic Capture of Pending Authorizations', 'paypal-for-woocommerce'),
@@ -2045,5 +2042,27 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
     }
+// Register new statuses in wc_order_statuses (function).
+function register_new_custom_wc_order_statuses( $order_statuses ) {
+    $order_statuses['wc-default'] = _x( 'Default', 'Order status', 'paypal-for-woocommerce' );
+    
+    return $order_statuses;
+}
+add_filter( 'wc_order_statuses', 'register_new_custom_wc_order_statuses' );
+function change_statuses_order( $wc_statuses_arr ){
 
+    $new_statuses_arr = array(
+        'wc-default' => $wc_statuses_arr['wc-default'], // 0
+        'wc-processing' => $wc_statuses_arr['wc-processing'], // 1     
+        'wc-completed' => $wc_statuses_arr['wc-completed'], // 3
+        'wc-cancelled' => $wc_statuses_arr['wc-cancelled'], // 4
+        'wc-refunded' => $wc_statuses_arr['wc-refunded'], // 5
+        'wc-failed' => $wc_statuses_arr['wc-failed'], // 6
+        'wc-pending' => $wc_statuses_arr['wc-pending'], // 7
+        'wc-on-hold' => $wc_statuses_arr['wc-on-hold'] // 8
+    );
+
+    return $new_statuses_arr;
+}
+add_filter( 'wc_order_statuses', 'change_statuses_order' );
 }
