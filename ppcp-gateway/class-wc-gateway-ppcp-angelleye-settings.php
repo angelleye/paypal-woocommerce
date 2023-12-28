@@ -1856,7 +1856,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'class' => 'wc-enhanced-select',
                     'default' => 'wc-default',
                     'desc_tip' => true,
-                    'options' => wc_get_order_statuses(),
+                    'options' => $this->angelleye_ppcp_setting_order_statuses(),
                 ),
                 'auto_capture_auth' => array(
                     'title' => __('Automatic Capture of Pending Authorizations', 'paypal-for-woocommerce'),
@@ -2040,29 +2040,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             return $this->angelleye_ppcp_gateway_setting;
         }
-
-    }
-// Register new statuses in wc_order_statuses (function).
-function register_new_custom_wc_order_statuses( $order_statuses ) {
-    $order_statuses['wc-default'] = _x( 'Default', 'Order status', 'paypal-for-woocommerce' );
-    
-    return $order_statuses;
-}
-add_filter( 'wc_order_statuses', 'register_new_custom_wc_order_statuses' );
-function change_statuses_order( $wc_statuses_arr ){
-
-    $new_statuses_arr = array(
-        'wc-default' => $wc_statuses_arr['wc-default'], // 0
-        'wc-processing' => $wc_statuses_arr['wc-processing'], // 1     
-        'wc-completed' => $wc_statuses_arr['wc-completed'], // 3
-        'wc-cancelled' => $wc_statuses_arr['wc-cancelled'], // 4
-        'wc-refunded' => $wc_statuses_arr['wc-refunded'], // 5
-        'wc-failed' => $wc_statuses_arr['wc-failed'], // 6
-        'wc-pending' => $wc_statuses_arr['wc-pending'], // 7
-        'wc-on-hold' => $wc_statuses_arr['wc-on-hold'] // 8
-    );
-
-    return $new_statuses_arr;
-}
-add_filter( 'wc_order_statuses', 'change_statuses_order' );
+        public function angelleye_ppcp_setting_order_statuses(){
+            $a1= array( "wc-default" => "Default");
+            $a2 = wc_get_order_statuses();
+            return $order_statuses = array_merge($a1,$a2);
+        }
+    }   
 }
