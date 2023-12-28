@@ -487,7 +487,8 @@ const angelleyeOrder = {
 			},
 			styles: {
 				'input': {
-					'font-size': '1.3em'
+					'font-size': '1.3em',
+					'color': '#0000a6'
 				}
 			},
 			fields: {
@@ -692,7 +693,19 @@ const angelleyeOrder = {
             return;
         }
 		let addPaymentMethodForm = angelleyeOrder.getCheckoutSelectorCss();
+		const cardStyle = {
+			'input': {
+				'font-size': '16px',
+				'font-family': 'courier, monospace',
+				'font-weight': 'lighter',
+				'color': '#ccc',
+			},
+			'.invalid': {
+				'color': 'purple',
+			},
+		};
         const cardFields = angelleye_paypal_sdk.CardFields({
+			style: cardStyle,
             createVaultSetupToken: async () => {
 				angelleyeOrder.showProcessingSpinner(addPaymentMethodForm);
                 const result = await fetch(angelleye_ppcp_manager.angelleye_ppcp_cc_setup_tokens, {

@@ -234,6 +234,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'advanced_card_payments_title' => 'Credit Card',
                 'advanced_card_payments_display_position' => 'after',
                 'disable_cards' => '',
+                'cards_input_size'=> '',
+                'cards_input_color' => '',
+                'cards_input_style' => '',
+                'cards_input_weight' => '',
+                'cards_input_padding' => '',
                 'soft_descriptor' => 'PPCP',
                 'error_email_notification' => 'yes',
                 'debug' => 'everything',
@@ -1995,6 +2000,51 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                             'paypal-for-woocommerce'
                     ),
                     'options' => $cards_list,
+                ),
+                'cards_input_size' => array(
+                    'title' => __('Card Text Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'default' => '12',
+                    'desc_tip' => true,
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'), '18' => __('18 px', 'paypal-for-woocommerce'), '20' => __('20 px', 'paypal-for-woocommerce'), '22' => __('22 px', 'paypal-for-woocommerce'), '24' => __('24 px', 'paypal-for-woocommerce'), '26' => __('26 px', 'paypal-for-woocommerce'))
+                ),
+                'cards_input_color' => array(
+                    'title' => __('Card Text Color', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'default' => 'black',
+                    'desc_tip' => true,
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'aqua' => __('Aqua', 'paypal-for-woocommerce'), 'beige' => __('Beige', 'paypal-for-woocommerce'), 'green' => __('Green', 'paypal-for-woocommerce'), 'blue' => __('Blue', 'paypal-for-woocommerce'), 'red' => __('Red', 'paypal-for-woocommerce'), 'orange' => __('Orange', 'paypal-for-woocommerce'))
+                ),
+                'cards_input_style' => array(
+                    'title' => __('Card Text Style', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'default' => 'normal',
+                    'desc_tip' => true,
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'options' => array('normal' => __('Normal', 'paypal-for-woocommerce'), 'italic' => __('Italic', 'paypal-for-woocommerce'), 'inherit' => __('Inherit', 'paypal-for-woocommerce'), 'revert' => __('Revert', 'paypal-for-woocommerce'))
+                ),
+                'cards_input_weight' => array(
+                    'title' => __('Card Text Weight', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'default' => '100',
+                    'desc_tip' => true,
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'options' => array('100' => __('100', 'paypal-for-woocommerce'), '200' => __('200', 'paypal-for-woocommerce'), '300' => __('300', 'paypal-for-woocommerce'), '400' => __('400', 'paypal-for-woocommerce'), '500' => __('500', 'paypal-for-woocommerce'), '600' => __('600', 'paypal-for-woocommerce'), 'bold' => __('Bold', 'paypal-for-woocommerce'))
+                ),
+                'cards_input_padding' => array(
+                    'title' => __('Card Text Padding', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'default' => 'inherit',
+                    'desc_tip' => true,
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'options' => array('inherit' => __('Inherit', 'paypal-for-woocommerce'), 'initial' => __('Initial', 'paypal-for-woocommerce'), 'revert' => __('Revert', 'paypal-for-woocommerce'), 'unset' => __('Unset', 'paypal-for-woocommerce'))
                 ),
                 'soft_descriptor' => array(
                     'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
