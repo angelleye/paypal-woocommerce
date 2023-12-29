@@ -36,16 +36,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public $ach_business_name;
     public $response;
     public $storeInVaultOnSuccess;
-    public $api_log;
-    public $setting_obj;
-    public $cards_input_size;
-    public $cards_input_color;
-    public $cards_input_style;
-    public $cards_input_weight;
-    public $cards_input_padding;
     
     function __construct() {
-        $this->angelleye_ppcp_load_class();
         $this->id = 'braintree';
         $this->icon = $this->get_option('card_icon', plugins_url('/assets/images/paypal-credit-card-logos.png', plugin_basename(dirname(__FILE__))));
         if (is_ssl() || 'yes' === get_option( 'woocommerce_force_ssl_checkout' )) {
@@ -54,11 +46,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->icon = apply_filters('woocommerce_braintree_icon', $this->icon);
         $this->has_fields = true;
         $this->method_title = 'Braintree';
-        $this->cards_input_size = $this->setting_obj->get('cards_input_size', '');
-        $this->cards_input_color = $this->setting_obj->get('cards_input_color', '');
-        $this->cards_input_style = $this->setting_obj->get('cards_input_style', '');
-        $this->cards_input_weight = $this->setting_obj->get('cards_input_weight', '');
-        $this->cards_input_padding = $this->setting_obj->get('cards_input_padding', '');
         $this->method_description = __('Credit Card payments Powered by PayPal / Braintree.', 'paypal-for-woocommerce');
         $this->supports = array(
             'subscriptions',
@@ -132,22 +119,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->storeInVaultOnSuccess = false;
         
-    }
-
-    public function angelleye_ppcp_load_class() {
-        try {
-            if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
-                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
-            }
-            if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
-                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
-            }
-            $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
-            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
-        } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
-        }
     }
 
     /**
@@ -1003,11 +974,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                                     client: client,
                                     styles: {
                                         'input': {
-                                            'font-size': '<?php echo $this->cards_input_size;?>',
-                                            'color': '<?php echo $this->cards_input_color;?>',
-                                            'font-style': '<?php echo $this->cards_input_style;?>',
-                                            'font-weight': '<?php echo $this->cards_input_weight;?>',
-                                            'padding': '<?php echo $this->cards_input_padding;?>'
+                                            'font-size': '1.3em'
                                         }
                                     },
                                     fields: {

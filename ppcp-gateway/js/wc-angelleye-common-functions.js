@@ -487,8 +487,11 @@ const angelleyeOrder = {
 			},
 			styles: {
 				'input': {
-					'font-size': '1.3em',
-					'color': '#0000a6'
+					'font-size': angelleye_ppcp_manager.card_style_props.font_size,
+					'color': angelleye_ppcp_manager.card_style_props.color,
+					'font-weight': angelleye_ppcp_manager.card_style_props.font_weight,
+					'font-style': angelleye_ppcp_manager.card_style_props.font_style,
+					'padding': angelleye_ppcp_manager.card_style_props.padding,
 				}
 			},
 			fields: {
@@ -688,24 +691,12 @@ const angelleyeOrder = {
 		}
 		return response;
 	},
-    addPaymentMethodAdvancedCreditCard: () => {
+    addPaymentMethodAdvancedCreditCard: () => {		
         if (typeof angelleye_paypal_sdk === 'undefined') {
             return;
         }
-		let addPaymentMethodForm = angelleyeOrder.getCheckoutSelectorCss();
-		const cardStyle = {
-			'input': {
-				'font-size': '16px',
-				'font-family': 'courier, monospace',
-				'font-weight': 'lighter',
-				'color': '#ccc',
-			},
-			'.invalid': {
-				'color': 'purple',
-			},
-		};
+		let addPaymentMethodForm = angelleyeOrder.getCheckoutSelectorCss();		
         const cardFields = angelleye_paypal_sdk.CardFields({
-			style: cardStyle,
             createVaultSetupToken: async () => {
 				angelleyeOrder.showProcessingSpinner(addPaymentMethodForm);
                 const result = await fetch(angelleye_ppcp_manager.angelleye_ppcp_cc_setup_tokens, {

@@ -2005,10 +2005,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('Card Text Size', 'paypal-for-woocommerce'),
                     'type' => 'select',
                     'class' => 'wc-enhanced-select',
-                    'default' => '12',
+                    'default' => '',
                     'desc_tip' => true,
-                    'description' => __('', 'paypal-for-woocommerce'),
-                    'options' => array('10' => __('10 px', 'paypal-for-woocommerce'), '11' => __('11 px', 'paypal-for-woocommerce'), '12' => __('12 px', 'paypal-for-woocommerce'), '13' => __('13 px', 'paypal-for-woocommerce'), '14' => __('14 px', 'paypal-for-woocommerce'), '15' => __('15 px', 'paypal-for-woocommerce'), '16' => __('16 px', 'paypal-for-woocommerce'), '18' => __('18 px', 'paypal-for-woocommerce'), '20' => __('20 px', 'paypal-for-woocommerce'), '22' => __('22 px', 'paypal-for-woocommerce'), '24' => __('24 px', 'paypal-for-woocommerce'), '26' => __('26 px', 'paypal-for-woocommerce'))
+                    'description' => __('Add px after enter size. like 12px!!', 'paypal-for-woocommerce'),
+                    'options' => $this->get_even_numbers()
                 ),
                 'cards_input_color' => array(
                     'title' => __('Card Text Color', 'paypal-for-woocommerce'),
@@ -2032,19 +2032,19 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'title' => __('Card Text Weight', 'paypal-for-woocommerce'),
                     'type' => 'select',
                     'class' => 'wc-enhanced-select',
-                    'default' => '100',
+                    'default' => '',
                     'desc_tip' => true,
                     'description' => __('', 'paypal-for-woocommerce'),
-                    'options' => array('100' => __('100', 'paypal-for-woocommerce'), '200' => __('200', 'paypal-for-woocommerce'), '300' => __('300', 'paypal-for-woocommerce'), '400' => __('400', 'paypal-for-woocommerce'), '500' => __('500', 'paypal-for-woocommerce'), '600' => __('600', 'paypal-for-woocommerce'), 'bold' => __('Bold', 'paypal-for-woocommerce'))
+                    'options' => array('' => __('Default', 'paypal-for-woocommerce'), '100' => __('100', 'paypal-for-woocommerce'), '200' => __('200', 'paypal-for-woocommerce'), '300' => __('300', 'paypal-for-woocommerce'), '400' => __('400', 'paypal-for-woocommerce'), '500' => __('500', 'paypal-for-woocommerce'), '600' => __('600', 'paypal-for-woocommerce'), 'bold' => __('Bold', 'paypal-for-woocommerce'))
                 ),
                 'cards_input_padding' => array(
                     'title' => __('Card Text Padding', 'paypal-for-woocommerce'),
                     'type' => 'select',
                     'class' => 'wc-enhanced-select',
-                    'default' => 'inherit',
+                    'default' => '',
                     'desc_tip' => true,
                     'description' => __('', 'paypal-for-woocommerce'),
-                    'options' => array('inherit' => __('Inherit', 'paypal-for-woocommerce'), 'initial' => __('Initial', 'paypal-for-woocommerce'), 'revert' => __('Revert', 'paypal-for-woocommerce'), 'unset' => __('Unset', 'paypal-for-woocommerce'))
+                    'options' => $this->get_even_numbers()
                 ),
                 'soft_descriptor' => array(
                     'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
@@ -2096,6 +2096,19 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 unset($this->angelleye_ppcp_gateway_setting['disable_term']);
             }
             return $this->angelleye_ppcp_gateway_setting;
+        }
+
+        public function get_even_numbers(){
+            $numbers = array('1.3em' => 'Default');
+            $arr = array();
+            for ($_getal = 1; $_getal < 100; $_getal++) 
+            {
+                if($_getal % 2 == 0)
+                {
+                    $arr[$_getal.'px'] = $_getal.'px';
+                }
+            }
+            return array_merge($numbers,$arr);
         }
 
     }
