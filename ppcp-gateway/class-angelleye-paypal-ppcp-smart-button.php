@@ -75,6 +75,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     private array $google_pay_button_props;
     private array $apple_pay_button_props;
     private array $common_button_props;
+    public array $card_style_props;
 
     public function __construct() {
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
@@ -198,6 +199,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->apple_pay_button_props = [
             'buttonStyle' => 'black', 'buttonType' => 'plain', 'height' => ''
         ];
+        $this->card_style_props = [
+            'font_size'=> '1.3em',
+            'color'=> 'black',
+            'font_weight'=> '',
+            'font_style' => '',
+            'padding' => ''
+        ];
 
         if (is_cart()) {
             $this->disable_funding = $this->setting_obj->get('cart_disallowed_funding_methods', array());
@@ -261,6 +269,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             ];
             $this->common_button_props['width'] = $this->setting_obj->get('product_button_width', '');
         }
+        $this->card_style_props = [
+            'font_size'=> ($this->setting_obj->get('cards_input_size') === '1.3em') ? '1.3em' : $this->setting_obj->get('cards_input_size'),
+            'color'=> $this->setting_obj->get('cards_input_color', 'black'),
+            'font_weight'=> $this->setting_obj->get('cards_input_weight', ''),
+            'font_style' => $this->setting_obj->get('cards_input_style', ''),
+            'padding' => ($this->setting_obj->get('cards_input_padding') === '1.3em') ? '' : $this->setting_obj->get('cards_input_padding')
+        ];
         $this->mini_cart_disable_funding = $this->setting_obj->get('mini_cart_disallowed_funding_methods', array());
         $this->mini_cart_style_layout = $this->setting_obj->get('mini_cart_button_layout', 'vertical');
         $this->mini_cart_style_color = $this->setting_obj->get('mini_cart_style_color', 'gold');
@@ -341,7 +356,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('woocommerce_payment_methods_list_item', array($this, 'angelleye_ppcp_woocommerce_payment_methods_list_item'), 10, 2);
         add_filter('woocommerce_subscription_payment_method_to_display', array($this, 'angelleye_ppcp_woocommerce_subscription_payment_method_to_display'), 10, 2);
         add_action('wp', array($this, 'angelleye_ppcp_delete_payment_method_action'), 9);
-        add_action('plugins_loaded', array($this, 'angelleye_ppcp_plugins_loaded'), 99);
+        add_action('init', array($this, 'angelleye_ppcp_plugins_loaded'), 99);
         add_action('woocommerce_valid_order_statuses_for_payment_complete', array($this, 'angelleye_ppcp_woocommerce_valid_order_statuses_for_payment_complete'), 10, 2);
         add_action('angelleye_ppcp_shipment_tracking_section', array($this, 'angelleye_ppcp_shipment_tracking_section'));
 
@@ -718,6 +733,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'common_button_props' => $this->common_button_props,
             'google_pay_button_props' => $this->google_pay_button_props,
             'apple_pay_button_props' => $this->apple_pay_button_props,
+            'card_style_props' => $this->card_style_props,
             'page' => $page,
             'is_pre_checkout_offer' => $pre_checkout_offer,
             'is_pay_page' => $is_pay_page,
@@ -1818,7 +1834,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_plugins_loaded() {
         try {
             if ($this->enable_paypal_checkout_page === true && $this->checkout_page_display_option !== 'regular') {
-                if (!class_exists('WFACP_Compatibility_With_Angel_Eye_PPCP')) {
+                if (class_exists('WFACP_Compatibility_With_Angel_Eye_PPCP')) {
                     if (class_exists('WC_Stripe_Payment_Request')) {
                         $payment_request_configuration = new WC_Stripe_Payment_Request();
                         if ($payment_request_configuration->should_show_payment_request_button()) {
