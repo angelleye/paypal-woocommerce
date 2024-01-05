@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.4
-Stable tag: 4.4.11
+Tested up to: 6.4.2
+Stable tag: 4.4.13
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,15 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.4.13 - 12.22.2023 =
+* Feature - Add HPOS compatibility with PFW Migrations. ([PFW-1708](https://github.com/angelleye/paypal-woocommerce/pull/1990))
+* Fix - Use correct payment method name in Migrations tool. ([PFW-1707](https://github.com/angelleye/paypal-woocommerce/pull/1988))
+
+= 4.4.12 - 12.18.2023 =
+* Fix - Resolved Authorization & Auto Capture flow. ([PFW-1620](https://github.com/angelleye/paypal-woocommerce/pull/1986))
+* Fix - Update Eligible Countries for PPCP-Advanced. ([PFW-1675](https://github.com/angelleye/paypal-woocommerce/pull/1985))
+* Fix - Resolved Funnelkit Checkout top smart button shipping validation error. ([PFW-1704](https://github.com/angelleye/paypal-woocommerce/pull/1987))
 
 = 4.4.11 - 12.05.2023 =
 * Tweak - Resolved the checkout error message display issue and translation function issue. ([PFW-1699](https://github.com/angelleye/paypal-woocommerce/pull/1984))
