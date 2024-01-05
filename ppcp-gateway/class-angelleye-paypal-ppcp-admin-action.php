@@ -63,7 +63,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public function angelleye_ppcp_add_hooks() {
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
         $this->is_auto_capture_auth = false;
-        if($this->paymentaction === 'capture') {
+        if($this->paymentaction === 'authorize') {
             $this->is_auto_capture_auth = 'yes' === $this->setting_obj->get('auto_capture_auth', 'yes');
         }
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');

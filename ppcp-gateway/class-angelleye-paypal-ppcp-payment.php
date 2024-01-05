@@ -2635,13 +2635,17 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
                 $seller_protection = $this->api_response['seller_protection']['status'] ?? '';
+                $captured_amount = $this->api_response['amount']['value'];   
                 $this->api_response = $this->angelleye_ppcp_get_authorized_payment($authorization_id);
                 $payment_status = $this->api_response['status'] ?? '';
                 $order->update_meta_data('_payment_status', $payment_status);
                 $order->save();
                 $order->add_order_note(sprintf(__('%s Capture Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
                 $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-                if ($payment_status === 'COMPLETED' || 'CAPTURED' === $payment_status) {
+                if($captured_amount < $this->api_response['amount']['value'] && 'PARTIALLY_CAPTURED' === $payment_status){
+                    $order->update_status('wc-processing');
+                }
+                elseif ($payment_status === 'COMPLETED' || 'CAPTURED' === $payment_status) {
                     $order->payment_complete();
                     $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
                 } elseif ('PARTIALLY_CAPTURED' === $payment_status) {
