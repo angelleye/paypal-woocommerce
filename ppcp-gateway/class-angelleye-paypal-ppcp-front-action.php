@@ -145,6 +145,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     }
 
                     $request_from_page = $_GET['from'] ?? '';
+                    
+                    AngellEye_Session_Manager::set('from', $request_from_page);
+                    
                     self::$checkout_started_from = $request_from_page;
 
                     if ('pay_page' === $request_from_page) {
@@ -186,7 +189,8 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 wp_send_json_error(array('messages' => $error_messages));
                             }
                         } else {
-                            $_GET['from'] = 'cart';
+                            $_GET['from'] = 'checkout_top';
+                            AngellEye_Session_Manager::set('from', 'checkout_top');
                             $this->payment_request->angelleye_ppcp_create_order_request();
                         }
                         exit();
