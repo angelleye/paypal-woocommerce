@@ -56,6 +56,15 @@ jQuery(function ($) {
             $("#woocommerce_angelleye_ppcp_cart_disallowed_funding_methods").trigger("change");
         }
     });
+    $('.wc-settings-sub-title').click(function(){
+        $(this).next('.form-table').toggle();
+    });
+    $('.wc-settings-sub-title').click(function(){
+        $(this).next().next('.form-table').toggle();
+    });
+    $('#angelleye_paypal_marketing_table h2').click(function(){
+        $(this).next().next('.form-table').toggle();
+    });
     $('#woocommerce_angelleye_ppcp_enable_advanced_card_payments').change(function () {
         if ($(this).is(':checked')) {
             $('#woocommerce_angelleye_ppcp_3d_secure_contingency').closest('tr').show();

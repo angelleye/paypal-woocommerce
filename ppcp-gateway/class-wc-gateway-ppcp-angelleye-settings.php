@@ -2049,5 +2049,39 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
     }
+    ?>
+<style>
+#angelleye_paypal_marketing_table  .form-table{
+    display:none;
+    background: #fff;
+}
+#angelleye_paypal_marketing_table h2::after {
+  content: "\25be";
 
+}
+#angelleye_paypal_marketing_table h2 {
+cursor:pointer;
+border: 2px solid #ccc;
+padding: 10px;
+}
+#angelleye_paypal_marketing_table  h3.wc-settings-sub-title::after {
+  content: "\25be";
+
+}
+#angelleye_paypal_marketing_table  h3.wc-settings-sub-title {
+cursor:pointer;
+border: 2px solid #ccc;
+padding: 10px;
+}
+#angelleye_paypal_marketing_table h3.wc-settings-sub-title{
+    border-bottom: 2px solid #ccc !important;
+}
+#angelleye_paypal_marketing_table{
+    padding-right:10px !important;
+}
+#angelleye_paypal_marketing_table .form-table th {
+padding: 20px 20px 20px 20px !important;
+}
+</style>
+<?php
 }
