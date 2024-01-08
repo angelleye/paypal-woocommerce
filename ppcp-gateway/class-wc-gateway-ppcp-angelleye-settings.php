@@ -87,6 +87,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'description' => __(
                         'The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce'
                 ),
+                'container_start' => '',
                 'account_settings' => '',
                 'testmode' => 'no',
                 'live_onboarding' => '',
@@ -238,7 +239,8 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'error_email_notification' => 'yes',
                 'debug' => 'everything',
                 'enable_google_pay' => 'no',
-                'enable_apple_pay' => 'no'
+                'enable_apple_pay' => 'no',                
+                'container_end' => ''
             );
             foreach ($defaults as $key => $value) {
                 if (isset($this->setting_obj[$key])) {
@@ -388,6 +390,35 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             ];
 
             $this->angelleye_ppcp_gateway_setting = array(
+                'container_start' => array(
+                    'type' => 'container_start',
+                    'description' => '',
+                    'tabs' => [
+						'tab_1' => ['icon'=>'e-commerace.png','class' => 'active', 'title'=>'PayPal Commerce - Built by Angelleye'],
+                        'tab_2' => ['icon'=>'user.png','class' => '',  'title'=>'PayPal Account Settings'],
+                        'tab_3' => ['icon'=>'product.png','class' => '',  'title'=>'Product Page Settings'],
+                        'tab_4' => ['icon'=>'cart.png','class' => '',  'title'=>'Cart Page Settings'],
+                        'tab_5' => ['icon'=>'shopping.png','class' => '',  'title'=>'Checkout Page Settings'],
+                        'tab_6' => ['icon'=>'cart.png','class' => '',  'title'=>'Mini Cart Page Settings'],
+                        'tab_7' => ['icon'=>'pay.png','class' => '',  'title'=>'Pay Later Messaging Settings'],
+                        'tab_8' => ['icon'=>'tokenization.png','class' => '',  'title'=>'Tokenization / Subscriptions'],
+                        'tab_9' => ['icon'=>'apple-pay.png','class' => '',  'title'=>'Apple Pay'],
+                        'tab_10' => ['icon'=>'google-pay.png','class' => '',  'title'=>'Google Pay'],
+                        'tab_11' => ['icon'=>'shipped.png','class' => '',  'title'=>'PayPal Shipment Tracking'],
+                        'tab_12' => ['icon'=>'settings.png','class' => '',  'title'=>'Advanced Settings']
+                    ]
+                ),
+                'tab_container_start_1' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
+                    'class' => 'active'
+                ),
+                'main_heading' => array(
+                    'title' => __('PayPal Commerce - Built by Angelleye', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
@@ -400,13 +431,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
                     'default' => __('PayPal', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
-                ),
+                ),                
                 'description' => array(
                     'title' => __('Description', 'paypal-for-woocommerce'),
                     'type' => 'text',
                     'description' => __('Payment method description that the customer will see on your checkout.', 'paypal-for-woocommerce'),
                     'default' => __('Accept PayPal, PayPal Credit and alternative payment types.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
+                ),              
+                'tab_container_end_1' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'tab_container_start_2' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
                 ),
                 'account_settings' => array(
                     'title' => __('PayPal Account Settings', 'paypal-for-woocommerce'),
@@ -495,6 +534,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => '',
                     'custom_attributes' => array('readonly' => 'readonly'),
                     'desc_tip' => true
+                ),               
+                'tab_container_end_2' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'tab_container_start_3' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
                 ),
                 'product_button_settings' => array(
                     'title' => __('Product Page Settings', 'paypal-for-woocommerce'),
@@ -703,7 +750,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'options' => $button_height,
                 ),
-
+                'tab_container_end_3' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'tab_container_start_4' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
+                ),
                 'cart_button_settings' => array(
                     'title' => __('Cart Page Settings', 'paypal-for-woocommerce'),
                     'description' => __('Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your Cart page.', 'paypal-for-woocommerce'),
@@ -924,6 +978,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => '',
                     'desc_tip' => true,
                     'options' => $button_height,
+                ),
+                'tab_container_end_4' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'tab_container_start_5' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
                 ),
                 'checkout_button_settings' => array(
                     'title' => __('Checkout Page Settings', 'paypal-for-woocommerce'),
@@ -1154,7 +1216,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'options' => $button_height,
                 ),
-
+                'tab_container_end_5' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'tab_container_start_6' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
+                ),
                 'mini_cart_button_settings' => array(
                     'title' => __('Mini Cart Page Settings', 'paypal-for-woocommerce'),
                     'description' => __('Enable the Mini Cart specific button settings, and the options set will be applied to the PayPal buttons on your Mini Cart page.', 'paypal-for-woocommerce'),
@@ -1280,6 +1349,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __(
                             'Add the tagline. This line will only show up, if you select a horizontal layout.', 'paypal-for-woocommerce'
                     ),
+                ),
+                'tab_container_end_6' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'tab_container_start_7' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
                 ),
                 'pay_later_messaging_settings' => array(
                     'title' => __('Pay Later Messaging Settings', 'paypal-for-woocommerce'),
@@ -1732,6 +1809,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'button_class' => 'payment_copy_text',
                     'custom_attributes' => array('readonly' => 'readonly'),
                     'default' => '[aepfw_bnpl_message placement="payment"]'
+                ),               
+                'tab_container_end_7' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'tab_container_start_8' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
                 ),
                 'tokenization_subscriptions' => array(
                     'title' => __('Tokenization / Subscriptions', 'paypal-for-woocommerce'),
@@ -1750,6 +1835,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'need_to_display_paypal_vault_onboard_button' => $this->need_to_display_paypal_vault_onboard_button,
                     'is_paypal_vault_enable' => $this->is_paypal_vault_enable,
                     'custom_attributes' => $vaulting_custom_attributes
+                ),
+                'tab_container_end_8' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'tab_container_start_9' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
                 ),
                 'apple_pay_authorizations' => array(
                     'title' => __('Apple Pay', 'paypal-for-woocommerce'),
@@ -1799,6 +1892,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => __('Billing Agreement', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
+                'tab_container_end_9' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'tab_container_start_10' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
+                ),
                 'google_pay_authorizations' => array(
                     'title' => __('Google Pay', 'paypal-for-woocommerce'),
                     'class' => 'ppcp_separator_heading',
@@ -1832,6 +1933,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => __('Accept payments using Google Pay.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                     ),
+                    'tab_container_end_10' => array(
+                        'type' => 'tab_container_end',
+                        'description' => '',
+                    ),
+                    'tab_container_start_11' => array(
+                        'type' => 'tab_container_start',
+                        'description' => '',
+                    ),
                  'paypal_shipment_tracking' => array(
                     'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
                     'type' => 'title',
@@ -1846,6 +1955,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'no',
                     'desc_tip' => true,
                     'class' => 'enable_package_tracking',
+                ),
+                'tab_container_end_11' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'tab_container_start_12' => array(
+                    'type' => 'tab_container_start',
+                    'description' => '',
                 ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
@@ -2023,7 +2140,16 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'disabled' => __('Disabled', 'paypal-for-woocommerce')
                     ),
                     'default' => 'everything'
-                )
+                ),
+                'tab_container_end_12' => array(
+                    'type' => 'tab_container_end',
+                    'description' => '',
+                ),
+                'container_end' => array(
+                    'title' => __('PayPal Account Settings', 'paypal-for-woocommerce'),
+                    'type' => 'container_end',
+                    'description' => '',
+                ),
             );
             if (wc_ship_to_billing_address_only() === true) {
                 unset($this->angelleye_ppcp_gateway_setting['set_billing_address']);
@@ -2049,5 +2175,4 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         }
 
     }
-
 }

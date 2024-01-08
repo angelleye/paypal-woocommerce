@@ -165,7 +165,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         wp_deregister_script('woocommerce_settings');
         wp_enqueue_script('wc-clipboard');
         echo '<div id="angelleye_paypal_marketing_table">';
-        parent::admin_options();
+        echo $this->generate_settings_html( $this->get_form_fields(), false );
         echo '</div>';
         AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id);
     }
@@ -311,6 +311,120 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
+    public function generate_container_start_html($field_key, $data) {
+        if (isset($data['type']) && $data['type'] === 'container_start') {
+            $field_key = $this->get_field_key($field_key);
+             $defaults = array(
+            'title' => '',
+            'disabled' => false,
+            'class' => '',
+            'css' => '',
+            'placeholder' => '',
+            'type' => 'text',
+            'desc_tip' => false,
+            'description' => '',
+            'custom_attributes' => array(),            
+            'tabs' => []
+        );
+
+        $data = wp_parse_args($data, $defaults);
+            ob_start();
+            ?>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-5 col-sm-8 col-xs-9 bhoechie-tab-container">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 bhoechie-tab-menu">
+                                <div class="list-group">
+                                   <?php foreach($data['tabs'] as $key => $value){ ?>                                    
+                                    <a href="#" class="list-group-item <?php echo $value['class'];?> text-center">
+                                        <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/'.$value['icon'];?>" width="35" height="35"><br/><?php echo $value['title'];?>
+                                    </a>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 bhoechie-tab">                          
+            <?php
+            return ob_get_clean();
+        }
+    }
+
+    public function generate_tab_container_start_html($field_key, $data) {
+        if (isset($data['type']) && $data['type'] === 'tab_container_start') {
+                        $field_key = $this->get_field_key($field_key);
+             $defaults = array(
+            'title' => '',
+            'disabled' => false,
+            'class' => '',
+            'css' => '',
+            'placeholder' => '',
+            'type' => 'text',
+            'desc_tip' => false,
+            'description' => '',
+            'custom_attributes' => array(),
+        );
+
+        $data = wp_parse_args($data, $defaults);
+            ob_start();
+            ?>
+                <div class="bhoechie-tab-content <?php echo $data['class'];?>">    
+                    <table class="form-table">               
+            <?php
+            return ob_get_clean();
+        }
+    }
+
+    public function generate_tab_container_end_html($field_key, $data) {
+        if (isset($data['type']) && $data['type'] === 'tab_container_end') {
+            $field_key = $this->get_field_key($field_key);
+             $defaults = array(
+            'title' => '',
+            'disabled' => false,
+            'class' => '',
+            'css' => '',
+            'placeholder' => '',
+            'type' => 'text',
+            'desc_tip' => false,
+            'description' => '',
+            'custom_attributes' => array(),
+        );
+
+        $data = wp_parse_args($data, $defaults);
+            ob_start();
+            ?>
+                </table>
+                    </div>                   
+            <?php
+            return ob_get_clean();
+        }
+    } 
+
+    public function generate_container_end_html($field_key, $data) {
+        if (isset($data['type']) && $data['type'] === 'container_end') {
+            $field_key = $this->get_field_key($field_key);
+             $defaults = array(
+            'title' => '',
+            'disabled' => false,
+            'class' => '',
+            'css' => '',
+            'placeholder' => '',
+            'type' => 'text',
+            'desc_tip' => false,
+            'description' => '',
+            'custom_attributes' => array(),
+        );
+
+        $data = wp_parse_args($data, $defaults);
+            ob_start();
+            ?>
+                </div>
+                </div>
+                </div>
+                </div>                          
+            <?php
+            return ob_get_clean();
+        }
+    }
+   
     public function generate_angelleye_ppcp_onboarding_html($field_key, $data) {
         if (isset($data['type']) && $data['type'] === 'angelleye_ppcp_onboarding') {
             $field_key = $this->get_field_key($field_key);
