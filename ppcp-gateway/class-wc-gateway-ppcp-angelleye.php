@@ -161,12 +161,17 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function admin_options() {
+        $GLOBALS['hide_save_button'] = 1;
         $this->angelleye_ppcp_admin_notices();
         wp_deregister_script('woocommerce_settings');
         wp_enqueue_script('wc-clipboard');
         echo '<div id="angelleye_paypal_marketing_table">';
         echo $this->generate_settings_html( $this->get_form_fields(), false );
+        echo '<p class="submit" style="text-align:center;"> 
+				<button name="save" class="button-primary woocommerce-save-button" type="submit" value="'.esc_attr( 'Save changes', 'woocommerce' ).'">'.esc_html( 'Save changes', 'woocommerce' ).'</button>
+		</p>';
         echo '</div>';
+
         AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id);
     }
 

@@ -98,10 +98,11 @@ div.bhoechie-tab-container{
   div.bhoechie-tab-menu div.list-group>a{
     text-decoration: none;
     margin-bottom: 0;
+    background: #e0edff;
   }
   div.bhoechie-tab-menu div.list-group>a .glyphicon,
   div.bhoechie-tab-menu div.list-group>a .fa {
-    color: green;
+    color: #92bdf8;
   }
   div.bhoechie-tab-menu div.list-group>a:first-child{
     border-top-right-radius: 0;
@@ -114,8 +115,9 @@ div.bhoechie-tab-container{
   div.bhoechie-tab-menu div.list-group>a.active,
   div.bhoechie-tab-menu div.list-group>a.active .glyphicon,
   div.bhoechie-tab-menu div.list-group>a.active .fa{
-    background-color: green;
-    background-image: green;
+    background-color: #92bdf8;
+    border: 1px;
+    background-image: #92bdf8;
     color: #ffffff;
   }
   div.bhoechie-tab-menu div.list-group>a.active:after{
@@ -127,15 +129,16 @@ div.bhoechie-tab-container{
     border-left: 0;
     border-bottom: 13px solid transparent;
     border-top: 13px solid transparent;
-    border-left: 10px solid green;
+    border-left: 10px solid #92bdf8;
   }
   
   div.bhoechie-tab-content{
     background-color: #ffffff;
+    padding: 0 20px;
   }
   div.bhoechie-tab{
       float: right;
-      width: 77%;
+      width: 80%;
   }
   div.bhoechie-tab div.bhoechie-tab-content:not(.active){
     display: none;
@@ -146,7 +149,7 @@ div.bhoechie-tab-container{
       display: block;
       padding: 10px 15px;
       background-color: #fff;
-      border: 1px solid #ddd;    
+      border: 1px solid #a3c7f8;
       color: #555;
   }
   a.list-group-item.active, a.list-group-item.active:hover, a.list-group-item.active:focus {
@@ -156,4 +159,11 @@ div.bhoechie-tab-container{
       border-color: #428bca;
   }
 
+  .list-group-item+.list-group-item {
+    border-bottom: 0;
+  }
+
+  .bhoechie-tab-content h3{
+    margin: 20px 0px 5px 0px;
+  }
   /* end tab style */

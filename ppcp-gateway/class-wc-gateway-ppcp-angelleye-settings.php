@@ -394,18 +394,18 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'container_start',
                     'description' => '',
                     'tabs' => [
-						'tab_1' => ['icon'=>'e-commerace.png','class' => 'active', 'title'=>'PayPal Commerce - Built by Angelleye'],
-                        'tab_2' => ['icon'=>'user.png','class' => '',  'title'=>'PayPal Account Settings'],
-                        'tab_3' => ['icon'=>'product.png','class' => '',  'title'=>'Product Page Settings'],
-                        'tab_4' => ['icon'=>'cart.png','class' => '',  'title'=>'Cart Page Settings'],
-                        'tab_5' => ['icon'=>'shopping.png','class' => '',  'title'=>'Checkout Page Settings'],
-                        'tab_6' => ['icon'=>'cart.png','class' => '',  'title'=>'Mini Cart Page Settings'],
-                        'tab_7' => ['icon'=>'pay.png','class' => '',  'title'=>'Pay Later Messaging Settings'],
-                        'tab_8' => ['icon'=>'tokenization.png','class' => '',  'title'=>'Tokenization / Subscriptions'],
-                        'tab_9' => ['icon'=>'apple-pay.png','class' => '',  'title'=>'Apple Pay'],
+						'tab_1' => ['icon'=>'basket.png','class' => 'active', 'title'=>'PayPal Commerce - Built by Angelleye'],
+                        'tab_2' => ['icon'=>'users.png','class' => '',  'title'=>'PayPal Account Settings'],
+                        'tab_3' => ['icon'=>'products.png','class' => '',  'title'=>'Product Page Settings'],
+                        'tab_4' => ['icon'=>'shoppings.png','class' => '',  'title'=>'Cart Page Settings'],
+                        'tab_5' => ['icon'=>'checkout.png','class' => '',  'title'=>'Checkout Page Settings'],
+                        'tab_6' => ['icon'=>'shoppings.png','class' => '',  'title'=>'Mini Cart Page Settings'],
+                        'tab_7' => ['icon'=>'pay-later.png','class' => '',  'title'=>'Pay Later Messaging Settings'],
+                        'tab_8' => ['icon'=>'currency.png','class' => '',  'title'=>'Tokenization / Subscriptions'],
+                        'tab_9' => ['icon'=>'apple-pays.png','class' => '',  'title'=>'Apple Pay'],
                         'tab_10' => ['icon'=>'google-pay.png','class' => '',  'title'=>'Google Pay'],
-                        'tab_11' => ['icon'=>'shipped.png','class' => '',  'title'=>'PayPal Shipment Tracking'],
-                        'tab_12' => ['icon'=>'settings.png','class' => '',  'title'=>'Advanced Settings']
+                        'tab_11' => ['icon'=>'shipping-truck.png','class' => '',  'title'=>'PayPal Shipment Tracking'],
+                        'tab_12' => ['icon'=>'setting.png','class' => '',  'title'=>'Advanced Settings']
                     ]
                 ),
                 'tab_container_start_1' => array(
