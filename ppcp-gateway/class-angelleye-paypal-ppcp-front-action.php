@@ -202,13 +202,15 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 $this->product::angelleye_ppcp_add_to_cart_action();
                             }
                             if (angelleye_ppcp_get_order_total() === 0) {
-                                $wc_notice = __('sorry your session expired.', 'paypal-for-woocommerce');                                  
-                                $all_notices  = WC()->session->get( 'wc_notices', array() );
-                                if ( wc_notice_count( 'error' ) ) {
-                                    foreach ( $all_notices[ 'error' ] as $notice ) {
-                                        $wc_notice = isset( $notice['notice'] ) ? $notice['notice'] : $notice;
-                                      }
-                                }                           
+                                $wc_notice = __('Sorry, your session has expired.', 'paypal-for-woocommerce');
+                                $all_notices = WC()->session->get( 'wc_notices', []);
+                                if (wc_notice_count('error') ) {
+                                    wc_clear_notices();
+                                    foreach ($all_notices['error'] as $notice) {
+                                        $wc_notice = $notice['notice'] ?? $notice;
+                                        break;
+                                    }
+                                }
                                 wc_add_notice($wc_notice);
                                 wp_send_json_error($wc_notice);
                             } else {
