@@ -262,7 +262,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function enqueue_scripts() {
         if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
             wp_enqueue_style('wc-gateway-ppcp-angelleye-settings-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-gateway-admin' . $this->minified_version . '.css', array(), VERSION_PFW, 'all');
-            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings' . $this->minified_version . '.js', array('jquery'), ($this->minified_version ? VERSION_PFW : time()), true);
+            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings' . $this->minified_version . '.js', array('jquery', 'wp-color-picker'), ($this->minified_version ? VERSION_PFW : time()), true);
             wp_localize_script('wc-gateway-ppcp-angelleye-settings', 'ppcp_angelleye_param', array(
                 'angelleye_ppcp_is_local_server' => ( angelleye_ppcp_is_local_server() == true) ? 'yes' : 'no',
                 'angelleye_ppcp_onboarding_endpoint' => WC_AJAX::get_endpoint('ppcp_login_seller'),
@@ -1071,6 +1071,28 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             <?php
             return ob_get_clean();
         }
+    }
+
+    public function generate_color_picker_html($key, $data) {
+        wp_enqueue_style( 'wp-color-picker' );
+        $field_key = $this->get_field_key($key);
+        $field_value = $this->get_option($key);
+        ob_start();
+        ?>
+        <tr valign="top">
+            <th scope="row" class="titledesc">
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
+            </th>
+            <td class="forminp">
+                <input name="<?php echo $key ?>" type="text" value="<?php echo $field_value; ?>" class="angelleye_color_picker <?php echo $data['class'] ?? '' ?>" data-default-color="<?php echo $data['default'] ?>" />
+            </td>
+        </tr>
+        <?php
+        return ob_get_clean();
+    }
+
+    public function validate_color_picker_field($key, $value) {
+        return $_POST[$key] ?? $value;
     }
 
     public function validate_checkbox_enable_paypal_google_pay_field($key, $value) {

@@ -1961,7 +1961,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 '3d_secure_contingency' => array(
                     'title' => __('Contingency for 3D Secure', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
                     'options' => array(
                         'SCA_WHEN_REQUIRED' => __('3D Secure when required', 'paypal-for-woocommerce'),
                         'SCA_ALWAYS' => __('Always trigger 3D Secure', 'paypal-for-woocommerce'),
@@ -1976,11 +1976,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
                     'default' => __('Credit Card', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
+                    'class' => 'advanced_cc_fields_group'
                 ),
                 'advanced_card_payments_display_position' => array(
                     'title' => __('Advanced Credit Cards Position', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
                     'options' => array(
                         'before' => __('Before PayPal Smart Button', 'paypal-for-woocommerce'),
                         'after' => __('After PayPal Smart Button', 'paypal-for-woocommerce'),
@@ -1992,7 +1993,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'disable_cards' => array(
                     'title' => __('Disable specific credit cards', 'paypal-for-woocommerce'),
                     'type' => 'multiselect',
-                    'class' => 'wc-enhanced-select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
                     'default' => array(),
                     'desc_tip' => true,
                     'description' => __(
@@ -2004,25 +2005,24 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'cards_input_size' => array(
                     'title' => __('Card Text Size', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
                     'default' => '',
                     'desc_tip' => true,
-                    'description' => __('Add px after enter size. like 12px!!', 'paypal-for-woocommerce'),
-                    'options' => $this->get_even_numbers()
+                    'description' => __('Choose the font size for the field.', 'paypal-for-woocommerce'),
+                    'options' => $this->get_size_listing(10, 50, 2, 'px')
                 ),
                 'cards_input_color' => array(
                     'title' => __('Card Text Color', 'paypal-for-woocommerce'),
-                    'type' => 'select',
-                    'class' => 'wc-enhanced-select',
-                    'default' => 'black',
+                    'type' => 'color_picker',
+                    'class' => 'advanced_cc_fields_group',
+                    'default' => '#000000',
                     'desc_tip' => true,
-                    'description' => __('', 'paypal-for-woocommerce'),
-                    'options' => array('black' => __('Black', 'paypal-for-woocommerce'), 'white' => __('White', 'paypal-for-woocommerce'), 'aqua' => __('Aqua', 'paypal-for-woocommerce'), 'beige' => __('Beige', 'paypal-for-woocommerce'), 'green' => __('Green', 'paypal-for-woocommerce'), 'blue' => __('Blue', 'paypal-for-woocommerce'), 'red' => __('Red', 'paypal-for-woocommerce'), 'orange' => __('Orange', 'paypal-for-woocommerce'))
+                    'description' => __('', 'paypal-for-woocommerce')
                 ),
                 'cards_input_style' => array(
                     'title' => __('Card Text Style', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
                     'default' => 'normal',
                     'desc_tip' => true,
                     'description' => __('', 'paypal-for-woocommerce'),
@@ -2031,7 +2031,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'cards_input_weight' => array(
                     'title' => __('Card Text Weight', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
                     'default' => '',
                     'desc_tip' => true,
                     'description' => __('', 'paypal-for-woocommerce'),
@@ -2040,11 +2040,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'cards_input_padding' => array(
                     'title' => __('Card Text Padding', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
                     'default' => '',
                     'desc_tip' => true,
                     'description' => __('', 'paypal-for-woocommerce'),
-                    'options' => $this->get_even_numbers()
+                    'options' => $this->get_size_listing(1, 20, 1, 'px')
                 ),
                 'soft_descriptor' => array(
                     'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
@@ -2098,19 +2098,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             return $this->angelleye_ppcp_gateway_setting;
         }
 
-        public function get_even_numbers(){
-            $numbers = array('1.3em' => 'Default');
-            $arr = array();
-            for ($_getal = 1; $_getal < 100; $_getal++) 
-            {
-                if($_getal % 2 == 0)
-                {
-                    $arr[$_getal.'px'] = $_getal.'px';
-                }
+        public function get_size_listing($from, $to, $step, $postfix): array {
+            $numbers = array('' => 'Default');
+            for (; $from <= $to; $from = $from+$step) {
+                $numbers[$from.$postfix] = $from.$postfix;
             }
-            return array_merge($numbers,$arr);
+            return $numbers;
         }
-
     }
-
 }

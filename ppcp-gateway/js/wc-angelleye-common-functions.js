@@ -691,11 +691,11 @@ const angelleyeOrder = {
 		}
 		return response;
 	},
-    addPaymentMethodAdvancedCreditCard: () => {		
+    addPaymentMethodAdvancedCreditCard: () => {
         if (typeof angelleye_paypal_sdk === 'undefined') {
             return;
         }
-		let addPaymentMethodForm = angelleyeOrder.getCheckoutSelectorCss();		
+		let addPaymentMethodForm = angelleyeOrder.getCheckoutSelectorCss();
         const cardFields = angelleye_paypal_sdk.CardFields({
             createVaultSetupToken: async () => {
 				angelleyeOrder.showProcessingSpinner(addPaymentMethodForm);

@@ -75,7 +75,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     private array $google_pay_button_props;
     private array $apple_pay_button_props;
     private array $common_button_props;
-    public array $card_style_props;
+    private array $card_style_props;
 
     public function __construct() {
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
@@ -199,14 +199,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->apple_pay_button_props = [
             'buttonStyle' => 'black', 'buttonType' => 'plain', 'height' => ''
         ];
-        $this->card_style_props = [
-            'font_size'=> '1.3em',
-            'color'=> 'black',
-            'font_weight'=> '',
-            'font_style' => '',
-            'padding' => ''
-        ];
-
         if (is_cart()) {
             $this->disable_funding = $this->setting_obj->get('cart_disallowed_funding_methods', array());
             $this->style_layout = $this->setting_obj->get('cart_button_layout', 'vertical');
