@@ -4662,10 +4662,6 @@ class AngellEYE_PayPal_PPCP_Payment {
     }
 
     public function get_preferred_order_status($payment_status){
-        if($this->paymentstatus === 'wc-default'){
-            return strtolower($payment_status);
-        }else{
-            return $this->paymentstatus;
-        }
+        return $this->paymentstatus === 'wc-default' ? strtolower($payment_status) : $this->paymentstatus;
     }
 }
