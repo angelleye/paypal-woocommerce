@@ -103,7 +103,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->response_code = $this->ppcp_error_handler->response_code;
         $this->payment_advice_code = $this->ppcp_error_handler->payment_advice_code;
         $this->is_auto_capture_auth = false;
-        if( $this->paymentaction === 'capture' ) {
+        if( $this->paymentaction === 'authorize' ) {
             $this->is_auto_capture_auth = 'yes' === $this->setting_obj->get('auto_capture_auth', 'yes');
         }
 
