@@ -340,6 +340,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 return;
             }
             $this->order = $order;
+            $order_total_amount = floatval($order->get_total(''));
             $this->angelleye_ppcp_order_status_data = array();
             $this->angelleye_ppcp_order_actions = array();
             $paypal_order_id = angelleye_ppcp_get_post_meta($order, '_paypal_order_id');
@@ -415,7 +416,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                         if ($this->ae_refund_amount < $this->ae_capture_amount) {
                             $this->angelleye_ppcp_order_actions['refund'] = __('Refund', '');
                         }
-                        $this->angelleye_ppcp_order_actions['capture'] = __('Capture Funds', '');
+                        if ($order_total_amount > $this->ae_capture_amount) {
+                            $this->angelleye_ppcp_order_actions['capture'] = __('Capture Funds', '');
+                        }
                     }
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'CAPTURED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
                         if ($this->ae_refund_amount < $this->ae_capture_amount) {
