@@ -262,11 +262,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->common_button_props['width'] = $this->setting_obj->get('product_button_width', '');
         }
         $this->card_style_props = [
-            'font_size'=> ($this->setting_obj->get('cards_input_size') === '1.3em') ? '1.3em' : $this->setting_obj->get('cards_input_size'),
+            'font_size'=> $this->setting_obj->get('cards_input_size', ''),
             'color'=> $this->setting_obj->get('cards_input_color', 'black'),
             'font_weight'=> $this->setting_obj->get('cards_input_weight', ''),
             'font_style' => $this->setting_obj->get('cards_input_style', ''),
-            'padding' => ($this->setting_obj->get('cards_input_padding') === '1.3em') ? '' : $this->setting_obj->get('cards_input_padding')
+            'padding' => $this->setting_obj->get('cards_input_padding', '')
         ];
         $this->mini_cart_disable_funding = $this->setting_obj->get('mini_cart_disallowed_funding_methods', array());
         $this->mini_cart_style_layout = $this->setting_obj->get('mini_cart_button_layout', 'vertical');
