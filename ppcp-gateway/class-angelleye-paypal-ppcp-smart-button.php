@@ -75,6 +75,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     private array $google_pay_button_props;
     private array $apple_pay_button_props;
     private array $common_button_props;
+    private array $card_style_props;
 
     public function __construct() {
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
@@ -106,8 +107,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->advanced_card_payments_display_position = $this->setting_obj->get('advanced_card_payments_display_position', 'after');
         $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');
         $is_domain_added = $this->setting_obj->get('apple_pay_domain_added', 'no') == 'yes';
-        $this->enable_apple_pay = $is_domain_added && 'yes' === $this->setting_obj->get('enable_apple_pay', 'no');
-        $this->enable_google_pay = 'yes' === $this->setting_obj->get('enable_google_pay', 'no');
+        $this->enable_apple_pay = $this->enabled && $is_domain_added && 'yes' === $this->setting_obj->get('enable_apple_pay', 'no');
+        $this->enable_google_pay = $this->enabled && 'yes' === $this->setting_obj->get('enable_google_pay', 'no');
         $this->pay_later_messaging_page_type = $this->setting_obj->get('pay_later_messaging_page_type', array('product', 'cart', 'payment'));
         $this->advanced_card_payments_display_position = $this->setting_obj->get('advanced_card_payments_display_position', 'before');
         if (wc_ship_to_billing_address_only()) {
@@ -198,27 +199,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->apple_pay_button_props = [
             'buttonStyle' => 'black', 'buttonType' => 'plain', 'height' => ''
         ];
-        if (is_product()) {
-            $this->disable_funding = $this->setting_obj->get('product_disallowed_funding_methods', array());
-            $this->style_layout = $this->setting_obj->get('product_button_layout', 'horizontal');
-            $this->style_color = $this->setting_obj->get('product_style_color', 'gold');
-            $this->style_shape = $this->setting_obj->get('product_style_shape', 'rect');
-            $this->style_size = $this->setting_obj->get('product_button_size', 'responsive');
-            $this->style_height = $this->setting_obj->get('product_button_height', '');
-            $this->style_label = $this->setting_obj->get('product_button_label', 'paypal');
-            $this->style_tagline = $this->setting_obj->get('product_button_tagline', 'yes');
-            $this->google_pay_button_props = [
-                'buttonColor' => $this->setting_obj->get('product_google_style_color', 'default'),
-                'buttonType' => $this->setting_obj->get('product_google_button_type', 'plain'),
-                'height' => $this->setting_obj->get('product_google_button_height', ''),
-            ];
-            $this->apple_pay_button_props = [
-                'buttonColor' => $this->setting_obj->get('product_apple_style_color', 'black'),
-                'buttonType' => $this->setting_obj->get('product_apple_button_type', 'plain'),
-                'height' => $this->setting_obj->get('product_apple_button_height', ''),
-            ];
-            $this->common_button_props['width'] = $this->setting_obj->get('product_button_width', '');
-        } elseif (is_cart()) {
+        if (is_cart()) {
             $this->disable_funding = $this->setting_obj->get('cart_disallowed_funding_methods', array());
             $this->style_layout = $this->setting_obj->get('cart_button_layout', 'vertical');
             $this->style_color = $this->setting_obj->get('cart_style_color', 'gold');
@@ -258,7 +239,35 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 'height' => $this->setting_obj->get('cart_apple_button_height', ''),
             ];
             $this->common_button_props['width'] = $this->setting_obj->get('checkout_button_width', '');
+        } else {
+            // Make the product style settings as default styled property
+            $this->disable_funding = $this->setting_obj->get('product_disallowed_funding_methods', array());
+            $this->style_layout = $this->setting_obj->get('product_button_layout', 'horizontal');
+            $this->style_color = $this->setting_obj->get('product_style_color', 'gold');
+            $this->style_shape = $this->setting_obj->get('product_style_shape', 'rect');
+            $this->style_size = $this->setting_obj->get('product_button_size', 'responsive');
+            $this->style_height = $this->setting_obj->get('product_button_height', '');
+            $this->style_label = $this->setting_obj->get('product_button_label', 'paypal');
+            $this->style_tagline = $this->setting_obj->get('product_button_tagline', 'yes');
+            $this->google_pay_button_props = [
+                'buttonColor' => $this->setting_obj->get('product_google_style_color', 'default'),
+                'buttonType' => $this->setting_obj->get('product_google_button_type', 'plain'),
+                'height' => $this->setting_obj->get('product_google_button_height', ''),
+            ];
+            $this->apple_pay_button_props = [
+                'buttonColor' => $this->setting_obj->get('product_apple_style_color', 'black'),
+                'buttonType' => $this->setting_obj->get('product_apple_button_type', 'plain'),
+                'height' => $this->setting_obj->get('product_apple_button_height', ''),
+            ];
+            $this->common_button_props['width'] = $this->setting_obj->get('product_button_width', '');
         }
+        $this->card_style_props = [
+            'font_size'=> $this->setting_obj->get('cards_input_size', ''),
+            'color'=> $this->setting_obj->get('cards_input_color', 'black'),
+            'font_weight'=> $this->setting_obj->get('cards_input_weight', ''),
+            'font_style' => $this->setting_obj->get('cards_input_style', ''),
+            'padding' => $this->setting_obj->get('cards_input_padding', '')
+        ];
         $this->mini_cart_disable_funding = $this->setting_obj->get('mini_cart_disallowed_funding_methods', array());
         $this->mini_cart_style_layout = $this->setting_obj->get('mini_cart_button_layout', 'vertical');
         $this->mini_cart_style_color = $this->setting_obj->get('mini_cart_style_color', 'gold');
@@ -286,9 +295,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
         if ($this->checkout_disable_smart_button === false) {
-            add_action('woocommerce_pay_order_before_submit', array($this, 'display_paypal_button_checkout_page'));
-            add_action('woocommerce_review_order_before_submit', array($this, 'display_paypal_button_checkout_page'));
+            add_action('woocommerce_pay_order_before_submit', array($this, 'display_paypal_button_checkout_page'), 100);
+            add_action('woocommerce_review_order_before_submit', array($this, 'display_paypal_button_checkout_page'), 100);
         }
+        // Add google and apple pay button on the checkout page
+        add_action('woocommerce_pay_order_before_submit', [$this, 'display_google_apple_pay_button_checkout_page'], 101);
+        add_action('woocommerce_review_order_before_submit', [$this, 'display_google_apple_pay_button_checkout_page'], 101);
+
         add_action('init', array($this, 'init'));
         add_action('admin_init', array($this, 'angelleye_ppcp_admin_init'), 100);
         add_filter('script_loader_tag', array($this, 'angelleye_ppcp_clean_url'), 10, 2);
@@ -306,6 +319,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('woocommerce_coupons_enabled', array($this, 'angelleye_ppcp_woocommerce_coupons_enabled'), 999, 1);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_order_review_page_description'), 9);
         add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_update_checkout_field_details'));
+        add_action('wfacp_before_form', array($this, 'angelleye_ppcp_update_checkout_field_details'), 1000);
         add_filter('woocommerce_checkout_get_value', array($this, 'angelleye_ppcp_woocommerce_checkout_get_value'), 999, 2);
 
         add_action('woocommerce_review_order_before_submit', array($this, 'angelleye_ppcp_cancel_button'), 999);
@@ -334,8 +348,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('woocommerce_payment_methods_list_item', array($this, 'angelleye_ppcp_woocommerce_payment_methods_list_item'), 10, 2);
         add_filter('woocommerce_subscription_payment_method_to_display', array($this, 'angelleye_ppcp_woocommerce_subscription_payment_method_to_display'), 10, 2);
         add_action('wp', array($this, 'angelleye_ppcp_delete_payment_method_action'), 9);
-        add_action('plugins_loaded', array($this, 'angelleye_ppcp_plugins_loaded'), 99);
+        add_action('woocommerce_checkout_init', array($this, 'angelleye_ppcp_plugins_loaded'), 99);
         add_action('woocommerce_valid_order_statuses_for_payment_complete', array($this, 'angelleye_ppcp_woocommerce_valid_order_statuses_for_payment_complete'), 10, 2);
+        add_action('angelleye_ppcp_shipment_tracking_section', array($this, 'angelleye_ppcp_shipment_tracking_section'));
 
         // Currently, This is to support the applepay, so that we can pass the total amount to SDK popup
         add_filter('woocommerce_update_order_review_fragments', array($this, 'add_order_checkout_data_for_direct_checkouts'), 99);
@@ -401,15 +416,47 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         global $post, $wp, $product;
         $this->angelleye_ppcp_smart_button_style_properties();
         $default_country = wc_get_base_location();
-        $this->angelleye_ppcp_currency = in_array(get_woocommerce_currency(), $this->angelleye_ppcp_currency_list) ? get_woocommerce_currency() : 'USD';
         if (is_checkout() && angelleye_ppcp_has_active_session() === true) {
             wp_enqueue_script($this->angelleye_ppcp_plugin_name . '-order-capture', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-order-capture.js', array('jquery'), $this->version, false);
         }
 
+        /*
+         * We don't need below condition as it will cause issues with Zero amount product having some shipping amount on checkout page
+         */
+        //if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_get_order_total() === 0 || angelleye_ppcp_is_subs_change_payment() === true) {
+        //    return false;
+        //}
+
         $ae_script_loader_handle = 'angelleye-paypal-checkout-sdk';
+        $enable_funding = [];
+        $smart_js_arg = array();
+        $active_currency = get_woocommerce_currency();
+
+        /* * *Compatibility with Multicurrency start * * */
+
+        if (function_exists("scd_get_bool_option")) {
+            $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
+        } else {
+            $scd_option = get_option('scd_general_options');
+            $multicurrency_payment = isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true;
+        }
+        if (function_exists("scd_get_target_currency") && $multicurrency_payment) {
+            $active_currency = scd_get_target_currency();
+        }
+
+        if (in_array($active_currency, $this->angelleye_ppcp_currency_list)) {
+            $this->angelleye_ppcp_currency = $active_currency;
+        } else {
+            // wc_add_notice($active_currency . ' ' . __('currency is not supported.', 'paypal-for-woocommerce'));
+            $this->angelleye_ppcp_currency = 'USD';
+        }
+        $smart_js_arg['currency'] = $this->angelleye_ppcp_currency;
+        /* * *Compatibility with Multicurrency end * * */
 
         $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
-        wp_register_script($this->angelleye_ppcp_plugin_name . '-common-functions', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-common-functions' . $this->minified_version . '.js', array('jquery',), $script_versions, false);
+        wp_register_script($this->angelleye_ppcp_plugin_name . '-common-functions', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-common-functions' . $this->minified_version . '.js', array('jquery', 'wp-i18n'), $script_versions, false);
+        $dir_path = dirname( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE ) . '/i18n/languages';
+        wp_set_script_translations( $this->angelleye_ppcp_plugin_name . '-common-functions', 'paypal-for-woocommerce', $dir_path);
         // wp_register_script('angelleye-paypal-checkout-sdk', $js_url, array(), null, false);
         wp_register_script($ae_script_loader_handle, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-script-loader' . $this->minified_version . '.js', array('jquery', 'angelleye_ppcp-common-functions'), $script_versions, true);
         if ($this->enable_apple_pay) {
@@ -420,10 +467,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $components = ["buttons"];
 
-        $smart_js_arg = ['currency' => $this->angelleye_ppcp_currency];
         $smart_js_arg = array_merge($smart_js_arg, $this->getClientIdMerchantId());
-
-        $enable_funding = [];
 
         $page = '';
         $is_pay_page = 'no';
@@ -462,13 +506,30 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
                 }
             }
-
             $product_cart_amounts = $this->payment_request->ae_get_updated_checkout_payment_data();
 
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
-            if (is_product()) {
+
+            // Adds a button selector when the product_page shortcode is added to a Non-WooCommerce page. Currently this supports single product_page shortcode if a page contains multiple shortcodes
+            $is_product_page_shortcode_used = !empty($post) && isset($post->post_content) && has_shortcode($post->post_content, 'product_page');
+            if ($is_product_page_shortcode_used) {
+                $shortcodes = angelleye_get_matched_shortcode_attributes('product_page', $post->post_content);
+                if (count($shortcodes)) {
+                    foreach ($shortcodes as $shortcode) {
+                        if (!empty($shortcode['id'])) {
+                            $product_id = $shortcode['id'];
+                            break;
+                        }
+                    }
+                }
+                if (empty($product_id)) {
+                    $is_product_page_shortcode_used = false;
+                }
+            }
+
+            if (is_product() || $is_product_page_shortcode_used) {
                 $page = 'product';
-                $product_id = $post->ID;
+                $product_id = $is_product_page_shortcode_used ? $product_id : $post->ID;
                 $product = wc_get_product($product_id);
                 if (class_exists('WC_Subscriptions_Product') && WC_Subscriptions_Product::is_subscription($product)) {
                     $product_cart_amounts['isSubscriptionRequired'] = true;
@@ -534,6 +595,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 global $wp;
                 $order_id = $wp->query_vars['order-pay'];
                 $order = wc_get_order($order_id);
+                // If the order is not retrieved then do not enqueue the JS
+                if (!is_a($order, 'WC_Order')) {
+                    return;
+                }
                 $product_cart_amounts['totalAmount'] = $order->get_total('');
                 $product_cart_amounts['shippingRequired'] = $order->needs_shipping_address();
                 $recurring_items = 0;
@@ -542,6 +607,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
                 $product_cart_amounts['isSubscriptionRequired'] = $recurring_items > 0;
                 $product_cart_amounts['lineItems'] = $this->payment_request->getOrderLineItems($order);
+
                 $is_pay_page = 'yes';
             } elseif (is_checkout()) {
                 $page = 'checkout';
@@ -563,6 +629,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             } elseif (is_add_payment_method_page()) {
                 $page = 'add_payment_method';
             }
+
             $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
             $smart_js_arg['intent'] = ($this->paymentaction === 'capture') ? 'capture' : 'authorize';
             $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
@@ -573,9 +640,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $order_id = $wp->query_vars['order-pay'];
                     $order_id = absint($order_id);
                     $order = wc_get_order($order_id);
-                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
-                    $first_name = $old_wc ? $order->billing_first_name : $order->get_billing_first_name();
-                    $last_name = $old_wc ? $order->billing_last_name : $order->get_billing_last_name();
+                    $first_name = $order->get_billing_first_name();
+                    $last_name = $order->get_billing_last_name();
                 }
             }
             if (angelleye_ppcp_is_vault_required($this->enable_tokenized_payments)) {
@@ -659,6 +725,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'common_button_props' => $this->common_button_props,
             'google_pay_button_props' => $this->google_pay_button_props,
             'apple_pay_button_props' => $this->apple_pay_button_props,
+            'card_style_props' => $this->card_style_props,
             'page' => $page,
             'is_pre_checkout_offer' => $pre_checkout_offer,
             'is_pay_page' => $is_pay_page,
@@ -675,8 +742,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'is_skip_final_review' => $this->angelleye_ppcp_is_skip_final_review() ? 'yes' : 'no',
             'is_checkout_disable_smart_button' => ($this->checkout_disable_smart_button) ? 'yes' : 'no',
             'direct_capture' => add_query_arg(array('angelleye_ppcp_action' => 'direct_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
-            'card_not_supported' => __('Unfortunately, we do not support this credit card type. Please try another card type.', 'paypal-for-woocommerce'),
-            'fields_not_valid' => __('Unfortunately, your credit card details are not valid. Please review the card details and try again.', 'paypal-for-woocommerce'),
             'disable_cards' => $this->disable_cards,
             'first_name' => $first_name,
             'last_name' => $last_name,
@@ -686,12 +751,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'advanced_card_payments_title' => $this->advanced_card_payments_title,
             'angelleye_cart_totals' => $product_cart_amounts,
             'update_cart_oncancel' => add_query_arg(array('angelleye_ppcp_action' => 'update_cart_oncancel', 'utm_nooverride' => '1',), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
-            'error_message_checkout_validation' => __('Unable to create the order due to the following errors.', 'paypal-for-woocommerce'),
             'angelleye_ppcp_cc_setup_tokens' => add_query_arg(array('angelleye_ppcp_action' => 'angelleye_ppcp_cc_setup_tokens', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'advanced_credit_card_create_payment_token' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'constants' => [
                     'approval_token_id' => APPROVAL_TOKEN_ID_PARAM_NAME
-            ]
+            ],
         ));
     }
 
@@ -794,7 +858,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $this->angelleye_ppcp_smart_button_style_properties();
             if (WC()->cart->needs_payment()) {
                 angelleye_ppcp_add_css_js();
-                echo apply_filters('angelleye_ppcp_checkout_top_html', '<div class="angelleye_ppcp"><fieldset><legend class="express-title">' . __('PayPal Checkout', 'paypal-for-woocommerce') . '</legend><div class="wc_ppcp_express_checkout_gateways"><div class="angelleye_ppcp-gateway express_payment_method_ppcp"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout_top"></div><div id="angelleye_ppcp_checkout_top_apple_pay"></div><div id="angelleye_ppcp_checkout_top_google_pay"></div></div></div></div></fieldset><span class="express-divider">OR</span></div>');
+                echo apply_filters('angelleye_ppcp_checkout_top_html', '<div class="angelleye_ppcp top_checkout_container_from_pfw"><fieldset><legend class="express-title">' . __('PayPal Checkout', 'paypal-for-woocommerce') . '</legend><div class="wc_ppcp_express_checkout_gateways"><div class="angelleye_ppcp-gateway express_payment_method_ppcp"><div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout_top"></div><div id="angelleye_ppcp_checkout_top_apple_pay"></div><div id="angelleye_ppcp_checkout_top_google_pay"></div></div></div></div></fieldset><span class="express-divider">OR</span></div>');
             }
         }
     }
@@ -831,6 +895,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             } else {
                 echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_checkout" ></div></div>';
             }
+        }
+    }
+
+    public function display_google_apple_pay_button_checkout_page() {
+        if (angelleye_ppcp_get_order_total() === 0) {
+            return false;
+        }
+        if (angelleye_ppcp_has_active_session() === false) {
+            $this->angelleye_ppcp_smart_button_style_properties();
+            angelleye_ppcp_add_css_js();
             if ($this->enable_apple_pay) {
                 echo '<div id="angelleye_ppcp_checkout_apple_pay" class="angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '" style=""></div>';
             }
@@ -1032,11 +1106,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function init() {
-        if (version_compare(WC_VERSION, '3.3', '<')) {
-            add_filter('wc_checkout_params', array($this, 'filter_wc_checkout_params'), 10, 1);
-        } else {
-            add_filter('woocommerce_get_script_data', array($this, 'filter_wc_checkout_params'), 10, 2);
-        }
+        add_filter('woocommerce_get_script_data', array($this, 'filter_wc_checkout_params'), 10, 2);
     }
 
     public function filter_wc_checkout_params($params, $handle = '') {
@@ -1240,6 +1310,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_exclude_javascript($excluded_handles) {
         $excluded_handles[] = 'jquery-core';
+        $excluded_handles[] = 'wp-i18n';
         $excluded_handles[] = 'angelleye_ppcp-common-functions';
         $excluded_handles[] = 'angelleye_ppcp-apple-pay';
         $excluded_handles[] = 'angelleye_ppcp-google-pay';
@@ -1360,7 +1431,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         return $fields;
     }
 
-    public function angelleye_ppcp_prepare_order_data($defaultData = []) {
+    public function angelleye_ppcp_prepare_order_data($defaultData = [])
+    {
         if (empty($this->checkout_details)) {
             $this->checkout_details = AngellEye_Session_Manager::get('paypal_transaction_details');
             if (empty($this->checkout_details)) {
@@ -1380,6 +1452,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $order_data['terms'] = 1;
         $order_data['createaccount'] = 0;
         $order_data['ship_to_different_address'] = 0;
+        $order_data['shipping_method'] = '';
 
         // merge post data with the transaction details data during the cc_capture api call
         if (isset($_POST)) {
@@ -1387,7 +1460,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 'wc-angelleye_ppcp_cc-new-payment-method', 'wc-angelleye_ppcp_cc-payment-token',
                 'wc-angelleye_ppcp-new-payment-method', 'wc-angelleye_ppcp-payment-token',
                 'wc-angelleye_ppcp_apple_pay-new-payment-method', 'wc-angelleye_ppcp_apple_pay-payment-token',
-                'ship_to_different_address'
+                'ship_to_different_address', 'shipping_method'
             ];
             foreach ($_POST as $key => $value) {
                 if (in_array($key, $look_for_keys_post)) {
@@ -1436,6 +1509,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $order_data['shipping_city'] = $shipping_address['city'] ?? '';
             $order_data['shipping_state'] = $shipping_address['state'] ?? '';
             $order_data['shipping_postcode'] = $shipping_address['postcode'] ?? '';
+        } elseif(!empty($shipping_address) && isset($defaultData['shipping_address_1']) && empty ($defaultData['shipping_address_1'])) {
+            $order_data['shipping_first_name'] = $shipping_address['first_name'] ?? '';
+            $order_data['shipping_last_name'] = $shipping_address['last_name'] ?? '';
+            $order_data['shipping_company'] = $shipping_address['company'] ?? ($order_data['billing_company'] ?? '');
+            $order_data['shipping_country'] = $shipping_address['country'] ?? '';
+            $order_data['shipping_address_1'] = $shipping_address['address_1'] ?? '';
+            $order_data['shipping_address_2'] = $shipping_address['address_2'] ?? '';
+            $order_data['shipping_city'] = $shipping_address['city'] ?? '';
+            $order_data['shipping_state'] = $shipping_address['state'] ?? '';
+            $order_data['shipping_postcode'] = $shipping_address['postcode'] ?? '';
         }
         if (isset($angelleye_ppcp_checkout_post)) {
             // Fill the data if it's not available in $order_data
@@ -1445,7 +1528,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
             }
         }
-
+        if(!isset($order_data['ship_to_different_address'])) {
+            $order_data['ship_to_different_address'] = false;
+        }
+        if(!isset($order_data['shipping_method'])) {
+            $order_data['shipping_method'] = '';
+        }
         return array_merge($defaultData, $order_data);
     }
 
@@ -1528,7 +1616,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if ($order_id !== null) {
                 $order = wc_get_order($order_id);
                 if ($order) {
-                    $old_wc = version_compare(WC_VERSION, '3.0', '<');
                     $paymentaction_val = angelleye_ppcp_get_post_meta($order, '_paymentaction');
                     if (!empty($paymentaction_val)) {
                         return $paymentaction_val;
@@ -1691,7 +1778,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_gateway_method_title($method_title) {
         if (is_admin() && isset($_GET['post']) && !empty($_GET['post'])) {
-            $payment_method_title = get_post_meta(wc_clean($_GET['post']), '_angelleye_ppcp_used_payment_method', true);
+            $payment_method_title = angelleye_ppcp_get_post_meta(wc_clean($_GET['post']), '_angelleye_ppcp_used_payment_method', true);
             if (!empty($payment_method_title)) {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method_title);
                 if (!empty($payment_method_title)) {
@@ -1717,7 +1804,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (!$order->get_id()) {
             return $total_rows;
         }
-        $payment_method_title = get_post_meta($order->get_id(), '_angelleye_ppcp_used_payment_method', true);
+        $payment_method_title = angelleye_ppcp_get_post_meta($order, '_angelleye_ppcp_used_payment_method', true);
         if (!empty($payment_method_title)) {
             $payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method_title);
             if (!empty($payment_method_title)) {
@@ -1739,17 +1826,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_plugins_loaded() {
         try {
             if ($this->enable_paypal_checkout_page === true && $this->checkout_page_display_option !== 'regular') {
-                if (!class_exists('WFACP_Compatibility_With_Angel_Eye_PPCP')) {
-                    if (class_exists('WC_Stripe_Payment_Request')) {
-                        $payment_request_configuration = new WC_Stripe_Payment_Request();
-                        if ($payment_request_configuration->should_show_payment_request_button()) {
-                            add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page_stripe'), 1);
-                        } else {
-                            add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page'), 1);
-                        }
+                if (!class_exists('WFACP_Compatibility_With_Angel_Eye_PPCP') && class_exists('WC_Stripe_Payment_Request')) {
+                    $payment_request_configuration = new WC_Stripe_Payment_Request();
+                    if ($payment_request_configuration->should_show_payment_request_button()) {
+                        add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page_stripe'), 1);
                     } else {
                         add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page'), 1);
                     }
+                } else {
+                    add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page'), 1);
                 }
             }
         } catch (Exception $ex) {
@@ -1787,13 +1872,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_woocommerce_subscription_payment_method_to_display($payment_method_to_display, $subscription) {
-        $wc_pre_30 = version_compare(WC_VERSION, '3.0.0', '<');
-        $subscription_id = $wc_pre_30 ? $subscription->id : $subscription->get_id();
-        if ($wc_pre_30) {
-            $angelleye_ppcp_used_payment_method = get_post_meta($subscription_id, '_angelleye_ppcp_used_payment_method', true);
-        } else {
-            $angelleye_ppcp_used_payment_method = $subscription->get_meta('_angelleye_ppcp_used_payment_method', true);
-        }
+        $angelleye_ppcp_used_payment_method = $subscription->get_meta('_angelleye_ppcp_used_payment_method', true);
         if (!empty($angelleye_ppcp_used_payment_method)) {
             return angelleye_ppcp_get_payment_method_title($angelleye_ppcp_used_payment_method);
         }
@@ -1887,6 +1966,30 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             } else {
                 update_option('cacsp_option_always_scripts', 'https://www.paypal.com/');
             }
+        }
+    }
+
+    public function angelleye_ppcp_shipment_tracking_section() {
+        try {
+            ?>
+            <h3 class="wc-settings-sub-title " id="woocommerce_paypal_express_general">
+                <?php echo __('PayPal Shipment Tracking Settings', 'angelleye-paypal-shipment-tracking-woocommerce'); ?>
+            </h3>
+            <table class="form-table shipping_tracking_api">
+                <tbody>
+                    <tr>
+                        <th>
+                            <?php echo __('PayPal Shipment Tracking', 'angelleye-paypal-shipment-tracking-woocommerce'); ?>
+                        </th>
+                        <td>
+                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
+                            <b>Connected via PayPal by Angelleye</b>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <?php
+        } catch (Exception $ex) {
         }
     }
 }

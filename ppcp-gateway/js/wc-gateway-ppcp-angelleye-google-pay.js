@@ -113,11 +113,11 @@ class GooglePayCheckoutButton {
             let debugID = errorObject.paypalDebugId;
             switch (errorObject.errorName) {
                 case 'ERROR_VALIDATING_MERCHANT':
-                    return 'This merchant is not enabled to process google pay. please contact website owner. [DebugId: ' + debugID + ']';
+                    return localizedMessages.error_validating_merchant + ' [GooglePay DebugId:' + debugID + ']';
                 //case 'UNPROCESSABLE_ENTITY':
                 //    return JSON.stringify(errorObject);
                 default:
-                    return 'We are unable to process your request at the moment, please contact website owner. [DebugId: ' + debugID + ']'
+                    return localizedMessages.general_error_message + ' [GooglePay DebugId:' + debugID + ']';
             }
         }
         return errorObject;
@@ -162,14 +162,14 @@ class GooglePayCheckoutButton {
                         angelleyeOrder.updateCartTotalsInEnvironment(response);
                         paymentDataRequestUpdate.newTransactionInfo = additionalData.thisObject.getGoogleTransactionInfo();
                     } else {
-                        throw new Error("Unable to update the shipping amount.");
+                        throw new Error(localizedMessages.shipping_amount_update_error);
                     }
                 } catch (error) {
                     console.log('shipping change error');
                     angelleyeOrder.hideProcessingSpinner();
                     angelleyeOrder.showError(additionalData.thisObject.parseErrorMessage(error));
-                    paymentDataRequestUpdate.error = 'Unable to pull the shipping amount details based on selected address';
-                    reject('Unable to pull the shipping amount details based on selected address');
+                    paymentDataRequestUpdate.error = localizedMessages.shipping_amount_pull_error;
+                    reject(localizedMessages.shipping_amount_pull_error);
                 }
             }
 
@@ -311,7 +311,7 @@ class GooglePayCheckoutButton {
         console.log('click event', event, thisObject.containerSelector);
         const cartDetails = angelleyeOrder.getCartDetails();
         if (cartDetails.totalAmount <= 0) {
-            angelleyeOrder.showError("Your shopping cart seems to be empty.");
+            angelleyeOrder.showError(localizedMessages.empty_cart_message);
         }
         angelleyeOrder.setPaymentMethodSelector('google_pay');
         const paymentDataRequest = thisObject.getGooglePaymentDataRequest();

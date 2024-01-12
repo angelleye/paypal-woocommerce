@@ -82,7 +82,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 return false;
             }
             $this->setting_obj = get_option($this->gateway_key, array());
-            $defaults = array('enabled' => 'yes',
+            $defaults = array('enabled' => 'no',
                 'title' => __('PayPal', 'paypal-for-woocommerce'),
                 'description' => __(
                         'The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce'
@@ -235,9 +235,16 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'advanced_card_payments_title' => 'Credit Card',
                 'advanced_card_payments_display_position' => 'after',
                 'disable_cards' => '',
+                'cards_input_size'=> '',
+                'cards_input_color' => '',
+                'cards_input_style' => '',
+                'cards_input_weight' => '',
+                'cards_input_padding' => '',
                 'soft_descriptor' => 'PPCP',
                 'error_email_notification' => 'yes',
                 'debug' => 'everything',
+                'enable_google_pay' => 'no',
+                'enable_apple_pay' => 'no'
             );
             foreach ($defaults as $key => $value) {
                 if (isset($this->setting_obj[$key])) {
@@ -1800,9 +1807,8 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 ),
                 'google_pay_authorizations' => array(
                     'title' => __('Google Pay', 'paypal-for-woocommerce'),
-                    'type' => 'title',
-                    'description' => '',
                     'class' => 'ppcp_separator_heading',
+                    'type' => 'title',
                 ),
                 'enable_google_pay' => array(
                     'title' => __('Enable Google Pay', 'paypal-for-woocommerce'),
@@ -1831,6 +1837,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('This controls the description which the user sees when they select Google Pay payment method during checkout.', 'paypal-for-woocommerce'),
                     'default' => __('Accept payments using Google Pay.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
+                    ),
+                 'paypal_shipment_tracking' => array(
+                    'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'enable_paypal_shipment_tracking' => array(
+                    'title' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'label' => __('Enable PayPal Shipment Tracking', 'paypal-for-woocommerce'),
+                    'type' => 'paypal_shipment_tracking',
+                    'description' => '',
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'class' => 'enable_package_tracking',
                 ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
@@ -1950,7 +1971,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 '3d_secure_contingency' => array(
                     'title' => __('Contingency for 3D Secure', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
                     'options' => array(
                         'SCA_WHEN_REQUIRED' => __('3D Secure when required', 'paypal-for-woocommerce'),
                         'SCA_ALWAYS' => __('Always trigger 3D Secure', 'paypal-for-woocommerce'),
@@ -1965,11 +1986,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('This controls the title which the user sees during checkout.', 'paypal-for-woocommerce'),
                     'default' => __('Credit Card', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
+                    'class' => 'advanced_cc_fields_group'
                 ),
                 'advanced_card_payments_display_position' => array(
                     'title' => __('Advanced Credit Cards Position', 'paypal-for-woocommerce'),
                     'type' => 'select',
-                    'class' => 'wc-enhanced-select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
                     'options' => array(
                         'before' => __('Before PayPal Smart Button', 'paypal-for-woocommerce'),
                         'after' => __('After PayPal Smart Button', 'paypal-for-woocommerce'),
@@ -1981,7 +2003,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'disable_cards' => array(
                     'title' => __('Disable specific credit cards', 'paypal-for-woocommerce'),
                     'type' => 'multiselect',
-                    'class' => 'wc-enhanced-select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
                     'default' => array(),
                     'desc_tip' => true,
                     'description' => __(
@@ -1989,6 +2011,50 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                             'paypal-for-woocommerce'
                     ),
                     'options' => $cards_list,
+                ),
+                'cards_input_size' => array(
+                    'title' => __('Card Text Size', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
+                    'default' => '',
+                    'desc_tip' => true,
+                    'description' => __('Choose the font size for the field.', 'paypal-for-woocommerce'),
+                    'options' => $this->get_size_listing(10, 50, 2, 'px')
+                ),
+                'cards_input_color' => array(
+                    'title' => __('Card Text Color', 'paypal-for-woocommerce'),
+                    'type' => 'color_picker',
+                    'class' => 'advanced_cc_fields_group',
+                    'default' => '#000000',
+                    'desc_tip' => true,
+                    'description' => __('', 'paypal-for-woocommerce')
+                ),
+                'cards_input_style' => array(
+                    'title' => __('Card Text Style', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
+                    'default' => 'normal',
+                    'desc_tip' => true,
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'options' => array('normal' => __('Normal', 'paypal-for-woocommerce'), 'italic' => __('Italic', 'paypal-for-woocommerce'), 'inherit' => __('Inherit', 'paypal-for-woocommerce'), 'revert' => __('Revert', 'paypal-for-woocommerce'))
+                ),
+                'cards_input_weight' => array(
+                    'title' => __('Card Text Weight', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
+                    'default' => '',
+                    'desc_tip' => true,
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'options' => array('' => __('Default', 'paypal-for-woocommerce'), '100' => __('100', 'paypal-for-woocommerce'), '200' => __('200', 'paypal-for-woocommerce'), '300' => __('300', 'paypal-for-woocommerce'), '400' => __('400', 'paypal-for-woocommerce'), '500' => __('500', 'paypal-for-woocommerce'), '600' => __('600', 'paypal-for-woocommerce'), 'bold' => __('Bold', 'paypal-for-woocommerce'))
+                ),
+                'cards_input_padding' => array(
+                    'title' => __('Card Text Padding', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select advanced_cc_fields_group',
+                    'default' => '',
+                    'desc_tip' => true,
+                    'description' => __('', 'paypal-for-woocommerce'),
+                    'options' => $this->get_size_listing(1, 20, 1, 'px')
                 ),
                 'soft_descriptor' => array(
                     'title' => __('Credit Card Statement Name', 'paypal-for-woocommerce'),
@@ -2040,6 +2106,15 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 unset($this->angelleye_ppcp_gateway_setting['disable_term']);
             }
             return $this->angelleye_ppcp_gateway_setting;
+        }
+
+        public function get_size_listing($from, $to, $step, $postfix): array
+        {
+            $numbers = array('' => 'Default');
+            for (; $from <= $to; $from = $from + $step) {
+                $numbers[$from . $postfix] = $from . $postfix;
+            }
+            return $numbers;
         }
 
         public function angelleye_get_order_statuses(){

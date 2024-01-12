@@ -5,7 +5,6 @@ if (!defined('ABSPATH')) {
 }
 
 class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_AngellEYE {
-    public $wc_pre_30;
     public function __construct() {
         parent::__construct();
         if (class_exists('WC_Subscriptions_Order')) {
@@ -15,7 +14,6 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
             add_action('wcs_resubscribe_order_created', array($this, 'delete_resubscribe_meta'), 10);
             add_action('woocommerce_subscription_failing_payment_method_updated_' . $this->id, array($this, 'update_failing_payment_method'), 10, 2);
         }
-        $this->wc_pre_30 = version_compare( WC_VERSION, '3.0.0', '<' );
     }
 
     public function is_subscription($order_id) {
@@ -42,11 +40,10 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
     }
 
     public function add_subscription_payment_meta($payment_meta, $subscription) {
-        $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
         $payment_meta[$this->id] = array(
             'post_meta' => array(
                 '_payment_tokens_id' => array(
-                    'value' => get_post_meta($subscription_id, '_payment_tokens_id', true),
+                    'value' => $subscription->get_meta('_payment_tokens_id'),
                     'label' => 'Payment Tokens ID',
                 )
             )
@@ -63,7 +60,7 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
     }
 
     public function save_payment_token($order, $payment_tokens_id) {
-        $order_id = version_compare(WC_VERSION, '3.0', '<') ? $order->id : $order->get_id();
+        $order_id = $order->get_id();
         parent::save_payment_token($order, $payment_tokens_id);
         // Also store it on the subscriptions being purchased or paid for in the order
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order_id)) {
@@ -75,20 +72,30 @@ class WC_Gateway_Braintree_Subscriptions_AngellEYE extends WC_Gateway_Braintree_
         }
         if (!empty($subscriptions)) {
             foreach ($subscriptions as $subscription) {
-                $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
-                update_post_meta($subscription_id, '_payment_tokens_id', $payment_tokens_id);
+                $subscription_parent_id = $this->wc_pre_30 ? $subscription->parent_id : $subscription->get_parent_id();
+                $parent_order = wc_get_order($subscription_parent_id);
+                $payment_tokens = $parent_order->get_meta( '_payment_tokens', true);
+                if(!empty($payment_tokens)) {
+                    foreach ($payment_tokens as $key => $token_id) {
+                        $token = WC_Payment_Tokens::get($token_id);
+                        $token->set_token($payment_tokens_id);
+                        $token->save();
+                    }
+                }
+                $subscription->update_meta_data('_payment_tokens_id', $payment_tokens_id);
+                $subscription->save_meta_data();
             }
         }
     }
 
     public function delete_resubscribe_meta($resubscribe_order) {
-        $resubscribe_order_id = $this->wc_pre_30 ? $resubscribe_order->id : $resubscribe_order->get_id();
-        delete_post_meta($resubscribe_order_id, '_payment_tokens_id');
+        $resubscribe_order->delete_meta_data('_payment_tokens_id');
+        $resubscribe_order->save_meta_data();
     }
 
     public function update_failing_payment_method($subscription, $renewal_order) {
-        $subscription_id = $this->wc_pre_30 ? $subscription->id : $subscription->get_id();
-        update_post_meta($subscription_id, '_payment_tokens_id', $renewal_order->payment_tokens_id);
+        $subscription->update_meta_data('_payment_tokens_id', $renewal_order->payment_tokens_id);
+        $subscription->save();
     }
 
 }

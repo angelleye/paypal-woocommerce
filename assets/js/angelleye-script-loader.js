@@ -1,35 +1,47 @@
 window.loadedScripts = []
 
-function finalLoaded(scriptUrl, event) {
-    loadedScripts[scriptUrl].status = 'loaded';
-    let scheduledCallbacks = loadedScripts[scriptUrl].queue;
-
+function finalLoaded(scriptUrl, isLoaded, event) {
+    loadedScripts[scriptUrl].status = isLoaded ? 'loaded' : 'error';
+    let scheduledCallbacks = isLoaded ? loadedScripts[scriptUrl].queue : loadedScripts[scriptUrl].error_queue;
+    if (!isLoaded) {
+        loadedScripts[scriptUrl].queue = [];
+    } else {
+        loadedScripts[scriptUrl].error_queue = [];
+    }
     if (scheduledCallbacks.length) {
         for(let i = 0; i < scheduledCallbacks.length; i++) {
             if (typeof scheduledCallbacks[i] === 'function') {
                 scheduledCallbacks[i]();
-                delete loadedScripts[scriptUrl].queue[i];
+                if (isLoaded) {
+                    delete loadedScripts[scriptUrl].queue[i];
+                } else {
+                    delete loadedScripts[scriptUrl].error_queue[i];
+                }
             }
         }
     }
 }
 
-function angelleyeLoadPayPalScript(config, onLoaded) {
-    if (typeof loadedScripts[config.url] !== 'undefined') {
+function angelleyeLoadPayPalScript(config, onLoaded, onError) {
+    if (typeof loadedScripts[config.url] !== 'undefined' && loadedScripts[config.url]['status'] !== 'error') {
         if (loadedScripts[config.url]['status'] === 'loaded') {
             onLoaded();
         } else {
             loadedScripts[config.url].queue.push(onLoaded);
+            typeof onError === 'function' && loadedScripts[config.url].error_queue.push(onError);
         }
         return;
     }
 
-    loadedScripts[config.url] = {'status': 'pending', 'queue': []};
+    loadedScripts[config.url] = {status: 'pending', queue: [], error_queue: []};
     loadedScripts[config.url].queue.push(onLoaded);
+    typeof onError === 'function' && loadedScripts[config.url].error_queue.push(onError);
+
     let script = document.createElement('script');
     let scriptUrl = config.url;
     // delay the onload event to let the PayPal lib initialized in the env
-    script.addEventListener('load', finalLoaded.bind(null, scriptUrl));
+    script.addEventListener('load', finalLoaded.bind(null, scriptUrl, true));
+    script.addEventListener('error', finalLoaded.bind(null, scriptUrl, false));
     script.setAttribute('src', config.url);
     script.async = true;
     if (config.script_attributes) {
@@ -47,10 +59,12 @@ function canShowPlaceOrderBtn() {
     // that we need to fix by using a way to identify if its checkout or order review page
     let isOrderCompletePage = angelleyeOrder.isOrderCompletePage();
     // console.log('canShowPlaceOrderBtn', isOrderCompletePage, angelleyeOrder.isAngelleyePaymentMethodSelected());
-    if (!isOrderCompletePage && angelleyeOrder.isAngelleyePaymentMethodSelected() && !angelleyeOrder.isSavedPaymentMethodSelected()) {
-        return false;
+    if (angelleyeOrder.isPpcpPaymentMethodSelected() && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'yes') {
+        return true;
     }
-    return true;
+    return !(!isOrderCompletePage
+        && angelleyeOrder.isAngelleyePaymentMethodSelected()
+        && !angelleyeOrder.isSavedPaymentMethodSelected());
 }
 
 function showHidePlaceOrderBtn() {

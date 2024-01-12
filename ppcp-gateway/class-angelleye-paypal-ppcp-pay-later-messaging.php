@@ -177,11 +177,6 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         angelleye_ppcp_add_css_js();
     }
 
-    public function add_pay_later_script_in_ajax() {
-        $this->angelleye_pay_later_messaging = ['updated_amount' => angelleye_ppcp_get_order_total()];
-        wp_send_json(['pay_later_data' => $this->angelleye_pay_later_messaging]);
-    }
-
     public function angelleye_ppcp_pay_later_messaging_home_page_content($content) {
         if (angelleye_ppcp_is_cart_contains_subscription() !== true && (is_home() || is_front_page())) {
             $this->add_pay_later_script_in_frontend();
@@ -241,8 +236,10 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         if (WC()->cart->is_empty() || angelleye_ppcp_has_active_session() || angelleye_ppcp_is_cart_contains_subscription() === true) {
             return false;
         }
-        $this->add_pay_later_script_in_frontend();
-        echo '<div class="angelleye_ppcp_message_payment"></div>';
+        if(is_checkout()) {
+            $this->add_pay_later_script_in_frontend();
+            echo '<div class="angelleye_ppcp_message_payment"></div>';
+        }
     }
 
     public function is_paypal_pay_later_messaging_enable_for_page($page = '') {

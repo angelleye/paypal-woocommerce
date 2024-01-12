@@ -18,12 +18,7 @@ jQuery(function ($) {
     if (typeof ppcp_angelleye_param === 'undefined') {
         return false;
     }
-    var ppcp_available = $('#woocommerce_angelleye_ppcp_enable_advanced_card_payments, #woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position, #woocommerce_angelleye_ppcp_disable_cards, #woocommerce_angelleye_ppcp_advanced_card_payments_title').closest('tr');
-    if (ppcp_angelleye_param.is_advanced_card_payments === 'yes') {
-        ppcp_available.show();
-    } else {
-        ppcp_available.hide();
-    }
+    $('.angelleye_color_picker').wpColorPicker();
     if ($('#ppcp_success_notice_onboarding').length > 0) {
         $('#ppcp_success_notice_onboarding').show(1000);
     }
@@ -73,12 +68,12 @@ jQuery(function ($) {
             } else {
                 $('#woocommerce_angelleye_ppcp_advanced_card_payments_display_position').closest('tr').hide();
             }
-            $('#woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position, #woocommerce_angelleye_ppcp_disable_cards, #woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_disable_cards').closest('tr').show();
+            $('.advanced_cc_fields_group').closest('tr').show();
         } else {
             if ($("#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option[value='card']").length === 0) {
                 $('#woocommerce_angelleye_ppcp_checkout_disallowed_funding_methods option:eq(0)').before(jQuery("<option></option>").attr("value", "card").text("Credit or Debit Card"));
             }
-            $('#woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position, #woocommerce_angelleye_ppcp_disable_cards, #woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_disable_cards').closest('tr').hide();
+            $('.advanced_cc_fields_group').closest('tr').hide();
         }
     }).change();
     $('#woocommerce_angelleye_ppcp_sandbox_disconnect, #woocommerce_angelleye_ppcp_live_disconnect, #woocommerce_angelleye_ppcp_sandbox_onboarding, #woocommerce_angelleye_ppcp_live_onboarding, #woocommerce_angelleye_ppcp_live_merchant_id, #woocommerce_angelleye_ppcp_sandbox_merchant_id, #woocommerce_angelleye_ppcp_api_client_id, #woocommerce_angelleye_ppcp_api_secret, #woocommerce_angelleye_ppcp_sandbox_client_id, #woocommerce_angelleye_ppcp_sandbox_api_secret').closest('tr').hide();
@@ -898,10 +893,6 @@ jQuery(function ($) {
             pay_later_messaging_payment_text_layout_logo_position.hide();
         }
     }).change();
-    var ppcp_available = $('#woocommerce_angelleye_ppcp_enable_advanced_card_payments, #woocommerce_angelleye_ppcp_3d_secure_contingency, #woocommerce_angelleye_ppcp_advanced_card_payments_display_position, #woocommerce_angelleye_ppcp_disable_cards, #woocommerce_angelleye_ppcp_advanced_card_payments_title, #woocommerce_angelleye_ppcp_disable_cards').closest('tr');
-    if (ppcp_angelleye_param.is_advanced_card_payments === 'no') {
-        ppcp_available.hide();
-    }
     jQuery("#woocommerce_angelleye_ppcp_paymentaction").change(function () {
         if ($('#woocommerce_angelleye_ppcp_paymentaction').val() === 'capture') {
             jQuery('#woocommerce_angelleye_ppcp_auto_capture_auth').closest('tr').hide();

@@ -46,6 +46,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
+
+        add_filter('woocommerce_currency', array($this, 'angelleye_get_scm_current_woocommerce_currency'), 99, 1);
+
+        add_action("woocommerce_checkout_create_order", array($this, "angelleye_convert_order_prices_to_active_currency"), 9999, 2);
+
         add_action('set_logged_in_cookie', [$this, 'handle_logged_in_cookie_nonce_on_checkout'], 1000, 6);
     }
 
@@ -72,7 +77,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
             $this->smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -140,6 +145,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     }
 
                     $request_from_page = $_GET['from'] ?? '';
+                    
+                    AngellEye_Session_Manager::set('from', $request_from_page);
+                    
                     self::$checkout_started_from = $request_from_page;
 
                     if ('pay_page' === $request_from_page) {
@@ -181,7 +189,8 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 wp_send_json_error(array('messages' => $error_messages));
                             }
                         } else {
-                            $_GET['from'] = 'cart';
+                            $_GET['from'] = 'checkout_top';
+                            AngellEye_Session_Manager::set('from', 'checkout_top');
                             $this->payment_request->angelleye_ppcp_create_order_request();
                         }
                         exit();
@@ -197,7 +206,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 $this->product::angelleye_ppcp_add_to_cart_action();
                             }
                             if (angelleye_ppcp_get_order_total() === 0) {
-                                $wc_notice = __('Sorry, your session has expired.', 'woocommerce');
+                                $wc_notice = __('Sorry, your session has expired.', 'paypal-for-woocommerce');
                                 wc_add_notice($wc_notice);
                                 wp_send_json_error($wc_notice);
                             } else {
@@ -205,7 +214,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             }
                             exit();
                         } catch (Exception $ex) {
-                            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+                            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
                             $this->api_log->log($ex->getMessage(), 'error');
                         }
                     } else {
@@ -273,7 +282,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             $this->product = AngellEYE_PayPal_PPCP_Product::instance();
                             $this->product::angelleye_ppcp_add_to_cart_action();
                         } catch (Exception $ex) {
-                            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+                            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
                             $this->api_log->log($ex->getMessage(), 'error');
                         }
                     }
@@ -305,7 +314,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         if (ob_get_length()) {
                             ob_end_clean();
                         }
-                        WC()->session->set( 'reload_checkout', true );
+                        WC()->session->set('reload_checkout', true);
                         wp_send_json_success(array(
                             'result' => 'success',
                             'redirect' => add_query_arg(array('paypal_order_id' => wc_clean($_GET['paypal_order_id']), 'utm_nooverride' => '1', 'wfacp_is_checkout_override' => 'yes'), untrailingslashit(wc_get_checkout_url())),
@@ -379,6 +388,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "angelleye_ppcp_cc_setup_tokens":
                     $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens();
                     exit();
+                case "install_plugin":
+                    $this->install_shipment_tracking_plugin();
+                    exit();
             }
         }
     }
@@ -402,17 +414,20 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         } else {
             $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
         }
-        angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
-        angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+        $order->update_meta_data('_paymentaction', $this->paymentaction);
+        $order->update_meta_data('_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+        $order->save_meta_data();
         AngellEye_Session_Manager::clear();
         if ($is_success) {
             WC()->cart->empty_cart();
             wp_redirect($this->angelleye_ppcp_get_return_url($order));
-            exit();
         } else {
+            // set this to null so that frontend third party plugin doesn't trigger reload on update_order_review ajax call
+            WC()->session->set('reload_checkout', null);
+
             wp_redirect(wc_get_checkout_url());
-            exit();
         }
+        exit();
     }
 
     public function angelleye_ppcp_get_return_url($order = null) {
@@ -455,21 +470,24 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         ));
                         exit();
                     }
-                    $this->payment_request->angelleye_ppcp_update_order($order);
                 }
                 $liability_shift_result = 1;
                 if ($this->advanced_card_payments) {
-                    $api_response = $this->payment_request->angelleye_ppcp_get_checkout_details($angelleye_ppcp_paypal_order_id);
+                    $api_response = AngellEye_Session_Manager::get('paypal_transaction_details');
+                    if(empty($api_response)) {
+                        $api_response = $this->payment_request->angelleye_ppcp_get_checkout_details($angelleye_ppcp_paypal_order_id);
+                    }
                     $liability_shift_result = $this->angelleye_ppcp_liability_shift($order, $api_response);
                 }
                 if ($liability_shift_result === 1) {
                     if ($this->paymentaction === 'capture') {
-                        $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($order_id, false);
+                        $is_success = $this->payment_request->angelleye_ppcp_order_capture_request($order_id, true);
                     } else {
                         $is_success = $this->payment_request->angelleye_ppcp_order_auth_request($order_id);
                     }
-                    angelleye_ppcp_update_post_meta($order, '_paymentaction', $this->paymentaction);
-                    angelleye_ppcp_update_post_meta($order, '_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+                    $order->update_meta_data('_paymentaction', $this->paymentaction);
+                    $order->update_meta_data('_enviorment', ($this->is_sandbox) ? 'sandbox' : 'live');
+                    $order->save_meta_data();
                 } elseif ($liability_shift_result === 2) {
                     $is_success = false;
                     wc_add_notice(__('We cannot process your order with the payment information that you provided. Please use an alternate payment method.', 'paypal-for-woocommerce'), 'error');
@@ -491,6 +509,8 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
+                    // set this to null so that frontend third party plugin doesn't trigger reload on update_order_review ajax call
+                    WC()->session->set('reload_checkout', null);
                     if (isset($_GET['is_pay_page']) && 'yes' === $_GET['is_pay_page']) {
                         wp_send_json_success(array(
                             'result' => 'failure',
@@ -507,7 +527,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 exit();
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -526,7 +546,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             wp_safe_redirect(apply_filters('woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order));
             exit();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -560,11 +580,13 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 exit;
             }
             if (is_used_save_payment_token() === false) {
-                $this->payment_request->angelleye_ppcp_create_order_request();
+                // check if an existing failed order is being processed.
+                $order_id = absint( WC()->session->get( 'order_awaiting_payment' ) );
+                $this->payment_request->angelleye_ppcp_create_order_request($order_id > 0 ? $order_id : null);
                 exit();
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -607,35 +629,20 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $customer->set_shipping_city($shipping_city);
             $customer->set_shipping_state($shipping_state);
             $customer->set_shipping_postcode($shipping_postcode);
-            if (version_compare(WC_VERSION, '3.0', '<')) {
-                $customer->shipping_first_name = $shipping_first_name;
-                $customer->shipping_last_name = $shipping_last_name;
-                $customer->billing_first_name = $billing_first_name;
-                $customer->billing_last_name = $billing_last_name;
-                $customer->set_country($billing_country);
-                $customer->set_address($billing_address_1);
-                $customer->set_address_2($billing_address_2);
-                $customer->set_city($billing_city);
-                $customer->set_state($billing_state);
-                $customer->set_postcode($billing_postcode);
-                $customer->billing_phone = $billing_phone;
-                $customer->billing_email = $billing_email;
-            } else {
-                $customer->set_shipping_first_name($shipping_first_name);
-                $customer->set_shipping_last_name($shipping_last_name);
-                $customer->set_billing_first_name($billing_first_name);
-                $customer->set_billing_last_name($billing_last_name);
-                $customer->set_billing_country($billing_country);
-                $customer->set_billing_address_1($billing_address_1);
-                $customer->set_billing_address_2($billing_address_2);
-                $customer->set_billing_city($billing_city);
-                $customer->set_billing_state($billing_state);
-                $customer->set_billing_postcode($billing_postcode);
-                $customer->set_billing_phone($billing_phone);
-                $customer->set_billing_email($billing_email);
-            }
+            $customer->set_shipping_first_name($shipping_first_name);
+            $customer->set_shipping_last_name($shipping_last_name);
+            $customer->set_billing_first_name($billing_first_name);
+            $customer->set_billing_last_name($billing_last_name);
+            $customer->set_billing_country($billing_country);
+            $customer->set_billing_address_1($billing_address_1);
+            $customer->set_billing_address_2($billing_address_2);
+            $customer->set_billing_city($billing_city);
+            $customer->set_billing_state($billing_state);
+            $customer->set_billing_postcode($billing_postcode);
+            $customer->set_billing_phone($billing_phone);
+            $customer->set_billing_email($billing_email);
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -707,7 +714,189 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         $this->angelleye_ppcp_create_woo_order();
     }
 
-    private function no_liability_shift(AuthResult $result): int {
+    public function angelleye_ppcp_download_zip_file($github_zip_url, $plugin_zip_path) {
+        $request_headers = array();
+        $request_headers[] = 'Accept: */*';
+        $request_headers[] = 'Accept-Encoding: gzip, deflate, br';
+        $request_headers[] = 'Connection: keep-alive';
+        $fp = fopen($plugin_zip_path, 'w+');
+        $ch = curl_init($github_zip_url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $request_headers);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, -1);
+        curl_setopt($ch, CURLOPT_VERBOSE, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $data = curl_exec($ch);
+        fwrite($fp, $data);
+        curl_close($ch);
+        fclose($fp);
+    }
 
+    public function angelleye_ppcp_add_zipdata($source, $inside_folder, $destination) {
+        $plugin_folder_name = $inside_folder;
+        $rootPath = $source;
+        $zip = new ZipArchive();
+        $zip->open($destination, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($rootPath), RecursiveIteratorIterator::LEAVES_ONLY
+        );
+        foreach ($files as $name => $file) {
+            if (!$file->isDir()) {
+                $filePath = $file->getRealPath();
+                $relativePath = substr($filePath, strlen($rootPath) + 1);
+                $zip->addFile($filePath, $plugin_folder_name . '/' . $relativePath);
+            }
+        }
+        $zip->close();
+    }
+
+    public function angelleye_ppcp_delete_files($dir) {
+        $files = array_diff(scandir($dir), array('.', '..'));
+        foreach ($files as $file) {
+            (is_dir("$dir/$file")) ? $this->angelleye_ppcp_delete_files("$dir/$file") : unlink("$dir/$file");
+        }
+        return rmdir($dir);
+    }
+
+    public function install_shipment_tracking_plugin() {
+        try {
+            $github_repo_url = 'https://updates.angelleye.com/ae-updater/angelleye-paypal-shipment-tracking-woocommerce/angelleye-paypal-shipment-tracking-woocommerce.zip';
+            $plugin_folder_name = 'angelleye-paypal-shipment-tracking-woocommerce';
+            $rename_path = WP_CONTENT_DIR . '/plugins/' . $plugin_folder_name;
+            $github_rename_path = WP_CONTENT_DIR . '/plugins/paypal-shipment-tracking-for-woocommerce';
+            $zipFile = WP_CONTENT_DIR . '/uploads/' . $plugin_folder_name . '.zip';
+            $un_zipFile = trailingslashit(WP_CONTENT_DIR . '/uploads/' . $plugin_folder_name);
+            $extracted_folder_name = '';
+            // TODO looks like here we need to handle the scenario where a plugin file or extract function fails and
+            // that leaves the user in a position where he won't be able to install the plugin again until he manually
+            // deletes the plugin folder from file manager or tries through upload plugin option.
+            if (!file_exists($rename_path) && !file_exists($github_rename_path)) {
+                require_once(ABSPATH . 'wp-admin/includes/file.php');
+                $this->angelleye_ppcp_download_zip_file($github_repo_url, $zipFile);
+                $zip = new ZipArchive;
+                $res = $zip->open($zipFile);
+                if ($res === TRUE) {
+                    $zip->extractTo($un_zipFile);
+                    $dir = trim($zip->getNameIndex(0), '/');
+                    $extracted_folder_name = $dir;
+                    $zip->close();
+                }
+
+                // Delete the zip file
+                unlink($zipFile);
+
+                // Delete the existing plugin folder from wp-content/plugins
+                if (is_dir($rename_path)) {
+                    $this->angelleye_ppcp_delete_files($rename_path);
+                }
+
+                // Move the uploads folder to wp-content/plugins/
+                rename($un_zipFile . $plugin_folder_name, $rename_path);
+
+                // Remove the extracted files from uploads
+                if (is_dir($un_zipFile)) {
+                    $this->angelleye_ppcp_delete_files($un_zipFile);
+                }
+
+                // Activate the plugin
+                if (is_dir($rename_path)) {
+                    wp_cache_delete('plugins', 'plugins');
+                    $result = activate_plugin($plugin_folder_name . DIRECTORY_SEPARATOR . 'angelleye-paypal-woocommerce-shipment-tracking.php');
+                    if (is_wp_error($result)) {
+                        wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=paypal_shipment_tracking&error=activation_error'));
+                    }
+                }
+            } elseif (file_exists($rename_path)) {
+                activate_plugin($plugin_folder_name . DIRECTORY_SEPARATOR . 'angelleye-paypal-woocommerce-shipment-tracking.php');
+            } elseif (file_exists($github_rename_path)) {
+                activate_plugin('paypal-shipment-tracking-for-woocommerce' . DIRECTORY_SEPARATOR . 'angelleye-paypal-woocommerce-shipment-tracking.php');
+            }
+            delete_transient('license_key_status_check');
+            delete_site_transient( 'update_plugins' );
+            delete_site_option('angelleye_helper_dismiss_activation_notice');
+            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=paypal_shipment_tracking'));
+            exit();
+        } catch (Exception $ex) {
+            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=paypal_shipment_tracking&error=' . $ex->getMessage()));
+            exit();
+        }
+    }
+
+    /**
+     * Get current active woocommerce currency by scm multicurrency plugin
+     */
+    public function angelleye_get_scm_current_woocommerce_currency( $currency ) {
+        if(function_exists("scd_get_bool_option")) {
+            $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
+        } else {
+            $scd_option = get_option('scd_general_options');
+            $multicurrency_payment = ( isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true ) ? true : false;
+        }
+        if(function_exists("scd_get_target_currency") && $multicurrency_payment) {
+            $currency = scd_get_target_currency();
+        }
+        return $currency;
+    }
+
+    /**
+     * Convert the order prices to active currency
+     */
+    public function angelleye_convert_order_prices_to_active_currency($order, $data) {
+        if(function_exists("scd_get_bool_option")) {
+            $multicurrency_payment = scd_get_bool_option('scd_general_options', 'multiCurrencyPayment');
+        } else {
+            $scd_option = get_option('scd_general_options');
+            $multicurrency_payment = ( isset($scd_option['multiCurrencyPayment']) && $scd_option['multiCurrencyPayment'] == true ) ? true : false;
+        }
+        if(function_exists("scd_get_target_currency") && $multicurrency_payment) {
+            // Get the woocommerce base currency
+            $base_currency = get_option( 'woocommerce_currency');
+
+            // Get the target currency
+            $target_currency = scd_get_target_currency();
+
+            $rate = scd_get_conversion_rate_origine ($target_currency,$base_currency);
+
+            $rate_c = scd_get_conversion_rate ($base_currency, $target_currency);
+            foreach( $order->get_items( array( 'line_item', 'tax', 'shipping', 'fee', 'coupon'  ) ) as $item_id => $item ) {
+
+                // Line items types are products. Convert their price.
+                if( $item['type'] === 'line_item' ) {
+                    $product = $item->get_product();
+                    $product_id = $product->get_id();
+
+                    $new_price = $item->get_subtotal() * $rate_c;
+
+                    $item->set_subtotal( $new_price );
+
+                    $new_price = $item->get_total() * $rate_c ;
+
+                    $item->set_total( $new_price );
+
+                } else if( $item['type'] === 'shipping' ) {
+
+                    $new_price = $item->get_total() * $rate_c ;
+                    // Set the shipping total
+                    $item->set_total( $new_price );
+                } elseif( $item['type'] === 'fee' ) {
+
+                    $new_price = $item->get_amount() * $rate_c ;
+                    // Set the fee total
+                    $item->set_total( $new_price );
+                } elseif( $item['type'] === 'coupon' ) {
+
+                    $new_price = $item->get_discount() * $rate_c;
+                    // Set the discount price
+                    $item->set_discount( $new_price );
+
+                    $coupons_used = true;
+                }
+
+            }
+            $order->calculate_totals();
+        }
     }
 }

@@ -1,8 +1,9 @@
 <?php
-
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 /**
  * Functions used by plugins
  */
+
 /**
  * Queue updates for the Angell EYE Updater
  */
@@ -80,7 +81,7 @@ if (!class_exists('AngellEYE_Updater') && !function_exists('angell_updater_notic
         }
         echo '<div id="angelleye-updater-notice" class="updated notice updater-dismissible"><p>' . $message . '</p><button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>' . "\n";
     }
-    
+
     function angelleye_updater_dismissible_admin_notice() {
         set_transient( 'angelleye_updater_notice_hide', 'yes', MONTH_IN_SECONDS );
     }
@@ -88,4 +89,26 @@ if (!class_exists('AngellEYE_Updater') && !function_exists('angell_updater_notic
         add_action('admin_notices', 'angell_updater_notice');
     }
     add_action( 'wp_ajax_angelleye_updater_dismissible_admin_notice', 'angelleye_updater_dismissible_admin_notice' );
+}
+
+if (!function_exists('ae_get_shop_order_screen_id')) {
+    function ae_get_shop_order_screen_id()
+    {
+        return wc_get_container()->get(CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
+            ? wc_get_page_screen_id('shop-order') : 'shop_order';
+    }
+}
+
+if (!function_exists('ae_is_active_screen')) {
+    /**
+     * Returns True if the current active screen matches to one of the array elements
+     * @param string $screen
+     * @return bool
+     */
+    function ae_is_active_screen(string $screen): bool
+    {
+        $current_screen = get_current_screen();
+        $screen_id = $current_screen ? $current_screen->id : '';
+        return $screen_id == $screen;
+    }
 }

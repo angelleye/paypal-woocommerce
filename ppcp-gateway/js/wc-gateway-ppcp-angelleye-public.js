@@ -134,11 +134,11 @@ function initSmartButtons() {
 
 	// This method will be invoked by other functions to refresh the PayPal SDK with the different parameters
 	// e.g. currency, intent, etc
-	window.angelleyeLoadAsyncLibs = (callback) => {
+	window.angelleyeLoadAsyncLibs = (callback, errorCallback) => {
 		angelleyeLoadPayPalScript({
 			url: angelleye_ppcp_manager.paypal_sdk_url,
 			script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
-		}, callback);
+		}, callback, errorCallback);
 	}
 
 	window.angelleyeLoadAsyncLibs(paypalSdkLoadCallback);
