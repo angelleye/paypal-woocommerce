@@ -30,6 +30,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public $title;
     public $brand_name;
     public $paymentaction;
+    public $paymentstatus;
     public $landing_page;
     public $payee_preferred;
     public $invoice_prefix;
@@ -86,6 +87,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $this->title = $this->setting_obj->get('title', 'PayPal Commerce - Built by Angelleye');
         $this->brand_name = $this->setting_obj->get('brand_name', get_bloginfo('name'));
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
+        $this->paymentstatus = $this->setting_obj->get('paymentstatus', 'wc-default');
         $this->landing_page = $this->setting_obj->get('landing_page', 'NO_PREFERENCE');
         $this->payee_preferred = 'yes' === $this->setting_obj->get('payee_preferred', 'no');
         $this->invoice_prefix = $this->setting_obj->get('invoice_prefix', 'WC-PPCP');
@@ -1288,6 +1290,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     // Update the transaction id for the order, For pending orders we need to save transaction id as well
                     $order->set_transaction_id($transaction_id);
                     if ($payment_status == 'COMPLETED') {
+                        add_filter('woocommerce_payment_complete_order_status', function ($payment_status) {
+                            return $this->get_preferred_order_status($payment_status);
+                        }, 20, 1);
                         $order->payment_complete($transaction_id);
                         $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
                     } elseif ($payment_status === 'DECLINED') {
@@ -1802,7 +1807,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->update_meta_data('_paymentaction', 'authorize');
                     $order->add_order_note(sprintf(__('%s Authorization Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-                    $order->update_status('on-hold');
+                    $order->update_status($this->get_preferred_order_status('on-hold'));
                     if ($this->is_auto_capture_auth) {
                         $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                     }
@@ -1998,6 +2003,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $order->add_order_note($payment_advice_code);
             }
             if ($payment_status == 'COMPLETED') {
+                add_filter('woocommerce_payment_complete_order_status', function ($payment_status) {
+                    return $this->get_preferred_order_status($payment_status);
+                }, 20, 1);
                 $order->payment_complete($transaction_id);
                 $order->add_order_note(sprintf(__('Payment via %s: %s .', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
             } else {
@@ -2020,7 +2028,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order->update_meta_data('_paymentaction', $this->paymentaction);
             $order->add_order_note(sprintf(__('%s Authorization Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $transaction_id));
             $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-            $order->update_status('on-hold');
+            $order->update_status($this->get_preferred_order_status('on-hold'));
             $order->save();
             $order->add_order_note(__('Payment authorized. Change order status to processing or complete for capture funds.', 'paypal-for-woocommerce'));
         }
@@ -3056,6 +3064,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $order->add_order_note($payment_advice_code);
                         }
                         if ($payment_status == 'COMPLETED') {
+                            add_filter('woocommerce_payment_complete_order_status', function ($payment_status) {
+                                return $this->get_preferred_order_status($payment_status);
+                            }, 20, 1);
                             $order->payment_complete($transaction_id);
                             $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
                         } elseif ($payment_status === 'DECLINED') {
@@ -3139,7 +3150,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $order->update_meta_data('_paymentaction', 'authorize');
                         $order->add_order_note(sprintf(__('%s Authorization Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
                         $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-                        $order->update_status('on-hold');
+                        $order->update_status($this->get_preferred_order_status('on-hold'));
                         $order->save();
                         if ($this->is_auto_capture_auth) {
                             $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
@@ -4648,5 +4659,9 @@ class AngellEYE_PayPal_PPCP_Payment {
         } catch (Exception $ex) {
 
         }
+    }
+
+    public function get_preferred_order_status($payment_status){
+        return $this->paymentstatus === 'wc-default' ? strtolower($payment_status) : $this->paymentstatus;
     }
 }

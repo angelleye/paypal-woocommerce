@@ -223,6 +223,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'pay_later_messaging_payment_preview_shortcode' => '[aepfw_bnpl_message placement="payment"]',
                 'advanced_settings' => '',
                 'paymentaction' => 'capture',
+                'paymentstatus' => 'wc-default',
                 'invoice_prefix' => 'WC-PPCP',
                 'skip_final_review' => 'no',
                 'brand_name' => 'PPCP',
@@ -1878,6 +1879,15 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('', 'paypal-for-woocommerce'),
                     'desc_tip' => true
                 ),
+                'paymentstatus' => array(
+                    'title' => __('Order Status', 'paypal-for-woocommerce'),
+                    'description' => __('Select the status you wish to apply after the successful order. The default setting adheres to WooCommerce rules for order status.', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'default' => 'wc-default',
+                    'desc_tip' => true,
+                    'options' => $this->angelleye_get_order_statuses(),
+                ),
                 'invoice_prefix' => array(
                     'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
                     'type' => 'text',
@@ -2098,12 +2108,17 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             return $this->angelleye_ppcp_gateway_setting;
         }
 
-        public function get_size_listing($from, $to, $step, $postfix): array {
+        public function get_size_listing($from, $to, $step, $postfix): array
+        {
             $numbers = array('' => 'Default');
-            for (; $from <= $to; $from = $from+$step) {
-                $numbers[$from.$postfix] = $from.$postfix;
+            for (; $from <= $to; $from = $from + $step) {
+                $numbers[$from . $postfix] = $from . $postfix;
             }
             return $numbers;
+        }
+
+        public function angelleye_get_order_statuses(){
+            return array_merge(["wc-default" => "Default"], wc_get_order_statuses());
         }
     }
 }
