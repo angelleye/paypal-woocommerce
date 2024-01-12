@@ -91,6 +91,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             add_action('woocommerce_admin_order_totals_after_tax', array($this, 'angelleye_ppcp_display_total_capture'), 1, 1);
         }
         add_action('admin_notices', array($this, 'angelleye_ppcp_display_payment_authorization_notice'));
+
+        add_filter('angelleye_shipping_tracking_enabled_payment_methods', [$this, 'angelleye_pfw_add_ppcp_payment_methods'], 10, 2);
     }
 
     public function angelleye_ppcp_admin_void_action_handler($order, $order_data) {
@@ -186,26 +188,20 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         }
     }
 
-    public function angelleye_ppcp_is_display_paypal_transaction_details($post_id) {
+    public function angelleye_ppcp_is_display_paypal_transaction_details($post_id, $payment_actions = ["authorize"]) {
         try {
             $order = wc_get_order($post_id);
-            if (empty($order)) {
-                return false;
-            }
-            $payment_method = $order->get_payment_method();
-            $payment_action = angelleye_ppcp_get_post_meta($order, '_payment_action', true);
-            if (isset($payment_method) && !empty($payment_method) && isset($payment_action) && !empty($payment_action)) {
-                if (in_array($payment_method, ['angelleye_ppcp_cc', 'angelleye_ppcp', 'angelleye_ppcp_apple_pay', 'angelleye_ppcp_google_pay']) && ($payment_action === "authorize" && $order->get_total() > 0)) {
+            if (!empty($order)) {
+                $payment_method = $order->get_payment_method();
+                $payment_action = angelleye_ppcp_get_post_meta($order, '_payment_action');
+                if (!empty($payment_method) && !empty($payment_action) && in_array($payment_method, ['angelleye_ppcp_cc', 'angelleye_ppcp', 'angelleye_ppcp_apple_pay', 'angelleye_ppcp_google_pay']) && $order->get_total() > 0 && in_array($payment_action, $payment_actions)) {
                     return true;
-                } else {
-                    return false;
                 }
-            } else {
-                return false;
             }
         } catch (Exception $ex) {
 
         }
+        return false;
     }
 
     public function angelleye_ppcp_save($post_id, $post_or_order_object) {
@@ -434,24 +430,43 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         }
     }
 
+    /**
+     * Add payment methods to the Shipment tracking supported gateway list
+     * @param $shipping_tracking_payment_methods
+     * @return array
+     */
+    public function angelleye_pfw_add_ppcp_payment_methods($shipping_tracking_payment_methods)
+    {
+        if (!is_array($shipping_tracking_payment_methods)) {
+            $shipping_tracking_payment_methods = [];
+        }
+        $shipping_tracking_payment_methods = array_merge($shipping_tracking_payment_methods, ['angelleye_ppcp', 'angelleye_ppcp_cc', 'angelleye_ppcp_google_pay', 'angelleye_ppcp_apple_pay']);
+        return array_unique($shipping_tracking_payment_methods);
+    }
+
     public function angelleye_ppcp_add_order_action_buttons($order) {
         try {
-            if (!$this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id())) {
-                return;
-            }
-            wp_enqueue_script('angelleye-ppcp-order-action');
-            if ($this->ae_capture_amount === 0) {
+            $shipment_tracking_enabled = defined('ANGELLEYE_PAYPAL_WOOCOMMERCE_SHIPMENT_TRACKING_VERSION');
+
+            $should_display_transaction_details = $this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id(), ['authorize', 'capture']);
+
+            // angelleye_ppcp_order_actions variable will be only set when order is and Authorization order
+            if ($should_display_transaction_details && !empty($this->angelleye_ppcp_order_actions)) {
+                wp_enqueue_script('angelleye-ppcp-order-action');
+                if ($this->ae_capture_amount === 0) { ?>
+                    <style>.button.refund-items {
+                            display: none;
+                        }</style>
+                <?php } ?>
+                <button type="button"
+                        class="button angelleye-ppcp-order-capture" <?php echo (isset($this->angelleye_ppcp_order_actions['capture']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>> <?php esc_html_e('Capture', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip(__('Capture payment for the authorized order.', 'paypal-for-woocommerce')); ?></button>
+                <button type="button"
+                        class="button angelleye-ppcp-order-void" <?php echo (isset($this->angelleye_ppcp_order_actions['void']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>><?php esc_html_e('Void Authorization', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip(__('Void the authorized order to release the hold on the buyer\'s payment source.', 'paypal-for-woocommerce')); ?></button>
+            <?php }
+
+            if (in_array($order->get_status(), array('processing', 'completed', 'partial-payment')) && $shipment_tracking_enabled) {
+                wp_enqueue_script('angelleye-ppcp-order-action');
                 ?>
-                <style>.button.refund-items {display:none;}</style>
-                    <?php
-                }
-                if (empty($this->angelleye_ppcp_order_actions)) {
-                    return;
-                }
-                ?>
-            <button type="button" class="button angelleye-ppcp-order-capture" <?php echo (isset($this->angelleye_ppcp_order_actions['capture']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>> <?php esc_html_e('Capture', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip(__('Capture payment for the authorized order.', 'paypal-for-woocommerce')); ?></button>
-            <button type="button" class="button angelleye-ppcp-order-void" <?php echo (isset($this->angelleye_ppcp_order_actions['void']) && !empty($this->angelleye_ppcp_order_actions)) ? '' : 'disabled'; ?>><?php esc_html_e('Void Authorization', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip(__('Void the authorized order to release the hold on the buyer\'s payment source.', 'paypal-for-woocommerce')); ?></button>
-            <?php if (in_array($order->get_status(), array('processing', 'completed', 'partial-payment')) && defined('ANGELLEYE_PAYPAL_WOOCOMMERCE_SHIPMENT_TRACKING_VERSION')) { ?>
                 <button type="button" class="button angelleye-ppcp-shipment-tracking"><?php esc_html_e('PayPal Shipment', 'paypal-for-woocommerce'); ?><?php echo wc_help_tip(__('Add shipment tracking details to WooCommerce and PayPal.', 'paypal-for-woocommerce')); ?></button>
             <?php } ?>
             <?php
