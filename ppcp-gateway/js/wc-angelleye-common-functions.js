@@ -487,7 +487,11 @@ const angelleyeOrder = {
 			},
 			styles: {
 				'input': {
-					'font-size': '1.3em'
+					'font-size': angelleye_ppcp_manager.card_style_props.font_size,
+					'color': angelleye_ppcp_manager.card_style_props.color,
+					'font-weight': angelleye_ppcp_manager.card_style_props.font_weight,
+					'font-style': angelleye_ppcp_manager.card_style_props.font_style,
+					'padding': angelleye_ppcp_manager.card_style_props.padding,
 				}
 			},
 			fields: {
