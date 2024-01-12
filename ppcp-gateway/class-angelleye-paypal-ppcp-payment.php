@@ -104,7 +104,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         if( $this->paymentaction === 'capture' ) {
             $this->is_auto_capture_auth = 'yes' === $this->setting_obj->get('auto_capture_auth', 'yes');
         }
-        
+
     }
 
     public function angelleye_ppcp_load_class() {
@@ -2523,6 +2523,11 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
+    /**
+     * @param WC_Order $order
+     * @param $order_data
+     * @return false|void
+     */
     public function angelleye_ppcp_capture_authorized_payment_admin($order, $order_data) {
         try {
             if ($order === false) {
@@ -2533,6 +2538,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $note_to_payer = substr($note_to_payer, 0, 252) . '...';
             }
             $order_id = $order->get_id();
+            $total_order_value = floatval($order->get_total(''));
             $angelleye_ppcp_payment_method_title = $this->get_payment_method_title_for_order($order_id);
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $amount_value = isset($order_data['ppcp_refund_amount']) ? angelleye_ppcp_round($order_data['ppcp_refund_amount'], $decimals) : '';
@@ -2635,17 +2641,19 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
                 $seller_protection = $this->api_response['seller_protection']['status'] ?? '';
-                $captured_amount = $this->api_response['amount']['value'];   
+                $captured_amount = $this->api_response['amount']['value'];
                 $this->api_response = $this->angelleye_ppcp_get_authorized_payment($authorization_id);
                 $payment_status = $this->api_response['status'] ?? '';
                 $order->update_meta_data('_payment_status', $payment_status);
                 $order->save();
                 $order->add_order_note(sprintf(__('%s Capture Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
                 $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-                if($captured_amount < $this->api_response['amount']['value'] && 'PARTIALLY_CAPTURED' === $payment_status){
-                    $order->update_status('wc-processing');
+                // PFW-1693 - We need to mark the order as completed if the order total is less than or equal to the captured amount
+                if ('PARTIALLY_CAPTURED' === $payment_status && $total_order_value <= $captured_amount){
+                    $payment_status = 'CAPTURED';
                 }
-                elseif ($payment_status === 'COMPLETED' || 'CAPTURED' === $payment_status) {
+
+                if ($payment_status === 'COMPLETED' || 'CAPTURED' === $payment_status) {
                     $order->payment_complete();
                     $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
                 } elseif ('PARTIALLY_CAPTURED' === $payment_status) {
