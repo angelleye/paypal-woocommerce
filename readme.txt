@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.4.2
-Stable tag: 4.4.13
+Stable tag: 4.4.14
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,15 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.4.14 - 01.12.2024 =
+* Feature - Added the shipment tracking support on line item basis for direct captured orders. ([PFW-1709](https://github.com/angelleye/paypal-woocommerce/pull/1989))
+* Feature - Added styling configuration settings for Advanced CC form. ([PFW-1673](https://github.com/angelleye/paypal-woocommerce/pull/1992))
+* Feature - Adjust order status based on Order amount during order Capture for Authorized orders. ([PFW-1693](https://github.com/angelleye/paypal-woocommerce/pull/1993))
+* Feature - Set order status based on order status configuration during checkout. ([PFW-1662](https://github.com/angelleye/paypal-woocommerce/pull/1994))
+* Fix - Fixed the google pay, apple pay payment gateway display issue on variations product page. ([PFW-1635](https://github.com/angelleye/paypal-woocommerce/pull/1995))
+* Fix - Fixed the capture issue with authorized orders on order status change. ([PFW-1714](https://github.com/angelleye/paypal-woocommerce/pull/1996))
+* Fix - Resolved the smart button display issue at the top of checkout page. ([PFW-1710](https://github.com/angelleye/paypal-woocommerce/pull/1991))
 
 = 4.4.13 - 12.22.2023 =
 * Feature - Add HPOS compatibility with PFW Migrations. ([PFW-1708](https://github.com/angelleye/paypal-woocommerce/pull/1990))
