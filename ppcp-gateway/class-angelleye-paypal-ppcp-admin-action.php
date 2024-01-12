@@ -68,7 +68,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
         }
         add_action('admin_notices', array($this, 'admin_notices'));
-        if ($this->is_auto_capture_auth) {
+        // On checkout page these hooks conflicts when we change order status to processing or completed from our payment gateway
+        // We need to apply these hooks in admin panel
+        if ($this->is_auto_capture_auth && is_admin()) {
             add_action('woocommerce_order_status_processing', array($this, 'angelleye_ppcp_capture_payment'));
             add_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
             add_action('woocommerce_order_status_cancelled', array($this, 'angelleye_ppcp_cancel_authorization'));

@@ -1850,14 +1850,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'authorize' => __('Authorize', 'paypal-for-woocommerce'),
                     ),
                 ),
-                'paymentstatus' => array(
-                    'title' => __('Payment Status', 'paypal-for-woocommerce'),
-                    'type' => 'select',
-                    'class' => 'wc-enhanced-select',
-                    'default' => 'wc-default',
-                    'desc_tip' => true,
-                    'options' => $this->angelleye_ppcp_setting_order_statuses(),
-                ),
                 'auto_capture_auth' => array(
                     'title' => __('Automatic Capture of Pending Authorizations', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
@@ -1865,6 +1857,15 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'yes',
                     'description' => __('', 'paypal-for-woocommerce'),
                     'desc_tip' => true
+                ),
+                'paymentstatus' => array(
+                    'title' => __('Order Status', 'paypal-for-woocommerce'),
+                    'description' => __('Select the status you wish to apply after the successful order. The default setting adheres to WooCommerce rules for order status.', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'default' => 'wc-default',
+                    'desc_tip' => true,
+                    'options' => $this->angelleye_get_order_statuses(),
                 ),
                 'invoice_prefix' => array(
                     'title' => __('Invoice Prefix', 'paypal-for-woocommerce'),
@@ -2040,10 +2041,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             return $this->angelleye_ppcp_gateway_setting;
         }
-        public function angelleye_ppcp_setting_order_statuses(){
-            $a1= array( "wc-default" => "Default");
-            $a2 = wc_get_order_statuses();
-            return $order_statuses = array_merge($a1,$a2);
+
+        public function angelleye_get_order_statuses(){
+            return array_merge(["wc-default" => "Default"], wc_get_order_statuses());
         }
-    }   
+    }
 }
