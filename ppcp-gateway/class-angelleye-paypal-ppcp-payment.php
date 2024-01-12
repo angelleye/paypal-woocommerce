@@ -485,7 +485,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $cart_item_discount_amount += angelleye_ppcp_round($fee_values->amount * 1, $decimals);
             }
         }
-        return $cart_item_discount_amount;
+        return absint($cart_item_discount_amount);
     }
 
     public function angelleye_ppcp_get_details_from_cart() {
