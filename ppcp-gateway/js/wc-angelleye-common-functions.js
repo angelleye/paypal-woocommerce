@@ -1,5 +1,6 @@
 const angelleyeOrder = {
 	productAddToCart: true,
+	lastApiResponse: null,
 	isCheckoutPage: () => {
 		return 'checkout' === angelleye_ppcp_manager.page;
 	},
@@ -120,7 +121,7 @@ const angelleyeOrder = {
 		if (typeof apiUrl == 'undefined') {
 			apiUrl = angelleye_ppcp_manager.create_order_url;
 		}
-
+		angelleyeOrder.lastApiResponse = null;
 		let formSelector = angelleyeOrder.getWooFormSelector();
 		angelleyeOrder.removeError();
 		let formData;
@@ -175,7 +176,7 @@ const angelleyeOrder = {
 				'Content-Type': 'application/x-www-form-urlencoded'
 			},
 			body: formData
-		}).then(function (res) {
+		}).then(async function (res) {
 			console.log('createOrder response', {
 				res,
 				apiUrl,
@@ -186,6 +187,7 @@ const angelleyeOrder = {
 			if (res.redirected) {
 				window.location.href = res.url;
 			} else {
+				angelleyeOrder.lastApiResponse = await res.clone().text();
 				return res.json();
 			}
 		}).then(function (data) {
@@ -274,7 +276,7 @@ const angelleyeOrder = {
 		}
 	},
 	handleCreateOrderError: (error) => {
-		console.log('create_order_error', error);
+		console.log('create_order_error', error, angelleyeOrder.lastApiResponse);
 		angelleyeOrder.hideProcessingSpinner();
 		jQuery(document.body).trigger('angelleye_paypal_onerror');
 		let errorMessage = error.message ? error.message : error;
@@ -282,6 +284,10 @@ const angelleyeOrder = {
 			if ((errorMessage.toLowerCase()).indexOf('required fields') < 0) {
 				errorMessage = localizedMessages.create_order_error;
 			}
+		} else if ((errorMessage.toLowerCase()).indexOf('unexpected token') > -1) {
+			let lastErrorHtmlEncoded = jQuery("<textarea/>").text(angelleyeOrder.lastApiResponse).html();
+			errorMessage = '<li>' + localizedMessages.create_order_error_with_content + '</li>' +
+				'<li><br>' + lastErrorHtmlEncoded + '</li>';
 		}
 		if (errorMessage !== '') {
 			angelleyeOrder.showError(errorMessage);
@@ -842,7 +848,8 @@ const localizedMessages = {
 	shipping_amount_update_error: __('Unable to update the shipping amount.', 'paypal-for-woocommerce'),
 	shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce'),
 	currency_change_js_load_error: __('We encountered an issue loading the updated currency. Please refresh the page or contact support for assistance.', 'paypal-for-woocommerce'),
-	create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce')
+	create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce'),
+	create_order_error_with_content: __('Unable to create the order, please contact the support with following error message.', 'paypal-for-woocommerce')
 };
 
 const pfwUrlHelper = {
