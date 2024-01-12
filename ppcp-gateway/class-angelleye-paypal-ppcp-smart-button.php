@@ -1818,7 +1818,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_plugins_loaded() {
         try {
             if ($this->enable_paypal_checkout_page === true && $this->checkout_page_display_option !== 'regular') {
-                if (!class_exists('WFACP_Compatibility_With_Angel_Eye_PPCP')) {
+                if (class_exists('WFACP_Compatibility_With_Angel_Eye_PPCP')) {
                     if (class_exists('WC_Stripe_Payment_Request')) {
                         $payment_request_configuration = new WC_Stripe_Payment_Request();
                         if ($payment_request_configuration->should_show_payment_request_button()) {
