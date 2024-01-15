@@ -1,10 +1,12 @@
 <?php
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
+use WC_Gateway_PPCP_AngellEYE;
 
 final class AngellEYE_PPCP_Checkout_Block extends AbstractPaymentMethodType {
-    
-    protected $name = 'angelleye_ppcp';// your payment gateway name
+
+    private $gateway;
+    protected $name = 'angelleye_ppcp'; // your payment gateway name
 
     public function initialize() {
         $this->settings = get_option('woocommerce_angelleye_ppcp_settings', []);
@@ -38,8 +40,9 @@ final class AngellEYE_PPCP_Checkout_Block extends AbstractPaymentMethodType {
 
     public function get_payment_method_data() {
         return [
-            'title' => $this->gateway->title,
-                'description' => 'test',
+            'title' => $this->get_setting('title'),
+            'description' => $this->get_setting('description'),
+            'supports' => $this->get_supported_features(),
         ];
     }
 }

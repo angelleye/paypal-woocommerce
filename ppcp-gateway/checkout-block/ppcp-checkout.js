@@ -1,19 +1,35 @@
-const ppcp_settings = window.wc.wcSettings.getSetting( 'angelleye_ppcp_data', {} );
-console.log('2');
-console.log(ppcp_settings);
-const ppcp_label = window.wp.htmlEntities.decodeEntities( ppcp_settings.title ) || window.wp.i18n.__( 'PayPal', 'angelleye_ppcp' );
-const ppcp_content = () => {
-    return window.wp.htmlEntities.decodeEntities( ppcp_settings.description || '' );
+const settings = window.wc.wcSettings.getSetting('angelleye_ppcp_data', {});
+const label = window.wp.htmlEntities.decodeEntities(settings.title) || window.wp.i18n.__('PPCP PayPal', 'paypal-for-woocommerce');
+const Content = () => {
+    return window.wp.htmlEntities.decodeEntities(settings.description || '');
 };
-const ppcp_block_gateway = {
+const Block_Gateway = {
     name: 'angelleye_ppcp',
-    label: ppcp_label,
-    content: Object( window.wp.element.createElement )( ppcp_content, null ),
-    edit: Object( window.wp.element.createElement )( ppcp_content, null ),
+    label: label,
+    content: Object(window.wp.element.createElement)(Content, null),
+    edit: Object(window.wp.element.createElement)(Content, null),
     canMakePayment: () => true,
-    ariaLabel: ppcp_label,
+    ariaLabel: label,
     supports: {
-        features: ppcp_settings.supports
+        features: settings.supports
     }
 };
-window.wc.wcBlocksRegistry.registerPaymentMethod( ppcp_block_gateway );
+
+window.wc.wcBlocksRegistry.registerPaymentMethod(Block_Gateway);
+
+const Express_Block_Gateway = {
+    name: "PayPal PPCPPC",
+    edit: Object(window.wp.element.createElement)(Content, null),
+    content: Object(r.createElement)("div", {id: "angelleye_ppcp_checkout"}),
+    canMakePayment: () => true,
+    paymentMethodId: "angelleye_ppcp",
+    supports: {
+        features: settings.supports
+    }
+};
+
+window.wc.wcBlocksRegistry.registerExpressPaymentMethod(Express_Block_Gateway);
+
+
+
+
