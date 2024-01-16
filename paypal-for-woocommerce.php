@@ -105,7 +105,7 @@ global $woocommerce, $pp_settings, $pp_pro, $pp_payflow, $wp_version;
 if (is_admin() && !defined('DOING_AJAX')) {
 $pp_pro     = get_option('woocommerce_paypal_pro_settings');
 $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings');
-$pp_settings = get_option( 'woocommerce_paypal_express_settings' );
+$pp_settings = get_option( 'woocommerce_paypal_express_settings', array());
 }
 
 
