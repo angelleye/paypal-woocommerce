@@ -284,7 +284,8 @@ const angelleyeOrder = {
 			if ((errorMessage.toLowerCase()).indexOf('required fields') < 0) {
 				errorMessage = localizedMessages.create_order_error;
 			}
-		} else if ((errorMessage.toLowerCase()).indexOf('unexpected token') > -1) {
+		} else if ((errorMessage.toLowerCase()).indexOf('unexpected token') > -1) {			
+			angelleyeJsErrorLogger.caughtJsError(errorMessage);
 			let lastErrorHtmlEncoded = jQuery("<textarea/>").text(angelleyeOrder.lastApiResponse).html();
 			errorMessage = '<li>' + localizedMessages.create_order_error_with_content + '</li>' +
 				'<li><br>' + lastErrorHtmlEncoded + '</li>';
@@ -882,4 +883,29 @@ const pfwUrlHelper = {
 		url.search = '';
 		return url.toString();
 	}
+}
+const angelleyeJsErrorLogger = {
+	caughtJsError: (error) => {
+		fetch(angelleye_ppcp_manager.handle_js_errors, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({"error": error}),
+		}).then(function (res) {
+			//alert(res.json());
+		}).then(function (data) {
+			//alert(data);
+		});
+			
+	}	
+}
+window.onerror =  
+function (msg, source, lineNo) { 
+	let errorobject = {
+		'msg':msg,
+		'source':source,
+		'line':lineNo,		
+	};
+	angelleyeJsErrorLogger.caughtJsError(errorobject);
 }

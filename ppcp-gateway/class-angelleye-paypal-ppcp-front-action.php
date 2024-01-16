@@ -312,6 +312,15 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "display_order_page":
                     $this->angelleye_ppcp_display_order_page();
                     break;
+                case "handle_js_errors":
+                    $_POST = json_decode(file_get_contents('php://input'), true);
+                    if( isset($_POST['error']['msg']) && isset($_POST['error']['source']) && isset($_POST['error']['line']) ){
+                        wc_get_logger()->info( 'JavaScript Error: ' . html_entity_decode( $_POST['error']['msg'], ENT_QUOTES ) . ', file: ' . $_POST['error']['source'] . ', line:' . $_POST['error']['line'], array( 'source' => 'angelleye_ppcp_js_errors' ) );
+                    }
+                    else{
+                        wc_get_logger()->info( 'JavaScript Error: ' . $_POST['error'], array( 'source' => 'angelleye_ppcp_js_errors' ) );
+                    }
+                    break;
                 case "cc_capture":
                     wc_clear_notices();
                     // Required for order pay form, as there will be no data in session
