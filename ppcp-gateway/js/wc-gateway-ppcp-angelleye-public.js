@@ -143,15 +143,24 @@ function initSmartButtons() {
 
     window.angelleyeLoadAsyncLibs(paypalSdkLoadCallback);
 
+
+
     document.addEventListener('DOMContentLoaded', function () {
         var cartBlock = document.querySelector('.wp-block-woocommerce-cart');
         if (cartBlock) {
             setTimeout(function () {
                 jQuery(document.body).trigger('ppcp_cart_block_ready');
-                console.log('added ppcp_cart_block_ready');
             }, 1);
-        } else {
-            console.log('not added ppcp_cart_block_ready');
-        }
+        } 
+        setTimeout(function () {
+                jQuery(document.body).trigger('ppcp_checkout_top_ready');
+            }, 1000);
+         var checkout_top = document.querySelector('#angelleye_ppcp_checkout_top');
+         console.log('checkout_top : ' + checkout_top);
+         if (checkout_top) {
+            setTimeout(function () {
+                jQuery(document.body).trigger('ppcp_checkout_top_ready');
+            }, 1000);
+        } 
     });
 })(jQuery);
