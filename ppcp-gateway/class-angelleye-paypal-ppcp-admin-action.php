@@ -123,6 +123,14 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
 
     public function angelleye_ppcp_capture_payment($order_id) {
         $order = wc_get_order($order_id);
+        $auth_captured_amount = $order->get_meta('_auth_captured_amount');
+        $auth_payment_status = $order->get_meta('_payment_status');
+        $total_order_value = floatval($order->get_total());
+        if ( $auth_payment_status === 'COMPLETED' || 'CAPTURED' === $auth_payment_status ) {
+            if( floatval($auth_captured_amount) >= $total_order_value ){
+                return;
+            }
+        }
         if (!$order) {
             return;
         }
