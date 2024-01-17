@@ -779,10 +779,10 @@ const angelleyeOrder = {
 	},
 	hooks: {
 		handleWooEvents: () => {
-			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function (event, data) {
+			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_cart_block_ready', function (event, data) {
 				console.log(`hook_received => ${event.type}`, data, angelleyeOrder.getCartDetails());
 				angelleyeOrder.dequeueEvent(event.type);
-
+                                
 				let response;
 				if (typeof data !== 'undefined' && typeof data["fragments"] !== 'undefined' && typeof data["fragments"]["angelleye_payments_data"] !== "undefined") {
 					response = angelleyeOrder.updateCartTotalsInEnvironment(JSON.parse(data["fragments"]["angelleye_payments_data"]));
@@ -791,12 +791,13 @@ const angelleyeOrder = {
 				}
 
 				if (!response || response.renderNeeded) {
+                                    
 					angelleyeOrder.renderPaymentButtons();
 				}
 			});
 		},
 		handleRaceConditionOnWooHooks: () => {
-			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function (event, data) {
+			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_cart_block_ready', function (event, data) {
 				if (!angelleyeOrder.isPendingEventTriggering) {
 					angelleyeOrder.addEventsForCallback(event.type, event, data);
 				}

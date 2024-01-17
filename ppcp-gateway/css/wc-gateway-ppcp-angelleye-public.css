@@ -1,6 +1,10 @@
 .angelleye_ppcp-button-container {
     text-align: center;
     min-width: 305px;
+    border-bottom: none !important;
+}
+.angelleye_ppcp-button-container div {
+    border-bottom: none !important;
 }
 .angelleye_ppcp-proceed-to-checkout-button-separator {
     display:inline-block;
