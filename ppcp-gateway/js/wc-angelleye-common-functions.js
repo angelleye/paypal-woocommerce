@@ -780,7 +780,7 @@ const angelleyeOrder = {
 	},
 	hooks: {
 		handleWooEvents: () => {
-			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_cart_block_ready ppcp_checkout_top_ready', function (event, data) {
+			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_block_ready', function (event, data) {
 				console.log(`hook_received => ${event.type}`, data, angelleyeOrder.getCartDetails());
 				angelleyeOrder.dequeueEvent(event.type);
                                 
@@ -798,7 +798,7 @@ const angelleyeOrder = {
 			});
 		},
 		handleRaceConditionOnWooHooks: () => {
-			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_cart_block_ready ppcp_checkout_top_ready', function (event, data) {
+			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_block_ready', function (event, data) {
 				if (!angelleyeOrder.isPendingEventTriggering) {
 					angelleyeOrder.addEventsForCallback(event.type, event, data);
 				}

@@ -566,6 +566,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                         $google_pay_btn_selector['angelleye_ppcp_cart_top_google_pay'] = '#angelleye_ppcp_cart_top_google_pay';
                     }
                 }
+                $button_selector['angelleye_ppcp_checkout_top'] = '#angelleye_ppcp_checkout_top';
                 $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
                 $button_selector['angelleye_ppcp_cart_shortcode'] = '#angelleye_ppcp_cart_shortcode';
             } elseif (is_checkout_pay_page()) {

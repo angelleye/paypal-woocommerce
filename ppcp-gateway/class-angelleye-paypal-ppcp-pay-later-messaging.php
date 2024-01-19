@@ -141,7 +141,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         return false;
     }
 
-    private function add_pay_later_script_in_frontend() {
+    public function add_pay_later_script_in_frontend() {
         $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
         wp_register_script('angelleye-pay-later-messaging', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging' . $this->minified_version . '.js', array('jquery', 'angelleye-paypal-checkout-sdk'), $script_versions, true);
 
