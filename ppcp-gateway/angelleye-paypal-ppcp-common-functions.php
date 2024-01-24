@@ -1199,6 +1199,20 @@ if (!function_exists('angelleye_ppcp_binary_search')) {
 
 }
 
+if (!function_exists('pfw_print_filters_for')) {
+
+    function pfw_print_filters_for($hook = '') {
+        global $wp_filter;
+        if (empty($hook) || !isset($wp_filter[$hook]))
+            return;
+
+        print '<pre>';
+        print_r($wp_filter[$hook]);
+        print '</pre>';
+    }
+
+}
+
 if (!function_exists('angelleye_ppcp_get_platform_fee_refund_amount')) {
     function angelleye_ppcp_get_platform_fee_refund_amount() {
         return 0.00;
