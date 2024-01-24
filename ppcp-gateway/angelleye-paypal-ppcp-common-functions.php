@@ -327,8 +327,14 @@ if (!function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
     function angelleye_ppcp_update_customer_addresses_from_paypal($shipping_details, $billing_details) {
         if (!empty(WC()->customer)) {
             $customer = WC()->customer;
-
+            if (!empty($billing_details['first_name'])) {
+                $customer->set_billing_first_name($billing_details['first_name']);
+            }
+            if (!empty($billing_details['last_name'])) {
+                $customer->set_billing_last_name($billing_details['last_name']);
+            }
             if (!empty($billing_details['address_1'])) {
+                $customer->set_billing_address_1($billing_details['address_1']);
                 $customer->set_billing_address($billing_details['address_1']);
             }
             if (!empty($billing_details['address_2'])) {
@@ -336,6 +342,10 @@ if (!function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
             }
             if (!empty($billing_details['city'])) {
                 $customer->set_billing_city($billing_details['city']);
+            }
+            if (!empty($billing_details['email'])) {
+                $customer->set_email($billing_details['email']);
+                $customer->set_billing_email($billing_details['email']);
             }
             if (!empty($billing_details['postcode'])) {
                 $customer->set_billing_postcode($billing_details['postcode']);
@@ -349,8 +359,15 @@ if (!function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
             if (!empty($billing_details['phone'])) {
                 $customer->set_billing_phone($billing_details['phone']);
             }
+            if (!empty($shipping_details['first_name'])) {
+                $customer->set_shipping_first_name($shipping_details['first_name']);
+            }
+            if (!empty($shipping_details['last_name'])) {
+                $customer->set_shipping_last_name($shipping_details['last_name']);
+            }
             if (!empty($shipping_details['address_1'])) {
                 $customer->set_shipping_address($shipping_details['address_1']);
+                $customer->set_shipping_address_1($shipping_details['address_1']);
             }
             if (!empty($shipping_details['address_2'])) {
                 $customer->set_shipping_address_2($shipping_details['address_2']);
@@ -367,6 +384,7 @@ if (!function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
             if (!empty($shipping_details['country'])) {
                 $customer->set_shipping_country($shipping_details['country']);
             }
+            $customer->save();
         }
     }
 

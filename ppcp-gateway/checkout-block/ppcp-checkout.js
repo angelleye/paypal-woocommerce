@@ -105,19 +105,20 @@ const { registerExpressPaymentMethod } = wc.wcBlocksRegistry;
 
         Object(c.registerPaymentMethod)(s);
 
-        registerExpressPaymentMethod({
-            name: "angelleye_ppcp_top",
-            label: '',
-            content: Object(r.createElement)("div", { id: "angelleye_ppcp_checkout_top" }),
-            edit: Object(r.createElement)(p, null),
-            ariaLabel: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
-            canMakePayment: () => !0,
-            paymentMethodId: 'angelleye_ppcp',
-            supports: {
-                features: null !== (o = l.supports) && void 0 !== o ? o : []
-            }
-        });
-
+        if( angelleye_ppcp_manager_block.is_order_confirm_page === 'no' ) {
+            registerExpressPaymentMethod({
+                name: "angelleye_ppcp_top",
+                label: '',
+                content: Object(r.createElement)("div", { id: "angelleye_ppcp_checkout_top" }),
+                edit: Object(r.createElement)(p, null),
+                ariaLabel: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
+                canMakePayment: () => !0,
+                paymentMethodId: 'angelleye_ppcp',
+                supports: {
+                    features: null !== (o = l.supports) && void 0 !== o ? o : []
+                }
+            });
+        }
         
     }
 ]);
