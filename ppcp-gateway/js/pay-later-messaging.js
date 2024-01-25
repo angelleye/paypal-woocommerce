@@ -37,7 +37,6 @@ const payLaterMessaging = {
         if (typeof renderDiv === 'undefined') {
             renderDiv = '.angelleye_ppcp_message_cart';
         }
-        // console.log('payLaterRender', renderDiv, jQuery(renderDiv).length, jQuery(renderDiv).is(":visible"));
         if (jQuery(renderDiv).length && jQuery(renderDiv).is(":visible")) {
             // Known issues, if we pass the difference currency than merchant account currency it will not work
             // https://www.paypal-community.com/t5/PayPal-Payments-Standard/PayPal-Pay-Later-message-it-says-invalid-currency/td-p/3045658
@@ -49,7 +48,6 @@ const payLaterMessaging = {
             };
             angelleye_paypal_sdk.Messages(payLaterConfig).render(renderDiv);
         } else {
-            // console.log('PayLater: selector ' + renderDiv + ' not defined');
         }
     },
     getPayLaterStyleConfig: (placementConfig) => {
@@ -95,7 +93,7 @@ const payLaterMessaging = {
         });
         payLaterMessaging.init();
         if (angelleyeOrder.isCartPage() || angelleyeOrder.isCheckoutPage()) {
-            jQuery(document.body).on('angelleye_cart_total_updated', async function () {
+            jQuery(document.body).on('angelleye_cart_total_updated ppcp_block_ready', async function () {
                 const cartDetails = angelleyeOrder.getCartDetails();
                 // console.log('PayLater amount update', cartDetails.totalAmount);
                 angelleye_pay_later_messaging.amount = cartDetails.totalAmount;

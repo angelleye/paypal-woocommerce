@@ -121,6 +121,15 @@ const { registerExpressPaymentMethod } = wc.wcBlocksRegistry;
                 }
             });
         }
+        
+        const render = () => {
+            return (
+              wp.element.createElement(ExperimentalOrderMeta, null,
+                Object(r.createElement)("div", { class: "angelleye_ppcp_message_cart" })
+              )
+            );
+        };
+        registerPlugin('wc-ppcp', { render, scope: 'woocommerce-checkout' });
     }
 ]);
 
