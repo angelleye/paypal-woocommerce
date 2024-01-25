@@ -60,6 +60,11 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         }
     }
 
+    public function removeAutoCaptureHooks() {
+        remove_action('woocommerce_order_status_processing', array($this, 'angelleye_ppcp_capture_payment'));
+        remove_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
+    }
+
     public function angelleye_ppcp_add_hooks() {
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
         $this->is_auto_capture_auth = false;
@@ -75,7 +80,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         add_action('admin_notices', array($this, 'admin_notices'));
         // On checkout page these hooks conflicts when we change order status to processing or completed from our payment gateway
         // We need to apply these hooks in admin panel
-        if ($this->is_auto_capture_auth && is_admin()) {
+        if ($this->is_auto_capture_auth) {
             add_action('woocommerce_order_status_processing', array($this, 'angelleye_ppcp_capture_payment'));
             add_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
             add_action('woocommerce_order_status_cancelled', array($this, 'angelleye_ppcp_cancel_authorization'));
