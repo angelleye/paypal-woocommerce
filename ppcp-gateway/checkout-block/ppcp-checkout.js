@@ -83,25 +83,27 @@ const { registerExpressPaymentMethod } = wc.wcBlocksRegistry;
             i = n(2),
             u = n(3),
             a = n(1);
-        const l = Object(u.getSetting)("angelleye_ppcp_data", {}),
-            p = () => Object(a.decodeEntities)(l.description || ""),
-            s = {
-                name: "angelleye_ppcp",
-                label: Object(r.createElement)("img", {
-                    src: "https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png",
-                    alt: Object(a.decodeEntities)(l.title || Object(i.__)("PayPal", "woo-gutenberg-products-block")),
-                }),
-                placeOrderButtonLabel: Object(i.__)(angelleye_ppcp_manager_block.placeOrderButtonLabel),
-                content: Object(r.createElement)("div", { id: "angelleye_ppcp_checkout" }),
-                edit: Object(r.createElement)(p, null),
-                canMakePayment: () => !0,
-                ariaLabel: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
-                supports: {
-                    features: null !== (o = l.supports) && void 0 !== o ? o : [],
-                    showSavedCards: false,
-                    showSaveOption: false
-                }
-            };
+        
+        const l = Object(u.getSetting)("angelleye_ppcp_data", {});
+        const p = () => Object(a.decodeEntities)(l.description || "");
+        
+        const s = {
+            name: "angelleye_ppcp",
+            label: Object(r.createElement)("img", {
+                src: "https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png",
+                alt: Object(a.decodeEntities)(l.title || Object(i.__)("PayPal", "woo-gutenberg-products-block")),
+            }),
+            placeOrderButtonLabel: Object(i.__)(angelleye_ppcp_manager_block.placeOrderButtonLabel),
+            content: Object(r.createElement)("div", { id: "angelleye_ppcp_checkout" }),
+            edit: Object(r.createElement)(p, null),
+            canMakePayment: () => !0,
+            ariaLabel: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
+            supports: {
+                features: null !== (o = l.supports) && void 0 !== o ? o : [],
+                showSavedCards: false,
+                showSaveOption: false
+            }
+        };
 
         Object(c.registerPaymentMethod)(s);
 
@@ -119,12 +121,11 @@ const { registerExpressPaymentMethod } = wc.wcBlocksRegistry;
                 }
             });
         }
-        
     }
 ]);
 
 document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
-            jQuery(document.body).trigger('ppcp_block_ready');
-        }, 1000);
+        jQuery(document.body).trigger('ppcp_block_ready');
+    }, 1000);
 });

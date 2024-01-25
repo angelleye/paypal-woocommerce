@@ -85,8 +85,6 @@ const payLaterMessaging = {
 };
 (function () {
     'use strict';
-    console.log('kaila jignesh m');
-    // angelleyeOrder.hooks.handleRaceConditionOnWooHooks();
     angelleyeLoadPayPalScript({
         url: angelleye_ppcp_manager.paypal_sdk_url,
         script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
@@ -95,6 +93,7 @@ const payLaterMessaging = {
         jQuery(document.body).on('ppcp_block_ready', async function () {
             payLaterMessaging.init();
         });
+        payLaterMessaging.init();
         if (angelleyeOrder.isCartPage() || angelleyeOrder.isCheckoutPage()) {
             jQuery(document.body).on('angelleye_cart_total_updated', async function () {
                 const cartDetails = angelleyeOrder.getCartDetails();

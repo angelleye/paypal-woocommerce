@@ -12,10 +12,10 @@ final class AngellEYE_PPCP_Checkout_Block extends AbstractPaymentMethodType {
     public function initialize() {
         $this->settings = get_option('woocommerce_angelleye_ppcp_settings', []);
         $this->gateway = new WC_Gateway_PPCP_AngellEYE();
-        if (!class_exists('AngellEYE_PayPal_PPCP_Smart_Button')) {
+        if (!class_exists('AngellEYE_PayPal_PPCP_Pay_Later')) {
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-pay-later-messaging.php');
         }
-        $this->pay_latesr = new AngellEYE_PayPal_PPCP_Pay_Later();
+        $this->pay_latesr = AngellEYE_PayPal_PPCP_Pay_Later::instance();
     }
 
     public function is_active() {
