@@ -83,10 +83,10 @@ const { registerExpressPaymentMethod } = wc.wcBlocksRegistry;
             i = n(2),
             u = n(3),
             a = n(1);
-        
+
         const l = Object(u.getSetting)("angelleye_ppcp_data", {});
         const p = () => Object(a.decodeEntities)(l.description || "");
-        
+
         const s = {
             name: "angelleye_ppcp",
             label: Object(r.createElement)("img", {
@@ -107,7 +107,7 @@ const { registerExpressPaymentMethod } = wc.wcBlocksRegistry;
 
         Object(c.registerPaymentMethod)(s);
 
-        if( angelleye_ppcp_manager_block.is_order_confirm_page === 'no' ) {
+        if (angelleye_ppcp_manager_block.is_order_confirm_page === 'no') {
             registerExpressPaymentMethod({
                 name: "angelleye_ppcp_top",
                 label: '',
@@ -120,16 +120,16 @@ const { registerExpressPaymentMethod } = wc.wcBlocksRegistry;
                     features: null !== (o = l.supports) && void 0 !== o ? o : []
                 }
             });
+
+            const render = () => {
+                return (
+                    wp.element.createElement(ExperimentalOrderMeta, null,
+                        Object(r.createElement)("div", { class: "angelleye_ppcp_message_cart" })
+                    )
+                );
+            };
+            registerPlugin('wc-ppcp', { render, scope: 'woocommerce-checkout' });
         }
-        
-        const render = () => {
-            return (
-              wp.element.createElement(ExperimentalOrderMeta, null,
-                Object(r.createElement)("div", { class: "angelleye_ppcp_message_cart" })
-              )
-            );
-        };
-        registerPlugin('wc-ppcp', { render, scope: 'woocommerce-checkout' });
     }
 ]);
 
