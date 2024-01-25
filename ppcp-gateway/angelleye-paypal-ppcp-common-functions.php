@@ -1199,9 +1199,9 @@ if (!function_exists('angelleye_ppcp_binary_search')) {
 
 }
 
-if (!function_exists('print_filters_for')) {
+if (!function_exists('pfw_print_filters_for')) {
 
-    function print_filters_for($hook = '') {
+    function pfw_print_filters_for($hook = '') {
         global $wp_filter;
         if (empty($hook) || !isset($wp_filter[$hook]))
             return;
