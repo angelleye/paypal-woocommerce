@@ -167,6 +167,9 @@ const angelleyeOrder = {
 				shippingField.appendTo(formSelector);
 			}
 			formData = jQuery(formSelector).serialize();
+                        if(formData === '') {
+                            formData = 'angelleye_ppcp_payment_method_title=' + jQuery('#angelleye_ppcp_payment_method_title').val();
+                        }
 		}
 
 		return fetch(apiUrl, {
@@ -356,7 +359,11 @@ const angelleyeOrder = {
 	},
 	setPaymentMethodSelector: (paymentMethod) => {
 		let payment_method_element_selector = angelleyeOrder.getWooFormSelector();
-
+                var element = document.querySelector(payment_method_element_selector);
+                if (!element) {
+                    payment_method_element_selector = document.body; // Use body as the default if appendToSelector doesn't exist
+                }
+                console.log(paymentMethod);
 		angelleyeOrder.createHiddenInputField({
 			fieldId: 'angelleye_ppcp_payment_method_title',
 			fieldName: 'angelleye_ppcp_payment_method_title',

@@ -87,14 +87,28 @@ const { registerExpressPaymentMethod } = wc.wcBlocksRegistry;
         const l = Object(u.getSetting)("angelleye_ppcp_data", {});
         const p = () => Object(a.decodeEntities)(l.description || "");
 
+        const content = wp.element.createElement(
+  "div",
+  { className: "angelleye_ppcp_checkout_parent" },
+  wp.element.createElement(
+    "div",
+    { className: "angelleye_ppcp_checkout" },
+    wp.element.createElement("input", {
+      type: "hidden",
+      name: "form",
+      value: "checkout"
+    })
+  )
+);
+
+
+
         const s = {
             name: "angelleye_ppcp",
-            label: Object(r.createElement)("img", {
-                src: "https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png",
-                alt: Object(a.decodeEntities)(l.title || Object(i.__)("PayPal", "woo-gutenberg-products-block")),
-            }),
+            label: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
+            icons : ["https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png"],
             placeOrderButtonLabel: Object(i.__)(angelleye_ppcp_manager_block.placeOrderButtonLabel),
-            content: Object(r.createElement)("div", { id: "angelleye_ppcp_checkout" }),
+            content: content,
             edit: Object(r.createElement)(p, null),
             canMakePayment: () => !0,
             ariaLabel: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
@@ -110,7 +124,7 @@ const { registerExpressPaymentMethod } = wc.wcBlocksRegistry;
         if (angelleye_ppcp_manager_block.is_order_confirm_page === 'no') {
             registerExpressPaymentMethod({
                 name: "angelleye_ppcp_top",
-                label: '',
+                label: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
                 content: Object(r.createElement)("div", { id: "angelleye_ppcp_checkout_top" }),
                 edit: Object(r.createElement)(p, null),
                 ariaLabel: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
@@ -124,7 +138,7 @@ const { registerExpressPaymentMethod } = wc.wcBlocksRegistry;
             const render = () => {
                 return (
                     wp.element.createElement(ExperimentalOrderMeta, null,
-                        Object(r.createElement)("div", { class: "angelleye_ppcp_message_cart" })
+                        Object(r.createElement)("div", { className: "angelleye_ppcp_message_cart" })
                     )
                 );
             };

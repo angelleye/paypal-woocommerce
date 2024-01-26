@@ -354,6 +354,9 @@ apple-pay-button {
 .angelleye_ppcp-order-review .woocommerce-checkout .wfacp-comm-title {
     display: none !important;
 }
+#express-payment-method-angelleye_ppcp_top {
+  list-style: none;
+}
 @media (min-width: 768px) {
     #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .angelleye_ppcp iframe {
         max-height: 100% !important;

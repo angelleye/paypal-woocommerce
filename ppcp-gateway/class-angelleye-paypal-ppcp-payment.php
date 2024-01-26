@@ -857,7 +857,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_application_context() {
+    public function angelleye_ppcp_application_context($return_url = false) {
         $smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
         $application_context = array(
             'brand_name' => $this->brand_name,
@@ -868,7 +868,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             'return_url' => '',
             'cancel_url' => ''
         );
-        if ($this->checkout_disable_smart_button === true) {
+        if ($this->checkout_disable_smart_button === true || $return_url === true) {
             $application_context['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
             $application_context['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
         }
@@ -2142,7 +2142,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_regular_create_order_request($woo_order_id = null) {
+    public function angelleye_ppcp_regular_create_order_request($woo_order_id = null, $return_url = true) {
         try {
             $return_response = [];
             if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
@@ -2162,7 +2162,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
             $body_request = array(
                 'intent' => $intent,
-                'application_context' => $this->angelleye_ppcp_application_context(),
+                'application_context' => $this->angelleye_ppcp_application_context($return_url),
                 'payment_method' => array('payee_preferred' => ($this->payee_preferred) ? 'IMMEDIATE_PAYMENT_REQUIRED' : 'UNRESTRICTED'),
                 'purchase_units' =>
                 array(

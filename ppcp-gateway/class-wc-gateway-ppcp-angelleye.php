@@ -463,6 +463,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                         ob_end_clean();
                     }
                     return $result;
+                } else {
+                    $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id, $return_url = true);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
+                    return $result;
                 }
             }
         } catch (Exception $ex) {
