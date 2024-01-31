@@ -1251,3 +1251,19 @@ if (!function_exists('angelleye_get_matched_shortcode_attributes')) {
         return $out;
     }
 }
+
+if (!function_exists('angelleye_ppcp_get_awaiting_payment_order_id')) {
+    function angelleye_ppcp_get_awaiting_payment_order_id() {
+        try {
+            $order_id = absint( WC()->session->get( 'order_awaiting_payment' ) );
+            if(!$order_id) {
+                $order_id = absint( wc()->session->get( 'store_api_draft_order', 0 ) );
+            }
+            return $order_id;
+        } catch (Exception $ex) {
+
+        }
+    }
+}
+
+

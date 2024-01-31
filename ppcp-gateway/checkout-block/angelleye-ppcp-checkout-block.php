@@ -64,9 +64,4 @@ final class AngellEYE_PPCP_Checkout_Block extends AbstractPaymentMethodType {
             'supports' => $this->get_supported_features(),
         ];
     }
-
-    public function process_payment($order_id) {
-        $this->gateway->process_payment($order_id);
-        $order = wc_get_order($order_id);
-    }
 }

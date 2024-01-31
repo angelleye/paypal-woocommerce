@@ -1933,7 +1933,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $billing_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details);
             angelleye_ppcp_update_customer_addresses_from_paypal($shipping_details, $billing_details);
         }
-        $order_id = (int) WC()->session->get('order_awaiting_payment');
+        $order_id = angelleye_ppcp_get_awaiting_payment_order_id();
         $order = wc_get_order($order_id);
         $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $order_id);
         $angelleye_ppcp_payment_method_title = $this->get_set_payment_method_title_from_session($order_id);
@@ -2315,7 +2315,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
                 if (!empty($this->api_response['links'])) {
                     foreach ($this->api_response['links'] as $key => $link_result) {
-                        if ('approve' === $link_result['rel']) {
+                        if ('approve' === $link_result['rel'] || 'payer-action' === $link_result['rel']) {
                             return array(
                                 'result' => 'success',
                                 'redirect' => $link_result['href']
@@ -2725,7 +2725,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_add_payment_source_parameter($request) {
         try {
             $payment_method_name = '';
-            $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
+            $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method', 'paypal');
             if (!empty($angelleye_ppcp_used_payment_method)) {
                 $payment_method_name = '';
                 $billing_address = array();
@@ -2771,8 +2771,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                         $request['payment_source'][$payment_method_name]['attributes'] = $attributes;
                         //$request['payment_source'][$payment_method_name]['experience_context']['shipping_preference'] = $this->angelleye_ppcp_shipping_preference();
-                        $request['payment_source'][$payment_method_name]['experience_context']['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
-                        $request['payment_source'][$payment_method_name]['experience_context']['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
+                        //$request['payment_source'][$payment_method_name]['experience_context']['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
+                        //$request['payment_source'][$payment_method_name]['experience_context']['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
                         break;
                     case 'venmo':
                         $payment_method_name = 'venmo';
