@@ -112,12 +112,12 @@ const angelleyeOrder = {
 		angelleye_ppcp_manager.woocommerce_process_checkout = nonce;
 		jQuery("#woocommerce-process-checkout-nonce").val(nonce);
 	},
-	createSmartButtonOrder: ({angelleye_ppcp_button_selector}) => {
-		return angelleyeOrder.createOrder({angelleye_ppcp_button_selector}).then((data) => {
+	createSmartButtonOrder: ({angelleye_ppcp_button_selector, uid}) => {
+		return angelleyeOrder.createOrder({angelleye_ppcp_button_selector, uid}).then((data) => {
 			return data.orderID;
 		});
 	},
-	createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, callback}) => {
+	createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, callback, uid}) => {
 		if (typeof apiUrl == 'undefined') {
 			apiUrl = angelleye_ppcp_manager.create_order_url;
 		}
@@ -144,9 +144,8 @@ const angelleyeOrder = {
 			});
 		}
 
-		console.log('formSelector', angelleye_ppcp_button_selector, formSelector, jQuery(formSelector).length);
-		let topCheckoutSelectors = ['#angelleye_ppcp_checkout_top', '#angelleye_ppcp_checkout_top_google_pay', '#angelleye_ppcp_checkout_top_apple_pay'];
-		if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
+		console.log('formSelector', formSelector, jQuery(formSelector).length);
+		if (is_from_checkout && angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
 			formData = '';
 		} else {
 			if (is_from_product) {
@@ -178,6 +177,14 @@ const angelleyeOrder = {
 			},
 			body: formData
 		}).then(async function (res) {
+			angelleyeJsErrorLogger.errorStackMeta = {
+				uid: uid,
+				res: res,
+				apiUrl: apiUrl,
+				redirected: res.redirected,
+				url: res.url,
+				status: res.status
+			  };
 			console.log('createOrder response', {
 				res,
 				apiUrl,
@@ -276,7 +283,7 @@ const angelleyeOrder = {
 			jQuery(containerSelector).unblock();
 		}
 	},
-	handleCreateOrderError: (error) => {
+	handleCreateOrderError: (error, uid) => {
 		console.log('create_order_error', error, angelleyeOrder.lastApiResponse);
 		angelleyeOrder.hideProcessingSpinner();
 		jQuery(document.body).trigger('angelleye_paypal_onerror');
@@ -286,6 +293,7 @@ const angelleyeOrder = {
 				errorMessage = localizedMessages.create_order_error;
 			}
 		} else if ((errorMessage.toLowerCase()).indexOf('unexpected token') > -1) {
+			angelleyeJsErrorLogger.caughtJsError(errorMessage, uid);
 			let lastErrorHtmlEncoded = jQuery("<textarea/>").text(angelleyeOrder.lastApiResponse).html();
 			errorMessage = '<li>' + localizedMessages.create_order_error_with_content + '</li>' +
 				'<li><br>' + lastErrorHtmlEncoded + '</li>';
@@ -392,12 +400,12 @@ const angelleyeOrder = {
 			if (angelleye_ppcp_manager.style_layout !== 'vertical') {
 				angelleye_ppcp_style['tagline'] = (angelleye_ppcp_manager.style_tagline === 'yes') ? true : false;
 			}
-
+			var uid = Math.floor(Math.random() * 101);
 			angelleye_paypal_sdk.Buttons({
 				style: angelleye_ppcp_style,
 				createOrder: function (data, actions) {
 					return angelleyeOrder.createSmartButtonOrder({
-						angelleye_ppcp_button_selector
+						angelleye_ppcp_button_selector, uid
 					})
 				},
 				onApprove: function (data, actions) {
@@ -412,7 +420,7 @@ const angelleyeOrder = {
 					angelleyeOrder.setPaymentMethodSelector(data.fundingSource);
 				},
 				onError: function (err) {
-					angelleyeOrder.handleCreateOrderError(err);
+					angelleyeOrder.handleCreateOrderError(err, uid);
 				}
 			}).render(angelleye_ppcp_button_selector);
 		});
@@ -883,4 +891,35 @@ const pfwUrlHelper = {
 		url.search = '';
 		return url.toString();
 	}
+}
+const angelleyeJsErrorLogger = {
+	errorStackMeta: {},
+	caughtJsError: (error, uid) => {
+		if(uid == angelleyeJsErrorLogger.errorStackMeta.uid){
+		const obj = angelleyeJsErrorLogger.errorStackMeta;
+		const add = { error: error }
+		Object.entries(add).forEach(([key,value]) => { obj[key] = value })		
+		//console.log(obj);
+		error = obj;
+		}
+			fetch(angelleye_ppcp_manager.handle_js_errors, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({"error": error}),
+			}).then(function (res) {
+				angelleyeJsErrorLogger.errorStackMeta = {};
+			}).then(function (data) {
+			});
+		}	
+}
+window.onerror =  
+function (msg, source, lineNo) { 
+	let errorobject = {
+		'msg':msg,
+		'source':source,
+		'line':lineNo,		
+	};
+	angelleyeJsErrorLogger.caughtJsError(errorobject, uid = '');
 }
