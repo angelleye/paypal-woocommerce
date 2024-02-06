@@ -243,6 +243,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function is_paypal_pay_later_messaging_enable_for_page($page = '') {
+        if($this->enabled_pay_later_messaging === false && $this->is_valid_for_use() === false) {
+            return false;
+        }
         if (empty($page)) {
             return false;
         }
