@@ -26,9 +26,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
-
-        // Add action to trigger the migration process
-        add_action('angelleye_ppcp_migration_schedule', array($this, 'angelleye_ppcp_migration_schedule_callback'));
+        add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'));
     }
 
     public function angelleye_ppcp_load_class() {
@@ -38,7 +36,7 @@ class AngellEYE_PayPal_PPCP_Migration {
             }
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -46,7 +44,7 @@ class AngellEYE_PayPal_PPCP_Migration {
         try {
             $this->angelleye_express_checkout_setting_field_map();
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -281,7 +279,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                 update_option('woocommerce_angelleye_ppcp_settings', $woocommerce_angelleye_ppcp_settings);
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -416,23 +414,31 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function schedule_next_batch($subscription_ids, $to_payment_method) {
         try {
-            // Set the transient with the batch index
-            set_transient('angelleye_ppcp_migration_batch_index', $this->batch_index, DAY_IN_SECONDS);
+            // Set the transient with the subscription IDs
+            set_transient('angelleye_ppcp_migration_subscription_ids', $subscription_ids, DAY_IN_SECONDS);
 
             // Schedule the action to process the batch
-            wp_schedule_single_event(time(), 'angelleye_ppcp_migration_schedule');
+            $action_hook = 'angelleye_ppcp_migration_schedule';
+            $scheduled_time = time();
+            as_schedule_single_action($scheduled_time, $action_hook, array($to_payment_method));
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
     }
 
-    public function process_subscription_batch($subscription_ids, $to_payment_method) {
+    public function process_subscription_batch($to_payment_method) {
         try {
-            $batch_start = $this->batch_index * $this->batch_size;
-            $batch_end = $batch_start + $this->batch_size;
+            // Get the subscription IDs from the transient
+            $subscription_ids = get_transient('angelleye_ppcp_migration_subscription_ids');
+
+            if (!$subscription_ids) {
+                // No more batches, clean up transient
+                delete_transient('angelleye_ppcp_migration_subscription_ids');
+                return;
+            }
 
             // Get the current batch of subscription IDs
-            $batch_subscription_ids = array_slice($subscription_ids, $batch_start, $this->batch_size);
+            $batch_subscription_ids = array_splice($subscription_ids, 0, $this->batch_size);
 
             foreach ($batch_subscription_ids as $subscription_id) {
                 $user_subscription = wcs_get_subscription($subscription_id);
@@ -440,33 +446,12 @@ class AngellEYE_PayPal_PPCP_Migration {
                 if ($user_subscription instanceof WC_Subscription && $user_subscription->get_time('next_payment') > 0 && $user_subscription->has_status(array('active', 'on-hold')) && $this->is_angelleye_ppcp_old_payment_token_exist($user_subscription)) {
                     $this->angelleye_ppcp_update_payment_method($user_subscription, $to_payment_method);
                     $user_subscription->set_requires_manual_renewal(false);
-                    $user_subscription->save();
                 }
             }
 
-            // Increment batch index
-            $this->batch_index++;
-
-            // Check if there are more batches to process
-            if ($batch_end < count($subscription_ids)) {
-                $this->schedule_next_batch($subscription_ids, $to_payment_method);
-            } else {
-                // If no more batches, clean up transient
-                delete_transient('angelleye_ppcp_migration_batch_index');
-            }
-        } catch (Exception $ex) {
-            // Handle exceptions if needed
-        }
-    }
-
-    public function angelleye_ppcp_migration_schedule_callback() {
-        try {
-            // Get subscription IDs for the specified payment method
-            $from_payment_method = 'your_payment_method'; // Set the payment method you want to migrate from
-            $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
-
-            // Schedule the first batch
-            $this->schedule_next_batch($subscription_ids, 'your_to_payment_method'); // Set the payment method you want to migrate to
+            // Save changes after the loop
+            WC()->session->dirty = true;
+            WC()->session->save_data();
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
