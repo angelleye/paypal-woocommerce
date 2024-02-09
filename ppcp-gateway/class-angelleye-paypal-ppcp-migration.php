@@ -27,7 +27,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
-        add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'));
+        add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'), 10, 2);
     }
 
     public function angelleye_ppcp_load_class() {
@@ -347,13 +347,14 @@ class AngellEYE_PayPal_PPCP_Migration {
             $old_payment_method_title = empty($old_payment_method_title) ? $old_payment_method : $old_payment_method_title;
             $new_payment_method_title = empty($new_payment_method_title) ? $new_payment_method : $new_payment_method_title;
 
-            // Batch update metadata
-            $metadata_updates = [
-                '_old_payment_method' => $old_payment_method,
-                '_angelleye_ppcp_old_payment_method' => $old_payment_method,
-                '_old_payment_method_title' => $old_payment_method_title,
-            ];
-            $subscription->update_meta_data($metadata_updates);
+            $subscription->set_payment_method($new_payment_method);
+            $subscription->set_payment_method_title($new_payment_method_title);
+            
+            $subscription->update_meta_data('_old_payment_method', $old_payment_method);
+            $subscription->update_meta_data('_angelleye_ppcp_old_payment_method', $old_payment_method);
+            $subscription->update_meta_data('_old_payment_method_title', $old_payment_method_title);
+
+            
 
             // Apply filters for old and new payment method titles
             $old_payment_method_title = apply_filters('woocommerce_subscription_note_old_payment_method_title', $old_payment_method_title, $old_payment_method, $subscription);
