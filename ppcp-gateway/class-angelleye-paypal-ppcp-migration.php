@@ -14,8 +14,9 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     protected static $_instance = null;
     public $setting_obj;
-    private $batch_size = 100;
-    private $batch_index = 0;
+
+    // Define class constants for better readability
+    const SUBSCRIPTION_BATCH_LIMIT = 100;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -31,20 +32,21 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_load_class() {
         try {
+            // Check if the necessary class exists before including it
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
         } catch (Exception $ex) {
-
+            // Handle exceptions if needed
         }
     }
-
+    
     public function angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status) {
         try {
             $this->angelleye_express_checkout_setting_field_map();
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -279,24 +281,18 @@ class AngellEYE_PayPal_PPCP_Migration {
                 update_option('woocommerce_angelleye_ppcp_settings', $woocommerce_angelleye_ppcp_settings);
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
     public function angelleye_ppcp_subscription_order_migration($from_payment_method, $to_payment_method) {
         try {
-            // Get batch index from transient if it exists
-            $this->batch_index = get_transient('angelleye_ppcp_migration_batch_index');
-
-            if ($this->batch_index === false) {
-                // If transient doesn't exist, reset batch index
-                $this->batch_index = 0;
-            }
-
             $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
 
-            // Schedule the first batch
-            $this->schedule_next_batch($subscription_ids, $to_payment_method);
+            // Check if subscription_ids is not empty before scheduling the next batch
+            if (!empty($subscription_ids)) {
+                $this->schedule_next_batch($from_payment_method, $to_payment_method);
+            }
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
@@ -306,7 +302,7 @@ class AngellEYE_PayPal_PPCP_Migration {
         try {
             $args = array(
                 'type' => 'shop_subscription',
-                'limit' => -1,
+                'limit' => self::SUBSCRIPTION_BATCH_LIMIT,
                 'return' => 'ids',
                 'orderby' => 'date',
                 'order' => 'DESC'
@@ -327,7 +323,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
             return wc_get_orders($args);
         } catch (Exception $ex) {
-            // Handle the exception if needed
+            // Handle exceptions if needed
             return array();
         }
     }
@@ -365,9 +361,9 @@ class AngellEYE_PayPal_PPCP_Migration {
 
             // Add order note about payment method change
             $note_message = sprintf(
-                    _x('Payment method changed from "%1$s" to "%2$s" by the Angelleye Migration.', '%1$s: old payment title, %2$s: new payment title', 'woocommerce-subscriptions'),
-                    $old_payment_method_title,
-                    $new_payment_method_title
+                _x('Payment method changed from "%1$s" to "%2$s" by the Angelleye Migration.', '%1$s: old payment title, %2$s: new payment title', 'woocommerce-subscriptions'),
+                $old_payment_method_title,
+                $new_payment_method_title
             );
             $subscription->add_order_note($note_message);
 
@@ -380,12 +376,12 @@ class AngellEYE_PayPal_PPCP_Migration {
                 do_action('woocommerce_subscription_payment_method_updated_from_' . $old_payment_method, $subscription, $new_payment_method);
             }
         } catch (Exception $e) {
-            // Handle exceptions and provide user-friendly error message
+            // Handle exceptions and provide a user-friendly error message
             $error_message = sprintf(
-                    __('%1$sError:%2$s %3$s', 'woocommerce-subscriptions'),
-                    '<strong>',
-                    '</strong>',
-                    $e->getMessage()
+                __('%1$sError:%2$s %3$s', 'woocommerce-subscriptions'),
+                '<strong>',
+                '</strong>',
+                $e->getMessage()
             );
             $subscription->add_order_note($error_message);
             $subscription->add_order_note(__('An error occurred updating your subscription\'s payment method. Please contact us for assistance.', 'woocommerce-subscriptions'));
@@ -412,46 +408,30 @@ class AngellEYE_PayPal_PPCP_Migration {
         }
     }
 
-    public function schedule_next_batch($subscription_ids, $to_payment_method) {
+    public function schedule_next_batch($from_payment_method, $to_payment_method) {
         try {
-            // Set the transient with the subscription IDs
-            set_transient('angelleye_ppcp_migration_subscription_ids', $subscription_ids, DAY_IN_SECONDS);
-
-            // Schedule the action to process the batch
             $action_hook = 'angelleye_ppcp_migration_schedule';
             $scheduled_time = time();
-            as_schedule_single_action($scheduled_time, $action_hook, array($to_payment_method));
+            as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
     }
 
-    public function process_subscription_batch($to_payment_method) {
+    public function process_subscription_batch($from_payment_method, $to_payment_method) {
         try {
-            // Get the subscription IDs from the transient
-            $subscription_ids = get_transient('angelleye_ppcp_migration_subscription_ids');
+            $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
 
-            if (!$subscription_ids) {
-                // No more batches, clean up transient
-                delete_transient('angelleye_ppcp_migration_subscription_ids');
-                return;
-            }
-
-            // Get the current batch of subscription IDs
-            $batch_subscription_ids = array_splice($subscription_ids, 0, $this->batch_size);
-
-            foreach ($batch_subscription_ids as $subscription_id) {
-                $user_subscription = wcs_get_subscription($subscription_id);
-
-                if ($user_subscription instanceof WC_Subscription && $user_subscription->get_time('next_payment') > 0 && $user_subscription->has_status(array('active', 'on-hold')) && $this->is_angelleye_ppcp_old_payment_token_exist($user_subscription)) {
-                    $this->angelleye_ppcp_update_payment_method($user_subscription, $to_payment_method);
-                    $user_subscription->set_requires_manual_renewal(false);
+            // Check if subscription_ids is not empty before processing the batch
+            if (!empty($subscription_ids)) {
+                foreach ($subscription_ids as $subscription_id) {
+                    $subscription = wcs_get_subscription($subscription_id);
+                    if ($this->is_angelleye_ppcp_old_payment_token_exist($subscription)) {
+                        $this->angelleye_ppcp_update_payment_method($subscription, $to_payment_method);
+                    }
                 }
+                $this->schedule_next_batch($from_payment_method, $to_payment_method);
             }
-
-            // Save changes after the loop
-            WC()->session->dirty = true;
-            WC()->session->save_data();
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
