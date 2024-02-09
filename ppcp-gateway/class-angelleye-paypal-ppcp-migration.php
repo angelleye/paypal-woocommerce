@@ -28,6 +28,7 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function __construct() {
         $this->angelleye_ppcp_load_class();
         add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'), 10, 2);
+        $this->process_subscription_batch('paypal_express', 'ppcp');
     }
 
     public function angelleye_ppcp_load_class() {
@@ -413,7 +414,7 @@ class AngellEYE_PayPal_PPCP_Migration {
         try {
             $action_hook = 'angelleye_ppcp_migration_schedule';
             $scheduled_time = time();
-            as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
+           // as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
