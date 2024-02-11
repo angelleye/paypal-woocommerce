@@ -301,8 +301,7 @@ const angelleyeOrder = {
 		} else if ((errorMessage.toLowerCase()).indexOf('unexpected token') > -1) {
 			let lastErrorHtmlEncoded = jQuery("<textarea/>").text(angelleyeOrder.lastApiResponse).html();
 			angelleyeJsErrorLogger.logJsError('InvalidJSON, Received Response: ' + lastErrorHtmlEncoded, errorLogId);
-			errorMessage = '<li>' + localizedMessages.create_order_error_with_content + '</li>' +
-				'<li><br>' + lastErrorHtmlEncoded + '</li>';
+			errorMessage = '<li>' + localizedMessages.create_order_error + '</li>';
 		}
 		if (errorMessage !== '') {
 			angelleyeOrder.showError(errorMessage);
