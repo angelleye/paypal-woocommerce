@@ -144,3 +144,11 @@ function initSmartButtons() {
 
 	window.angelleyeLoadAsyncLibs(paypalSdkLoadCallback);
 })(jQuery);
+
+window.onerror = function (msg, source, lineNo) {
+	angelleyeJsErrorLogger.logJsError({
+		'msg': msg,
+		'source': source,
+		'line': lineNo,
+	});
+}
