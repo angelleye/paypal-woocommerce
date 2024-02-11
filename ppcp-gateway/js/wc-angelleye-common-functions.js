@@ -112,12 +112,12 @@ const angelleyeOrder = {
 		angelleye_ppcp_manager.woocommerce_process_checkout = nonce;
 		jQuery("#woocommerce-process-checkout-nonce").val(nonce);
 	},
-	createSmartButtonOrder: ({angelleye_ppcp_button_selector}) => {
-		return angelleyeOrder.createOrder({angelleye_ppcp_button_selector}).then((data) => {
+	createSmartButtonOrder: ({angelleye_ppcp_button_selector, errorLogId}) => {
+		return angelleyeOrder.createOrder({angelleye_ppcp_button_selector, errorLogId}).then((data) => {
 			return data.orderID;
 		});
 	},
-	createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, callback}) => {
+	createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback}) => {
 		if (typeof apiUrl == 'undefined') {
 			apiUrl = angelleye_ppcp_manager.create_order_url;
 		}
@@ -170,6 +170,13 @@ const angelleyeOrder = {
 			formData = jQuery(formSelector).serialize();
 		}
 
+		angelleyeJsErrorLogger.addToLog(errorLogId, {
+			context: 'api_request',
+			url: apiUrl,
+			method: 'POST',
+			body: formData,
+			time: new Date()
+		});
 		return fetch(apiUrl, {
 			method: 'POST',
 			headers: {
@@ -177,6 +184,13 @@ const angelleyeOrder = {
 			},
 			body: formData
 		}).then(async function (res) {
+			angelleyeJsErrorLogger.addToLog(errorLogId, {
+				context: 'api_response',
+				response: res,
+				redirected: res.redirected,
+				status: res.status,
+				time: new Date()
+			});
 			console.log('createOrder response', {
 				res,
 				apiUrl,
@@ -229,8 +243,8 @@ const angelleyeOrder = {
 			}
 		}
 	},
-	shippingAddressUpdate: (shippingDetails, billingDetails) => {
-		return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails, billingDetails});
+	shippingAddressUpdate: (shippingDetails, billingDetails, errorLogId) => {
+		return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails, billingDetails, errorLogId});
 	},
 	triggerPaymentCancelEvent: () => {
 		jQuery(document.body).trigger('angelleye_paypal_oncancel');
@@ -275,7 +289,7 @@ const angelleyeOrder = {
 			jQuery(containerSelector).unblock();
 		}
 	},
-	handleCreateOrderError: (error) => {
+	handleCreateOrderError: (error, errorLogId) => {
 		console.log('create_order_error', error, angelleyeOrder.lastApiResponse);
 		angelleyeOrder.hideProcessingSpinner();
 		jQuery(document.body).trigger('angelleye_paypal_onerror');
@@ -284,9 +298,9 @@ const angelleyeOrder = {
 			if ((errorMessage.toLowerCase()).indexOf('required fields') < 0) {
 				errorMessage = localizedMessages.create_order_error;
 			}
-		} else if ((errorMessage.toLowerCase()).indexOf('unexpected token') > -1) {			
-			angelleyeJsErrorLogger.caughtJsError(errorMessage);
+		} else if ((errorMessage.toLowerCase()).indexOf('unexpected token') > -1) {
 			let lastErrorHtmlEncoded = jQuery("<textarea/>").text(angelleyeOrder.lastApiResponse).html();
+			angelleyeJsErrorLogger.logJsError('InvalidJSON, Received Response: ' + lastErrorHtmlEncoded, errorLogId);
 			errorMessage = '<li>' + localizedMessages.create_order_error_with_content + '</li>' +
 				'<li><br>' + lastErrorHtmlEncoded + '</li>';
 		}
@@ -393,11 +407,14 @@ const angelleyeOrder = {
 				angelleye_ppcp_style['tagline'] = (angelleye_ppcp_manager.style_tagline === 'yes') ? true : false;
 			}
 
+			let errorLogId = null;
 			angelleye_paypal_sdk.Buttons({
 				style: angelleye_ppcp_style,
 				createOrder: function (data, actions) {
+					errorLogId = angelleyeJsErrorLogger.generateErrorId();
+					angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal Smart Button Payment Started');
 					return angelleyeOrder.createSmartButtonOrder({
-						angelleye_ppcp_button_selector
+						angelleye_ppcp_button_selector, errorLogId
 					})
 				},
 				onApprove: function (data, actions) {
@@ -412,7 +429,7 @@ const angelleyeOrder = {
 					angelleyeOrder.setPaymentMethodSelector(data.fundingSource);
 				},
 				onError: function (err) {
-					angelleyeOrder.handleCreateOrderError(err);
+					angelleyeOrder.handleCreateOrderError(err, errorLogId);
 				}
 			}).render(angelleye_ppcp_button_selector);
 		});
@@ -473,12 +490,15 @@ const angelleyeOrder = {
 			spinnerSelectors = '#customer_details, .woocommerce-checkout-review-order';
 		}
 		jQuery(checkoutSelector).addClass('HostedFields');
+		let errorLogId = null;
 		angelleye_paypal_sdk.HostedFields.render({
 			createOrder: function () {
 				jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
 				if (jQuery(checkoutSelector).is('.createOrder') === false) {
+					errorLogId = angelleyeJsErrorLogger.generateErrorId();
+					angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
 					jQuery(checkoutSelector).addClass('createOrder');
-					return angelleyeOrder.createOrder({}).then(function (data) {
+					return angelleyeOrder.createOrder({errorLogId}).then(function (data) {
 						return data.orderID;
 					}).catch((error) => {
 						angelleyeOrder.showError(error);
@@ -628,16 +648,19 @@ const angelleyeOrder = {
 						}
 
 						if (error_message !== '') {
+							angelleyeJsErrorLogger.logJsError(error_message, errorLogId);
 							angelleyeOrder.showError(error_message);
 						}
 					}
 				).catch((error) => {
+					angelleyeJsErrorLogger.logJsError(error, errorLogId);
 					console.log('hf_submit_exception_handler', error);
 				});
 			});
 		}).catch(function (error) {
 			// We don't need to display this error to customers as this is unrelated. This usually throws an error like:
 			// {"name":"BraintreeError","code":"HOSTED_FIELDS_TIMEOUT","message":"Hosted Fields timed out when attempting to set up.","type":"UNKNOWN"}
+			angelleyeJsErrorLogger.logJsError(JSON.stringify(error), errorLogId);
 			console.log('error: ', JSON.stringify(error));
 		});
 	},
@@ -885,27 +908,31 @@ const pfwUrlHelper = {
 	}
 }
 const angelleyeJsErrorLogger = {
-	caughtJsError: (error) => {
+	errorStackMeta: {},
+	generateErrorId: () => {
+		return Date.now() + Math.floor(Math.random() * 101);
+	},
+	addToLog: (errorLogId, metaData) => {
+		if (typeof angelleyeJsErrorLogger.errorStackMeta[errorLogId] === 'undefined') {
+			angelleyeJsErrorLogger.errorStackMeta[errorLogId] = [];
+		}
+		angelleyeJsErrorLogger.errorStackMeta[errorLogId].push(metaData);
+	},
+	getLogTrace:(errorLogId) => {
+		return typeof angelleyeJsErrorLogger.errorStackMeta[errorLogId] !== 'undefined' ?
+			angelleyeJsErrorLogger.errorStackMeta[errorLogId] : [];
+	},
+	logJsError: (error, errorLogId) => {
 		fetch(angelleye_ppcp_manager.handle_js_errors, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({"error": error}),
+			body: JSON.stringify({error, logTrace: angelleyeJsErrorLogger.getLogTrace(errorLogId)}),
 		}).then(function (res) {
 			//alert(res.json());
 		}).then(function (data) {
 			//alert(data);
 		});
-			
-	}	
-}
-window.onerror =  
-function (msg, source, lineNo) { 
-	let errorobject = {
-		'msg':msg,
-		'source':source,
-		'line':lineNo,		
-	};
-	angelleyeJsErrorLogger.caughtJsError(errorobject);
+	}
 }
