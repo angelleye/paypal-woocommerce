@@ -617,15 +617,18 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $google_pay_btn_selector['angelleye_ppcp_checkout_google_pay'] = '#angelleye_ppcp_checkout_google_pay';
                 if ($this->checkout_page_display_option === 'top') {
                     $button_selector['angelleye_ppcp_checkout_top'] = '#angelleye_ppcp_checkout_top';
+                    $apple_pay_btn_selector['angelleye_ppcp_checkout_top_apple_pay'] = '#angelleye_ppcp_checkout_top_apple_pay';
+                    $google_pay_btn_selector['angelleye_ppcp_checkout_top_google_pay'] = '#angelleye_ppcp_checkout_top_google_pay';
                 } elseif ($this->checkout_page_display_option === 'regular') {
                     $button_selector['angelleye_ppcp_checkout'] = '#angelleye_ppcp_checkout';
                 } elseif ($this->checkout_page_display_option === 'both') {
                     $button_selector['angelleye_ppcp_checkout_top'] = '#angelleye_ppcp_checkout_top';
+                    $apple_pay_btn_selector['angelleye_ppcp_checkout_top_apple_pay'] = '#angelleye_ppcp_checkout_top_apple_pay';
+                    $google_pay_btn_selector['angelleye_ppcp_checkout_top_google_pay'] = '#angelleye_ppcp_checkout_top_google_pay';
                     $button_selector['angelleye_ppcp_checkout'] = '#angelleye_ppcp_checkout';
                 }
                 $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
                 $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
-                ;
             } elseif (is_add_payment_method_page()) {
                 $page = 'add_payment_method';
             }

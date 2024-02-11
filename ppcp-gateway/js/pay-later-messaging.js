@@ -7,6 +7,10 @@ const payLaterMessaging = {
             console.log('Unable to render the PayLaterMessaging: PayPal lib not defined.')
             return;
         }
+        if (typeof angelleye_paypal_sdk.Messages === 'undefined') {
+            console.log('PayLaterMessaging is not enabled for this merchant account.')
+            return;
+        }
         // console.log('Init PayLater');
         let amount = angelleye_pay_later_messaging.amount;
         let currencyCode = angelleye_pay_later_messaging.currencyCode;

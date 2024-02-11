@@ -1807,6 +1807,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->update_meta_data('_paymentaction', 'authorize');
                     $order->add_order_note(sprintf(__('%s Authorization Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
+                    if (class_exists('AngellEYE_PayPal_PPCP_Admin_Action')) {
+                        AngellEYE_PayPal_PPCP_Admin_Action::instance()->removeAutoCaptureHooks();
+                    }
                     $order->update_status($this->get_preferred_order_status('on-hold'));
                     if ($this->is_auto_capture_auth) {
                         $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
@@ -2028,6 +2031,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order->update_meta_data('_paymentaction', $this->paymentaction);
             $order->add_order_note(sprintf(__('%s Authorization Transaction ID: %s', 'paypal-for-woocommerce'), $this->title, $transaction_id));
             $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
+            if (class_exists('AngellEYE_PayPal_PPCP_Admin_Action')) {
+                AngellEYE_PayPal_PPCP_Admin_Action::instance()->removeAutoCaptureHooks();
+            }
             $order->update_status($this->get_preferred_order_status('on-hold'));
             $order->save();
             $order->add_order_note(__('Payment authorized. Change order status to processing or complete for capture funds.', 'paypal-for-woocommerce'));
@@ -3150,6 +3156,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $order->update_meta_data('_paymentaction', 'authorize');
                         $order->add_order_note(sprintf(__('%s Authorization Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
                         $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
+                        if (class_exists('AngellEYE_PayPal_PPCP_Admin_Action')) {
+                            AngellEYE_PayPal_PPCP_Admin_Action::instance()->removeAutoCaptureHooks();
+                        }
                         $order->update_status($this->get_preferred_order_status('on-hold'));
                         $order->save();
                         if ($this->is_auto_capture_auth) {

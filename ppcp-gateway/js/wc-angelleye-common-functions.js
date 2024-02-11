@@ -144,8 +144,9 @@ const angelleyeOrder = {
 			});
 		}
 
-		console.log('formSelector', formSelector, jQuery(formSelector).length);
-		if (is_from_checkout && angelleye_ppcp_button_selector === '#angelleye_ppcp_checkout_top') {
+		console.log('formSelector', angelleye_ppcp_button_selector, formSelector, jQuery(formSelector).length);
+		let topCheckoutSelectors = ['#angelleye_ppcp_checkout_top', '#angelleye_ppcp_checkout_top_google_pay', '#angelleye_ppcp_checkout_top_apple_pay'];
+		if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
 			formData = '';
 		} else {
 			if (is_from_product) {
