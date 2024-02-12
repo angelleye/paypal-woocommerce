@@ -389,13 +389,13 @@ class AngellEYE_PayPal_PPCP_Migration {
             $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
             // Check if subscription_ids is not empty before processing the batch
             if (!empty($subscription_ids)) {
+                $this->schedule_next_batch($from_payment_method, $to_payment_method);
                 foreach ($subscription_ids as $subscription_id) {
                     $subscription = wcs_get_subscription($subscription_id);
                     if ($this->is_angelleye_ppcp_old_payment_token_exist($subscription)) {
                         $this->angelleye_ppcp_update_payment_method($subscription, $to_payment_method);
                     }
                 }
-                $this->schedule_next_batch($from_payment_method, $to_payment_method);
             }
         } catch (Exception $ex) {
             // Handle exceptions if needed
