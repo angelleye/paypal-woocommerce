@@ -17,6 +17,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     // Define class constants for better readability
     const SUBSCRIPTION_BATCH_LIMIT = 100;
+    public static $total_payment_method = 1;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -28,18 +29,17 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function __construct() {
         $this->angelleye_ppcp_load_class();
         add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'), 10, 2);
-        $this->process_subscription_batch('paypal_express', 'ppcp');
+        $this->angelleye_ppcp_get_subscription_order_list('angelleye_ppcp_cc');
     }
 
     public function angelleye_ppcp_load_class() {
         try {
-            // Check if the necessary class exists before including it
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
         } catch (Exception $ex) {
-            // Handle exceptions if needed
+
         }
     }
     
@@ -54,60 +54,48 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function angelleye_ppcp_paypal_pro_to_ppcp($seller_onboarding_status) {
         $woocommerce_paypal_pro_settings = get_option('woocommerce_paypal_pro_settings');
         $woocommerce_paypal_pro_settings['enabled'] = 'no';
-
         $gateway_settings_key_array = array('sandbox_api_username', 'sandbox_api_password', 'sandbox_api_signature', 'api_username', 'api_password', 'api_signature');
-
         foreach ($gateway_settings_key_array as $gateway_settings_value) {
             if (!empty($woocommerce_paypal_pro_settings[$gateway_settings_value])) {
                 $woocommerce_paypal_pro_settings[$gateway_settings_value] = AngellEYE_Utility::crypting($woocommerce_paypal_pro_settings[$gateway_settings_value], $action = 'e');
             }
         }
-
         update_option('woocommerce_paypal_pro_settings', $woocommerce_paypal_pro_settings);
     }
 
     public function angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status) {
         $woocommerce_paypal_pro_payflow_settings = get_option('woocommerce_paypal_pro_payflow_settings');
         $woocommerce_paypal_pro_payflow_settings['enabled'] = 'no';
-
         $gateway_settings_key_array = array('sandbox_paypal_vendor', 'sandbox_paypal_password', 'sandbox_paypal_user', 'sandbox_paypal_partner', 'paypal_vendor', 'paypal_password', 'paypal_user', 'paypal_partner');
-
         foreach ($gateway_settings_key_array as $gateway_settings_value) {
             if (!empty($woocommerce_paypal_pro_payflow_settings[$gateway_settings_value])) {
                 $woocommerce_paypal_pro_payflow_settings[$gateway_settings_value] = AngellEYE_Utility::crypting($woocommerce_paypal_pro_payflow_settings[$gateway_settings_value], $action = 'e');
             }
         }
-
         update_option('woocommerce_paypal_pro_payflow_settings', $woocommerce_paypal_pro_payflow_settings);
     }
 
     public function angelleye_ppcp_paypal_advanced_to_ppcp($seller_onboarding_status) {
         $woocommerce_paypal_advanced_settings = get_option('woocommerce_paypal_advanced_settings');
         $woocommerce_paypal_advanced_settings['enabled'] = 'no';
-
         $gateway_settings_key_array = array('loginid', 'resellerid', 'user', 'password');
-
         foreach ($gateway_settings_key_array as $gateway_settings_value) {
             if (!empty($woocommerce_paypal_advanced_settings[$gateway_settings_value])) {
                 $woocommerce_paypal_advanced_settings[$gateway_settings_value] = AngellEYE_Utility::crypting($woocommerce_paypal_advanced_settings[$gateway_settings_value], $action = 'e');
             }
         }
-
         update_option('woocommerce_paypal_advanced_settings', $woocommerce_paypal_advanced_settings);
     }
 
     public function angelleye_ppcp_paypal_credit_card_rest_to_ppcp($seller_onboarding_status) {
         $woocommerce_paypal_credit_card_rest_settings = get_option('woocommerce_paypal_credit_card_rest_settings');
         $woocommerce_paypal_credit_card_rest_settings['enabled'] = 'no';
-
         $gateway_settings_key_array = array('rest_client_id_sandbox', 'rest_secret_id_sandbox', 'rest_client_id', 'rest_secret_id');
-
         foreach ($gateway_settings_key_array as $gateway_settings_value) {
             if (!empty($woocommerce_paypal_credit_card_rest_settings[$gateway_settings_value])) {
                 $woocommerce_paypal_credit_card_rest_settings[$gateway_settings_value] = AngellEYE_Utility::crypting($woocommerce_paypal_credit_card_rest_settings[$gateway_settings_value], $action = 'e');
             }
         }
-
         update_option('woocommerce_paypal_credit_card_rest_settings', $woocommerce_paypal_credit_card_rest_settings);
     }
 
@@ -289,8 +277,6 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function angelleye_ppcp_subscription_order_migration($from_payment_method, $to_payment_method) {
         try {
             $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
-
-            // Check if subscription_ids is not empty before scheduling the next batch
             if (!empty($subscription_ids)) {
                 $this->schedule_next_batch($from_payment_method, $to_payment_method);
             }
@@ -308,7 +294,6 @@ class AngellEYE_PayPal_PPCP_Migration {
                 'orderby' => 'date',
                 'order' => 'DESC'
             );
-
             if (OrderUtil::custom_orders_table_usage_is_enabled()) {
                 $args['status'] = array('wc-active', 'wc-on-hold');
                 $args['payment_method'] = $payment_method_id;
@@ -331,49 +316,35 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_update_payment_method($subscription, $new_payment_method) {
         try {
-            // Store current payment method details
             $old_payment_method = $subscription->get_payment_method();
             $old_payment_method_title = $subscription->get_payment_method_title();
-
-            // Get payment method titles from settings or default to 'PayPal'
             $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
-
-            // Trigger pre-update payment method action
             do_action('woocommerce_subscriptions_pre_update_payment_method', $subscription, $new_payment_method, $old_payment_method);
-
-            // Trigger gateway status update hook
             WC_Subscriptions_Core_Plugin::instance()->get_gateways_handler_class()::trigger_gateway_status_updated_hook($subscription, 'cancelled');
-
-            // Handle empty payment method titles
             $old_payment_method_title = empty($old_payment_method_title) ? $old_payment_method : $old_payment_method_title;
             $new_payment_method_title = empty($new_payment_method_title) ? $new_payment_method : $new_payment_method_title;
-
-            $subscription->set_payment_method($new_payment_method);
-            $subscription->set_payment_method_title($new_payment_method_title);
             
-            $subscription->update_meta_data('_old_payment_method', $old_payment_method);
-            $subscription->update_meta_data('_angelleye_ppcp_old_payment_method', $old_payment_method);
-            $subscription->update_meta_data('_old_payment_method_title', $old_payment_method_title);
-
-            
-
             // Apply filters for old and new payment method titles
             $old_payment_method_title = apply_filters('woocommerce_subscription_note_old_payment_method_title', $old_payment_method_title, $old_payment_method, $subscription);
             $new_payment_method_title = apply_filters('woocommerce_subscription_note_new_payment_method_title', $new_payment_method_title, $new_payment_method, $subscription);
-
             // Add order note about payment method change
+            
+            $subscription->set_payment_method($new_payment_method);
+            $subscription->set_payment_method_title($new_payment_method_title);
+            $subscription->update_meta_data('_old_payment_method', $old_payment_method);
+            $subscription->update_meta_data('_angelleye_ppcp_old_payment_method', $old_payment_method);
+            $subscription->update_meta_data('_old_payment_method_title', $old_payment_method_title);
+            
             $note_message = sprintf(
                 _x('Payment method changed from "%1$s" to "%2$s" by the Angelleye Migration.', '%1$s: old payment title, %2$s: new payment title', 'woocommerce-subscriptions'),
                 $old_payment_method_title,
                 $new_payment_method_title
             );
             $subscription->add_order_note($note_message);
-
             // Save changes and trigger relevant actions
             $subscription->save();
             do_action('woocommerce_subscription_payment_method_updated', $subscription, $new_payment_method, $old_payment_method);
             do_action('woocommerce_subscription_payment_method_updated_to_' . $new_payment_method, $subscription, $old_payment_method);
-
             if ($old_payment_method) {
                 do_action('woocommerce_subscription_payment_method_updated_from_' . $old_payment_method, $subscription, $new_payment_method);
             }
@@ -413,8 +384,12 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function schedule_next_batch($from_payment_method, $to_payment_method) {
         try {
             $action_hook = 'angelleye_ppcp_migration_schedule';
-            $scheduled_time = time();
-           // as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
+            $scheduled_time = time() + (self::$total_payment_method * 60);
+            if ( ! as_has_scheduled_action( $action_hook, array($from_payment_method, $to_payment_method) ) ) {
+                as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
+                self::$total_payment_method = self::$total_payment_method + 3;
+            }
+            
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
@@ -423,7 +398,6 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function process_subscription_batch($from_payment_method, $to_payment_method) {
         try {
             $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
-
             // Check if subscription_ids is not empty before processing the batch
             if (!empty($subscription_ids)) {
                 foreach ($subscription_ids as $subscription_id) {
