@@ -292,21 +292,10 @@ class AngellEYE_PayPal_PPCP_Migration {
                 'limit' => self::SUBSCRIPTION_BATCH_LIMIT,
                 'return' => 'ids',
                 'orderby' => 'date',
-                'order' => 'DESC'
+                'order' => 'DESC',
+                'status' => array('wc-active', 'wc-on-hold'),
+                'payment_method' => $payment_method_id
             );
-            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
-                $args['status'] = array('wc-active', 'wc-on-hold');
-                $args['payment_method'] = $payment_method_id;
-            } elseif (function_exists('wcs_get_orders_with_meta_query')) {
-                $args['status'] = 'any';
-                $args['meta_query'] = array(
-                    array(
-                        'key' => '_payment_method',
-                        'value' => $payment_method_id,
-                    ),
-                );
-            }
-
             return wc_get_orders($args);
         } catch (Exception $ex) {
             // Handle exceptions if needed
