@@ -672,6 +672,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <?php
                     endif;
                 }
+                if (!as_has_scheduled_action('angelleye_ppcp_migration_schedule')) {
+                    do_action('angelleye_ppcp_migration_progress_report');
+                }
                 ?>
                 <ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard ppcp_email_confirm">
                     <?php if (($this->on_board_status === 'CONNECTED_BUT_NOT_ACC' || $this->on_board_status === 'FULLY_CONNECTED') && !empty($this->email_confirm_text_1)) { ?>

@@ -17,6 +17,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     // Define class constants for better readability
     const SUBSCRIPTION_BATCH_LIMIT = 100;
+
     public static $total_payment_method = 1;
 
     public static function instance() {
@@ -29,7 +30,7 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function __construct() {
         $this->angelleye_ppcp_load_class();
         add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'), 10, 2);
-        $this->angelleye_ppcp_get_subscription_order_list('angelleye_ppcp_cc');
+        add_action('angelleye_ppcp_migration_progress_report', array($this, 'angelleye_ppcp_migration_progress_report'));
     }
 
     public function angelleye_ppcp_load_class() {
@@ -39,10 +40,10 @@ class AngellEYE_PayPal_PPCP_Migration {
             }
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
         } catch (Exception $ex) {
-
+            
         }
     }
-    
+
     public function angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status) {
         try {
             $this->angelleye_express_checkout_setting_field_map();
@@ -303,6 +304,67 @@ class AngellEYE_PayPal_PPCP_Migration {
         }
     }
 
+    public function angelleye_ppcp_get_classic_subscription_order_list() {
+        try {
+            $args = array(
+                'type' => 'shop_subscription',
+                'limit' => -1,
+                'return' => 'ids',
+                'orderby' => 'date',
+                'order' => 'DESC',
+                'status' => array('wc-active', 'wc-on-hold'),
+                'payment_method' => array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest', 'paypal', 'ppec_paypal')
+            );
+            $orders = wc_get_orders($args);
+            $order_count = 0;
+            // Check if $orders is empty
+            if (empty($orders)) {
+                // Handle the case where no orders match the criteria
+                $order_count = 0;
+            } else {
+                // Get the count of order IDs
+                $order_count = count(wp_list_pluck($orders, 'ID'));
+            }
+            return $order_count;
+        } catch (Exception $ex) {
+            // Handle exceptions if needed
+            return array();
+        }
+    }
+
+    public function angelleye_ppcp_total_migrated_profile() {
+        try {
+            $custom_field_key = '_angelleye_ppcp_old_payment_method'; // Replace this with your actual custom field key
+            // Set up arguments for wc_get_orders
+            $args = array(
+                'type' => 'shop_subscription',
+                'limit' => -1,
+                'return' => 'ids',
+                'meta_query' => array(
+                    array(
+                        'key' => $custom_field_key,
+                        'compare' => 'EXISTS', // Check if the custom field exists
+                    ),
+                ),
+            );
+            // Get orders based on the arguments
+            $orders = wc_get_orders($args);
+            $order_count = 0;
+            // Check if $orders is empty
+            if (empty($orders)) {
+                // Handle the case where no orders match the criteria
+                $order_count = 0;
+            } else {
+                // Get the count of order IDs
+                $order_count = count(wp_list_pluck($orders, 'ID'));
+            }
+            return $order_count;
+            // Now $order_count contains the count of order IDs with the specified custom field
+        } catch (Exception $ex) {
+            
+        }
+    }
+
     public function angelleye_ppcp_update_payment_method($subscription, $new_payment_method) {
         try {
             $old_payment_method = $subscription->get_payment_method();
@@ -312,22 +374,22 @@ class AngellEYE_PayPal_PPCP_Migration {
             WC_Subscriptions_Core_Plugin::instance()->get_gateways_handler_class()::trigger_gateway_status_updated_hook($subscription, 'cancelled');
             $old_payment_method_title = empty($old_payment_method_title) ? $old_payment_method : $old_payment_method_title;
             $new_payment_method_title = empty($new_payment_method_title) ? $new_payment_method : $new_payment_method_title;
-            
+
             // Apply filters for old and new payment method titles
             $old_payment_method_title = apply_filters('woocommerce_subscription_note_old_payment_method_title', $old_payment_method_title, $old_payment_method, $subscription);
             $new_payment_method_title = apply_filters('woocommerce_subscription_note_new_payment_method_title', $new_payment_method_title, $new_payment_method, $subscription);
             // Add order note about payment method change
-            
+
             $subscription->set_payment_method($new_payment_method);
             $subscription->set_payment_method_title($new_payment_method_title);
             $subscription->update_meta_data('_old_payment_method', $old_payment_method);
             $subscription->update_meta_data('_angelleye_ppcp_old_payment_method', $old_payment_method);
             $subscription->update_meta_data('_old_payment_method_title', $old_payment_method_title);
-            
+
             $note_message = sprintf(
-                _x('Payment method changed from "%1$s" to "%2$s" by the Angelleye Migration.', '%1$s: old payment title, %2$s: new payment title', 'woocommerce-subscriptions'),
-                $old_payment_method_title,
-                $new_payment_method_title
+                    _x('Payment method changed from "%1$s" to "%2$s" by the Angelleye Migration.', '%1$s: old payment title, %2$s: new payment title', 'woocommerce-subscriptions'),
+                    $old_payment_method_title,
+                    $new_payment_method_title
             );
             $subscription->add_order_note($note_message);
             // Save changes and trigger relevant actions
@@ -340,10 +402,10 @@ class AngellEYE_PayPal_PPCP_Migration {
         } catch (Exception $e) {
             // Handle exceptions and provide a user-friendly error message
             $error_message = sprintf(
-                __('%1$sError:%2$s %3$s', 'woocommerce-subscriptions'),
-                '<strong>',
-                '</strong>',
-                $e->getMessage()
+                    __('%1$sError:%2$s %3$s', 'woocommerce-subscriptions'),
+                    '<strong>',
+                    '</strong>',
+                    $e->getMessage()
             );
             $subscription->add_order_note($error_message);
             $subscription->add_order_note(__('An error occurred updating your subscription\'s payment method. Please contact us for assistance.', 'woocommerce-subscriptions'));
@@ -374,11 +436,10 @@ class AngellEYE_PayPal_PPCP_Migration {
         try {
             $action_hook = 'angelleye_ppcp_migration_schedule';
             $scheduled_time = time() + (self::$total_payment_method * 60);
-            if ( ! as_has_scheduled_action( $action_hook, array($from_payment_method, $to_payment_method) ) ) {
+            if (!as_has_scheduled_action($action_hook, array($from_payment_method, $to_payment_method))) {
                 as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
                 self::$total_payment_method = self::$total_payment_method + 3;
             }
-            
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
@@ -400,5 +461,87 @@ class AngellEYE_PayPal_PPCP_Migration {
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
+    }
+
+    public function angelleye_ppcp_migration_progress_report() {
+        ?>
+        <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard ppcp_migration_report_parent" style="margin-top:30px;">
+            <ul id="skill">
+                <li>
+                    <span class="bar jquery"></span>
+                </li>
+            </ul>
+        </div>
+        <script>
+            jQuery(document).ready(function () {
+                var startTime = new Date().getTime();
+
+                // Simulating real-time update using jQuery
+                function updateProgressBar() {
+                    var progressBar = jQuery('.jquery');
+
+                    var currentTime = new Date().getTime();
+                    var elapsedTime = currentTime - startTime;
+
+                    // Calculate percentage based on elapsed time
+                    var percentage = Math.min((elapsedTime / 2000) * 100, 100);
+
+                    console.log(percentage);
+                    progressBar.css('width', percentage + '%');
+
+
+                    // Check if the progress is complete
+                    if (percentage >= 100) {
+                        // Progress is complete, you can handle it accordingly
+                        console.log('Progress complete!');
+                    }
+                }
+
+                // Call the updateProgressBar function at regular intervals (e.g., every 100 milliseconds)
+                setInterval(updateProgressBar, 10);
+            });
+        </script>
+        <style type="text/css">
+            #skill {
+                list-style: none;
+                font: 12px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+                width: 296px;
+                margin: 50px auto 0;
+                position: relative;
+                line-height: 2em;
+                padding: 30px 0;
+            }
+
+            #skill li {
+                margin-bottom: 50px;
+                background: #e9e5e2;
+                background-image: linear-gradient(top, #e1ddd9, #e9e5e2);
+                height: 20px;
+                border-radius: 10px;
+                box-shadow: 0 1px 0px #bebbb9 inset, 0 1px 0 #fcfcfc;
+                padding: 0px;
+                display: block;
+            }
+
+            #skill li h3 {
+                position: relative;
+                top: -25px;
+            }
+
+            .bar {
+                height: 18px;
+                position: absolute;
+                border-radius: 10px;
+                box-shadow: 0 1px 0px #fcfcfc inset, 0 1px 0 #bebbb9;
+            }
+
+            .jquery {
+                /* Remove initial width here */
+                background-color: #a1ce5b; /* Progress bar color */
+                background-image: linear-gradient(top, #a1ce5b, #91ba52);
+            }
+
+        </style>
+        <?php
     }
 }
