@@ -16,7 +16,7 @@ class AngellEYE_PayPal_PPCP_Migration {
     public $setting_obj;
 
     // Define class constants for better readability
-    const SUBSCRIPTION_BATCH_LIMIT = 100;
+    const SUBSCRIPTION_BATCH_LIMIT = 1;
 
     public static $total_payment_method = 1;
 
@@ -31,6 +31,7 @@ class AngellEYE_PayPal_PPCP_Migration {
         $this->angelleye_ppcp_load_class();
         add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'), 10, 2);
         add_action('angelleye_ppcp_migration_progress_report', array($this, 'angelleye_ppcp_migration_progress_report'));
+        add_action('wp_ajax_update_progress_bar', array($this, 'angelleye_ppcp_get_progress_status'));
     }
 
     public function angelleye_ppcp_load_class() {
@@ -323,7 +324,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                 $order_count = 0;
             } else {
                 // Get the count of order IDs
-                $order_count = count(wp_list_pluck($orders, 'ID'));
+                $order_count = count($orders);
             }
             return $order_count;
         } catch (Exception $ex) {
@@ -356,10 +357,27 @@ class AngellEYE_PayPal_PPCP_Migration {
                 $order_count = 0;
             } else {
                 // Get the count of order IDs
-                $order_count = count(wp_list_pluck($orders, 'ID'));
+                $order_count = count($orders);
             }
             return $order_count;
             // Now $order_count contains the count of order IDs with the specified custom field
+        } catch (Exception $ex) {
+            
+        }
+    }
+
+    public function angelleye_ppcp_get_progress_status() {
+        try {
+            $total_migrated_orders = $this->angelleye_ppcp_total_migrated_profile();
+            $pending_migrated_orders = $this->angelleye_ppcp_get_classic_subscription_order_list();
+            $total_migrated_percentage = ($total_migrated_orders / ($total_migrated_orders + $pending_migrated_orders)) * 100;
+            $response['percentage'] = $total_migrated_percentage;
+            if ($total_migrated_percentage >= 100) {
+                $response['status'] = 'complete';
+            } else {
+                $response['status'] = 'in_progress';
+            }
+            wp_send_json($response);
         } catch (Exception $ex) {
             
         }
@@ -450,13 +468,13 @@ class AngellEYE_PayPal_PPCP_Migration {
             $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
             // Check if subscription_ids is not empty before processing the batch
             if (!empty($subscription_ids)) {
-                $this->schedule_next_batch($from_payment_method, $to_payment_method);
                 foreach ($subscription_ids as $subscription_id) {
                     $subscription = wcs_get_subscription($subscription_id);
                     if ($this->is_angelleye_ppcp_old_payment_token_exist($subscription)) {
                         $this->angelleye_ppcp_update_payment_method($subscription, $to_payment_method);
                     }
                 }
+                $this->schedule_next_batch($from_payment_method, $to_payment_method);
             }
         } catch (Exception $ex) {
             // Handle exceptions if needed
@@ -464,43 +482,20 @@ class AngellEYE_PayPal_PPCP_Migration {
     }
 
     public function angelleye_ppcp_migration_progress_report() {
+        wp_enqueue_script('wc-angelleye-ppcp-migration-status', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-ppcp-migration-status.js', array('jquery'), null, true);
+        wp_localize_script('wc-angelleye-ppcp-migration-status', 'ppcp_migration_progress', array('ajax_url' => admin_url('admin-ajax.php')));
         ?>
         <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard ppcp_migration_report_parent" style="margin-top:30px;">
+            <div class="ppcp_migration_report">
+                <h3>Subscription Migration Progress Report</h3>
+
+            </div>
             <ul id="skill">
                 <li>
-                    <span class="bar jquery"></span>
+                    <span class="percentage_display_bar bar"></span>
                 </li>
             </ul>
         </div>
-        <script>
-            jQuery(document).ready(function () {
-                var startTime = new Date().getTime();
-
-                // Simulating real-time update using jQuery
-                function updateProgressBar() {
-                    var progressBar = jQuery('.jquery');
-
-                    var currentTime = new Date().getTime();
-                    var elapsedTime = currentTime - startTime;
-
-                    // Calculate percentage based on elapsed time
-                    var percentage = Math.min((elapsedTime / 2000) * 100, 100);
-
-                    console.log(percentage);
-                    progressBar.css('width', percentage + '%');
-
-
-                    // Check if the progress is complete
-                    if (percentage >= 100) {
-                        // Progress is complete, you can handle it accordingly
-                        console.log('Progress complete!');
-                    }
-                }
-
-                // Call the updateProgressBar function at regular intervals (e.g., every 100 milliseconds)
-                setInterval(updateProgressBar, 10);
-            });
-        </script>
         <style type="text/css">
             #skill {
                 list-style: none;
@@ -535,7 +530,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                 box-shadow: 0 1px 0px #fcfcfc inset, 0 1px 0 #bebbb9;
             }
 
-            .jquery {
+            .percentage_display_bar {
                 /* Remove initial width here */
                 background-color: #a1ce5b; /* Progress bar color */
                 background-image: linear-gradient(top, #a1ce5b, #91ba52);

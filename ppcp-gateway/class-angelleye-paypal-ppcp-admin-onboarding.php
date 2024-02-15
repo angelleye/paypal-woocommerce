@@ -275,7 +275,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     $result = $this->angelleye_ppcp_get_result_migrate_to_ppcp();
                     $payment_gateways = WC()->payment_gateways->payment_gateways();
                     if (!empty($result[0])) {
-                        if (!class_exists('AngellEYE_PayPal_PPCP_Migration')) {
+                        if (!class_exists('AngellEYE_PayPal_PPCP_Migration_Revert')) {
                             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration-revert.php');
                         }
                         $this->ppcp_migration_revert = AngellEYE_PayPal_PPCP_Migration_Revert::instance();
@@ -672,7 +672,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                         <?php
                     endif;
                 }
-                if (!as_has_scheduled_action('angelleye_ppcp_migration_schedule')) {
+                if (as_has_scheduled_action('angelleye_ppcp_migration_schedule')) {
                     do_action('angelleye_ppcp_migration_progress_report');
                 }
                 ?>
