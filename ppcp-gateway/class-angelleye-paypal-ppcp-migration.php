@@ -465,12 +465,11 @@ class AngellEYE_PayPal_PPCP_Migration {
             $scheduled_time = time() + (self::$total_payment_method * 60);
             sleep(5);
             $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
-            if (!empty($subscription_ids)) {
-                if (!as_has_scheduled_action($action_hook, array($from_payment_method, $to_payment_method))) {
-                    as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
-                    self::$total_payment_method = self::$total_payment_method + 3;
-                }
+            if (empty($subscription_ids) || as_has_scheduled_action($action_hook, array($from_payment_method, $to_payment_method))) {
+                return;
             }
+            as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
+            self::$total_payment_method = self::$total_payment_method + 3;
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
