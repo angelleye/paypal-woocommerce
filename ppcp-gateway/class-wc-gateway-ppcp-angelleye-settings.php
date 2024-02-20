@@ -315,6 +315,18 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             } else {
                 $available_endpoints = false;
             }
+            $google_pay_supported_country = [
+                'AU', 'AT', 'BE', 'BG', 'CA', 'CY', 'CZ', 'DK', 'EE', 'FI',
+                'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU',
+                'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+                'GB', 'US'
+            ];
+            $apple_pay_supported_country = [
+                'AU', 'AT', 'BE', 'BG', 'CA', 'CY', 'CZ', 'DK', 'EE', 'FI',
+                'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU',
+                'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+                'US', 'GB'
+            ];
             $advanced_cc_text = '';
             $vaulting_advanced_text = '';
             $applePayText = '';
@@ -353,7 +365,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $this->is_apple_pay_enable = false;
             } elseif (!isset($available_endpoints['apple_pay'])) {
                 $applePayText = __('Apple Pay is not enabled on your PayPal account.', 'paypal-for-woocommerce');
-                $this->need_to_display_apple_pay_button = strtolower($default_country) === 'us';
+                $this->need_to_display_apple_pay_button = in_array($default_country, $apple_pay_supported_country);
                 $this->is_apple_pay_enable = true;
             } elseif (isset($available_endpoints['apple_pay'])) {
                 $this->is_apple_pay_enable = true;
@@ -368,7 +380,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $this->is_google_pay_enable = false;
             } elseif (!isset($available_endpoints['google_pay'])) {
                 $googlePayText = __('Google Pay is not enabled on your PayPal account.', 'paypal-for-woocommerce');
-                $this->need_to_display_google_pay_button = strtolower($default_country) === 'us';
+                $this->need_to_display_google_pay_button = in_array($default_country, $google_pay_supported_country);
                 $this->is_google_pay_enable = true;
             } elseif (isset($available_endpoints['google_pay'])) {
                 $this->is_google_pay_enable = true;
