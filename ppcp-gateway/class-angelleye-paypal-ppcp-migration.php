@@ -289,6 +289,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_get_subscription_order_list($payment_method_id) {
         try {
+            wp_reset_query();
             $args = array(
                 'type' => 'shop_subscription',
                 'limit' => self::SUBSCRIPTION_BATCH_LIMIT,
@@ -307,6 +308,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_get_classic_subscription_order_list() {
         try {
+            wp_reset_query();
             $args = array(
                 'type' => 'shop_subscription',
                 'limit' => -1,
@@ -335,10 +337,11 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_total_migrated_profile() {
         try {
+            wp_reset_query();
+
             $custom_field_key = '_angelleye_ppcp_old_payment_method'; // Replace this with your actual custom field key
-            // Set up arguments for wc_get_orders
+// Set up arguments for wcs_get_subscriptions
             $args = array(
-                'type' => 'shop_subscription',
                 'limit' => -1,
                 'return' => 'ids',
                 'meta_query' => array(
@@ -348,8 +351,9 @@ class AngellEYE_PayPal_PPCP_Migration {
                     ),
                 ),
             );
-            // Get orders based on the arguments
-            $orders = wc_get_orders($args);
+
+            $orders = wcs_get_subscriptions($args);
+
             $order_count = 0;
             // Check if $orders is empty
             if (empty($orders)) {
@@ -370,7 +374,12 @@ class AngellEYE_PayPal_PPCP_Migration {
         try {
             $total_migrated_orders = $this->angelleye_ppcp_total_migrated_profile();
             $pending_migrated_orders = $this->angelleye_ppcp_get_classic_subscription_order_list();
-            $total_migrated_percentage = ($total_migrated_orders / ($total_migrated_orders + $pending_migrated_orders)) * 100;
+            $total_classic_order = $total_migrated_orders + $pending_migrated_orders;
+            if ($total_classic_order > 0) {
+                $total_migrated_percentage = ($total_migrated_orders / $total_classic_order) * 100;
+            } else {
+                $total_migrated_percentage = 1;
+            }
             $response['percentage'] = $total_migrated_percentage;
             if ($total_migrated_percentage >= 100) {
                 $response['status'] = 'complete';
@@ -454,9 +463,13 @@ class AngellEYE_PayPal_PPCP_Migration {
         try {
             $action_hook = 'angelleye_ppcp_migration_schedule';
             $scheduled_time = time() + (self::$total_payment_method * 60);
-            if (!as_has_scheduled_action($action_hook, array($from_payment_method, $to_payment_method))) {
-                as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
-                self::$total_payment_method = self::$total_payment_method + 3;
+            sleep(5);
+            $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
+            if (!empty($subscription_ids)) {
+                if (!as_has_scheduled_action($action_hook, array($from_payment_method, $to_payment_method))) {
+                    as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
+                    self::$total_payment_method = self::$total_payment_method + 3;
+                }
             }
         } catch (Exception $ex) {
             // Handle exceptions if needed
