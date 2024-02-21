@@ -330,7 +330,14 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     AngellEye_Session_Manager::set('paypal_order_id', wc_clean($_GET['paypal_order_id']));
 
                     $from = AngellEye_Session_Manager::get('from', '');
-                    if ('checkout_top' === $from) {
+
+                    if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
+                        include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
+                    }
+                    $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+                    $this->skip_final_review = 'yes' === $this->setting_obj->get('skip_final_review', 'no');
+
+                    if ('checkout_top' === $from && ! $this->skip_final_review) {
                         if (ob_get_length()) {
                             ob_end_clean();
                         }
