@@ -5,15 +5,15 @@ jQuery(document).ready(function ($) {
             url: ppcp_migration_progress.ajax_url,
             type: 'POST',
             data: {
-                action: 'update_progress_bar',
+                action: 'update_progress_bar'
             },
             success: function (response) {
                 progressBar.css('width', response.percentage + '%');
                 if (response.status === 'complete') {
-                    console.log('Progress complete!');
+                    window.location.reload();
                 }
             }
         });
     }
-    setInterval(updateProgressBar, 5000);
+    setInterval(updateProgressBar, 30000);
 });

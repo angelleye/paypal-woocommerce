@@ -16,7 +16,7 @@ class AngellEYE_PayPal_PPCP_Migration {
     public $setting_obj;
 
     // Define class constants for better readability
-    const SUBSCRIPTION_BATCH_LIMIT = 1;
+    const SUBSCRIPTION_BATCH_LIMIT = 100;
 
     public static $total_payment_method = 1;
 
@@ -462,14 +462,14 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function schedule_next_batch($from_payment_method, $to_payment_method) {
         try {
             $action_hook = 'angelleye_ppcp_migration_schedule';
-            $scheduled_time = time() + (self::$total_payment_method * 60);
-            sleep(5);
+            $scheduled_time = time() + (self::$total_payment_method * 20);
             $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
-            if (empty($subscription_ids) || as_has_scheduled_action($action_hook, array($from_payment_method, $to_payment_method))) {
+            if (empty($subscription_ids)) {
+                as_unschedule_action($action_hook, array($from_payment_method, $to_payment_method));
                 return;
             }
             as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
-            self::$total_payment_method = self::$total_payment_method + 3;
+            self::$total_payment_method = self::$total_payment_method + 2;
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
@@ -499,7 +499,7 @@ class AngellEYE_PayPal_PPCP_Migration {
         ?>
         <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard ppcp_migration_report_parent" style="margin-top:30px;">
             <div class="ppcp_migration_report">
-                <h3>Subscription Migration Progress Report</h3>
+                <h3>Migration Progress Status</h3>
 
             </div>
             <ul id="skill">
@@ -512,15 +512,14 @@ class AngellEYE_PayPal_PPCP_Migration {
             #skill {
                 list-style: none;
                 font: 12px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
-                width: 296px;
-                margin: 50px auto 0;
+                width: 90%;
+                margin: 0px auto 0;
                 position: relative;
                 line-height: 2em;
                 padding: 30px 0;
             }
 
             #skill li {
-                margin-bottom: 50px;
                 background: #e9e5e2;
                 background-image: linear-gradient(top, #e1ddd9, #e9e5e2);
                 height: 20px;
@@ -544,7 +543,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
             .percentage_display_bar {
                 /* Remove initial width here */
-                background-color: #a1ce5b; /* Progress bar color */
+                background-color: #78A532; /* Progress bar color */
                 background-image: linear-gradient(top, #a1ce5b, #91ba52);
             }
 
