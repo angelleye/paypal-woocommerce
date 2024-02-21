@@ -494,12 +494,12 @@ class AngellEYE_PayPal_PPCP_Migration {
     }
 
     public function angelleye_ppcp_migration_progress_report() {
-        wp_enqueue_script('wc-angelleye-ppcp-migration-status', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-ppcp-migration-status.js', array('jquery'), null, true);
+        wp_enqueue_script('wc-angelleye-ppcp-migration-status', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-angelleye-ppcp-migration-status.js', array('jquery'), time(), true);
         wp_localize_script('wc-angelleye-ppcp-migration-status', 'ppcp_migration_progress', array('ajax_url' => admin_url('admin-ajax.php')));
         ?>
         <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard ppcp_migration_report_parent" style="margin-top:30px;">
-            <div class="ppcp_migration_report">
-                <h3>Migration Progress Status</h3>
+            <div>
+                <h3 style="text-align: center;">Migration Progress Status</h3>
 
             </div>
             <ul id="skill">
@@ -516,7 +516,6 @@ class AngellEYE_PayPal_PPCP_Migration {
                 margin: 0px auto 0;
                 position: relative;
                 line-height: 2em;
-                padding: 30px 0;
             }
 
             #skill li {
