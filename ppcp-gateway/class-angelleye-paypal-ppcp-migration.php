@@ -27,7 +27,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
-        // add_action('wp_loaded', array($this, 'test'));
+        //add_action('wp_loaded', array($this, 'test'));
 
         add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'), 10, 2);
         add_action('angelleye_ppcp_migration_progress_report', array($this, 'angelleye_ppcp_migration_progress_report'));
@@ -433,9 +433,9 @@ class AngellEYE_PayPal_PPCP_Migration {
             }
             $response['percentage'] = $total_migrated_percentage;
             if ($total_migrated_percentage >= 100) {
-                $response['status'] = 'complete';
-            } else {
                 $response['status'] = 'in_progress';
+            } else {
+                $response['status'] = 'complete';
             }
             wp_send_json($response);
         } catch (Exception $ex) {
@@ -549,56 +549,122 @@ class AngellEYE_PayPal_PPCP_Migration {
         ?>
         <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard ppcp_migration_report_parent" style="margin-top:30px;">
             <div class="ce_ixelgen_progress_bar block">
-                <div class="progress_bar">
+
+                <div class="progress_bar" style="margin: 30px;">
                     <div class="progress_bar_item grid-x">
                         <div class="item_label cell auto">Migration Progress Status</div>
-                        <div class="item_value cell shrink">0%</div>
-                        <div class="item_bar cell"><div class="progress" data-progress="80"></div></div>
+                        <div class="item_value cell shrink" id="progress_bar_percentage">80%</div>
+                        <div class="item_bar cell"><div class="progress" id="percentage_display_bar"></div></div>
                     </div>
+
+
                 </div>
-                <button onclick="progress_bar()">Animate it again</button>
+
             </div>
         </div>
         <style type="text/css">
-            $primary-color: #f50045;
-            $secondary-color: #000;
-            $bar-height: 1.5rem;
-            .ce_ixelgen_progress_bar {
-                max-width: 800px;
-                margin: 0 auto;
-                .progress_bar_item {
-                    margin-bottom: 2rem;
-                }
-                .item_label,
-                .item_value {
-                    font-size: 1.2rem;
-                    font-weight: 600;
-                    color: #333;
-                    margin-bottom: 0.5rem;
-                }
-                .item_value {
-                    font-weight: 400;
-                }
-                .item_bar {
-                    position: relative;
-                    height: $bar-height;
-                    width: 100%;
-                    background-color: $secondary-color;
-                    border-radius: 4px;
-                    .progress {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        bottom: 0;
-                        width: 0;
-                        height: $bar-height;
-                        margin: 0;
-                        background-color: $primary-color;
-                        border-radius: 4px;
-                        transition: width 100ms ease;
-                    }
-                }
+            .ce_ixelgen_progress_bar .progress_bar_item {
+                margin-bottom: 2rem;
             }
+            .grid-x {
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-orient: horizontal;
+                -webkit-box-direction: normal;
+                -webkit-flex-flow: row wrap;
+                -ms-flex-flow: row wrap;
+                flex-flow: row wrap;
+            }
+            .ce_ixelgen_progress_bar .item_label, .ce_ixelgen_progress_bar .item_value {
+                font-size: 16px;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 15px;
+            }
+            .grid-x > .auto {
+                width: auto;
+            }
+            .cell.auto {
+                -webkit-box-flex: 1;
+                -webkit-flex: 1 1 0px;
+                -ms-flex: 1 1 0px;
+                flex: 1 1 0px;
+            }
+            .ce_ixelgen_progress_bar .item_value {
+                font-weight: 400;
+            }
+            .grid-x > .shrink {
+                width: auto;
+            }
+
+            .cell.shrink {
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                -ms-flex: 0 0 auto;
+                flex: 0 0 auto;
+            }
+            .cell {
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                -ms-flex: 0 0 auto;
+                flex: 0 0 auto;
+                min-height: 0;
+                min-width: 0;
+                width: 100%;
+            }
+            .ce_ixelgen_progress_bar .item_bar {
+                position: relative;
+                height: 1.5rem;
+                width: 100%;
+                background-color: #000;
+                border-radius: 4px;
+            }
+            .cell {
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                -ms-flex: 0 0 auto;
+                flex: 0 0 auto;
+                min-height: 0;
+                min-width: 0;
+                width: 100%;
+            }
+            .ce_ixelgen_progress_bar .item_bar .progress {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 0;
+                height: 1.5rem;
+                margin: 0;
+                background-color: #6D9A27;
+                border-radius: 4px;
+                transition: width 100ms ease;
+            }
+            .progress {
+                height: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 0;
+                background-color: #cacaca;
+            }
+            .ce_ixelgen_progress_bar .item_bar {
+                position: relative;
+                height: 1.5rem;
+                width: 100%;
+                background-color: #e9e5e2;
+                border-radius: 4px;
+            }
+            .cell {
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                -ms-flex: 0 0 auto;
+                flex: 0 0 auto;
+                min-height: 0;
+                min-width: 0;
+                width: 100%;
+            }
+
 
         </style>
         <?php

@@ -1,6 +1,6 @@
 jQuery(document).ready(function ($) {
     function updateProgressBar() {
-        var progressBar = $('.percentage_display_bar');
+        var progressBar = $('#percentage_display_bar');
         $.ajax({
             url: ppcp_migration_progress.ajax_url,
             type: 'POST',
@@ -9,6 +9,7 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
                 progressBar.css('width', response.percentage + '%');
+                $('#progress_bar_percentage').text(parseInt(response.percentage) + '%');
                 if (response.status === 'complete') {
                     setTimeout(function () {
                         window.location.reload();
