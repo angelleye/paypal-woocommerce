@@ -18,8 +18,6 @@ class AngellEYE_PayPal_PPCP_Migration {
     // Define class constants for better readability
     const SUBSCRIPTION_BATCH_LIMIT = 100;
 
-    public static $total_payment_method = 1;
-
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
@@ -29,9 +27,61 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
+        // add_action('wp_loaded', array($this, 'test'));
+
         add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'), 10, 2);
         add_action('angelleye_ppcp_migration_progress_report', array($this, 'angelleye_ppcp_migration_progress_report'));
         add_action('wp_ajax_update_progress_bar', array($this, 'angelleye_ppcp_get_progress_status'));
+    }
+
+    public function test() {
+        try {
+            $customer_id = 1;
+            $product_id = 323;
+            $billing_period = 'day';
+            $payment_method = 'paypal_express'; // Replace with your desired payment method (e.g., 'bacs', 'paypal')
+
+            for ($i = 1; $i <= 5000; $i++) {
+                // Create subscription order
+                $order = wc_create_order(array('customer_id' => $customer_id));
+
+                // Add product to the order
+                $order->add_product(wc_get_product($product_id), 1);
+
+                // Calculate totals
+                $order->calculate_totals();
+
+                // Set payment method
+                $order->set_payment_method($payment_method);
+
+                // Save the order
+                $order_id = $order->get_id();
+                $order->save();
+
+                $order->update_status('processing', 'Order created via script');
+
+                // Create subscription
+                $subscription_args = array(
+                    'order_id' => $order_id,
+                    'billing_period' => $billing_period,
+                    'billing_interval' => 1,
+                    'start_date' => date('Y-m-d H:i:s'),
+                    'next_payment_date' => date('Y-m-d H:i:s', strtotime("+1 $billing_period")),
+                    'customer_id' => $customer_id,
+                );
+
+                $subscription = wcs_create_subscription($subscription_args);
+                update_post_meta($subscription->get_id(), '_payment_method', $payment_method);
+
+                // Set subscription status to 'active' (you can change it based on your needs)
+                $subscription->update_status('active', 'Subscription created via script');
+                //update_post_meta($subscription->get_id(), '_schedule_next_payment', 'true');
+                update_post_meta($subscription->get_id(), '_payment_tokens_id', 'B-2NN0990947713504F');
+                update_post_meta($subscription->get_id(), '_requires_manual_renewal', 'false');
+            }
+        } catch (Exception $ex) {
+            
+        }
     }
 
     public function angelleye_ppcp_load_class() {
@@ -294,6 +344,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                 'type' => 'shop_subscription',
                 'limit' => self::SUBSCRIPTION_BATCH_LIMIT,
                 'return' => 'ids',
+                'fields' => 'ids',
                 'orderby' => 'date',
                 'order' => 'DESC',
                 'status' => array('wc-active', 'wc-on-hold'),
@@ -313,6 +364,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                 'type' => 'shop_subscription',
                 'limit' => -1,
                 'return' => 'ids',
+                'fields' => 'ids',
                 'orderby' => 'date',
                 'order' => 'DESC',
                 'status' => array('wc-active', 'wc-on-hold'),
@@ -337,34 +389,27 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_total_migrated_profile() {
         try {
-            wp_reset_query();
-
-            $custom_field_key = '_angelleye_ppcp_old_payment_method'; // Replace this with your actual custom field key
-// Set up arguments for wcs_get_subscriptions
-            $args = array(
-                'limit' => -1,
-                'return' => 'ids',
-                'meta_query' => array(
-                    array(
-                        'key' => $custom_field_key,
-                        'compare' => 'EXISTS', // Check if the custom field exists
-                    ),
-                ),
-            );
-
-            $orders = wcs_get_subscriptions($args);
-
-            $order_count = 0;
-            // Check if $orders is empty
-            if (empty($orders)) {
-                // Handle the case where no orders match the criteria
-                $order_count = 0;
+            global $wpdb;
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                $payment_methods = $wpdb->get_results("SELECT COUNT(DISTINCT p.id) AS 'count'
+                FROM {$wpdb->prefix}wc_orders p
+                JOIN {$wpdb->prefix}wc_orders_meta pm2 ON p.id = pm2.order_id AND pm2.meta_key = '_old_payment_method'
+                JOIN {$wpdb->prefix}wc_orders_meta pm3 ON p.id = pm3.order_id AND pm3.meta_key = '_angelleye_ppcp_old_payment_method'
+                WHERE p.status IN ('wc-active', 'wc-on-hold')
+                AND p.payment_method != pm2.meta_value;", ARRAY_A);
+                $total_count = isset($payment_methods[0]['count']) ? $payment_methods[0]['count'] : 0;
+                return $total_count;
             } else {
-                // Get the count of order IDs
-                $order_count = count($orders);
+                $payment_methods = $wpdb->get_results("SELECT COUNT(DISTINCT p.ID) AS 'count'
+                FROM {$wpdb->posts} p
+                JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_payment_method'
+                JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_old_payment_method'
+                JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = '_angelleye_ppcp_old_payment_method'
+                WHERE p.post_type = 'shop_subscription'
+                AND pm.meta_value != pm2.meta_value;", ARRAY_A);
+                $total_count = isset($payment_methods[0]['count']) ? $payment_methods[0]['count'] : 0;
+                return $total_count;
             }
-            return $order_count;
-            // Now $order_count contains the count of order IDs with the specified custom field
         } catch (Exception $ex) {
             
         }
@@ -377,8 +422,14 @@ class AngellEYE_PayPal_PPCP_Migration {
             $total_classic_order = $total_migrated_orders + $pending_migrated_orders;
             if ($total_classic_order > 0) {
                 $total_migrated_percentage = ($total_migrated_orders / $total_classic_order) * 100;
+                $response['total'] = $total_classic_order;
+                $response['pending'] = $pending_migrated_orders;
+                $response['done'] = $total_migrated_orders;
             } else {
                 $total_migrated_percentage = 1;
+                $response['total'] = $total_classic_order;
+                $response['pending'] = $pending_migrated_orders;
+                $response['done'] = $total_migrated_orders;
             }
             $response['percentage'] = $total_migrated_percentage;
             if ($total_migrated_percentage >= 100) {
@@ -462,14 +513,13 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function schedule_next_batch($from_payment_method, $to_payment_method) {
         try {
             $action_hook = 'angelleye_ppcp_migration_schedule';
-            $scheduled_time = time() + (self::$total_payment_method * 20);
+            $scheduled_time = time();
             $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
             if (empty($subscription_ids)) {
                 as_unschedule_action($action_hook, array($from_payment_method, $to_payment_method));
                 return;
             }
             as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
-            self::$total_payment_method = self::$total_payment_method + 2;
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
@@ -498,52 +548,56 @@ class AngellEYE_PayPal_PPCP_Migration {
         wp_localize_script('wc-angelleye-ppcp-migration-status', 'ppcp_migration_progress', array('ajax_url' => admin_url('admin-ajax.php')));
         ?>
         <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard ppcp_migration_report_parent" style="margin-top:30px;">
-            <div>
-                <h3 style="text-align: center;">Migration Progress Status</h3>
-
+            <div class="ce_ixelgen_progress_bar block">
+                <div class="progress_bar">
+                    <div class="progress_bar_item grid-x">
+                        <div class="item_label cell auto">Migration Progress Status</div>
+                        <div class="item_value cell shrink">0%</div>
+                        <div class="item_bar cell"><div class="progress" data-progress="80"></div></div>
+                    </div>
+                </div>
+                <button onclick="progress_bar()">Animate it again</button>
             </div>
-            <ul id="skill">
-                <li>
-                    <span class="percentage_display_bar bar"></span>
-                </li>
-            </ul>
         </div>
         <style type="text/css">
-            #skill {
-                list-style: none;
-                font: 12px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
-                width: 90%;
-                margin: 0px auto 0;
-                position: relative;
-                line-height: 2em;
-            }
-
-            #skill li {
-                background: #e9e5e2;
-                background-image: linear-gradient(top, #e1ddd9, #e9e5e2);
-                height: 20px;
-                border-radius: 10px;
-                box-shadow: 0 1px 0px #bebbb9 inset, 0 1px 0 #fcfcfc;
-                padding: 0px;
-                display: block;
-            }
-
-            #skill li h3 {
-                position: relative;
-                top: -25px;
-            }
-
-            .bar {
-                height: 18px;
-                position: absolute;
-                border-radius: 10px;
-                box-shadow: 0 1px 0px #fcfcfc inset, 0 1px 0 #bebbb9;
-            }
-
-            .percentage_display_bar {
-                /* Remove initial width here */
-                background-color: #78A532; /* Progress bar color */
-                background-image: linear-gradient(top, #a1ce5b, #91ba52);
+            $primary-color: #f50045;
+            $secondary-color: #000;
+            $bar-height: 1.5rem;
+            .ce_ixelgen_progress_bar {
+                max-width: 800px;
+                margin: 0 auto;
+                .progress_bar_item {
+                    margin-bottom: 2rem;
+                }
+                .item_label,
+                .item_value {
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    color: #333;
+                    margin-bottom: 0.5rem;
+                }
+                .item_value {
+                    font-weight: 400;
+                }
+                .item_bar {
+                    position: relative;
+                    height: $bar-height;
+                    width: 100%;
+                    background-color: $secondary-color;
+                    border-radius: 4px;
+                    .progress {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        bottom: 0;
+                        width: 0;
+                        height: $bar-height;
+                        margin: 0;
+                        background-color: $primary-color;
+                        border-radius: 4px;
+                        transition: width 100ms ease;
+                    }
+                }
             }
 
         </style>

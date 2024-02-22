@@ -814,6 +814,8 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
         $html .= '</table>';
         return $html;
     }
+    
+    
 
     public function angelleye_ppcp_get_result_migrate_to_ppcp() {
         global $wpdb;
