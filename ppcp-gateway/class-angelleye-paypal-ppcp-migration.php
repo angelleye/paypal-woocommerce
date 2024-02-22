@@ -431,8 +431,10 @@ class AngellEYE_PayPal_PPCP_Migration {
                 $response['pending'] = $pending_migrated_orders;
                 $response['done'] = $total_migrated_orders;
             }
+            $label = "Migration Progress: $total_migrated_orders Completed out of $total_classic_order Subscriptions";
+            $response['label'] = $label;
             $response['percentage'] = $total_migrated_percentage;
-            if ($total_migrated_percentage >= 100) {
+            if ($pending_migrated_orders != 0) {
                 $response['status'] = 'in_progress';
             } else {
                 $response['status'] = 'complete';
@@ -549,17 +551,16 @@ class AngellEYE_PayPal_PPCP_Migration {
         ?>
         <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard ppcp_migration_report_parent" style="margin-top:30px;">
             <div class="ce_ixelgen_progress_bar block">
-
                 <div class="progress_bar" style="margin: 30px;">
                     <div class="progress_bar_item grid-x">
                         <div class="item_label cell auto">Migration Progress Status</div>
-                        <div class="item_value cell shrink" id="progress_bar_percentage">80%</div>
-                        <div class="item_bar cell"><div class="progress" id="percentage_display_bar"></div></div>
+                        <div class="item_value cell shrink" id="progress_bar_percentage"></div>
+                        <div class="item_bar cell">
+                            <div class="progress" id="percentage_display_bar"></div>
+                        </div>
+                        <div class="item_value cell shrink" id="progress_label" style="font-size: 13px;margin-top: 17px;"></div>
                     </div>
-
-
                 </div>
-
             </div>
         </div>
         <style type="text/css">
