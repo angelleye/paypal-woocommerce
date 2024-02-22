@@ -558,7 +558,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                         <div class="item_bar cell">
                             <div class="progress" id="percentage_display_bar"></div>
                         </div>
-                        <div class="item_value cell shrink" id="progress_label" style="font-size: 13px;margin-top: 17px;"></div>
+                        <div class="item_value cell shrink" id="progress_label" style="font-size: 13px;margin-top: 11px;"></div>
                     </div>
                 </div>
             </div>
