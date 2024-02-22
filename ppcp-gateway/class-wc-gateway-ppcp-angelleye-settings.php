@@ -409,7 +409,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'label' => __('PayPal Commerce', 'paypal-for-woocommerce'),
+                    'label' => __('PayPal Complete Payments', 'paypal-for-woocommerce'),
                     'default' => 'no',
                 ),
                 'title' => array(

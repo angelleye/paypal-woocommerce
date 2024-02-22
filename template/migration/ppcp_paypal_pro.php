@@ -41,7 +41,7 @@
                 <div class="ml-auto">
                     <h3 class="pb-20"><?php echo __('Updated PayPal Integration', 'paypal-for-woocommerce'); ?></h3>
                     <ul>
-                        <li><?php echo __('PayPal Commerce Platform', 'paypal-for-woocommerce'); ?></li>
+                        <li><?php echo __('PayPal Complete Payments Platform', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('PayPal Checkout | Venmo | Pay Later', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('Direct Credit Card Processing – No Branding', 'paypal-for-woocommerce'); ?></li>
                         <li><strong><?php echo __('Total Fee of 2.69%¹', 'paypal-for-woocommerce'); ?></strong></li>
@@ -54,7 +54,7 @@
                 <div class="pt-20 pb-20">
                     <div class="angella_button_bg text-center paypal_woocommerce_product_onboard" style="color: red;">
                         We noticed that the PayPal account you are connecting is different from the PayPal account you have configured in PayPal Classic.<br><br>
-                        Any subscription profiles or billing agreements that are running on this old account will not function properly if you connect a new account with PayPal Commerce.<br><br>
+                        Any subscription profiles or billing agreements that are running on this old account will not function properly if you connect a new account with PayPal Complete Payments.<br><br>
                         Are you sure you want to switch PayPal accounts?
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                             <P>We noticed that you are running PayPal PayFlow Pro.  Please make sure that the PayPal account you are connecting during the upgrade is the same as the PayPal account that you have been using with PayFlow Pro.</P><br><br>
                         <?php } else { ?>
                             <br>
-                            <p>By connecting PayPal Commerce you will be moving away from PayFlow entirely, and you will be using PayPal to process all of your credit card payments as well as PayPal, Pay Later, Venmo, Apple Pay, etc.  If this is not what you are intending, please submit a ticket so we can help you through this process more directly.</p><br><br>
+                            <p>By connecting PayPal Complete Payments you will be moving away from PayFlow entirely, and you will be using PayPal to process all of your credit card payments as well as PayPal, Pay Later, Venmo, Apple Pay, etc.  If this is not what you are intending, please submit a ticket so we can help you through this process more directly.</p><br><br>
                             <?php
                         }
                     }

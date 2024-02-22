@@ -45,7 +45,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             add_action('wp_ajax_angelleye_ppcp_onboard_email_sendy_subscription', array($this, 'angelleye_ppcp_onboard_email_sendy_subscription'));
             $this->ppcp_paypal_country = $this->dcc_applies->country();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -77,7 +77,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
             AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -145,7 +145,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $body = $this->default_data();
         }
         $return_url = add_query_arg(array('place' => 'admin_settings_onboarding', 'utm_nooverride' => '1', 'products' => $products, 'is_migration' => 'yes'), untrailingslashit($body['return_url']));
-        if(isset($_GET['is_found_diffrent_account'])) {
+        if (isset($_GET['is_found_diffrent_account'])) {
             $return_url = add_query_arg(array('do_not_check_diffrent_account' => 'yes'), untrailingslashit($return_url));
         }
         $body['return_url'] = $return_url;
@@ -207,10 +207,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return array(
             'testmode' => $testmode,
             'return_url' => admin_url(
-                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=googlepay&testmode=' . $testmode
+                    'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=googlepay&testmode=' . $testmode
             ),
             'return_url_description' => __(
-                'Return to your shop.', 'paypal-for-woocommerce'
+                    'Return to your shop.', 'paypal-for-woocommerce'
             ),
             'capabilities' => array(
                 'GOOGLE_PAY'
@@ -219,7 +219,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
                 'PAYMENT_METHODS'
-            ));
+        ));
     }
 
     public function ppcp_vault_data() {
@@ -253,7 +253,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             $data = json_decode($posted_raw, true);
             $this->angelleye_ppcp_get_credentials($data);
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -276,7 +276,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 set_transient('angelleye_ppcp_live_seller_onboarding_process_done', 'yes', 29000);
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -443,19 +443,32 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     }
                 } else {
                     if (isset($seller_onboarding_status['country']) && 'US' === $seller_onboarding_status['country']) {
-                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('We see that you are running WooCommerce Subscriptions.<br>
-                            Unfortunately, your PayPal account was not instantly approved for the PayPal Vault, which is required for Subscriptions functionality.<br>
-                            As such, you will not be able to update to PayPal Commerce until your account is fully approved for the PayPal Vault feature.<br>
-                            No changes have been made, and you can continue running PayPal Classic.<br>
-                            Please try this wizard again in 2 - 3 business days.  If the problem persists, please submit a <a target="_blank" href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">support ticket</a> and we can help you get it approved.');
+                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __(
+                                sprintf(
+                                        'We see that you are running WooCommerce Subscriptions.<br>
+                                        Unfortunately, your PayPal account was not instantly approved for the %s Vault, which is required for Subscriptions functionality.<br>
+                                        As such, you will not be able to update to %s until your account is fully approved for the PayPal Vault feature.<br>
+                                        No changes have been made, and you can continue running PayPal Classic.<br>
+                                        Please try this wizard again in 2 - 3 business days. If the problem persists, please submit a <a target="_blank" href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">support ticket</a> and we can help you get it approved.',
+                                        AE_PPCP_NAME,
+                                        AE_PPCP_NAME
+                                )
+                        );
                     } else {
                         $country = WC()->countries->countries[$country];
-                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __('You are currently running WooCommerce Subscriptions.<br>
-                            Unfortunately, the PayPal Vault feature (which is required for Subscriptions / Token Payments) is only currently available for United States PayPal accounts.<br>
-                            Your PayPal account is based in ' . $country . '.  As such, you cannot upgrade to PayPal Commerce Platform at this time.<br>
-                            Please look for future updates and details about when the PayPal Vault is available in your country.<br>
-                            For now, you will remain on PayPal Classic.<br>
-                            Feel free to submit a <a target="_blank" href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">support ticket</a> if you have any questions or concerns.');
+                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __(
+                                sprintf(
+                                        'You are currently running WooCommerce Subscriptions.<br>
+                                        Unfortunately, the PayPal Vault feature (which is required for Subscriptions / Token Payments) is only currently available for United States PayPal accounts.<br>
+                                        Your PayPal account is based in %s. As such, you cannot upgrade to %s Platform at this time.<br>
+                                        Please look for future updates and details about when the PayPal Vault is available in your country.<br>
+                                        For now, you will remain on %s.<br>
+                                        Feel free to submit a <a target="_blank" href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">support ticket</a> if you have any questions or concerns.',
+                                        $country,
+                                        AE_PPCP_NAME,
+                                        AE_PPCP_NAME
+                                )
+                        );
                     }
                     update_option($this->angelleye_ppcp_migration_wizard_notice_key, $this->angelleye_ppcp_migration_wizard_notice_data);
                 }
@@ -467,7 +480,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             wp_safe_redirect($redirect_url, 302);
             exit();
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
     }
@@ -544,7 +557,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 }
             }
         } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
             return false;
         }
@@ -567,8 +580,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             try {
                 $this->api_request = new AngellEYE_PayPal_PPCP_Request();
                 $url = trailingslashit($this->host) .
-                    'v1/customer/partners/' . $partner_merchant_id .
-                    '/merchant-integrations/' . $merchant_id;
+                        'v1/customer/partners/' . $partner_merchant_id .
+                        '/merchant-integrations/' . $merchant_id;
                 $args = array(
                     'method' => 'GET',
                     'headers' => array(
@@ -579,7 +592,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $this->result = $this->api_request->request($url, $args, 'seller_onboarding_status');
                 $seller_onboarding_status_transient = $this->result;
             } catch (Exception $ex) {
-                $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
+                $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
                 $this->api_log->log($ex->getMessage(), 'error');
                 $seller_onboarding_status_transient = [];
             }
@@ -647,7 +660,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
             return false;
         } catch (Exception $ex) {
-
+            
         }
     }
 

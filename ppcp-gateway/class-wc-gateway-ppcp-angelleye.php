@@ -52,14 +52,14 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function setup_properties() {
         $this->icon = apply_filters('woocommerce_angelleye_paypal_checkout_icon', 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png');
         $this->has_fields = true;
-        $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', __('PayPal Commerce - Built by Angelleye', 'paypal-for-woocommerce'));
+        $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', __('PayPal Complete Payments - Built by Angelleye', 'paypal-for-woocommerce'));
         $this->method_description = __('The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce');
     }
 
     public function angelleye_get_settings() {
         $this->title = $this->get_option('title', 'PayPal');
         if (isset($_GET['page']) && 'wc-settings' === $_GET['page'] && isset($_GET['tab']) && 'checkout' === $_GET['tab']) {
-            $this->title = __('PayPal Commerce - Built by Angelleye', 'paypal-for-woocommerce');
+            $this->title = __('PayPal Complete Payments - Built by Angelleye', 'paypal-for-woocommerce');
         }
         $this->description = $this->get_option('description', '');
         $this->enabled = $this->get_option('enabled', 'no');
@@ -299,7 +299,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     </div>
                     <div class="ppcp_paypal_connection">
                         <div class="ppcp_paypal_connection_status">
-                            <h3><?php echo __('Congratulations, PayPal Commerce is Connected!', 'paypal-for-woocommerce'); ?></h3>
+                            <h3><?php echo __('Congratulations, PayPal Complete Payments is Connected!', 'paypal-for-woocommerce'); ?></h3>
                         </div>
                     </div>
                     <button type="button" class="button angelleye-ppcp-disconnect"><?php echo __('Disconnect', 'paypal-for-woocommerce'); ?></button>
@@ -590,7 +590,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
         $message = sprintf(
                 __(
-                        'PayPal Commerce - Built by Angelleye is almost ready. To get started, <a href="%1$s">connect your account</a>.', 'paypal-for-woocommerce'
+                        'PayPal Complete Payments - Built by Angelleye is almost ready. To get started, <a href="%1$s">connect your account</a>.', 'paypal-for-woocommerce'
                 ), admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products')
         );
         ?>
