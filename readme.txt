@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.4.3
-Stable tag: 4.4.18
+Stable tag: 4.4.19
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,6 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 4.4.19 - 02.23.2024 =
+* Tweak - Resolved wc_get_log_file_path() deprecation warnings. ([PFW-1767](https://github.com/angelleye/paypal-woocommerce/pull/2012))
+
 = 4.4.18 - 02.21.2024 =
 * Tweak - Migration Wizard Update. ([PFW-1747](https://github.com/angelleye/paypal-woocommerce/pull/2009))
 * Tweak - Expand Google / Apple Pay Regions. ([PFW-1760](https://github.com/angelleye/paypal-woocommerce/pull/2008))
@@ -137,7 +140,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 4.4.16 - 01.25.2024 =
 * Fix - Resolved the express button display issue with Apple and Google Pay. ([PFW-1729](https://github.com/angelleye/paypal-woocommerce/pull/2004))
-* Fix - Fixed the capture issue on order status change by third party plugns. ([PFW-1731](https://github.com/angelleye/paypal-woocommerce/pull/2002))
+* Fix - Fixed the capture issue on order status change by third party plugins. ([PFW-1731](https://github.com/angelleye/paypal-woocommerce/pull/2002))
 * Tweak - Resolve the Pay Later Messaging render error for Merchants with no PayLater Support in account. ([PFW-1730](https://github.com/angelleye/paypal-woocommerce/pull/2001))
 
 = 4.4.15 - 01.13.2024 =
