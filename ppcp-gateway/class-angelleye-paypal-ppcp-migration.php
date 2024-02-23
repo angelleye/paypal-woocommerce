@@ -27,61 +27,9 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function __construct() {
         $this->angelleye_ppcp_load_class();
-        //add_action('wp_loaded', array($this, 'test'));
-
         add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'), 10, 2);
         add_action('angelleye_ppcp_migration_progress_report', array($this, 'angelleye_ppcp_migration_progress_report'));
         add_action('wp_ajax_update_progress_bar', array($this, 'angelleye_ppcp_get_progress_status'));
-    }
-
-    public function test() {
-        try {
-            $customer_id = 1;
-            $product_id = 323;
-            $billing_period = 'day';
-            $payment_method = 'paypal_express'; // Replace with your desired payment method (e.g., 'bacs', 'paypal')
-
-            for ($i = 1; $i <= 5000; $i++) {
-                // Create subscription order
-                $order = wc_create_order(array('customer_id' => $customer_id));
-
-                // Add product to the order
-                $order->add_product(wc_get_product($product_id), 1);
-
-                // Calculate totals
-                $order->calculate_totals();
-
-                // Set payment method
-                $order->set_payment_method($payment_method);
-
-                // Save the order
-                $order_id = $order->get_id();
-                $order->save();
-
-                $order->update_status('processing', 'Order created via script');
-
-                // Create subscription
-                $subscription_args = array(
-                    'order_id' => $order_id,
-                    'billing_period' => $billing_period,
-                    'billing_interval' => 1,
-                    'start_date' => date('Y-m-d H:i:s'),
-                    'next_payment_date' => date('Y-m-d H:i:s', strtotime("+1 $billing_period")),
-                    'customer_id' => $customer_id,
-                );
-
-                $subscription = wcs_create_subscription($subscription_args);
-                update_post_meta($subscription->get_id(), '_payment_method', $payment_method);
-
-                // Set subscription status to 'active' (you can change it based on your needs)
-                $subscription->update_status('active', 'Subscription created via script');
-                //update_post_meta($subscription->get_id(), '_schedule_next_payment', 'true');
-                update_post_meta($subscription->get_id(), '_payment_tokens_id', 'B-2NN0990947713504F');
-                update_post_meta($subscription->get_id(), '_requires_manual_renewal', 'false');
-            }
-        } catch (Exception $ex) {
-            
-        }
     }
 
     public function angelleye_ppcp_load_class() {
@@ -339,7 +287,6 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_get_subscription_order_list($payment_method_id) {
         try {
-            wp_reset_query();
             $args = array(
                 'type' => 'shop_subscription',
                 'limit' => self::SUBSCRIPTION_BATCH_LIMIT,
@@ -359,7 +306,6 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_get_classic_subscription_order_list() {
         try {
-            wp_reset_query();
             $args = array(
                 'type' => 'shop_subscription',
                 'limit' => -1,
@@ -431,7 +377,9 @@ class AngellEYE_PayPal_PPCP_Migration {
                 $response['pending'] = $pending_migrated_orders;
                 $response['done'] = $total_migrated_orders;
             }
-            $label = "Migration Progress: $total_migrated_orders Completed out of $total_classic_order Subscriptions";
+            $total_migrated_orders = number_format($total_migrated_orders);
+            $total_classic_order = number_format($total_classic_order);
+            $label = "Migration Progress: $total_migrated_orders of $total_classic_order Completed.";
             $response['label'] = $label;
             $response['percentage'] = $total_migrated_percentage;
             if ($pending_migrated_orders != 0) {
