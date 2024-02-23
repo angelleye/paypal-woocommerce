@@ -233,9 +233,9 @@ const angelleyeOrder = {
 			return data;
 		});
 	},
-	approveOrder: ({orderID, payerID}) => {
+	approveOrder: ({orderID, payerID, errorLogId}) => {
 		if (angelleyeOrder.isCheckoutPage()) {
-			angelleyeOrder.checkoutFormCapture({payPalOrderId: orderID})
+			angelleyeOrder.checkoutFormCapture({payPalOrderId: orderID, errorLogId})
 		} else {
 			if (angelleye_ppcp_manager.is_skip_final_review === 'yes') {
 				window.location.href = angelleye_ppcp_manager.direct_capture + '&paypal_order_id=' + orderID + '&paypal_payer_id=' + payerID + '&from=' + angelleye_ppcp_manager.page;
@@ -419,7 +419,7 @@ const angelleyeOrder = {
 				},
 				onApprove: function (data, actions) {
 					angelleyeOrder.showProcessingSpinner();
-					angelleyeOrder.approveOrder(data);
+					angelleyeOrder.approveOrder({...data, errorLogId});
 				},
 				onCancel: function (data, actions) {
 					angelleyeOrder.hideProcessingSpinner();
@@ -444,7 +444,7 @@ const angelleyeOrder = {
 			});
 		}
 	},
-	checkoutFormCapture: ({checkoutSelector, payPalOrderId}) => {
+	checkoutFormCapture: ({checkoutSelector, payPalOrderId, errorLogId}) => {
 		if (typeof checkoutSelector === 'undefined') {
 			checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
 		}
@@ -473,8 +473,8 @@ const angelleyeOrder = {
 		}).catch((error) => {
 			console.log('capture error', error);
 			jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
+			angelleyeOrder.handleCreateOrderError(error, errorLogId);
 			angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
-			angelleyeOrder.showError(error.message);
 		});
 	},
 	renderHostedButtons: () => {
@@ -631,7 +631,7 @@ const angelleyeOrder = {
 				}).then(
 					function (payload) {
 						if (payload.orderId) {
-							angelleyeOrder.checkoutFormCapture({checkoutSelector, payPalOrderId: payload.orderId});
+							angelleyeOrder.checkoutFormCapture({checkoutSelector, payPalOrderId: payload.orderId, errorLogId});
 						}
 					}, function (error) {
 						console.log('hf_submit_error_handler', error)
