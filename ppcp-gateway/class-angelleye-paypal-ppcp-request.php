@@ -130,6 +130,10 @@ class AngellEYE_PayPal_PPCP_Request {
 
     public function angelleye_ppcp_remote_get($paypal_url, $args, $action_name) {
         $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
+        $body['meta'] = [
+            'plugin_version' => VERSION_PFW,
+            'wp_home' => get_home_url(),
+        ];
         $body['paypal_url'] = $paypal_url;
         $body['paypal_header'] = $args['headers'] ?? [];
         $body['paypal_method'] = isset($args['method']) ? $args['method'] : 'GET';

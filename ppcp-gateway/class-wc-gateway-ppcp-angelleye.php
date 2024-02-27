@@ -52,14 +52,14 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function setup_properties() {
         $this->icon = apply_filters('woocommerce_angelleye_paypal_checkout_icon', 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png');
         $this->has_fields = true;
-        $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', __('PayPal Commerce - Built by Angelleye', 'paypal-for-woocommerce'));
+        $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', sprintf('%s - Built by Angelleye', AE_PPCP_NAME));
         $this->method_description = __('The easiest one-stop solution for accepting PayPal, Venmo, Debit/Credit Cards with cheaper fees than other processors!', 'paypal-for-woocommerce');
     }
 
     public function angelleye_get_settings() {
         $this->title = $this->get_option('title', 'PayPal');
         if (isset($_GET['page']) && 'wc-settings' === $_GET['page'] && isset($_GET['tab']) && 'checkout' === $_GET['tab']) {
-            $this->title = __('PayPal Commerce - Built by Angelleye', 'paypal-for-woocommerce');
+            $this->title = sprintf('%s - Built by Angelleye', AE_PPCP_NAME);
         }
         $this->description = $this->get_option('description', '');
         $this->enabled = $this->get_option('enabled', 'no');
@@ -262,7 +262,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function enqueue_scripts() {
         if (isset($_GET['section']) && 'angelleye_ppcp' === $_GET['section']) {
             wp_enqueue_style('wc-gateway-ppcp-angelleye-settings-css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-gateway-admin' . $this->minified_version . '.css', array(), VERSION_PFW, 'all');
-            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings' . $this->minified_version . '.js', array('jquery'), ($this->minified_version ? VERSION_PFW : time()), true);
+            wp_enqueue_script('wc-gateway-ppcp-angelleye-settings', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-settings' . $this->minified_version . '.js', array('jquery', 'wp-color-picker'), ($this->minified_version ? VERSION_PFW : time()), true);
             wp_localize_script('wc-gateway-ppcp-angelleye-settings', 'ppcp_angelleye_param', array(
                 'angelleye_ppcp_is_local_server' => ( angelleye_ppcp_is_local_server() == true) ? 'yes' : 'no',
                 'angelleye_ppcp_onboarding_endpoint' => WC_AJAX::get_endpoint('ppcp_login_seller'),
@@ -299,7 +299,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     </div>
                     <div class="ppcp_paypal_connection">
                         <div class="ppcp_paypal_connection_status">
-                            <h3><?php echo __('Congratulations, PayPal Commerce is Connected!', 'paypal-for-woocommerce'); ?></h3>
+                            <h3><?php echo sprintf(__('Congratulations, %s is Connected!', 'paypal-for-woocommerce'), AE_PPCP_NAME); ?></h3>
                         </div>
                     </div>
                     <button type="button" class="button angelleye-ppcp-disconnect"><?php echo __('Disconnect', 'paypal-for-woocommerce'); ?></button>
@@ -593,12 +593,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if (($this->is_live_first_party_used === 'yes' || $this->is_live_third_party_used === 'yes') || ($this->is_sandbox_first_party_used === 'yes' || $this->is_sandbox_third_party_used === 'yes')) {
             return false;
         }
-
-        $message = sprintf(
-                __(
-                        'PayPal Commerce - Built by Angelleye is almost ready. To get started, <a href="%1$s">connect your account</a>.', 'paypal-for-woocommerce'
-                ), admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products')
-        );
+        $message = sprintf(__('%s is almost ready. To get started, <a href="%1$s">connect your account</a>.','paypal-for-woocommerce'),AE_PPCP_NAME,admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products'));
         ?>
         <div class="notice notice-warning is-dismissible">
             <p><?php echo $message; ?></p>
@@ -1077,6 +1072,28 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             <?php
             return ob_get_clean();
         }
+    }
+
+    public function generate_color_picker_html($key, $data) {
+        wp_enqueue_style( 'wp-color-picker' );
+        $field_key = $this->get_field_key($key);
+        $field_value = $this->get_option($key);
+        ob_start();
+        ?>
+        <tr valign="top">
+            <th scope="row" class="titledesc">
+                <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
+            </th>
+            <td class="forminp">
+                <input name="<?php echo $key ?>" type="text" value="<?php echo $field_value; ?>" class="angelleye_color_picker <?php echo $data['class'] ?? '' ?>" data-default-color="<?php echo $data['default'] ?>" />
+            </td>
+        </tr>
+        <?php
+        return ob_get_clean();
+    }
+
+    public function validate_color_picker_field($key, $value) {
+        return $_POST[$key] ?? $value;
     }
 
     public function validate_checkbox_enable_paypal_google_pay_field($key, $value) {

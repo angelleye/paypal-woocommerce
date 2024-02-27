@@ -36,7 +36,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
         $this->angelleye_ppcp_load_class();
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
-        $this->title = $this->setting_obj->get('title', 'PayPal Commerce - Built by Angelleye');
+        $this->title = $this->setting_obj->get('title', AE_PPCP_NAME . ' - Built by Angelleye');
         $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         if ($this->dcc_applies->for_country_currency() === false) {
@@ -145,6 +145,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     }
 
                     $request_from_page = $_GET['from'] ?? '';
+
+                    AngellEye_Session_Manager::set('from', $request_from_page);
+
                     self::$checkout_started_from = $request_from_page;
 
                     if ('pay_page' === $request_from_page) {
@@ -186,7 +189,8 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 wp_send_json_error(array('messages' => $error_messages));
                             }
                         } else {
-                            $_GET['from'] = 'cart';
+                            $_GET['from'] = 'checkout_top';
+                            AngellEye_Session_Manager::set('from', 'checkout_top');
                             $this->payment_request->angelleye_ppcp_create_order_request();
                         }
                         exit();
@@ -203,6 +207,14 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             }
                             if (angelleye_ppcp_get_order_total() === 0) {
                                 $wc_notice = __('Sorry, your session has expired.', 'paypal-for-woocommerce');
+                                $all_notices = WC()->session->get( 'wc_notices', []);
+                                if (wc_notice_count('error') ) {
+                                    wc_clear_notices();
+                                    foreach ($all_notices['error'] as $notice) {
+                                        $wc_notice = $notice['notice'] ?? $notice;
+                                        break;
+                                    }
+                                }
                                 wc_add_notice($wc_notice);
                                 wp_send_json_error($wc_notice);
                             } else {
@@ -300,13 +312,32 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 case "display_order_page":
                     $this->angelleye_ppcp_display_order_page();
                     break;
+                case "handle_js_errors":
+                    $_POST = json_decode(file_get_contents('php://input'), true);
+                    if (isset($_POST['error']['msg']) && isset($_POST['error']['source']) && isset($_POST['error']['line'])) {
+                        $errorLine = html_entity_decode($_POST['error']['msg'], ENT_QUOTES) . ', file: ' . $_POST['error']['source'] . ', line:' . $_POST['error']['line'];
+                    } else {
+                        $errorLine = print_r($_POST['error'], true);
+                    }
+                    if (isset($_POST['logTrace'])) {
+                        $errorLine .= "\nLog Trace: " . print_r($_POST['logTrace'], true);
+                    }
+                    wc_get_logger()->error($errorLine, array('source' => 'angelleye_ppcp_js_errors'));
+                    break;
                 case "cc_capture":
                     wc_clear_notices();
                     // Required for order pay form, as there will be no data in session
                     AngellEye_Session_Manager::set('paypal_order_id', wc_clean($_GET['paypal_order_id']));
 
                     $from = AngellEye_Session_Manager::get('from', '');
-                    if ('checkout_top' === $from) {
+
+                    if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
+                        include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
+                    }
+                    $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+                    $this->skip_final_review = 'yes' === $this->setting_obj->get('skip_final_review', 'no');
+
+                    if ('checkout_top' === $from && ! $this->skip_final_review) {
                         if (ob_get_length()) {
                             ob_end_clean();
                         }

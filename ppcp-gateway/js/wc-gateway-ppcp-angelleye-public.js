@@ -6,14 +6,12 @@ function initSmartButtons() {
     }
     
     let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
-
     if ($('.variations_form').length) {
-        $('.variations_form')
-            .on('show_variation', function () {
-                $('#angelleye_ppcp_product').show();
-            })
-            .on('hide_variation', function () {
-                $('#angelleye_ppcp_product').hide();
+            let div_to_hide_show = '#angelleye_ppcp_product, #angelleye_ppcp_product_google_pay, #angelleye_ppcp_product_apple_pay'
+            $('.variations_form').on('show_variation', function () {
+                    $(div_to_hide_show).show();
+            }).on('hide_variation', function () {
+                    $(div_to_hide_show).hide();
             });
     }
 
@@ -147,3 +145,11 @@ function initSmartButtons() {
 
     
 })(jQuery);
+
+window.onerror = function (msg, source, lineNo) {
+	angelleyeJsErrorLogger.logJsError({
+		'msg': msg,
+		'source': source,
+		'line': lineNo,
+	});
+}
