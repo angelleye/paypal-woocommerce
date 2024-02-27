@@ -548,7 +548,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                 'type' => 'checkbox',
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
-                'description' => sprintf( __( 'Log PayPal events, inside <code>%s</code>', 'paypal-for-woocommerce' ), wc_get_log_file_path( 'paypal-pro' ) )
+                'description' => sprintf( __( 'Log PayPal events, inside <code>%s</code>', 'paypal-for-woocommerce' ), angelleye_get_log_path( 'paypal-pro' ) )
             ),
             'is_encrypt' => array(
                 'title' => __('', 'paypal-for-woocommerce'),
@@ -749,7 +749,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
 
         // Format values
         $card_number = str_replace(array(' ', '-'), '', $card_number);
-        
+
         $firstname = isset($_POST['paypal_pro-card-cardholder-first']) ? wc_clean($_POST['paypal_pro-card-cardholder-first']) : '';
         $lastname = isset($_POST['paypal_pro-card-cardholder-last']) ? wc_clean($_POST['paypal_pro-card-cardholder-last']) : '';
 
@@ -775,9 +775,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if (strlen($card_start_year) == 2) {
             $card_start_year += 2000;
         }
-        
+
         $card_type = AngellEYE_Utility::card_type_from_account_number($card_number);
-        
+
         return (object) array(
                     'number' => $card_number,
                     'type' => $card_type,
@@ -806,7 +806,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $card = $this->get_posted_card();
             do_action('before_angelleye_pro_checkout_validate_fields', $card->type, $card->number, $card->cvc, $card->exp_month, $card->exp_year);
-            
+
             if (empty($card->number) || !ctype_digit((string) $card->number)) {
                 throw new Exception(__('Card number is invalid', 'paypal-for-woocommerce'));
             }
@@ -1224,8 +1224,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 $PaymentDetails['shippingamt'] = 0.00;
             }
-        } 
-        
+        }
+
         /**
          * 3D Secure Params
          */
@@ -1844,7 +1844,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             'returnfmfdetails' => '1',                   // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
             'softdescriptor' => $this->softdescriptor
         );
-        
+
         $PayerInfo = array(
             'email' => $order->get_billing_email(), // Email address of payer.
             'firstname' => $order->get_billing_first_name(), // Required.  Payer's first name.
@@ -1915,8 +1915,8 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             } else {
                 $PaymentDetails['shippingamt'] = 0.00;
             }
-        } 
-        
+        }
+
         $PayPalRequestData = array(
             'DPFields' => $DPFields,
             'PayerInfo' => $PayerInfo,
@@ -2212,14 +2212,14 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         );
         $this->PayPal = new Angelleye_PayPal_WC($PayPalConfig);
     }
-    
+
     public function init_settings() {
         parent::init_settings();
         $this->enabled  = ! empty( $this->settings['enabled'] ) && 'yes' === $this->settings['enabled'] ? 'yes' : 'no';
         $this->send_items_value = ! empty( $this->settings['send_items'] ) && 'yes' === $this->settings['send_items'] ? 'yes' : 'no';
         $this->send_items = 'yes' === $this->send_items_value;
     }
-    
+
     public function subscription_change_payment($order_id) {
         $order = wc_get_order($order_id);
         if ( (!empty($_POST['wc-paypal_pro-payment-token']) && $_POST['wc-paypal_pro-payment-token'] != 'new')) {
@@ -2293,7 +2293,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
         }
     }
-    
+
     public function angelleye_successwithwarning_payment_response_handler($order, $PayPalResult) {
         if($this->successwithwarning_payment_response == 'ignore_warnings_and_proceed_as_usual') {
             $this->angelleye_update_status($order, $PayPalResult['TRANSACTIONID']);
@@ -2304,7 +2304,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             wc_maybe_reduce_stock_levels( $order->get_id() );
         }
     }
-    
+
     public function own_angelleye_pfw_add_google_recaptcha() {
         if( $this->enable_google_recaptcha ) {
             wp_enqueue_script('pfw_recaptcha', 'https://www.google.com/recaptcha/api.js?render='.$this->recaptcha_site_key, array(), '', true);
@@ -2322,7 +2322,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                     jQuery(document.body).on('updated_checkout checkout_error init_add_payment_method', function () {
                         pfw_grecaptcha();
                     });
-                    setInterval(function(){ 
+                    setInterval(function(){
                         pfw_grecaptcha();
                     }, 110000);
                 });
@@ -2330,7 +2330,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             <?php
         }
     }
-    
+
     public function angelleye_pfw_validate_google_recaptcha() {
         try {
             if( $this->enable_google_recaptcha ) {
@@ -2350,7 +2350,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
                         if($response->score < 0.2) {
                             throw new Exception(__('Very likely a bot', 'paypal-for-woocommerce'));
                         }
-                    } 
+                    }
                 } else {
                     throw new Exception(__('Google recaptcha verification Failed', 'paypal-for-woocommerce'));
                 }
@@ -2361,6 +2361,6 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
             }
             return false;
         }
-        
+
     }
 }

@@ -587,7 +587,7 @@ of the user authorized to process transactions. Otherwise, leave this field blan
                 'type' => 'checkbox',
                 'label' => __('Enable logging', 'paypal-for-woocommerce'),
                 'default' => 'no',
-                'description' => sprintf(__('Log PayPal events inside <code>%s</code>', 'paypal-for-woocommerce'), wc_get_log_file_path('paypal_pro_payflow')),
+                'description' => sprintf(__('Log PayPal events inside <code>%s</code>', 'paypal-for-woocommerce'), angelleye_get_log_path('paypal_pro_payflow')),
             ),
             'is_encrypt' => array(
                 'title' => __('', 'paypal-for-woocommerce'),
