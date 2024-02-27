@@ -145,7 +145,7 @@ const { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegis
                 );
             };
             registerPlugin('wc-ppcp', { render, scope: 'woocommerce-checkout' });
-        } else if (page === 'cart') {
+        } else if (page === 'cart' && ppcp_settings && ppcp_settings.enable_cart_button === 'yes') {
             registerExpressPaymentMethod(commonExpressPaymentMethodConfig);
             const render = () => {
                 const shouldShowDiv = is_paylater_enable_incart_page === 'yes';
