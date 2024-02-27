@@ -80,7 +80,12 @@
                             <P>We noticed that you are running PayPal PayFlow Pro.  Please make sure that the PayPal account you are connecting during the upgrade is the same as the PayPal account that you have been using with PayFlow Pro.</P><br><br>
                         <?php } else { ?>
                             <br>
-                            <p>By connecting PayPal Complete Payments you will be moving away from PayFlow entirely, and you will be using PayPal to process all of your credit card payments as well as PayPal, Pay Later, Venmo, Apple Pay, etc.  If this is not what you are intending, please submit a ticket so we can help you through this process more directly.</p><br><br>
+                            <p>
+                                <?php echo sprintf(
+                                    __('By connecting %s you will be moving away from PayFlow entirely, and you will be using PayPal to process all of your credit card payments as well as PayPal, Pay Later, Venmo, Apple Pay, etc. If this is not what you are intending, please submit a ticket so we can help you through this process more directly.', 'paypal-for-woocommerce'),
+                                    AE_PPCP_NAME
+                                ); ?>
+                            </p><br><br>
                             <?php
                         }
                     }
