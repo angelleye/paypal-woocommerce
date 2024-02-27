@@ -47,9 +47,16 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
                 }
                 $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
+                //add_filter('wcml_gateway_text_keys_to_translate', [$this, 'wpml_add_translatable_setting_fields']);
             } catch (Exception $ex) {
 
             }
+        }
+
+        public function wpml_add_translatable_setting_fields($text_keys)
+        {
+            $text_keys = array_merge($text_keys, ['advanced_card_payments_title']);
+            return $text_keys;
         }
 
         public function get($id, $default = false) {
@@ -409,7 +416,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'enabled' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'label' => __('PayPal Commerce', 'paypal-for-woocommerce'),
+                    'label' => __(sprintf('%s', AE_PPCP_NAME), 'paypal-for-woocommerce'),
                     'default' => 'no',
                 ),
                 'title' => array(

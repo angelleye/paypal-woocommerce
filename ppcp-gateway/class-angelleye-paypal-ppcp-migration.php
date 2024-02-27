@@ -18,8 +18,6 @@ class AngellEYE_PayPal_PPCP_Migration {
     // Define class constants for better readability
     const SUBSCRIPTION_BATCH_LIMIT = 100;
 
-    public static $total_payment_method = 1;
-
     public static function instance() {
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
@@ -289,11 +287,11 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_get_subscription_order_list($payment_method_id) {
         try {
-            wp_reset_query();
             $args = array(
                 'type' => 'shop_subscription',
                 'limit' => self::SUBSCRIPTION_BATCH_LIMIT,
                 'return' => 'ids',
+                'fields' => 'ids',
                 'orderby' => 'date',
                 'order' => 'DESC',
                 'status' => array('wc-active', 'wc-on-hold'),
@@ -308,11 +306,11 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_get_classic_subscription_order_list() {
         try {
-            wp_reset_query();
             $args = array(
                 'type' => 'shop_subscription',
                 'limit' => -1,
                 'return' => 'ids',
+                'fields' => 'ids',
                 'orderby' => 'date',
                 'order' => 'DESC',
                 'status' => array('wc-active', 'wc-on-hold'),
@@ -337,34 +335,27 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_ppcp_total_migrated_profile() {
         try {
-            wp_reset_query();
-
-            $custom_field_key = '_angelleye_ppcp_old_payment_method'; // Replace this with your actual custom field key
-// Set up arguments for wcs_get_subscriptions
-            $args = array(
-                'limit' => -1,
-                'return' => 'ids',
-                'meta_query' => array(
-                    array(
-                        'key' => $custom_field_key,
-                        'compare' => 'EXISTS', // Check if the custom field exists
-                    ),
-                ),
-            );
-
-            $orders = wcs_get_subscriptions($args);
-
-            $order_count = 0;
-            // Check if $orders is empty
-            if (empty($orders)) {
-                // Handle the case where no orders match the criteria
-                $order_count = 0;
+            global $wpdb;
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                $payment_methods = $wpdb->get_results("SELECT COUNT(DISTINCT p.id) AS 'count'
+                FROM {$wpdb->prefix}wc_orders p
+                JOIN {$wpdb->prefix}wc_orders_meta pm2 ON p.id = pm2.order_id AND pm2.meta_key = '_old_payment_method'
+                JOIN {$wpdb->prefix}wc_orders_meta pm3 ON p.id = pm3.order_id AND pm3.meta_key = '_angelleye_ppcp_old_payment_method'
+                WHERE p.status IN ('wc-active', 'wc-on-hold')
+                AND p.payment_method != pm2.meta_value;", ARRAY_A);
+                $total_count = isset($payment_methods[0]['count']) ? $payment_methods[0]['count'] : 0;
+                return $total_count;
             } else {
-                // Get the count of order IDs
-                $order_count = count($orders);
+                $payment_methods = $wpdb->get_results("SELECT COUNT(DISTINCT p.ID) AS 'count'
+                FROM {$wpdb->posts} p
+                JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_payment_method'
+                JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_old_payment_method'
+                JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = '_angelleye_ppcp_old_payment_method'
+                WHERE p.post_type = 'shop_subscription'
+                AND pm.meta_value != pm2.meta_value;", ARRAY_A);
+                $total_count = isset($payment_methods[0]['count']) ? $payment_methods[0]['count'] : 0;
+                return $total_count;
             }
-            return $order_count;
-            // Now $order_count contains the count of order IDs with the specified custom field
         } catch (Exception $ex) {
             
         }
@@ -377,14 +368,24 @@ class AngellEYE_PayPal_PPCP_Migration {
             $total_classic_order = $total_migrated_orders + $pending_migrated_orders;
             if ($total_classic_order > 0) {
                 $total_migrated_percentage = ($total_migrated_orders / $total_classic_order) * 100;
+                $response['total'] = $total_classic_order;
+                $response['pending'] = $pending_migrated_orders;
+                $response['done'] = $total_migrated_orders;
             } else {
                 $total_migrated_percentage = 1;
+                $response['total'] = $total_classic_order;
+                $response['pending'] = $pending_migrated_orders;
+                $response['done'] = $total_migrated_orders;
             }
+            $total_migrated_orders = number_format($total_migrated_orders);
+            $total_classic_order = number_format($total_classic_order);
+            $label = "Migration Progress: $total_migrated_orders of $total_classic_order Completed.";
+            $response['label'] = $label;
             $response['percentage'] = $total_migrated_percentage;
-            if ($total_migrated_percentage >= 100) {
-                $response['status'] = 'complete';
-            } else {
+            if ($pending_migrated_orders != 0) {
                 $response['status'] = 'in_progress';
+            } else {
+                $response['status'] = 'complete';
             }
             wp_send_json($response);
         } catch (Exception $ex) {
@@ -462,14 +463,13 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function schedule_next_batch($from_payment_method, $to_payment_method) {
         try {
             $action_hook = 'angelleye_ppcp_migration_schedule';
-            $scheduled_time = time() + (self::$total_payment_method * 20);
+            $scheduled_time = time();
             $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
             if (empty($subscription_ids)) {
                 as_unschedule_action($action_hook, array($from_payment_method, $to_payment_method));
                 return;
             }
             as_schedule_single_action($scheduled_time, $action_hook, array($from_payment_method, $to_payment_method));
-            self::$total_payment_method = self::$total_payment_method + 2;
         } catch (Exception $ex) {
             // Handle exceptions if needed
         }
@@ -498,53 +498,122 @@ class AngellEYE_PayPal_PPCP_Migration {
         wp_localize_script('wc-angelleye-ppcp-migration-status', 'ppcp_migration_progress', array('ajax_url' => admin_url('admin-ajax.php')));
         ?>
         <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard ppcp_migration_report_parent" style="margin-top:30px;">
-            <div>
-                <h3 style="text-align: center;">Migration Progress Status</h3>
-
+            <div class="ce_ixelgen_progress_bar block">
+                <div class="progress_bar" style="margin: 30px;">
+                    <div class="progress_bar_item grid-x">
+                        <div class="item_label cell auto">Migration Progress Status</div>
+                        <div class="item_value cell shrink" id="progress_bar_percentage"></div>
+                        <div class="item_bar cell">
+                            <div class="progress" id="percentage_display_bar"></div>
+                        </div>
+                        <div class="item_value cell shrink" id="progress_label" style="font-size: 13px;margin-top: 11px;"></div>
+                    </div>
+                </div>
             </div>
-            <ul id="skill">
-                <li>
-                    <span class="percentage_display_bar bar"></span>
-                </li>
-            </ul>
         </div>
         <style type="text/css">
-            #skill {
-                list-style: none;
-                font: 12px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
-                width: 90%;
-                margin: 0px auto 0;
+            .ce_ixelgen_progress_bar .progress_bar_item {
+                margin-bottom: 2rem;
+            }
+            .grid-x {
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-orient: horizontal;
+                -webkit-box-direction: normal;
+                -webkit-flex-flow: row wrap;
+                -ms-flex-flow: row wrap;
+                flex-flow: row wrap;
+            }
+            .ce_ixelgen_progress_bar .item_label, .ce_ixelgen_progress_bar .item_value {
+                font-size: 16px;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 15px;
+            }
+            .grid-x > .auto {
+                width: auto;
+            }
+            .cell.auto {
+                -webkit-box-flex: 1;
+                -webkit-flex: 1 1 0px;
+                -ms-flex: 1 1 0px;
+                flex: 1 1 0px;
+            }
+            .ce_ixelgen_progress_bar .item_value {
+                font-weight: 400;
+            }
+            .grid-x > .shrink {
+                width: auto;
+            }
+
+            .cell.shrink {
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                -ms-flex: 0 0 auto;
+                flex: 0 0 auto;
+            }
+            .cell {
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                -ms-flex: 0 0 auto;
+                flex: 0 0 auto;
+                min-height: 0;
+                min-width: 0;
+                width: 100%;
+            }
+            .ce_ixelgen_progress_bar .item_bar {
                 position: relative;
-                line-height: 2em;
+                height: 1.5rem;
+                width: 100%;
+                background-color: #000;
+                border-radius: 4px;
             }
-
-            #skill li {
-                background: #e9e5e2;
-                background-image: linear-gradient(top, #e1ddd9, #e9e5e2);
-                height: 20px;
-                border-radius: 10px;
-                box-shadow: 0 1px 0px #bebbb9 inset, 0 1px 0 #fcfcfc;
-                padding: 0px;
-                display: block;
+            .cell {
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                -ms-flex: 0 0 auto;
+                flex: 0 0 auto;
+                min-height: 0;
+                min-width: 0;
+                width: 100%;
             }
-
-            #skill li h3 {
-                position: relative;
-                top: -25px;
-            }
-
-            .bar {
-                height: 18px;
+            .ce_ixelgen_progress_bar .item_bar .progress {
                 position: absolute;
-                border-radius: 10px;
-                box-shadow: 0 1px 0px #fcfcfc inset, 0 1px 0 #bebbb9;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 0;
+                height: 1.5rem;
+                margin: 0;
+                background-color: #6D9A27;
+                border-radius: 4px;
+                transition: width 100ms ease;
+            }
+            .progress {
+                height: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 0;
+                background-color: #cacaca;
+            }
+            .ce_ixelgen_progress_bar .item_bar {
+                position: relative;
+                height: 1.5rem;
+                width: 100%;
+                background-color: #e9e5e2;
+                border-radius: 4px;
+            }
+            .cell {
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                -ms-flex: 0 0 auto;
+                flex: 0 0 auto;
+                min-height: 0;
+                min-width: 0;
+                width: 100%;
             }
 
-            .percentage_display_bar {
-                /* Remove initial width here */
-                background-color: #78A532; /* Progress bar color */
-                background-image: linear-gradient(top, #a1ce5b, #91ba52);
-            }
 
         </style>
         <?php

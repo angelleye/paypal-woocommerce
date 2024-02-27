@@ -3,7 +3,7 @@
  * @wordpress-plugin
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
- * Description:       Easily add the PayPal Commerce Platform including PayPal Checkout, Pay Later, Venmo, Direct Credit Processing, and alternative payment methods like Apple Pay, Google Pay, and more! Also fully supports Braintree Payments.
+ * Description:       Easily add the PayPal Complete Payments Platform including PayPal Checkout, Pay Later, Venmo, Direct Credit Processing, and alternative payment methods like Apple Pay, Google Pay, and more! Also fully supports Braintree Payments.
  * Version:           4.4.19
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
@@ -78,6 +78,9 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE')) {
 }
 if (!defined('AE_FEE')) {
     define('AE_FEE', 'ae_p_f');
+}
+if (!defined('AE_PPCP_NAME')) {
+    define('AE_PPCP_NAME', 'PayPal Complete Payments');
 }
 
 
@@ -428,7 +431,9 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             AngellEYE_PayPal_PPCP_Front_Action::instance();
             AngellEye_PayPal_PPCP_Apple_Domain_Validation::instance();
             AngellEye_Session_Manager::instance();
-            add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
+            // Set to low priority so that gateways are added before WPML plugin runs the task to add the translations
+            // in the DB, WPML default priority is set to 10
+            add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'), 3 );
         }
 
 
@@ -660,7 +665,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
         	$this->plugin_screen_hook_suffix = add_submenu_page(
 			'options-general.php',
 			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),
-			__( 'PayPal Commerce', 'paypal-for-woocommerce' ),
+			AE_PPCP_NAME,
 			'manage_options',
 			'paypal-for-woocommerce',
 			array( $this, 'display_plugin_admin_page'));
