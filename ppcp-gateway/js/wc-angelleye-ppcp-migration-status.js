@@ -1,6 +1,6 @@
 jQuery(document).ready(function ($) {
     function updateProgressBar() {
-        var progressBar = $('.percentage_display_bar');
+        var progressBar = $('#percentage_display_bar');
         $.ajax({
             url: ppcp_migration_progress.ajax_url,
             type: 'POST',
@@ -9,11 +9,18 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
                 progressBar.css('width', response.percentage + '%');
+                $('#progress_bar_percentage').text(parseInt(response.percentage) + '%');$
+                $('#progress_label').text(response.label);
+                console.log(response);
                 if (response.status === 'complete') {
-                    window.location.reload();
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1000);
+
                 }
             }
         });
     }
-    setInterval(updateProgressBar, 30000);
+    updateProgressBar();
+    setInterval(updateProgressBar, 12000);
 });
