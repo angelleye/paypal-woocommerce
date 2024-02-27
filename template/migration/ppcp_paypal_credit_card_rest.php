@@ -43,7 +43,7 @@
                 <div class="ml-auto">
                     <h3 class="pb-20"><?php echo __('Updated PayPal Integration', 'paypal-for-woocommerce'); ?></h3>
                     <ul>
-                        <li><?php echo __('PayPal Complete Payments Platform', 'paypal-for-woocommerce'); ?></li>
+                        <li><?php echo sprintf(__('%s Platform', 'paypal-for-woocommerce'), AE_PPCP_NAME); ?></li>
                         <li><?php echo __('PayPal Checkout | Venmo | Pay Later (Optional)', 'paypal-for-woocommerce'); ?></li>
                         <li><?php echo __('Direct Credit Card Processing – No Branding', 'paypal-for-woocommerce'); ?></li>
                         <li><strong><?php echo __('Total Fee of 2.69%¹', 'paypal-for-woocommerce'); ?></strong></li>
