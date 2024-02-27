@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.4.3
-Stable tag: 4.4.19
+Stable tag: 4.4.20
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,6 +127,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 4.4.20 - 02.27.2024 =
+* Tweak - Enhanced compatibility with WPML translation for Gateway settings page. ([PFW-1667](https://github.com/angelleye/paypal-woocommerce/pull/1979))
+* Tweak - Enhancements required for Migration Wizard batches. ([PFW-1766](https://github.com/angelleye/paypal-woocommerce/pull/2011))   
+* Tweak - Rename it back to 'Complete Payments'. ([PFW-1763](https://github.com/angelleye/paypal-woocommerce/pull/2013))   
+* Tweak - Modify the logic to verify if the vault is enabled. ([PFW-1759](https://github.com/angelleye/paypal-woocommerce/pull/2014))   
+* Fix - Compatibility of the Express Checkout section with CheckoutWC. ([PFW-1755](https://github.com/angelleye/paypal-woocommerce/pull/2015))   
+ 
 = 4.4.19 - 02.23.2024 =
 * Tweak - Resolved wc_get_log_file_path() deprecation warnings. ([PFW-1767](https://github.com/angelleye/paypal-woocommerce/pull/2012))
 
