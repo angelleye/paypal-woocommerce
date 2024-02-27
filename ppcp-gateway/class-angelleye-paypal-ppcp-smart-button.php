@@ -1837,6 +1837,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     } else {
                         add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page'), 1);
                     }
+                } elseif ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+	                add_action('cfw_checkout_before_order_review_container', array($this, 'display_paypal_button_top_checkout_page'), 1);
                 } else {
                     add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page'), 1);
                 }
