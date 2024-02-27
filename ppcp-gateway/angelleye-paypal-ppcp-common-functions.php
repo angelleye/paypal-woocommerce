@@ -836,13 +836,11 @@ if (!function_exists('angelleye_is_vaulting_enable')) {
             return PPCP_VAULT_DISABLE;
         }
         if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
-            foreach ($result['products'] as $key => $product) {
-                if (isset($product['vetting_status']) && ('SUBSCRIBED' === $product['vetting_status'] || 'APPROVED' === $product['vetting_status'] ) && isset($product['capabilities']) && is_array($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
-                    foreach ($result['capabilities'] as $key => $capabilities) {
-                        if (isset($capabilities['name']) && 'PAYPAL_WALLET_VAULTING_ADVANCED' === $capabilities['name'] && 'ACTIVE' === $capabilities['status']) {
-                            return true;
-                        }
-                    }
+            foreach ($result['products'] as $product) {
+                if ($product['name'] === 'ADVANCED_VAULTING' && 
+                    isset($product['vetting_status']) && $product['vetting_status'] === 'SUBSCRIBED' &&
+                    isset($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
+                    return true;
                 }
             }
         }
