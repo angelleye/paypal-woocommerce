@@ -249,7 +249,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'id' => 'ppcp_notice_classic_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'Important PayPal Update Required',
-                'ans_message_description' => sprintf('Upgrade now to PayPal Commerce for better features, enhanced security, <b>reduced fees</b>, and future-proof integration. <a target="_blank" href="%s">Click to learn more about the upgrade process.</a> Don\'t miss out on the advantages of PayPal Commerce! <br>', 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/'),
+                'ans_message_description' => sprintf('Upgrade now to %s for better features, enhanced security, <b>reduced fees</b>, and future-proof integration. <a target="_blank" href="%s">Click to learn more about the upgrade process.</a> Don\'t miss out on the advantages of %s! <br>', AE_PPCP_NAME, 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/', AE_PPCP_NAME),
                 'ans_button_url' => admin_url('options-general.php?page=paypal-for-woocommerce'),
                 'ans_button_label' => 'Upgrade Now',
                 'is_dismiss' => false,
@@ -260,8 +260,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $notice_data['vault_upgrade'] = array(
                 'id' => 'ppcp_notice_vault_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
-                'ans_message_title' => 'PayPal Commerce Now Supports Token Payments / Subscriptions!',
-                'ans_message_description' => 'Maximize the power of PayPal Commerce in your WordPress store by enabling the Vault functionality. Unlock advanced features such as Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
+                'ans_message_title' => AE_PPCP_NAME . ' Now Supports Token Payments / Subscriptions!',
+                'ans_message_description' => 'Maximize the power of '. AE_PPCP_NAME . ' in your WordPress store by enabling the Vault functionality. Unlock advanced features such as Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by ' . AE_PPCP_NAME . '!',
                 'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
                 'ans_button_label' => 'Enable PayPal Vault',
                 'is_dismiss' => true
@@ -269,8 +269,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $notice_data['enable_apple_pay'] = array(
                 'id' => 'ppcp_notice_apple_pay',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
-                'ans_message_title' => 'PayPal Commerce Now Supports Apple Pay!',
-                'ans_message_description' => 'Unlock advanced features such as Apple Pay. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
+                'ans_message_title' => AE_PPCP_NAME . ' Now Supports Apple Pay!',
+                'ans_message_description' => 'Unlock advanced features such as Apple Pay. Upgrade your store today and take full advantage of the benefits offered by' . AE_PPCP_NAME . '!',
                 'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=additional_authorizations'),
                 'ans_button_label' => 'Enable Apple Pay',
                 'is_dismiss' => true
@@ -278,8 +278,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $notice_data['vault_upgrade_enable_apple_pay'] = array(
                 'id' => 'ppcp_notice_vault_upgrade_apple_pay',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
-                'ans_message_title' => 'PayPal Commerce Now Supports Apple Pay and Token Payments / Subscriptions!',
-                'ans_message_description' => 'Unlock advanced features such as Apple Pay, Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by PayPal Commerce!',
+                'ans_message_title' => AE_PPCP_NAME . ' Now Supports Apple Pay and Token Payments / Subscriptions!',
+                'ans_message_description' => 'Unlock advanced features such as Apple Pay, Subscriptions, One-Click Upsells, and more, for a seamless and streamlined payment experience. Upgrade your store today and take full advantage of the benefits offered by ' . AE_PPCP_NAME . '!',
                 'ans_button_url' => admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&move=tokenization_subscriptions'),
                 'ans_button_label' => 'Activate These Features',
                 'is_dismiss' => true
@@ -289,7 +289,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => '',
                 'ans_message_description' => 'We notice that are running WooCommerce Subscriptions and your store country is outside the United States.<br>
-                    Unfortunately, the PayPal Commerce Platform Vault functionality, which is required for Subscriptions, is only available for United States PayPal accounts.<br>
+                    Unfortunately, the '. AE_PPCP_NAME . ' Platform Vault functionality, which is required for Subscriptions, is only available for United States PayPal accounts.<br>
                     If your PayPal account is in fact based in the United States, you can continue with this update.<br>
                     However, if your PayPal account is not based in the U.S. you will need to wait until this feature is available in your country.<br>
                     Please submit a <a href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">help desk</a> ticket with any questions or concerns about this.',

@@ -92,7 +92,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_get_properties() {
-        $this->title = $this->setting_obj->get('title', 'PayPal Commerce - Built by Angelleye');
+        $this->title = $this->setting_obj->get('title', sprintf('%s - Built by Angelleye', AE_PPCP_NAME));
         $this->enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
         $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
         $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');

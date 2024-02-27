@@ -60,7 +60,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_get_properties() {
-        $this->title = $this->setting_obj->get('title', 'PayPal Commerce - Built by Angelleye');
+        $this->title = $this->setting_obj->get('title', AE_PPCP_NAME . ' - Built by Angelleye');
         $this->enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         $this->sandbox_client_id = $this->setting_obj->get('sandbox_client_id', '');
