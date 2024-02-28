@@ -692,7 +692,29 @@ if (!function_exists('angelleye_ppcp_get_order_total')) {
                 $order_id = absint(get_query_var('order-pay'));
             }
             if (is_product()) {
-                $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 1;
+	            
+	            if ( $product->is_type('variable') ) {
+		            $variation_id = $product->get_id();
+		            $variations = $product->get_available_variations();
+		            $default_attributes = $product->get_default_attributes();
+		            $variation_data = null;
+		            if( !empty( $default_attributes ) && is_array( $default_attributes ) ) {
+			            
+			            foreach ( $default_attributes as $key => $attribute ) {
+				            $variation_data = array_values( array_filter( $variations, function ( $variation ) use($key, $attribute) {
+					            $attribute_value = !empty( $variation['attributes']['attribute_'.$key] ) ? $variation['attributes']['attribute_'.$key] : '';
+					            return ( $attribute_value == $attribute );
+				            }));
+			            }
+			            
+			            $variation_id = !empty( $variation_data[0]['variation_id'] ) ? $variation_data[0]['variation_id'] :'';
+		            }
+		            
+		            $variable_product = wc_get_product( $variation_id );
+		            $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($variable_product ) : 1;
+	            } else{
+		            $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 1;
+                }
             } elseif (0 < $order_id) {
                 $order = wc_get_order($order_id);
                 if ($order === false) {
