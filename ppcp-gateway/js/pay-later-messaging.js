@@ -112,7 +112,7 @@ const payLaterMessaging = {
                 jQuery('form.variations_form select').on('change', function() {
                     const myTimeout = setTimeout( function (){
                         let variationPrice = variationsForm.find( '.single_variation_wrap .woocommerce-variation-price' ).text();
-                        variationPrice = (variationPrice) ? variationPrice.replace("$", ""): 0;
+                        variationPrice = (variationPrice) ? variationPrice.replace( angelleye_pay_later_messaging.currencySymbol, "" ): 0;
                         angelleye_pay_later_messaging.amount = variationPrice;
                         payLaterMessaging.init();
                         clearTimeout(myTimeout);
