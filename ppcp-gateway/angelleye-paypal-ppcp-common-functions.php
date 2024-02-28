@@ -695,19 +695,36 @@ if (!function_exists('angelleye_ppcp_get_order_total')) {
 	            
 	            if ( $product->is_type('variable') ) {
 		            $variation_id = $product->get_id();
-		            $variations = $product->get_available_variations();
-		            $default_attributes = $product->get_default_attributes();
-		            $variation_data = null;
-		            if( !empty( $default_attributes ) && is_array( $default_attributes ) ) {
+		            $is_default_variation = false;
+		            
+		            $available_variations = $product->get_available_variations();
+		            
+		            if( !empty( $available_variations ) && is_array( $available_variations ) ) {
 			            
-			            foreach ( $default_attributes as $key => $attribute ) {
-				            $variation_data = array_values( array_filter( $variations, function ( $variation ) use($key, $attribute) {
-					            $attribute_value = !empty( $variation['attributes']['attribute_'.$key] ) ? $variation['attributes']['attribute_'.$key] : '';
-					            return ( $attribute_value == $attribute );
-				            }));
+			            foreach( $available_variations as $variation_values ){
+				            
+				            $attributes = !empty( $variation_values['attributes'] ) ? $variation_values['attributes'] :  '';
+				            
+				            if( !empty( $attributes ) && is_array( $attributes ) ) {
+					            
+					            foreach( $attributes as $key => $attribute_value ) {
+						            
+						            $attribute_name = str_replace( 'attribute_', '', $key );
+						            $default_value = $product->get_variation_default_attribute($attribute_name );
+						            if( $default_value == $attribute_value ){
+							            $is_default_variation = true;
+						            } else {
+							            $is_default_variation = false;
+							            break;
+						            }
+					            }
+				            }
+				            
+				            if( $is_default_variation ) {
+					            $variation_id = !empty( $variation_values['variation_id'] ) ? $variation_values['variation_id'] : 0;
+					            break;
+				            }
 			            }
-			            
-			            $variation_id = !empty( $variation_data[0]['variation_id'] ) ? $variation_data[0]['variation_id'] :'';
 		            }
 		            
 		            $variable_product = wc_get_product( $variation_id );
