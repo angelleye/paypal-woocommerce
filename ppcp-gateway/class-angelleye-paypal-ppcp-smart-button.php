@@ -219,7 +219,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 'height' => $this->setting_obj->get('cart_apple_button_height', ''),
             ];
             $this->common_button_props['width'] = $this->setting_obj->get('cart_button_width', '');
-        } elseif (is_checkout() || is_checkout_pay_page()) {
+        } elseif (is_checkout() || is_checkout_pay_page() || is_account_page()) {
             $this->disable_funding = $this->setting_obj->get('checkout_disallowed_funding_methods', array());
             $this->style_layout = $this->setting_obj->get('checkout_button_layout', 'vertical');
             $this->style_color = $this->setting_obj->get('checkout_style_color', 'gold');
