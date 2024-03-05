@@ -1984,7 +1984,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'checkbox',
                     'label' => __('Enable advanced credit and debit card payments.', 'paypal-for-woocommerce'),
                     'default' => 'no',
-                    'description' => 'PayPal currently supports direct credit card processing for US, AU, UK, FR, IT, CA, DE and ES. <br> <br>' . '<b>' . $advanced_cc_text . '</b>',
+                    'description' => 'PayPal currently supports direct credit card processing for AU, AT, BE, BG, CA, CY, CZ, DK, EE, FI, FR, DE, GR, HU, IE, IT, JP, LV, LI, LT, LU, MT, MX, NL, PL, PT, RO, SK, SI, ES, SE, GB, US and NO. <br> <br>' . '<b>' . $advanced_cc_text . '</b>',
                     'custom_attributes' => $advanced_cc_custom_attributes
                 ),
                 '3d_secure_contingency' => array(

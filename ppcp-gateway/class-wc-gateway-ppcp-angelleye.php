@@ -838,7 +838,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                                 <b><?php echo __(($is_domain_added ? 'Apple Pay is connected!' : 'Register your domain to activate Apple Pay.'), 'paypal-for-woocommerce'); ?></b>
                             <?php } else if ($is_ppcp_connected && !$is_apple_pay_approved && !$need_to_display_apple_pay_button) {
                                 ?>
-                                <br><br><b style="color:red"><?php echo __('Apple Pay is only currently available in the United States. PayPal is working to expand this to other countries as quickly as possible.', 'paypal-for-woocommerce'); ?></b>
+                                <br><br><b style="color:red"><?php echo __('Apple Pay is currently available in the following countries: AU, AT, BE, BG, CA, CY, CZ, DK, EE, FI, FR, DE, GR, HU, IE, IT, LV, LI, LT, LU, MT, NL, NO, PL, PT, RO, SK, SI, ES, SE, US, GB. PayPal is working to expand this availability to additional countries as quickly as possible.', 'paypal-for-woocommerce'); ?></b>
                                 <?php
                             }?>
                         </label>
@@ -932,7 +932,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                                 <b><?php echo __('Google Pay is connected!', 'paypal-for-woocommerce'); ?></b>
                             <?php } else if ($is_ppcp_connected && !$is_google_pay_approved && !$need_to_display_google_pay_button) {
                                 ?>
-                                <br><br><b style="color:red"><?php echo __('Google Pay is currently available in the United States only. PayPal is working to expand this to other countries as quickly as possible.', 'paypal-for-woocommerce'); ?></b>
+                                <br><br><b style="color:red"><?php echo __('Google Pay is currently available in the following countries: AU, AT, BE, BG, CA, CY, CZ, DK, EE, FI, FR, DE, GR, HU, IE, IT, LV, LI, LT, LU, MT, NL, NO, PL, PT, RO, SK, SI, ES, SE, US, GB. PayPal is working to expand this availability to additional countries as quickly as possible.', 'paypal-for-woocommerce'); ?></b>
                                 <?php
                             }?>
                         </label>
