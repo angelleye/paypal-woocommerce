@@ -448,6 +448,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     <?php
                 endif;
             }
+            if (as_has_scheduled_action('angelleye_ppcp_migration_schedule')) {
+                do_action('angelleye_ppcp_migration_progress_report');
+            }
         } catch (Exception $ex) {
             
         }

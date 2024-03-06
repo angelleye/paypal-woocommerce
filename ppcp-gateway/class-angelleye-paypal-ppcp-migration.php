@@ -17,7 +17,7 @@ class AngellEYE_PayPal_PPCP_Migration {
     public $api_log;
 
     // Define class constants for better readability
-    const SUBSCRIPTION_BATCH_LIMIT = 1;
+    const SUBSCRIPTION_BATCH_LIMIT = 100;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -494,9 +494,9 @@ class AngellEYE_PayPal_PPCP_Migration {
                 foreach ($subscription_ids as $subscription_id) {
                     $subscription = wcs_get_subscription($subscription_id);
                     if ($this->is_angelleye_ppcp_old_payment_token_exist($subscription)) {
-                       // $this->angelleye_ppcp_update_payment_method($subscription, $to_payment_method);
+                        $this->angelleye_ppcp_update_payment_method($subscription, $to_payment_method);
                     } else {
-                       // $this->angelleye_ppcp_skip_migation_profile($subscription);
+                        $this->angelleye_ppcp_skip_migation_profile($subscription);
                         $this->api_log->migration_log('No payment token found for subscription profile ID :' . $subscription_id);
                     }
                 }
