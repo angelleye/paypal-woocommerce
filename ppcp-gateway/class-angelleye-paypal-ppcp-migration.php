@@ -459,6 +459,12 @@ class AngellEYE_PayPal_PPCP_Migration {
                     return true;
                 }
             }
+            foreach ($meta_keys as $key) {
+                $payment_tokens_id = get_post_meta($user_subscription->get_id(), $key, true);
+                if (!empty($payment_tokens_id)) {
+                    return true;
+                }
+            }
             return false;
         } catch (Exception $ex) {
             return false;
@@ -491,7 +497,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                         $this->angelleye_ppcp_update_payment_method($subscription, $to_payment_method);
                     } else {
                         $this->angelleye_ppcp_skip_migation_profile($subscription);
-                        $this->api_log->log('No payment token detected for skipping subscription.' . $subscription_id);
+                        $this->api_log->migration_log('No payment token found for subscription profile ID :' . $subscription_id);
                     }
                 }
                 $this->schedule_next_batch($from_payment_method, $to_payment_method);
@@ -513,7 +519,7 @@ class AngellEYE_PayPal_PPCP_Migration {
             $subscription->update_meta_data('_old_payment_method', $old_payment_method);
             $subscription->update_meta_data('_angelleye_ppcp_old_payment_method', $old_payment_method);
             $subscription->update_meta_data('_old_payment_method_title', $old_payment_method_title);
-            $subscription->add_order_note('No payment token detected for skipping subscription.');
+            $subscription->add_order_note('No payment token found for subscription profile.');
             $subscription->save();
         } catch (Exception $e) {
             $error_message = sprintf(
