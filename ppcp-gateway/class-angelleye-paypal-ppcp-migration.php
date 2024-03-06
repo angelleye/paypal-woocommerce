@@ -514,8 +514,8 @@ class AngellEYE_PayPal_PPCP_Migration {
             WC_Subscriptions_Core_Plugin::instance()->get_gateways_handler_class()::trigger_gateway_status_updated_hook($subscription, 'cancelled');
             $old_payment_method_title = empty($old_payment_method_title) ? $old_payment_method : $old_payment_method_title;
             $old_payment_method_title = apply_filters('woocommerce_subscription_note_old_payment_method_title', $old_payment_method_title, $old_payment_method, $subscription);
-            $subscription->set_payment_method('ppcp_skip_migration');
-            $subscription->set_payment_method_title('PPCP Skip migration');
+            $subscription->set_payment_method('_manual_renewal');
+            $subscription->set_payment_method_title('Manual Renewal');
             $subscription->update_meta_data('_old_payment_method', $old_payment_method);
             $subscription->update_meta_data('_angelleye_ppcp_old_payment_method', $old_payment_method);
             $subscription->update_meta_data('_old_payment_method_title', $old_payment_method_title);
