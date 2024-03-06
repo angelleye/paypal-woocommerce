@@ -331,7 +331,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
                 $this->view();
             } else {
-                $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+                $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest', 'paypal', 'ppec_paypal');
                 $active_classic_gateway_list = array();
                 foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
                     if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
@@ -342,7 +342,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if (!empty($other_payment_methods)) {
                     foreach ($other_payment_methods as $gateway_id) {
                         if (in_array($gateway_id, array('paypal', 'ppec_paypal'))) {
-                            $active_classic_gateway_list[$gateway_id] = $gateway_id;
+                            //$active_classic_gateway_list[$gateway_id] = $gateway_id;
                         }
                     }
                 }
