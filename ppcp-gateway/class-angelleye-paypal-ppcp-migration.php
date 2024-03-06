@@ -14,6 +14,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     protected static $_instance = null;
     public $setting_obj;
+    public $api_log;
 
     // Define class constants for better readability
     const SUBSCRIPTION_BATCH_LIMIT = 100;
@@ -37,6 +38,10 @@ class AngellEYE_PayPal_PPCP_Migration {
             if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
+            }
+            $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
         } catch (Exception $ex) {
             
@@ -484,12 +489,41 @@ class AngellEYE_PayPal_PPCP_Migration {
                     $subscription = wcs_get_subscription($subscription_id);
                     if ($this->is_angelleye_ppcp_old_payment_token_exist($subscription)) {
                         $this->angelleye_ppcp_update_payment_method($subscription, $to_payment_method);
+                    } else {
+                        $this->angelleye_ppcp_skip_migation_profile($subscription);
+                        $this->api_log->log('No payment token detected for skipping subscription.' . $subscription_id);
                     }
                 }
                 $this->schedule_next_batch($from_payment_method, $to_payment_method);
             }
         } catch (Exception $ex) {
             // Handle exceptions if needed
+        }
+    }
+    
+    public function angelleye_ppcp_skip_migation_profile($subscription) {
+        try {
+            $old_payment_method = $subscription->get_payment_method();
+            $old_payment_method_title = $subscription->get_payment_method_title();
+            WC_Subscriptions_Core_Plugin::instance()->get_gateways_handler_class()::trigger_gateway_status_updated_hook($subscription, 'cancelled');
+            $old_payment_method_title = empty($old_payment_method_title) ? $old_payment_method : $old_payment_method_title;
+            $old_payment_method_title = apply_filters('woocommerce_subscription_note_old_payment_method_title', $old_payment_method_title, $old_payment_method, $subscription);
+            $subscription->set_payment_method('ppcp_skip_migration');
+            $subscription->set_payment_method_title('PPCP Skip migration');
+            $subscription->update_meta_data('_old_payment_method', $old_payment_method);
+            $subscription->update_meta_data('_angelleye_ppcp_old_payment_method', $old_payment_method);
+            $subscription->update_meta_data('_old_payment_method_title', $old_payment_method_title);
+            $subscription->add_order_note('No payment token detected for skipping subscription.');
+            $subscription->save();
+        } catch (Exception $e) {
+            $error_message = sprintf(
+                    __('%1$sError:%2$s %3$s', 'woocommerce-subscriptions'),
+                    '<strong>',
+                    '</strong>',
+                    $e->getMessage()
+            );
+            $subscription->add_order_note($error_message);
+            $subscription->add_order_note(__('An error occurred updating your subscription\'s payment method. Please contact us for assistance.', 'woocommerce-subscriptions'));
         }
     }
 
