@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.4.3
-Stable tag: 4.4.21
+Stable tag: 4.4.22
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.4.22 - 03.07.2024 =
+* Feature - Updated migration wizard for Woo classic gateway. ([PFW-1777](https://github.com/angelleye/paypal-woocommerce/pull/2022))
+* Feature - Extended support for Advanced Credit Card, Vault, Apple, and Google. ([PFW-1775](https://github.com/angelleye/paypal-woocommerce/pull/2018))
+* Fix - Addressed issue with ACC not displaying when PayPal Standard CC is hidden in gateway settings. ([PFW-1771](https://github.com/angelleye/paypal-woocommerce/pull/2020))
+* Fix - Rectified Saved Payment Method issue. ([PFW-1772](https://github.com/angelleye/paypal-woocommerce/pull/2019))
+* Fix - Resolved pricing discrepancy for variable products in Pay Later. ([PFW-1758](https://github.com/angelleye/paypal-woocommerce/pull/2016))
 
 = 4.4.21 - 03.06.2024 =
 * Fix - Resolved Migration Wizard Update. ([PFW-1776](https://github.com/angelleye/paypal-woocommerce/pull/2021))
