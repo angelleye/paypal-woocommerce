@@ -692,7 +692,46 @@ if (!function_exists('angelleye_ppcp_get_order_total')) {
                 $order_id = absint(get_query_var('order-pay'));
             }
             if (is_product()) {
-                $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 1;
+	            
+	            if ( $product->is_type('variable') ) {
+		            $variation_id = $product->get_id();
+		            $is_default_variation = false;
+		            
+		            $available_variations = $product->get_available_variations();
+		            
+		            if( !empty( $available_variations ) && is_array( $available_variations ) ) {
+			            
+			            foreach( $available_variations as $variation_values ){
+				            
+				            $attributes = !empty( $variation_values['attributes'] ) ? $variation_values['attributes'] :  '';
+				            
+				            if( !empty( $attributes ) && is_array( $attributes ) ) {
+					            
+					            foreach( $attributes as $key => $attribute_value ) {
+						            
+						            $attribute_name = str_replace( 'attribute_', '', $key );
+						            $default_value = $product->get_variation_default_attribute($attribute_name );
+						            if( $default_value == $attribute_value ){
+							            $is_default_variation = true;
+						            } else {
+							            $is_default_variation = false;
+							            break;
+						            }
+					            }
+				            }
+				            
+				            if( $is_default_variation ) {
+					            $variation_id = !empty( $variation_values['variation_id'] ) ? $variation_values['variation_id'] : 0;
+					            break;
+				            }
+			            }
+		            }
+		            
+		            $variable_product = wc_get_product( $variation_id );
+		            $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($variable_product ) : 1;
+	            } else{
+		            $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 1;
+                }
             } elseif (0 < $order_id) {
                 $order = wc_get_order($order_id);
                 if ($order === false) {

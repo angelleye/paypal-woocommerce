@@ -201,6 +201,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             }
                             $paymentMethod = $_REQUEST['angelleye_ppcp_payment_method_title'] ?? null;
                             $addToCart = $_REQUEST['angelleye_ppcp-add-to-cart'] ?? null;
+	                        
+							if( !empty( $addToCart ) && angelleye_ppcp_get_order_total() > 0 ) {
+								WC()->cart->empty_cart();
+							}
+							
                             if (angelleye_ppcp_get_order_total() === 0 && !empty($addToCart)) {
                                 $this->product = AngellEYE_PayPal_PPCP_Product::instance();
                                 $this->product::angelleye_ppcp_add_to_cart_action();
