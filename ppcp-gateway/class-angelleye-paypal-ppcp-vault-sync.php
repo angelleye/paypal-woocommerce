@@ -39,15 +39,6 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
             }
         }
         $saved_methods = wc_get_customer_saved_methods_list(get_current_user_id());
-        if (!empty($saved_methods['cc']) && is_iterable($saved_methods['cc'])) {
-            foreach ($saved_methods['cc'] as $woo_save_method_key => $woo_saved_methods_list) {
-                if (isset($woo_saved_methods_list['_angelleye_ppcp_used_payment_method'])) {
-                    if ($this->angelleye_ppcp_is_woo_vault_id_exist_in_paypal_method_list($paypal_payment_list, $woo_saved_methods_list['vault_id']) === false) {
-                        unset($saved_methods['cc'][$woo_save_method_key]);
-                    }
-                }
-            }
-        }
         return $saved_methods;
     }
 
