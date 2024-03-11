@@ -407,6 +407,10 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 			</p>',
         );
 
+	    if (!$this->supports('credit_card_form_cvc_on_saved_method')) {
+		    $default_fields['card-cvc-field'] = $cvc_field;
+	    }
+
         $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->id));
         ?>
 
