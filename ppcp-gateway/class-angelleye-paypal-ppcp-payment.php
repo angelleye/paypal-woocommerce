@@ -2799,8 +2799,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                         }
                         $request['payment_source'][$payment_method_name]['attributes'] = $attributes;
                         //$request['payment_source'][$payment_method_name]['experience_context']['shipping_preference'] = $this->angelleye_ppcp_shipping_preference();
-                        //$request['payment_source'][$payment_method_name]['experience_context']['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
-                        //$request['payment_source'][$payment_method_name]['experience_context']['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
+                        $request['payment_source'][$payment_method_name]['experience_context']['return_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
+                        $request['payment_source'][$payment_method_name]['experience_context']['cancel_url'] = add_query_arg(array('angelleye_ppcp_action' => 'regular_cancel', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action')));
                         break;
                     case 'venmo':
                         $payment_method_name = 'venmo';
