@@ -1,24 +1,8 @@
-if (typeof wp !== 'undefined' && typeof wp.element !== 'undefined' && typeof wp.element.createElement === 'undefined') {
-    const {createElement} = wp.element;
-}
-if (typeof wp !== 'undefined' && typeof wp.plugins !== 'undefined' && typeof wp.plugins.registerPlugin === 'undefined') {
-    const {registerPlugin} = wp.plugins;
-}
-if (typeof wc !== 'undefined' && typeof wc.blocksCheckout !== 'undefined' && typeof wc.blocksCheckout.ExperimentalOrderMeta === 'undefined') {
-    const {ExperimentalOrderMeta} = wc.blocksCheckout;
-}
-// Check if wc and wc.wcBlocksRegistry are defined
-if (typeof wc !== 'undefined' && typeof wc.wcBlocksRegistry !== 'undefined') {
-  // Check if registerExpressPaymentMethod is not defined
-  if (typeof wc.wcBlocksRegistry.registerExpressPaymentMethod === 'undefined') {
-    const { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistry;
-    // Now you can use registerExpressPaymentMethod and registerPaymentMethod as needed
-  } else {
-    console.log('registerExpressPaymentMethod is already declared');
-  }
-} else {
-  console.log('wc or wc.wcBlocksRegistry is not defined');
-}
+var { createElement } = wp.element;
+var { registerPlugin } = wp.plugins;
+var { ExperimentalOrderMeta } = wc.blocksCheckout;
+var { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistry;
+
 
 
 (function (e) {
@@ -153,7 +137,7 @@ if (typeof wc !== 'undefined' && typeof wc.wcBlocksRegistry !== 'undefined') {
         };
         if (page === 'checkout' && is_order_confirm_page === 'no' && ppcp_settings && (ppcp_settings.checkout_page_display_option === 'both' || ppcp_settings.checkout_page_display_option === 'top')) {
             registerExpressPaymentMethod(commonExpressPaymentMethodConfig);
-
+            Object(c.registerExpressPaymentMethod)(commonExpressPaymentMethodConfig);
             const render = () => {
                 const shouldShowDiv = is_paylater_enable_incart_page === 'yes';
                 return shouldShowDiv && (
