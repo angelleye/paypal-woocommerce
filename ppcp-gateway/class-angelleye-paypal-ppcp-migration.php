@@ -496,7 +496,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                     if ($this->is_angelleye_ppcp_old_payment_token_exist($subscription)) {
                         $this->angelleye_ppcp_update_payment_method($subscription, $to_payment_method);
                     } else {
-                        $this->angelleye_ppcp_skip_migation_profile($subscription);
+                        $this->angelleye_ppcp_skip_migration_profile($subscription);
                         $this->api_log->migration_log('No payment token found for subscription profile ID :' . $subscription_id);
                     }
                 }
@@ -507,7 +507,7 @@ class AngellEYE_PayPal_PPCP_Migration {
         }
     }
     
-    public function angelleye_ppcp_skip_migation_profile($subscription) {
+    public function angelleye_ppcp_skip_migration_profile($subscription) {
         try {
             $old_payment_method = $subscription->get_payment_method();
             $old_payment_method_title = $subscription->get_payment_method_title();
