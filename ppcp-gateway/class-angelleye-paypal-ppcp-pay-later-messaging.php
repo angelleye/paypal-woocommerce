@@ -173,7 +173,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
             }
         }
         wp_localize_script('angelleye-pay-later-messaging', 'angelleye_pay_later_messaging', ['placements' => $finalArray, 'amount' => angelleye_ppcp_number_format(angelleye_ppcp_get_order_total()),
-            'currencyCode' => angelleye_ppcp_get_currency()]);
+            'currencyCode' => angelleye_ppcp_get_currency(),
+            'currencySymbol' => get_woocommerce_currency_symbol(),
+        ]);
         angelleye_ppcp_add_css_js();
     }
 

@@ -331,7 +331,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
                 $this->view();
             } else {
-                $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+                $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest', 'paypal', 'ppec_paypal');
                 $active_classic_gateway_list = array();
                 foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
                     if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
@@ -342,7 +342,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if (!empty($other_payment_methods)) {
                     foreach ($other_payment_methods as $gateway_id) {
                         if (in_array($gateway_id, array('paypal', 'ppec_paypal'))) {
-                            $active_classic_gateway_list[$gateway_id] = $gateway_id;
+                            //$active_classic_gateway_list[$gateway_id] = $gateway_id;
                         }
                     }
                 }
@@ -399,9 +399,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             <?php
             wp_enqueue_style('ppcp_account_request_form_css', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/angelleye-ppcp-admin-migration.css', null, time());
             $layout_type = '';
-            if (isset($active_classic_gateway_list['paypal_express']) && (isset($active_classic_gateway_list['paypal_pro']) || isset($active_classic_gateway_list['paypal_pro_payflow']))) {
+            if ((isset($active_classic_gateway_list['paypal_express']) || isset($active_classic_gateway_list['ppec_paypal'])) && (isset($active_classic_gateway_list['paypal_pro']) || isset($active_classic_gateway_list['paypal_pro_payflow']))) {
                 $layout_type = 'paypal_express_paypal_pro';
-            } elseif (isset($active_classic_gateway_list['paypal_express']) && isset($active_classic_gateway_list['paypal_credit_card_rest'])) {
+            } elseif ((isset($active_classic_gateway_list['paypal_express']) || isset ($active_classic_gateway_list['ppec_paypal'])) && isset($active_classic_gateway_list['paypal_credit_card_rest'])) {
                 $layout_type = 'paypal_express_paypal_credit_card_rest';
             } elseif ((isset($active_classic_gateway_list['paypal_pro']) || isset($active_classic_gateway_list['paypal_pro_payflow']))) {
                 $layout_type = 'paypal_pro';
@@ -416,7 +416,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             } elseif (isset($active_classic_gateway_list['ppec_paypal'])) {
                 $layout_type = 'paypal_express';
             }
-            $footer_note = ' All of PayPal’s new features and functionality will be released on the '. AE_PPCP_NAME . ' Platform.  The Classic Gateways are no longer officially supported.  Please update by <strong>September 30, 2023</strong> in order to avoid potential interruptions.';
+            $footer_note = ' All of PayPal’s new features and functionality will be released on the '. AE_PPCP_NAME . ' Platform.  The Classic Gateways are no longer officially supported.  Please update by <strong>April 30th, 2024</strong> in order to avoid potential interruptions.';
             $footer_note .= '<br /><br /> For more details about the new fee structure please review our <a target="_blank" href="https://www.angelleye.com/woocommerce-complete-payments-paypal-angelleye-fees/">pricing page</a>.';
             $products = urlencode(wp_json_encode(array_values($active_classic_gateway_list)));
             if (!empty($layout_type)) {
@@ -447,6 +447,9 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     </div>
                     <?php
                 endif;
+            }
+            if (as_has_scheduled_action('angelleye_ppcp_migration_schedule')) {
+                do_action('angelleye_ppcp_migration_progress_report');
             }
         } catch (Exception $ex) {
             
