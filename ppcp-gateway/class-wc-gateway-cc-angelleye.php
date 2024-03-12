@@ -194,8 +194,18 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                         'redirect' => wc_get_cart_url()
                     );
                 }
-            } elseif ($this->checkout_disable_smart_button === true && $this->advanced_card_payments === false) {
-                return $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
+            } elseif ($this->checkout_disable_smart_button === true) {
+                $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
+                if (ob_get_length()) {
+                    ob_end_clean();
+                }
+                return $result;
+            } else {
+                $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
+                if (ob_get_length()) {
+                    ob_end_clean();
+                }
+                return $result;
             }
         } catch (Exception $ex) {
 

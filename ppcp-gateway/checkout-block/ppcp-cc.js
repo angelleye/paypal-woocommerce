@@ -95,19 +95,14 @@ var { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistr
                 const l = Object(u.getSetting)("angelleye_ppcp_cc_data", {});
                 const p = () => Object(a.decodeEntities)(l.description || "");
 
-                const content = wp.element.createElement(
-                        "div",
-                        {className: "angelleye_ppcp_cc_parent"},
-                        wp.element.createElement(
-                                "div",
-                                {className: "angelleye_ppcp_cc"},
-                                wp.element.createElement("input", {
-                                    type: "hidden",
-                                    name: "form",
-                                    value: "checkout"
-                                })
-                                )
-                        );
+               const content = wp.element.createElement(
+    "div",
+    {},
+    wp.element.createElement("div", { id: "angelleye_ppcp_cc-card-number", className: "input-text wc-credit-card-form-card-number w48" }),
+    wp.element.createElement("div", { id: "angelleye_ppcp_cc-card-expiry", className: "w48" }),
+    wp.element.createElement("div", { id: "angelleye_ppcp_cc-card-cvc", className: "w48" })
+);
+
                 const ppcp_settings = angelleye_ppcp_manager_block.settins;
         const { is_order_confirm_page, is_paylater_enable_incart_page, page } = angelleye_ppcp_manager_block;
                 const s = {
@@ -143,3 +138,15 @@ document.addEventListener('DOMContentLoaded', function () {
         jQuery(document.body).trigger('ppcp_block_ready');
     }, 1000);
 });
+
+ jQuery(document).ready(function () {
+    // Get all elements in the DOM
+     jQuery('input[name="radio-control-wc-payment-method-options"]').on('change', function (event) {
+         if( jQuery(this).val() === 'angelleye_ppcp_cc') {
+             jQuery(document.body).trigger('trigger_angelleye_ppcp_cc');
+         }
+    });
+});
+
+
+

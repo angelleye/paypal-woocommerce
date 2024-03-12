@@ -7,7 +7,7 @@ function initSmartButtons() {
     
     let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
     if ($('.variations_form').length) {
-            let div_to_hide_show = '#angelleye_ppcp_product, #angelleye_ppcp_product_google_pay, #angelleye_ppcp_product_apple_pay'
+            let div_to_hide_show = '#angelleye_ppcp_product, #angelleye_ppcp_product_google_pay, #angelleye_ppcp_product_apple_pay';
             $('.variations_form').on('show_variation', function () {
                     $(div_to_hide_show).show();
             }).on('hide_variation', function () {

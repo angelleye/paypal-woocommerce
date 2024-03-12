@@ -554,7 +554,7 @@ const angelleyeOrder = {
 						angelleyeOrder.showError(localizedMessages.card_not_supported);
 					} else {
 						jQuery('#angelleye_ppcp_cc-card-number').removeClass().addClass(cardname);
-						jQuery('#angelleye_ppcp_cc-card-number').addClass("input-text wc-credit-card-form-card-number hosted-field-braintree braintree-hosted-fields-valid");
+						jQuery('#angelleye_ppcp_cc-card-number').addClass("input-text wc-credit-card-form-card-number hosted-field-braintree braintree-hosted-fields-valid w48");
 					}
 					let payment_method_element_selector;
 					if (angelleye_ppcp_manager.page === 'product') {
@@ -807,6 +807,7 @@ const angelleyeOrder = {
 			} else {
 				jQuery(document.body).trigger(event);
 			}
+                        console.log(event);
 		}
 	},
 	renderPaymentButtons: () => {
@@ -837,6 +838,9 @@ const angelleyeOrder = {
 					angelleyeOrder.renderPaymentButtons();
 				}
 			});
+                        jQuery(document.body).on('trigger_angelleye_ppcp_cc', function (event, data) {
+                            angelleyeOrder.renderPaymentButtons();
+                        });
 		},
 		handleRaceConditionOnWooHooks: () => {
 			jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_block_ready', function (event, data) {

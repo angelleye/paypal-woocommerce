@@ -375,3 +375,6 @@ apple-pay-button {
         min-width: auto;
     }
 }
+.w48 {
+    height: 48px;
+}
