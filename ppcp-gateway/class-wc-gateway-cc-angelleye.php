@@ -195,13 +195,13 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     );
                 }
             } elseif ($this->checkout_disable_smart_button === true) {
-                $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
+                $result = $this->payment_request->angelleye_ppcp_order_capture_request($woo_order_id);
                 if (ob_get_length()) {
                     ob_end_clean();
                 }
                 return $result;
             } else {
-                $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
+                $result = $this->payment_request->angelleye_ppcp_order_capture_request($woo_order_id);
                 if (ob_get_length()) {
                     ob_end_clean();
                 }
