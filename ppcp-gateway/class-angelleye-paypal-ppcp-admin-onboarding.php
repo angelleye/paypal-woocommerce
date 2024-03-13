@@ -464,20 +464,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
             include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_header.php');
             ?>
             <div id="angelleye_paypal_marketing_table">
-                <?php if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) { ?>
-                    <div class="paypal_woocommerce_product">
-                        <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
-                            <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
-                            <br><br>
-                            <div class="paypal_woocommerce_product_onboard_content">
-                                <p><?php echo sprintf(__('We\'re sorry, but the PayPal Multi-Account functionality you are currently using is not yet supported by the %s gateway.', 'paypal-for-woocommerce'), AE_PPCP_NAME); ?></p>
-                                <p><?php echo __('For now, please continue using PayPal Classic - Express Checkout. You will not experience any interruptions with your payment processing, so no worries!', 'paypal-for-woocommerce'); ?> </p>
-                                <p><?php echo sprintf(__('We are actively working on %s compatibility, and should have updates ready for you very soon. <br>Stay tuned!', 'paypal-for-woocommerce'), AE_PPCP_NAME); ?></p>
-                            </div>
-
-                        </div>
-                    </div>
-                <?php } elseif ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
+               <?php if ($this->on_board_status === 'NOT_CONNECTED' || $this->on_board_status === 'USED_FIRST_PARTY') { ?>
                     <div class="paypal_woocommerce_product">
                         <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
                             <span class="ppcp_onbard_icon"><img width="150px" class="image" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/ppcp_admin_onbard_icon.png'; ?>"></span>
