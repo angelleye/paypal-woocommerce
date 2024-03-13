@@ -60,7 +60,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_get_properties() {
-        $this->title = $this->setting_obj->get('title', 'PayPal Commerce - Built by Angelleye');
+        $this->title = $this->setting_obj->get('title', AE_PPCP_NAME . ' - Built by Angelleye');
         $this->enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
         $this->sandbox_client_id = $this->setting_obj->get('sandbox_client_id', '');
@@ -173,7 +173,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
             }
         }
         wp_localize_script('angelleye-pay-later-messaging', 'angelleye_pay_later_messaging', ['placements' => $finalArray, 'amount' => angelleye_ppcp_number_format(angelleye_ppcp_get_order_total()),
-            'currencyCode' => angelleye_ppcp_get_currency()]);
+            'currencyCode' => angelleye_ppcp_get_currency(),
+            'currencySymbol' => get_woocommerce_currency_symbol(),
+        ]);
         angelleye_ppcp_add_css_js();
     }
 

@@ -25,6 +25,15 @@ if (!function_exists('angelleye_queue_update')) {
 
 }
 
+/**
+ * Get log path - Resolved wc_get_log_file_path() deprecation warnings.
+ */
+if (!function_exists('angelleye_get_log_path')) {
+    function angelleye_get_log_path($handle)
+    {
+        return WC_Log_Handler_File::get_log_file_path($handle);
+    }
+}
 
 /**
  * Load installer for the AngellEYE Updater.

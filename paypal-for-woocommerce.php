@@ -3,8 +3,8 @@
  * @wordpress-plugin
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
- * Description:       Easily add the PayPal Commerce Platform including PayPal Checkout, Pay Later, Venmo, Direct Credit Processing, and alternative payment methods like Apple Pay, Google Pay, and more! Also fully supports Braintree Payments.
- * Version:           4.4.13
+ * Description:       Easily add the PayPal Complete Payments Platform including PayPal Checkout, Pay Later, Venmo, Direct Credit Processing, and alternative payment methods like Apple Pay, Google Pay, and more! Also fully supports Braintree Payments.
+ * Version:           4.4.23
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,9 +13,9 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.8
- * Tested up to: 6.4.2
+ * Tested up to: 6.4.3
  * WC requires at least: 3.0.0
- * WC tested up to: 8.4.0
+ * WC tested up to: 8.6.1
  *
  * ************
  * Attribution
@@ -37,7 +37,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '4.4.13');
+    define('VERSION_PFW', '4.4.23');
 }
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__);
@@ -75,6 +75,9 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE')) {
 }
 if (!defined('AE_FEE')) {
     define('AE_FEE', 'ae_p_f');
+}
+if (!defined('AE_PPCP_NAME')) {
+    define('AE_PPCP_NAME', 'PayPal Complete Payments');
 }
 
 
@@ -506,7 +509,9 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_filter('woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'), 1000);
             AngellEye_PayPal_PPCP_Apple_Domain_Validation::instance();
             AngellEye_Session_Manager::instance();
-            add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'),1000 );
+            // Set to low priority so that gateways are added before WPML plugin runs the task to add the translations
+            // in the DB, WPML default priority is set to 10
+            add_filter( 'woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'), 3 );
         }
 
         /**
@@ -730,14 +735,14 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             return $methods;
         }
 
-        public function angelleye_admin_menu_own() {
-            $this->plugin_screen_hook_suffix = add_submenu_page(
-                    'options-general.php',
-                    __('PayPal for WooCommerce - Settings', 'paypal-for-woocommerce'),
-                    __('PayPal for WooCommerce', 'paypal-for-woocommerce'),
-                    'manage_options',
-                    'paypal-for-woocommerce',
-                    array($this, 'display_plugin_admin_page'));
+        public function angelleye_admin_menu_own(){
+        	$this->plugin_screen_hook_suffix = add_submenu_page(
+			'options-general.php',
+			__( 'PayPal for WooCommerce - Settings', 'paypal-for-woocommerce' ),
+			AE_PPCP_NAME,
+			'manage_options',
+			'paypal-for-woocommerce',
+			array( $this, 'display_plugin_admin_page'));
         }
 
         public function display_plugin_admin_page() {

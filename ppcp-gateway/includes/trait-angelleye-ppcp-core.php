@@ -38,6 +38,10 @@ trait AngellEye_PPCP_Core
             if (!class_exists('WC_AngellEYE_PayPal_PPCP_Payment_Token')) {
                 include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/ppcp-payment-token/class-angelleye-paypal-ppcp-payment-token.php';
             }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Migration')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration.php');
+            }
+            AngellEYE_PayPal_PPCP_Migration::instance();
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();

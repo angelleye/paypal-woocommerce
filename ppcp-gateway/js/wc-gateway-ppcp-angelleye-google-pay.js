@@ -166,8 +166,7 @@ class GooglePayCheckoutButton {
                     }
                 } catch (error) {
                     console.log('shipping change error');
-                    angelleyeOrder.hideProcessingSpinner();
-                    angelleyeOrder.showError(additionalData.thisObject.parseErrorMessage(error));
+                    angelleyeOrder.handleCreateOrderError(additionalData.thisObject.parseErrorMessage(error), additionalData.thisObject.errorLogId);
                     paymentDataRequestUpdate.error = localizedMessages.shipping_amount_pull_error;
                     reject(localizedMessages.shipping_amount_pull_error);
                 }
@@ -184,7 +183,8 @@ class GooglePayCheckoutButton {
             angelleyeOrder.showProcessingSpinner();
             /* Create Order */
             let orderID = await angelleyeOrder.createOrder({
-                angelleye_ppcp_button_selector: thisObject.containerSelector
+                angelleye_ppcp_button_selector: thisObject.containerSelector,
+                errorLogId: additionalData.thisObject.errorLogId
             }).then((orderData) => {
                 console.log('orderCreated', orderData);
                 angelleyeOrder.updateCartTotalsInEnvironment(orderData);
@@ -210,7 +210,7 @@ class GooglePayCheckoutButton {
                         }
                         billingDetails.emailAddress = paymentData.email;
                     }
-                    await angelleyeOrder.shippingAddressUpdate({shippingDetails}, {billingDetails});
+                    await angelleyeOrder.shippingAddressUpdate({shippingDetails}, {billingDetails}, additionalData.thisObject.errorLogId);
                 }
                 /* Capture the Order */
                 angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
@@ -220,8 +220,7 @@ class GooglePayCheckoutButton {
             }
         } catch (error) {
             console.log('processPaymentError', error);
-            angelleyeOrder.hideProcessingSpinner();
-            angelleyeOrder.showError(additionalData.thisObject.parseErrorMessage(error));
+            angelleyeOrder.handleCreateOrderError(additionalData.thisObject.parseErrorMessage(error), additionalData.thisObject.errorLogId);
 
             return {
                 transactionState: "ERROR",
@@ -309,10 +308,12 @@ class GooglePayCheckoutButton {
 
     async handleClickEvent(event, thisObject) {
         console.log('click event', event, thisObject.containerSelector);
+        thisObject.errorLogId = angelleyeJsErrorLogger.generateErrorId();
         const cartDetails = angelleyeOrder.getCartDetails();
         if (cartDetails.totalAmount <= 0) {
             angelleyeOrder.showError(localizedMessages.empty_cart_message);
         }
+        angelleyeJsErrorLogger.addToLog(thisObject.errorLogId, 'Google Pay Payment Started');
         angelleyeOrder.setPaymentMethodSelector('google_pay');
         const paymentDataRequest = thisObject.getGooglePaymentDataRequest();
         const paymentsClient = thisObject.getGooglePaymentsClient({});

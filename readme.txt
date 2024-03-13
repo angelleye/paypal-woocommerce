@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.4.2
-Stable tag: 4.4.13
+Tested up to: 6.4.3
+Stable tag: 4.4.23
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -15,7 +15,7 @@ One plugin for all things PayPal!  Express Checkout with Smart Payment Buttons, 
 = Introduction =
 
 Easily add PayPal payment options to your WordPress / WooCommerce website.
- * PayPal Commerce - Powered by PayPal
+ * PayPal Complete Payments - Powered by PayPal
  * PayPal Express Checkout / PayPal Smart Payment Buttons
  * PayPal Website Payments Pro 3.0 (DoDirectPayment)
  * PayPal Payments Pro 2.0 (PayPal Manager / PayFlow Gateway)
@@ -126,6 +126,57 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.4.23 - 03.11.2024 =
+* Tweak - Update function name. ([PFW-1779](https://github.com/angelleye/paypal-woocommerce/pull/2024))
+* Tweak - CVC field absence on checkout page fixed for subscriptions with trial periods. ([PFW-1762](https://github.com/angelleye/paypal-woocommerce/pull/2023))
+
+= 4.4.22 - 03.07.2024 =
+* Feature - Updated migration wizard for Woo classic gateway. ([PFW-1777](https://github.com/angelleye/paypal-woocommerce/pull/2022))
+* Feature - Extended support for Advanced Credit Card, Vault, Apple, and Google. ([PFW-1775](https://github.com/angelleye/paypal-woocommerce/pull/2018))
+* Fix - Addressed issue with ACC not displaying when PayPal Standard CC is hidden in gateway settings. ([PFW-1771](https://github.com/angelleye/paypal-woocommerce/pull/2020))
+* Fix - Rectified Saved Payment Method issue. ([PFW-1772](https://github.com/angelleye/paypal-woocommerce/pull/2019))
+* Fix - Resolved pricing discrepancy for variable products in Pay Later. ([PFW-1758](https://github.com/angelleye/paypal-woocommerce/pull/2016))
+
+= 4.4.21 - 03.06.2024 =
+* Fix - Resolved Migration Wizard Update. ([PFW-1776](https://github.com/angelleye/paypal-woocommerce/pull/2021))
+
+= 4.4.20 - 02.27.2024 =
+* Tweak - Enhanced compatibility with WPML translation for Gateway settings page. ([PFW-1667](https://github.com/angelleye/paypal-woocommerce/pull/1979))
+* Tweak - Enhancements required for Migration Wizard batches. ([PFW-1766](https://github.com/angelleye/paypal-woocommerce/pull/2011))   
+* Tweak - Rename it back to 'Complete Payments'. ([PFW-1763](https://github.com/angelleye/paypal-woocommerce/pull/2013))   
+* Tweak - Modify the logic to verify if the vault is enabled. ([PFW-1759](https://github.com/angelleye/paypal-woocommerce/pull/2014))   
+* Fix - Compatibility of the Express Checkout section with CheckoutWC. ([PFW-1755](https://github.com/angelleye/paypal-woocommerce/pull/2015))   
+ 
+= 4.4.19 - 02.23.2024 =
+* Tweak - Resolved wc_get_log_file_path() deprecation warnings. ([PFW-1767](https://github.com/angelleye/paypal-woocommerce/pull/2012))
+
+= 4.4.18 - 02.21.2024 =
+* Tweak - Migration Wizard Update. ([PFW-1747](https://github.com/angelleye/paypal-woocommerce/pull/2009))
+* Tweak - Expand Google / Apple Pay Regions. ([PFW-1760](https://github.com/angelleye/paypal-woocommerce/pull/2008))
+* Fix - Resolve FunnelKit Conflicts. ([PFW-1751](https://github.com/angelleye/paypal-woocommerce/pull/2007))
+
+= 4.4.17 - 02.11.2024 =
+* Fix - Added JS Logger support for PPCP payment gateways to log the errors. ([PFW-1726](https://github.com/angelleye/paypal-woocommerce/pull/2006))
+
+= 4.4.16 - 01.25.2024 =
+* Fix - Resolved the express button display issue with Apple and Google Pay. ([PFW-1729](https://github.com/angelleye/paypal-woocommerce/pull/2004))
+* Fix - Fixed the capture issue on order status change by third party plugins. ([PFW-1731](https://github.com/angelleye/paypal-woocommerce/pull/2002))
+* Tweak - Resolve the Pay Later Messaging render error for Merchants with no PayLater Support in account. ([PFW-1730](https://github.com/angelleye/paypal-woocommerce/pull/2001))
+
+= 4.4.15 - 01.13.2024 =
+* Fix - Resolved amount mismatch error when custom discounts are applied. ([PFW-1712](https://github.com/angelleye/paypal-woocommerce/pull/1999))
+* Tweak - Added the code to display error on-screen for dirty JSON. ([PFW-1724](https://github.com/angelleye/paypal-woocommerce/pull/2000))
+* Fix - Disable capture funds button in admin if order total is captured. ([PFW-1723](https://github.com/angelleye/paypal-woocommerce/pull/1998))
+
+= 4.4.14 - 01.12.2024 =
+* Feature - Added the shipment tracking support on line item basis for direct captured orders. ([PFW-1709](https://github.com/angelleye/paypal-woocommerce/pull/1989))
+* Feature - Added styling configuration settings for Advanced CC form. ([PFW-1673](https://github.com/angelleye/paypal-woocommerce/pull/1992))
+* Feature - Adjust order status based on Order amount during order Capture for Authorized orders. ([PFW-1693](https://github.com/angelleye/paypal-woocommerce/pull/1993))
+* Feature - Set order status based on order status configuration during checkout. ([PFW-1662](https://github.com/angelleye/paypal-woocommerce/pull/1994))
+* Fix - Fixed the google pay, apple pay payment gateway display issue on variations product page. ([PFW-1635](https://github.com/angelleye/paypal-woocommerce/pull/1995))
+* Fix - Fixed the capture issue with authorized orders on order status change. ([PFW-1714](https://github.com/angelleye/paypal-woocommerce/pull/1996))
+* Fix - Resolved the smart button display issue at the top of checkout page. ([PFW-1710](https://github.com/angelleye/paypal-woocommerce/pull/1991))
 
 = 4.4.13 - 12.22.2023 =
 * Feature - Add HPOS compatibility with PFW Migrations. ([PFW-1708](https://github.com/angelleye/paypal-woocommerce/pull/1990))
@@ -735,7 +786,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Resolves Gateway setting page issue. ([PFW-893](https://github.com/angelleye/paypal-woocommerce/pull/1604))
 
 = 3.0.0 - 11.02.2021 =
-* Feature - Adds PayPal PayPal Commerce. ([PFW-27](https://github.com/angelleye/paypal-woocommerce/pull/1603))
+* Feature - Adds PayPal PayPal Complete Payments. ([PFW-27](https://github.com/angelleye/paypal-woocommerce/pull/1603))
 
 = 2.5.19 - 18.10.2021 =
 * Feature - Re-Added required hooks for our PayPal for WooCommerce Multi-Account extension. ([PFW-813](https://github.com/angelleye/paypal-woocommerce/pull/1557))

@@ -7,6 +7,10 @@ const payLaterMessaging = {
             console.log('Unable to render the PayLaterMessaging: PayPal lib not defined.')
             return;
         }
+        if (typeof angelleye_paypal_sdk.Messages === 'undefined') {
+            console.log('PayLaterMessaging is not enabled for this merchant account.')
+            return;
+        }
         // console.log('Init PayLater');
         let amount = angelleye_pay_later_messaging.amount;
         let currencyCode = angelleye_pay_later_messaging.currencyCode;
@@ -100,6 +104,21 @@ const payLaterMessaging = {
                 angelleye_pay_later_messaging.currencyCode = cartDetails.currencyCode;
                 payLaterMessaging.init();
             });
+        }
+
+        if( angelleyeOrder.isProductPage()) {
+            let variationsForm = jQuery('form.variations_form');
+            if( variationsForm.length > 0 ) {
+                jQuery('form.variations_form select').on('change', function() {
+                    const myTimeout = setTimeout( function (){
+                        let variationPrice = variationsForm.find( '.single_variation_wrap .woocommerce-variation-price' ).text();
+                        variationPrice = (variationPrice) ? variationPrice.replace( angelleye_pay_later_messaging.currencySymbol, "" ): 0;
+                        angelleye_pay_later_messaging.amount = variationPrice;
+                        payLaterMessaging.init();
+                        clearTimeout(myTimeout);
+                    }, 500);
+                });
+            }
         }
     });
 })(jQuery);

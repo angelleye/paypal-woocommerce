@@ -18,7 +18,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     public $merchant_id;
     public $client_id;
     public $secret_id;
-    public $enable_tokenized_payments;
+    public bool $enable_tokenized_payments;
     public $paymentaction;
     public $checkout_disable_smart_button;
 
@@ -30,8 +30,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->has_fields = true;
             $this->angelleye_ppcp_load_class();
             $this->setGatewaySupports();
-            $this->title = $this->setting_obj->get('advanced_card_payments_title', 'Credit Card');
-            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('advanced_card_payments_title', 'Credit Card'));
+            $this->title = __($this->setting_obj->get('advanced_card_payments_title', 'Credit Card'), 'paypal-for-woocommerce');
+            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->title);
             $this->enable_paypal_checkout_page = 'yes' === $this->setting_obj->get('enable_paypal_checkout_page', 'yes');
             $this->checkout_page_display_option = $this->setting_obj->get('checkout_page_display_option', 'regular');
             $this->sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
@@ -406,6 +406,10 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 				<input id="' . esc_attr($this->id) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry" inputmode="numeric" autocomplete="cc-exp" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="' . esc_attr__('MM / YY', 'woocommerce') . '" ' . $this->field_name('card-expiry') . ' />
 			</p>',
         );
+
+	    if (!$this->supports('credit_card_form_cvc_on_saved_method')) {
+		    $default_fields['card-cvc-field'] = $cvc_field;
+	    }
 
         $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->id));
         ?>
