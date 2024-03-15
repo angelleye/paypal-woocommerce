@@ -2,12 +2,8 @@ var { createElement } = wp.element;
 var { registerPlugin } = wp.plugins;
 var { ExperimentalOrderMeta } = wc.blocksCheckout;
 var { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistry;
-
-
-
 (function (e) {
     var t = {};
-
     function n(o) {
         if (t[o]) return t[o].exports;
         var r = (t[o] = {
@@ -17,7 +13,6 @@ var { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistr
         });
         return e[o].call(r.exports, r, r.exports, n), (r.l = !0), r.exports;
     }
-
     n.m = e;
     n.c = t;
     n.d = function (e, t, o) {
@@ -86,10 +81,8 @@ var { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistr
             i = n(2),
             u = n(3),
             a = n(1);
-
         const l = Object(u.getSetting)("angelleye_ppcp_data", {});
         const p = () => Object(a.decodeEntities)(l.description || "");
-
         const content = wp.element.createElement(
             "div",
             { className: "angelleye_ppcp_checkout_parent" },
@@ -103,7 +96,6 @@ var { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistr
                 })
             )
         );
-
         const s = {
             name: "angelleye_ppcp",
             label: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
@@ -161,7 +153,6 @@ var { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistr
         }
     }
 ]);
-
 document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
         jQuery(document.body).trigger('ppcp_block_ready');
