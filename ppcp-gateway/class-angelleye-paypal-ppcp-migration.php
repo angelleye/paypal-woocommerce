@@ -402,7 +402,12 @@ class AngellEYE_PayPal_PPCP_Migration {
         try {
             $old_payment_method = $subscription->get_payment_method();
             $old_payment_method_title = $subscription->get_payment_method_title();
-            $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
+            $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+            if (isset($available_gateways[$new_payment_method])) {
+                $new_payment_method_title = $available_gateways[$new_payment_method]->get_title();
+            } else {
+                $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
+            }
             do_action('woocommerce_subscriptions_pre_update_payment_method', $subscription, $new_payment_method, $old_payment_method);
             WC_Subscriptions_Core_Plugin::instance()->get_gateways_handler_class()::trigger_gateway_status_updated_hook($subscription, 'cancelled');
             $old_payment_method_title = empty($old_payment_method_title) ? $old_payment_method : $old_payment_method_title;
