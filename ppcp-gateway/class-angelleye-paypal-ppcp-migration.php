@@ -402,7 +402,17 @@ class AngellEYE_PayPal_PPCP_Migration {
         try {
             $old_payment_method = $subscription->get_payment_method();
             $old_payment_method_title = $subscription->get_payment_method_title();
-            $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
+            if('angelleye_ppcp_cc' === $new_payment_method) {
+                $new_payment_method_title = $this->setting_obj->get('advanced_card_payments_title', 'PayPal');
+            } elseif('angelleye_ppcp' === $new_payment_method ) {
+                $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
+            } elseif('angelleye_ppcp_google_pay' === $new_payment_method) {
+                $new_payment_method_title = $this->setting_obj->get('google_pay_payments_title', 'PayPal');
+            } elseif('angelleye_ppcp_apple_pay' === $new_payment_method) {
+                $new_payment_method_title = $this->setting_obj->get('apple_pay_payments_title', 'PayPal');
+            } else {
+                $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
+            }
             do_action('woocommerce_subscriptions_pre_update_payment_method', $subscription, $new_payment_method, $old_payment_method);
             WC_Subscriptions_Core_Plugin::instance()->get_gateways_handler_class()::trigger_gateway_status_updated_hook($subscription, 'cancelled');
             $old_payment_method_title = empty($old_payment_method_title) ? $old_payment_method : $old_payment_method_title;
