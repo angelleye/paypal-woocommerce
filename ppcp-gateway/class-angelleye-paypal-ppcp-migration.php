@@ -402,7 +402,6 @@ class AngellEYE_PayPal_PPCP_Migration {
         try {
             $old_payment_method = $subscription->get_payment_method();
             $old_payment_method_title = $subscription->get_payment_method_title();
-            $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
             if('angelleye_ppcp_cc' === $new_payment_method) {
                 $new_payment_method_title = $this->setting_obj->get('advanced_card_payments_title', 'PayPal');
             } elseif('angelleye_ppcp' === $new_payment_method ) {

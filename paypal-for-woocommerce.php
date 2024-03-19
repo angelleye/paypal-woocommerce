@@ -569,6 +569,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-express-subscriptions-angelleye.php');
                         $methods[] = 'WC_Gateway_Braintree_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
+                        $methods[] = 'WC_Gateway_PPCP_AngellEYE_Subscriptions';
                         $methods[] = 'WC_Gateway_PPCP_AngellEYE';
                     } else {
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-pro-payflow-subscriptions-angelleye.php' );
@@ -581,6 +582,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-subscriptions.php');
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-apple-pay-subscriptions.php');
                         include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-google-pay-subscriptions.php');
+                        include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-cc-angelleye-subscriptions.php');
                         $methods[] = 'WC_Gateway_PayPal_Pro_PayFlow_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Advanced_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Pro_Subscriptions_AngellEYE';
@@ -590,6 +592,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
                         if (!isset($_GET['tab']) || $_GET['tab'] !== 'checkout') {
                             $methods[] = 'WC_Gateway_PPCP_AngellEYE_Apple_Pay_Subscriptions';
                             $methods[] = 'WC_Gateway_PPCP_AngellEYE_Google_Pay_Subscriptions';
+                            $methods[] = 'WC_Gateway_CC_AngellEYE_Subscriptions';
                         }
                         $methods[] = 'WC_Gateway_PPCP_AngellEYE_Subscriptions';
                     }
