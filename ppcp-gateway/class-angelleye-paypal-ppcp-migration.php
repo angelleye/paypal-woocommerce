@@ -403,8 +403,14 @@ class AngellEYE_PayPal_PPCP_Migration {
             $old_payment_method = $subscription->get_payment_method();
             $old_payment_method_title = $subscription->get_payment_method_title();
             $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
-            if (isset($available_gateways[$new_payment_method])) {
-                $new_payment_method_title = $available_gateways[$new_payment_method]->get_title();
+            if('angelleye_ppcp_cc' === $new_payment_method) {
+                $new_payment_method_title = $this->setting_obj->get('advanced_card_payments_title', 'PayPal');
+            } elseif('angelleye_ppcp' === $new_payment_method ) {
+                $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
+            } elseif('angelleye_ppcp_google_pay' === $new_payment_method) {
+                $new_payment_method_title = $this->setting_obj->get('google_pay_payments_title', 'PayPal');
+            } elseif('angelleye_ppcp_apple_pay' === $new_payment_method) {
+                $new_payment_method_title = $this->setting_obj->get('apple_pay_payments_title', 'PayPal');
             } else {
                 $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
             }

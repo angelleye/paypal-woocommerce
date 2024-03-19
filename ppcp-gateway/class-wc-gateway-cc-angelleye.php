@@ -203,7 +203,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function is_available() {
-        return $this->advanced_card_payments === true && $this->is_credentials_set();
+        return $this->advanced_card_payments === true && $this->enabled === true && $this->is_credentials_set();
     }
 
     public function payment_fields() {
