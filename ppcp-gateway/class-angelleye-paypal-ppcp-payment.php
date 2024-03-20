@@ -3191,6 +3191,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                 'body' => $body_request
             );
+          //  $args = apply_filters('angelleye_ppcp_request_args', $args, 'create_order', $order_id);
             $this->api_response = $this->api_request->request($this->paypal_order_api, $args, 'create_order');
             if (ob_get_length()) {
                 ob_end_clean();
