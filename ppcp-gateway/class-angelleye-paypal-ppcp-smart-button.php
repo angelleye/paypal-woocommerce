@@ -365,7 +365,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('sgo_javascript_combine_excluded_inline_content', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_filter('sgo_js_async_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_action('woocommerce_pay_order_after_submit', array($this, 'angelleye_ppcp_add_order_id'));
-        add_filter('woocommerce_payment_gateways', array($this, 'angelleye_ppcp_hide_show_gateway'), 9999);
+        //add_filter('woocommerce_payment_gateways', array($this, 'angelleye_ppcp_hide_show_gateway'), 9999);
         add_filter('woocommerce_available_payment_gateways', array($this, 'angelleye_ppcp_short_gateway'), 9999);
 
         add_filter('woocommerce_checkout_fields', array($this, 'angelleye_ppcp_woocommerce_checkout_fields'), 999);
@@ -1402,9 +1402,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ((isset($_GET['page']) && 'wc-settings' === $_GET['page']) && isset($_GET['tab']) && 'checkout' === $_GET['tab']) {
 
         } else {
-            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
+            
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
-                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-cc-angelleye-subscriptions.php');
+                
                 $methods[] = 'WC_Gateway_CC_AngellEYE_Subscriptions';
             } else {
                 $methods[] = 'WC_Gateway_CC_AngellEYE';

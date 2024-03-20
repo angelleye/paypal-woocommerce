@@ -21,6 +21,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     public bool $enable_tokenized_payments;
     public $paymentaction;
     public $checkout_disable_smart_button;
+    public $is_enabled;
 
     public function __construct() {
         try {
@@ -43,7 +44,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $this->live_secret_id = $this->setting_obj->get('api_secret', '');
             $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
             $this->advanced_card_payments = 'yes' === $this->setting_obj->get('enable_advanced_card_payments', 'no');
-             $this->enabled = $this->setting_obj->get('enabled', 'no');
+            $this->enabled = $this->setting_obj->get('enabled', 'no');
+            $this->is_enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
             if ($this->dcc_applies->for_country_currency() === false) {
                 $this->advanced_card_payments = false;
             }
@@ -203,7 +205,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function is_available() {
-        return $this->advanced_card_payments == true && $this->is_credentials_set();
+        return $this->advanced_card_payments === true && $this->is_enabled === true && $this->is_credentials_set();
     }
 
     public function payment_fields() {
