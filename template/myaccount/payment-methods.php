@@ -63,7 +63,7 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                                             <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='<?php echo ucwords(str_replace('_', ' ', $paymentMethod)) ?>'><?php
                                             echo $paymentMethod == 'apple_pay' ? $ccEndingText($method) : '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
                                         }
-                                    } elseif ($method['method']['gateway'] === 'angelleye_ppcp_cc') {
+                                    } elseif ($method['method']['gateway'] === 'angelleye_ppcp_cc' || $method['method']['gateway'] === 'paypal_pro') {
                                         $brand = strtolower($method['method']['brand']);
                                         $brand = str_replace(['-', '_'], '', $brand);
 
