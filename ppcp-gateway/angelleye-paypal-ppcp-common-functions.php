@@ -871,9 +871,6 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
 if (!function_exists('angelleye_is_vaulting_enable')) {
 
     function angelleye_is_vaulting_enable($result) {
-        if (defined('PPCP_VAULT_DISABLE')) {
-            return PPCP_VAULT_DISABLE;
-        }
         if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
             foreach ($result['products'] as $product) {
                 if ($product['name'] === 'ADVANCED_VAULTING' && 
