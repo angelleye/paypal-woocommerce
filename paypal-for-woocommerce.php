@@ -308,13 +308,14 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
 
             do_action( 'angelleye_admin_notices', $pp_pro, $pp_payflow, $pp_standard );
 
-            $pp_pro['testmode'] = !empty($pp_pro['testmode']) ? $pp_pro['testmode'] : '';
-            $pp_payflow['testmode'] = !empty($pp_payflow['testmode']) ? $pp_payflow['testmode'] : '';
-            $pp_settings['testmode'] = !empty($pp_settings['testmode']) ? $pp_settings['testmode'] : '';
-            $pp_pro['enabled'] = !empty($pp_pro['enabled']) ? $pp_pro['enabled'] : '';
-            $pp_payflow['enabled'] = !empty($pp_payflow['enabled']) ? $pp_payflow['enabled'] : '';
-            $pp_settings['enabled'] = !empty($pp_settings['enabled']) ? $pp_settings['enabled'] : '';
-            $pp_standard['enabled'] = !empty($pp_standard['enabled']) ? $pp_standard['enabled'] : '';
+            $pp_pro['testmode'] = isset($pp_pro['testmode']) ? $pp_pro['testmode'] : '';
+            $pp_payflow['testmode'] = isset($pp_payflow['testmode']) ? $pp_payflow['testmode'] : '';
+            $pp_settings['testmode'] = isset($pp_settings['testmode']) ? $pp_settings['testmode'] : '';
+            $pp_pro['enabled'] = isset($pp_pro['enabled']) ? $pp_pro['enabled'] : '';
+            $pp_payflow['enabled'] = isset($pp_payflow['enabled']) ? $pp_payflow['enabled'] : '';
+            $pp_settings['enabled'] = isset($pp_settings['enabled']) ? $pp_settings['enabled'] : '';
+            $pp_standard['enabled'] = isset($pp_standard['enabled']) ? $pp_standard['enabled'] : '';
+
             if(isset($_GET['page']) && $_GET['page'] == 'wc-settings' ) {
                 if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || ( !empty($pp_payflow['enabled']) && $pp_payflow['enabled']=='yes' )) {
                     // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
