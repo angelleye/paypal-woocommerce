@@ -182,7 +182,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         ));
         $country = $this->dcc_applies->country();
         if (!empty($country)) {
-            if (in_array($this->dcc_applies->country(), $this->dcc_applies->apple_google_vault_supported_county)) {
+            if (in_array($this->dcc_applies->country(), $this->dcc_applies->apple_google_vault_supported_country)) {
                 $default_data['capabilities'] = array(
                     'PAYPAL_WALLET_VAULTING_ADVANCED',
                     'GOOGLE_PAY',
