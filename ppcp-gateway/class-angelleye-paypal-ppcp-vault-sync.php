@@ -25,7 +25,7 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
     }
 
     public function angelleye_ppcp_wc_get_customer_saved_methods_list() {
-        $saved_methods = wc_get_customer_saved_methods_list(get_current_user_id());
+        /*$saved_methods = wc_get_customer_saved_methods_list(get_current_user_id());
         $paypal_payment_list = $this->payment_request->angelleye_ppcp_get_all_payment_tokens();
         if (is_iterable($paypal_payment_list)) {
             foreach ($paypal_payment_list as $paypal_payment_list_key => $paypal_payment_list_data) {
@@ -37,7 +37,7 @@ class AngellEYE_PayPal_PPCP_Vault_Sync {
                     }
                 }
             }
-        }
+        }*/
         $saved_methods = wc_get_customer_saved_methods_list(get_current_user_id());
         return $saved_methods;
     }
