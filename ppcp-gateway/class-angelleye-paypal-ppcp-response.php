@@ -236,7 +236,7 @@ class AngellEYE_PayPal_PPCP_Response {
             if (isset($data['capabilities'])) {
                 $this->generate_signup_link_default_request_param['capabilities'] = $data['capabilities'];
             }
-            if (isset($data['third_party_features'])) {
+            if (isset($data['third_party_features']) && !empty($data['third_party_features'])) {
                 $this->generate_signup_link_default_request_param['operations'][0]['api_integration_preference']['rest_api_integration']['third_party_details']['features'] = array_merge($this->generate_signup_link_default_request_param['operations'][0]['api_integration_preference']['rest_api_integration']['third_party_details']['features'], $data['third_party_features']);
             }
             $this->api_log->log('Request Body: ' . wc_print_r($this->generate_signup_link_default_request_param, true));
