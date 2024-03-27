@@ -2004,8 +2004,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_display_deprecated_tag_myaccount($method, $available_payment_gateways) {
         try {
             $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
-            if(isset($method['method']['gateway']) && in_array($method['method']['gateway'], $angelleye_classic_gateway_id_list) && isset($available_payment_gateways[$method['method']['gateway']]) && $angelleye_classic_gateway_id_list[$method['method']['gateway']]->enable === 'yes') {
-                
+            if(isset($method['method']['gateway']) && in_array($method['method']['gateway'], $angelleye_classic_gateway_id_list) && !isset($available_payment_gateways[$method['method']['gateway']])) {
+                echo '<br>' . '<ppcp_tag class="ppcp-tooltip">Deprecated<span class="ppcp-tooltiptext">This payment method is no longer available because the payment gateway it was created with is no longer running on the site.</span></ppcp_tag>';
             }
         } catch (Exception $ex) {
 

@@ -64,7 +64,7 @@ $available_payment_gateways = WC()->payment_gateways->get_available_payment_gate
                                             <img class='ppcp_payment_method_icon' src='<?php echo $image_path; ?>' alt='<?php echo ucwords(str_replace('_', ' ', $paymentMethod)) ?>'><?php
                                             echo $paymentMethod == 'apple_pay' ? $ccEndingText($method) : '&nbsp;&nbsp;&nbsp;&nbsp;' . esc_html(wc_get_credit_card_type_label($method['method']['brand']));
                                         }
-                                    } elseif ($method['method']['gateway'] === 'angelleye_ppcp_cc' || $method['method']['gateway'] === 'paypal_pro') {
+                                    } elseif ($method['method']['gateway'] === 'angelleye_ppcp_cc') {
                                         $brand = strtolower($method['method']['brand']);
                                         $brand = str_replace(['-', '_'], '', $brand);
                                         $icon_url = array(
