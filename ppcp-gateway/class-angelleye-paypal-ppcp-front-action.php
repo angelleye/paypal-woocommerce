@@ -208,7 +208,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 $this->product = AngellEYE_PayPal_PPCP_Product::instance();
                                 $this->product::angelleye_ppcp_add_to_cart_action();
                             }
-                            if (WC()->cart->needs_payment() === false) {
+                            if (WC()->cart->is_empty()) {
                                 $wc_notice = __('Sorry, your session has expired.', 'paypal-for-woocommerce');
                                 $all_notices = WC()->session->get('wc_notices', []);
                                 if (wc_notice_count('error')) {
@@ -225,7 +225,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                     include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php';
                                 }
                                 $ppcp_checkout = AngellEYE_PayPal_PPCP_Checkout::instance();
-                                $ppcp_checkout->process_checkout_for_cart_product_page();
+                                $order_id = $ppcp_checkout->process_checkout_for_cart_product_page();
+                                $token_id = $this->payment_request->angelleye_ppcp_paypal_setup_tokens_free_signup_with_free_trial($order_id, true);
+                                $return_response['orderID'] = $token_id;
+                                wp_send_json($return_response, 200);
+                                exit();
                                 // $this->payment_request->angelleye_ppcp_create_order_request();
                             }
                             exit();

@@ -163,7 +163,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_create_order_request($woo_order_id = null) {
         try {
             $return_response = [];
-            if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
+            if (WC()->cart->is_empty()) {
                 $wc_notice = __('Sorry, your session has expired.', 'paypal-for-woocommerce');
                 wc_add_notice($wc_notice);
                 wp_send_json_error($wc_notice);
@@ -2161,7 +2161,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_regular_create_order_request($woo_order_id = null) {
         try {
             $return_response = [];
-            if (angelleye_ppcp_get_order_total($woo_order_id) === 0) {
+            if (WC()->cart->is_empty()) {
                 $wc_notice = __('Sorry, your session has expired.', 'paypal-for-woocommerce');
                 wc_add_notice($wc_notice);
                 wp_send_json_error($wc_notice);
@@ -3273,7 +3273,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_paypal_setup_tokens_free_signup_with_free_trial($order_id) {
+    public function angelleye_ppcp_paypal_setup_tokens_free_signup_with_free_trial($order_id, $is_return_token = false) {
         try {
             $body_request = array();
             $body_request['payment_source']['paypal']['description'] = "Billing Agreement";
@@ -3301,6 +3301,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->api_response = $this->api_request->request($this->setup_tokens_url, $args, 'setup tokens');
             if (ob_get_length()) {
                 ob_end_clean();
+            }
+            if($is_return_token) {
+                return $this->api_response['id'];
             }
             if (!empty($this->api_response['id'])) {
                 if (!empty($this->api_response['links'])) {

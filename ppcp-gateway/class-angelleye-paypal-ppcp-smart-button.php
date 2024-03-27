@@ -760,6 +760,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'constants' => [
                     'approval_token_id' => APPROVAL_TOKEN_ID_PARAM_NAME
             ],
+            'createVaultSetupToken' => angelleye_ppcp_is_cart_contains_free_trial() ? 'yes' : 'no',
         ));
     }
 
