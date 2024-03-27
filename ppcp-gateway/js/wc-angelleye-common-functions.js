@@ -242,7 +242,7 @@ const angelleyeOrder = {
     },
     approveOrder: ({orderID, payerID, errorLogId}) => {
         if (angelleye_ppcp_manager.createVaultSetupToken === 'yes') {
-
+            window.location.href = angelleye_ppcp_manager.paypal_create_payment_token_free_signup_with_free_trial;
         } else {
             if (angelleyeOrder.isCheckoutPage()) {
                 angelleyeOrder.checkoutFormCapture({payPalOrderId: orderID, errorLogId})

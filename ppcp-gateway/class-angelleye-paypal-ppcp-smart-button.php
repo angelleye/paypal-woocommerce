@@ -761,6 +761,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     'approval_token_id' => APPROVAL_TOKEN_ID_PARAM_NAME
             ],
             'createVaultSetupToken' => angelleye_ppcp_is_cart_contains_free_trial() ? 'yes' : 'no',
+            'paypal_create_payment_token_free_signup_with_free_trial' => add_query_arg(array('angelleye_ppcp_action' => 'paypal_create_payment_token_free_signup_with_free_trial', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
         ));
     }
 
