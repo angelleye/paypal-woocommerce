@@ -411,6 +411,9 @@ const angelleyeOrder = {
 			angelleye_paypal_sdk.Buttons({
 				style: angelleye_ppcp_style,
 				createOrder: function (data, actions) {
+                                    if(data.hasOwnProperty('order_id')) {
+                                            window.location.href = data.redirect;
+                                        }
 					errorLogId = angelleyeJsErrorLogger.generateErrorId();
 					angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal Smart Button Payment Started');
 					return angelleyeOrder.createSmartButtonOrder({
@@ -418,6 +421,8 @@ const angelleyeOrder = {
 					})
 				},
 				onApprove: function (data, actions) {
+                                        
+                                        
 					angelleyeOrder.showProcessingSpinner();
 					angelleyeOrder.approveOrder({...data, errorLogId});
 				},

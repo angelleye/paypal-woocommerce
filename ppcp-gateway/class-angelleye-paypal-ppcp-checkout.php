@@ -74,6 +74,39 @@ if (class_exists('WC_Checkout')) {
                 exit();
             }
         }
+        
+        public function process_checkout_for_cart_product_page() {
+            try {
+                wc_maybe_define_constant('WOOCOMMERCE_CHECKOUT', true);
+                wc_set_time_limit(0);
+                do_action('woocommerce_before_checkout_process');
+                if (WC()->cart->is_empty()) {
+                    throw new Exception(sprintf(__('Sorry, your session has expired. <a href="%s" class="wc-backward">Return to shop</a>', 'paypal-for-woocommerce'), esc_url(wc_get_page_permalink('shop'))));
+                }
+                do_action('woocommerce_checkout_process');
+                    $posted_data = array();
+                    $this->process_customer($posted_data);
+                    $order_id = $this->create_order($posted_data);
+                    $order = wc_get_order($order_id);
+                    if (is_wp_error($order_id)) {
+                        throw new Exception($order_id->get_error_message());
+                    }
+                    if (!$order) {
+                        throw new Exception(__('Unable to create order.', 'paypal-for-woocommerce'));
+                    }
+                    if(wp_doing_ajax() === false) {
+                        define( 'DOING_AJAX', true );
+                    }
+                    do_action('woocommerce_checkout_order_processed', $order_id, $posted_data, $order);
+                    if (apply_filters('woocommerce_cart_needs_payment', $order->needs_payment(), WC()->cart)) {
+                        $this->process_order_payment($order_id, ($posted_data['payment_method'] ?? 'angelleye_ppcp'));
+                    } else {
+                        $this->process_order_without_payment($order_id);
+                    }
+            } catch (Exception $e) {
+                wc_add_notice($e->getMessage(), 'error');
+            }
+        }
 
         /**
          * @throws Exception
