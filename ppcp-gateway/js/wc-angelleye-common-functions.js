@@ -112,17 +112,36 @@ const angelleyeOrder = {
         angelleye_ppcp_manager.woocommerce_process_checkout = nonce;
         jQuery("#woocommerce-process-checkout-nonce").val(nonce);
     },
-    createSmartButtonOrder: ({angelleye_ppcp_button_selector, errorLogId}) => {
-        return angelleyeOrder.createOrder({angelleye_ppcp_button_selector, errorLogId}).then((data) => {
+    createSmartButtonOrder: ({
+        angelleye_ppcp_button_selector,
+        errorLogId
+    }) => {
+        return angelleyeOrder.createOrder({
+            angelleye_ppcp_button_selector,
+            errorLogId
+        }).then((data) => {
             return data.orderID;
         });
     },
-    createVaultSetupToken: ({angelleye_ppcp_button_selector, errorLogId}) => {
-        return angelleyeOrder.createOrder({angelleye_ppcp_button_selector, errorLogId}).then((data) => {
+    createVaultSetupToken: ({
+        angelleye_ppcp_button_selector,
+        errorLogId
+    }) => {
+        return angelleyeOrder.createOrder({
+            angelleye_ppcp_button_selector,
+            errorLogId
+        }).then((data) => {
             return data.orderID;
         });
     },
-    createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback}) => {
+    createOrder: ({
+        angelleye_ppcp_button_selector,
+        billingDetails,
+        shippingDetails,
+        apiUrl,
+        errorLogId,
+        callback
+    }) => {
         if (typeof apiUrl == 'undefined') {
             apiUrl = angelleye_ppcp_manager.create_order_url;
         }
@@ -148,7 +167,6 @@ const angelleyeOrder = {
                 value: JSON.stringify(shippingDetails)
             });
         }
-
         console.log('formSelector', angelleye_ppcp_button_selector, formSelector, jQuery(formSelector).length);
         let topCheckoutSelectors = ['#angelleye_ppcp_checkout_top', '#angelleye_ppcp_checkout_top_google_pay', '#angelleye_ppcp_checkout_top_apple_pay'];
         if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
@@ -175,7 +193,6 @@ const angelleyeOrder = {
             }
             formData = jQuery(formSelector).serialize();
         }
-
         angelleyeJsErrorLogger.addToLog(errorLogId, {
             context: 'api_request',
             url: apiUrl,
@@ -189,8 +206,7 @@ const angelleyeOrder = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: formData
-        }).then(async function (res) {
-            console.log('193');
+        }).then(async function(res) {
             angelleyeJsErrorLogger.addToLog(errorLogId, {
                 context: 'api_response',
                 response: res,
@@ -211,8 +227,7 @@ const angelleyeOrder = {
                 angelleyeOrder.lastApiResponse = await res.clone().text();
                 return res.json();
             }
-        }).then(function (data) {
-            console.log('215');
+        }).then(function(data) {
             if (typeof callback === 'function') {
                 callback(data);
                 return;
@@ -220,7 +235,7 @@ const angelleyeOrder = {
             if (typeof data.success !== 'undefined') {
                 let messages = data.data.messages ? data.data.messages : data.data;
                 if ('string' !== typeof messages) {
-                    messages = messages.map(function (message) {
+                    messages = messages.map(function(message) {
                         return '<li>' + message + '</li>';
                     }).join('');
                     if (localizedMessages.error_message_checkout_validation !== "") {
@@ -240,12 +255,19 @@ const angelleyeOrder = {
             return data;
         });
     },
-    approveOrder: ({orderID, payerID, errorLogId}) => {
+    approveOrder: ({
+        orderID,
+        payerID,
+        errorLogId
+    }) => {
         if (angelleye_ppcp_manager.createVaultSetupToken === 'yes') {
             window.location.href = angelleye_ppcp_manager.paypal_create_payment_token_free_signup_with_free_trial;
         } else {
             if (angelleyeOrder.isCheckoutPage()) {
-                angelleyeOrder.checkoutFormCapture({payPalOrderId: orderID, errorLogId})
+                angelleyeOrder.checkoutFormCapture({
+                    payPalOrderId: orderID,
+                    errorLogId
+                })
             } else {
                 if (angelleye_ppcp_manager.is_skip_final_review === 'yes') {
                     window.location.href = angelleye_ppcp_manager.direct_capture + '&paypal_order_id=' + orderID + '&paypal_payer_id=' + payerID + '&from=' + angelleye_ppcp_manager.page;
@@ -253,11 +275,15 @@ const angelleyeOrder = {
                     window.location.href = angelleye_ppcp_manager.checkout_url + '&paypal_order_id=' + orderID + (payerID ? '&paypal_payer_id=' + payerID : '') + '&from=' + angelleye_ppcp_manager.page;
                 }
             }
-    }
-
+        }
     },
     shippingAddressUpdate: (shippingDetails, billingDetails, errorLogId) => {
-        return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails, billingDetails, errorLogId});
+        return angelleyeOrder.createOrder({
+            apiUrl: angelleye_ppcp_manager.shipping_update_url,
+            shippingDetails,
+            billingDetails,
+            errorLogId
+        });
     },
     triggerPaymentCancelEvent: () => {
         jQuery(document.body).trigger('angelleye_paypal_oncancel');
@@ -292,7 +318,13 @@ const angelleyeOrder = {
             containerSelector = '.woocommerce';
         }
         if (jQuery(containerSelector).length) {
-            jQuery(containerSelector).block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
+            jQuery(containerSelector).block({
+                message: null,
+                overlayCSS: {
+                    background: '#fff',
+                    opacity: 0.6
+                }
+            });
         }
     },
     hideProcessingSpinner: (containerSelector) => {
@@ -328,8 +360,8 @@ const angelleyeOrder = {
     isHostedFieldEligible: () => {
         if (angelleyeOrder.isCheckoutPage()) {
             if (angelleye_ppcp_manager.advanced_card_payments === 'yes') {
-                return typeof angelleye_paypal_sdk === 'undefined' || typeof angelleye_paypal_sdk.HostedFields == 'undefined'
-                        ? false : (angelleye_paypal_sdk.HostedFields.isEligible() === true);
+                return typeof angelleye_paypal_sdk === 'undefined' || typeof angelleye_paypal_sdk.HostedFields == 'undefined' ?
+                    false : (angelleye_paypal_sdk.HostedFields.isEligible() === true);
             }
         }
         return false;
@@ -358,7 +390,7 @@ const angelleyeOrder = {
             jQuery('.payment_method_angelleye_ppcp_cc').hide();
         }
         if ((isAePpcpMethodSelected === true && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'no') ||
-                angelleyeOrder.isAngelleyePpcpAdditionalPaymentMethodSelected()) {
+            angelleyeOrder.isAngelleyePpcpAdditionalPaymentMethodSelected()) {
             showHidePlaceOrderBtn();
             angelleyeOrder.showPpcpPaymentMethods();
         } else {
@@ -366,7 +398,13 @@ const angelleyeOrder = {
             showHidePlaceOrderBtn();
         }
     },
-    createHiddenInputField: ({fieldId, fieldName, fieldValue, fieldType, appendToSelector}) => {
+    createHiddenInputField: ({
+        fieldId,
+        fieldName,
+        fieldValue,
+        fieldType,
+        appendToSelector
+    }) => {
         if (jQuery('#' + fieldId).length > 0) {
             jQuery('#' + fieldId).remove();
         }
@@ -390,7 +428,6 @@ const angelleyeOrder = {
     },
     setPaymentMethodSelector: (paymentMethod) => {
         let payment_method_element_selector = angelleyeOrder.getWooFormSelector();
-
         angelleyeOrder.createHiddenInputField({
             fieldId: 'angelleye_ppcp_payment_method_title',
             fieldName: 'angelleye_ppcp_payment_method_title',
@@ -399,9 +436,8 @@ const angelleyeOrder = {
         });
     },
     renderSmartButton: () => {
-        console.log(angelleye_ppcp_manager);
         console.log('render smart buttons');
-        jQuery.each(angelleye_ppcp_manager.button_selector, function (key, angelleye_ppcp_button_selector) {
+        jQuery.each(angelleye_ppcp_manager.button_selector, function(key, angelleye_ppcp_button_selector) {
             if (!jQuery(angelleye_ppcp_button_selector).length || jQuery(angelleye_ppcp_button_selector).children().length) {
                 return;
             }
@@ -420,59 +456,65 @@ const angelleyeOrder = {
             if (angelleye_ppcp_manager.style_layout !== 'vertical') {
                 angelleye_ppcp_style['tagline'] = (angelleye_ppcp_manager.style_tagline === 'yes') ? true : false;
             }
-
             let errorLogId = null;
             const buttonsConfig = {
                 style: angelleye_ppcp_style,
-                onApprove: function (data, actions) {
-                    console.log('test 423');
-                    console.log(data);
+                onApprove: function(data, actions) {
                     angelleyeOrder.showProcessingSpinner();
-                    angelleyeOrder.approveOrder({...data, errorLogId});
+                    angelleyeOrder.approveOrder({
+                        ...data,
+                        errorLogId
+                    });
                 },
-                onCancel: function (data, actions) {
+                onCancel: function(data, actions) {
                     angelleyeOrder.hideProcessingSpinner();
                     angelleyeOrder.onCancel();
                 },
-                onClick: function (data, actions) {
+                onClick: function(data, actions) {
                     angelleyeOrder.setPaymentMethodSelector(data.fundingSource);
                 },
-                onError: function (err) {
+                onError: function(err) {
                     angelleyeOrder.handleCreateOrderError(err, errorLogId);
                 }
             };
             if (angelleye_ppcp_manager.createVaultSetupToken === 'no') {
-                buttonsConfig.createOrder = function (data, actions) {
+                buttonsConfig.createOrder = function(data, actions) {
                     errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal Smart Button Payment Started');
                     return angelleyeOrder.createSmartButtonOrder({
-                        angelleye_ppcp_button_selector, errorLogId
+                        angelleye_ppcp_button_selector,
+                        errorLogId
                     });
                 };
             }
             if (angelleye_ppcp_manager.createVaultSetupToken === 'yes') {
-                buttonsConfig.createVaultSetupToken = function (data, actions) {
+                buttonsConfig.createVaultSetupToken = function(data, actions) {
                     errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal Smart Button Payment Started');
                     return angelleyeOrder.createVaultSetupToken({
-                        angelleye_ppcp_button_selector, errorLogId
+                        angelleye_ppcp_button_selector,
+                        errorLogId
                     });
                 };
             }
             angelleye_paypal_sdk.Buttons(buttonsConfig).render(angelleye_ppcp_button_selector);
         });
         if (angelleyeOrder.isApplePayEnabled()) {
-            jQuery.each(angelleye_ppcp_manager.apple_pay_btn_selector, function (key, angelleye_ppcp_apple_button_selector) {
+            jQuery.each(angelleye_ppcp_manager.apple_pay_btn_selector, function(key, angelleye_ppcp_apple_button_selector) {
                 (new ApplePayCheckoutButton()).render(angelleye_ppcp_apple_button_selector);
             });
         }
         if (angelleyeOrder.isGooglePayEnabled()) {
-            jQuery.each(angelleye_ppcp_manager.google_pay_btn_selector, function (key, angelleye_ppcp_google_button_selector) {
+            jQuery.each(angelleye_ppcp_manager.google_pay_btn_selector, function(key, angelleye_ppcp_google_button_selector) {
                 (new GooglePayCheckoutButton()).render(angelleye_ppcp_google_button_selector);
             });
         }
     },
-    checkoutFormCapture: ({checkoutSelector, payPalOrderId, errorLogId}) => {
+    checkoutFormCapture: ({
+        checkoutSelector,
+        payPalOrderId,
+        errorLogId
+    }) => {
         if (typeof checkoutSelector === 'undefined') {
             checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
         }
@@ -483,7 +525,7 @@ const angelleyeOrder = {
         }
         // Fluid-Checkout compatibility to stop showing the Leave popup on beforeunload event
         if (typeof window.can_update_checkout !== 'undefined') {
-            jQuery(checkoutSelector).on('checkout_place_order_' + angelleyeOrder.getSelectedPaymentMethod(), function () {
+            jQuery(checkoutSelector).on('checkout_place_order_' + angelleyeOrder.getSelectedPaymentMethod(), function() {
                 return false;
             });
             jQuery(checkoutSelector).submit();
@@ -494,9 +536,9 @@ const angelleyeOrder = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: data
-        }).then(function (res) {
+        }).then(function(res) {
             return res.json();
-        }).then(function (data) {
+        }).then(function(data) {
             window.location.href = data.data.redirect;
         }).catch((error) => {
             console.log('capture error', error);
@@ -520,13 +562,15 @@ const angelleyeOrder = {
         jQuery(checkoutSelector).addClass('HostedFields');
         let errorLogId = null;
         angelleye_paypal_sdk.HostedFields.render({
-            createOrder: function () {
+            createOrder: function() {
                 jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
                 if (jQuery(checkoutSelector).is('.createOrder') === false) {
                     errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
-                    return angelleyeOrder.createOrder({errorLogId}).then(function (data) {
+                    return angelleyeOrder.createOrder({
+                        errorLogId
+                    }).then(function(data) {
                         return data.orderID;
                     }).catch((error) => {
                         angelleyeOrder.showError(error);
@@ -534,10 +578,10 @@ const angelleyeOrder = {
                     })
                 }
             },
-            onCancel: function (data, actions) {
+            onCancel: function(data, actions) {
                 actions.redirect(angelleye_ppcp_manager.cancel_url);
             },
-            onError: function (err) {
+            onError: function(err) {
                 console.log(err);
             },
             styles: {
@@ -564,8 +608,8 @@ const angelleyeOrder = {
                     placeholder: localizedMessages.expiry_date_placeholder
                 }
             }
-        }).then(function (hf) {
-            hf.on('cardTypeChange', function (event) {
+        }).then(function(hf) {
+            hf.on('cardTypeChange', function(event) {
                 if (event.cards.length > 0) {
                     let cardname = event.cards[0].type.replace("master-card", "mastercard").replace("american-express", "amex").replace("diners-club", "dinersclub").replace("-", "");
                     if (jQuery.inArray(cardname, angelleye_ppcp_manager.disable_cards) !== -1) {
@@ -599,7 +643,6 @@ const angelleyeOrder = {
                     }).appendTo(payment_method_element_selector);
                 }
             });
-
             // Unhook previous handlers so that we don't run the same handler(s) again to create the orders
             jQuery(document.body).off('submit_paypal_cc_form');
             jQuery(document.body).on('submit_paypal_cc_form', (event) => {
@@ -627,7 +670,7 @@ const angelleyeOrder = {
                     angelleyeOrder.showError(localizedMessages.fields_not_valid);
                     return;
                 }
-                let formValid = Object.keys(state.fields).every(function (key) {
+                let formValid = Object.keys(state.fields).every(function(key) {
                     return state.fields[key].isValid;
                 });
                 if (formValid === false) {
@@ -639,7 +682,6 @@ const angelleyeOrder = {
                 }
                 let contingencies = [];
                 contingencies = [angelleye_ppcp_manager.three_d_secure_contingency];
-
                 let firstName;
                 let lastName;
                 if (angelleye_ppcp_manager.is_pay_page === 'yes') {
@@ -657,35 +699,39 @@ const angelleyeOrder = {
                     contingencies: contingencies,
                     cardholderName: firstName + ' ' + lastName
                 }).then(
-                        function (payload) {
-                            if (payload.orderId) {
-                                angelleyeOrder.checkoutFormCapture({checkoutSelector, payPalOrderId: payload.orderId, errorLogId});
-                            }
-                        }, function (error) {
-                    console.log('hf_submit_error_handler', error)
-                    jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
-                    angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
-                    let error_message = '';
-                    if (Array.isArray(error.details) && error.details[0]['description']) {
-                        error_message = error.details[0]['description'];
-                    } else if (error.message) {
-                        error_message = error.message;
+                    function(payload) {
+                        if (payload.orderId) {
+                            angelleyeOrder.checkoutFormCapture({
+                                checkoutSelector,
+                                payPalOrderId: payload.orderId,
+                                errorLogId
+                            });
+                        }
+                    },
+                    function(error) {
+                        console.log('hf_submit_error_handler', error)
+                        jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting HostedFields createOrder');
+                        angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
+                        let error_message = '';
+                        if (Array.isArray(error.details) && error.details[0]['description']) {
+                            error_message = error.details[0]['description'];
+                        } else if (error.message) {
+                            error_message = error.message;
+                        }
+                        if (Array.isArray(error.details) && error.details[0]['issue'] === 'INVALID_RESOURCE_ID') {
+                            error_message = '';
+                        }
+                        if (error_message !== '') {
+                            angelleyeJsErrorLogger.logJsError(error_message, errorLogId);
+                            angelleyeOrder.showError(error_message);
+                        }
                     }
-                    if (Array.isArray(error.details) && error.details[0]['issue'] === 'INVALID_RESOURCE_ID') {
-                        error_message = '';
-                    }
-
-                    if (error_message !== '') {
-                        angelleyeJsErrorLogger.logJsError(error_message, errorLogId);
-                        angelleyeOrder.showError(error_message);
-                    }
-                }
                 ).catch((error) => {
                     angelleyeJsErrorLogger.logJsError(error, errorLogId);
                     console.log('hf_submit_exception_handler', error);
                 });
             });
-        }).catch(function (error) {
+        }).catch(function(error) {
             // We don't need to display this error to customers as this is unrelated. This usually throws an error like:
             // {"name":"BraintreeError","code":"HOSTED_FIELDS_TIMEOUT","message":"Hosted Fields timed out when attempting to set up.","type":"UNKNOWN"}
             angelleyeJsErrorLogger.logJsError(JSON.stringify(error), errorLogId);
@@ -714,7 +760,9 @@ const angelleyeOrder = {
     },
     updateCartTotalsInEnvironment: (data) => {
         let cartTotals;
-        let response = {renderNeeded: true};
+        let response = {
+            renderNeeded: true
+        };
         if (data) {
             cartTotals = data;
         } else if (jQuery('#angelleye_cart_totals').length) {
@@ -760,14 +808,18 @@ const angelleyeOrder = {
                 const result = await fetch(angelleye_ppcp_manager.angelleye_ppcp_cc_setup_tokens, {
                     method: "POST"
                 });
-                const {id} = await result.json();
+                const {
+                    id
+                } = await result.json();
                 return id;
             },
             onApprove: async (data) => {
                 const approvalTokenIdParamName = angelleyeOrder.getConstantValue('approval_token_id');
                 const endpoint = angelleye_ppcp_manager.advanced_credit_card_create_payment_token;
                 const url = `${endpoint}&${approvalTokenIdParamName}=${data.vaultSetupToken}`;
-                fetch(url, {method: "POST"}).then(response => {
+                fetch(url, {
+                    method: "POST"
+                }).then(response => {
                     return response.json();
                 }).then(data => {
                     window.location.href = data.redirect;
@@ -791,7 +843,6 @@ const angelleyeOrder = {
         } else {
             jQuery('.payment_method_angelleye_ppcp_cc').hide();
         }
-
         jQuery(addPaymentMethodForm).unbind('submit').on('submit', (event) => {
             angelleyeOrder.removeError();
             if (angelleyeOrder.isCCPaymentMethodSelected() || angelleyeOrder.isPpcpPaymentMethodSelected()) {
@@ -811,7 +862,10 @@ const angelleyeOrder = {
     },
     queuedEvents: {},
     addEventsForCallback: (eventType, event, data) => {
-        angelleyeOrder.queuedEvents[eventType] = {event, data};
+        angelleyeOrder.queuedEvents[eventType] = {
+            event,
+            data
+        };
     },
     dequeueEvent: (eventType) => {
         if (eventType in angelleyeOrder.queuedEvents) {
@@ -841,31 +895,29 @@ const angelleyeOrder = {
     },
     hooks: {
         handleWooEvents: () => {
-            jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function (event, data) {
+            jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function(event, data) {
                 console.log(`hook_received => ${event.type}`, data, angelleyeOrder.getCartDetails());
                 angelleyeOrder.dequeueEvent(event.type);
-
                 let response;
                 if (typeof data !== 'undefined' && typeof data["fragments"] !== 'undefined' && typeof data["fragments"]["angelleye_payments_data"] !== "undefined") {
                     response = angelleyeOrder.updateCartTotalsInEnvironment(JSON.parse(data["fragments"]["angelleye_payments_data"]));
                 } else if (event.type === 'updated_cart_totals') {
                     response = angelleyeOrder.updateCartTotalsInEnvironment();
                 }
-
                 if (!response || response.renderNeeded) {
                     angelleyeOrder.renderPaymentButtons();
                 }
             });
         },
         handleRaceConditionOnWooHooks: () => {
-            jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function (event, data) {
+            jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout', function(event, data) {
                 if (!angelleyeOrder.isPendingEventTriggering) {
                     angelleyeOrder.addEventsForCallback(event.type, event, data);
                 }
             });
         },
         onPaymentCancellation: () => {
-            jQuery(document.body).on('angelleye_paypal_oncancel', function (event) {
+            jQuery(document.body).on('angelleye_paypal_oncancel', function(event) {
                 event.preventDefault();
                 if (angelleyeOrder.isProductPage() && angelleyeOrder.productAddToCart === false) {
                     fetch(angelleye_ppcp_manager.update_cart_oncancel, {
@@ -874,9 +926,9 @@ const angelleyeOrder = {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         },
                         body: jQuery(angelleyeOrder.getWooFormSelector()).serialize()
-                    }).then(function (res) {
+                    }).then(function(res) {
                         return res.json();
-                    }).then(function (data) {
+                    }).then(function(data) {
                         window.location.reload();
                     });
                 }
@@ -884,7 +936,6 @@ const angelleyeOrder = {
         }
     }
 }
-
 __ = wp.i18n.__;
 const localizedMessages = {
     card_not_supported: __('Unfortunately, we do not support this credit card type. Please try another card type.', 'paypal-for-woocommerce'),
@@ -903,7 +954,6 @@ const localizedMessages = {
     create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce'),
     create_order_error_with_content: __('Unable to create the order, please contact the support with following error message.', 'paypal-for-woocommerce')
 };
-
 const pfwUrlHelper = {
     getUrlObject: (url) => {
         if (!url) {
@@ -948,7 +998,7 @@ const angelleyeJsErrorLogger = {
     },
     getLogTrace: (errorLogId) => {
         return typeof angelleyeJsErrorLogger.errorStackMeta[errorLogId] !== 'undefined' ?
-                angelleyeJsErrorLogger.errorStackMeta[errorLogId] : [];
+            angelleyeJsErrorLogger.errorStackMeta[errorLogId] : [];
     },
     logJsError: (error, errorLogId) => {
         fetch(angelleye_ppcp_manager.handle_js_errors, {
@@ -956,10 +1006,13 @@ const angelleyeJsErrorLogger = {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({error, logTrace: angelleyeJsErrorLogger.getLogTrace(errorLogId)}),
-        }).then(function (res) {
+            body: JSON.stringify({
+                error,
+                logTrace: angelleyeJsErrorLogger.getLogTrace(errorLogId)
+            }),
+        }).then(function(res) {
             //alert(res.json());
-        }).then(function (data) {
+        }).then(function(data) {
             //alert(data);
         });
     }
