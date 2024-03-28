@@ -1267,3 +1267,29 @@ if (!function_exists('angelleye_get_matched_shortcode_attributes')) {
         return $out;
     }
 }
+
+if (!function_exists('angelleye_ppcp_is_cart_contains_free_trial')) {
+
+    function angelleye_ppcp_is_cart_contains_free_trial() {
+        global $product;
+        if (!class_exists('WC_Subscriptions_Product')) {
+            return false;
+        }
+        if(is_product()) {
+             if (WC_Subscriptions_Product::get_trial_length($product) > 0) {
+                 return true;
+             }
+        }
+        $cart_contains_free_trial = false;
+        if (angelleye_ppcp_is_cart_contains_subscription()) {
+            foreach (WC()->cart->cart_contents as $cart_item) {
+                if (WC_Subscriptions_Product::get_trial_length($cart_item['data']) > 0) {
+                    $cart_contains_free_trial = true;
+                    break;
+                }
+            }
+        }
+        return $cart_contains_free_trial;
+    }
+
+}
