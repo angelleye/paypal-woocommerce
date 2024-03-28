@@ -874,6 +874,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (angelleye_ppcp_get_order_total() === 0) {
                 return false;
             }
+            if(angelleye_ppcp_is_cart_contains_free_trial()) {
+                return false;
+            }
             $this->angelleye_ppcp_smart_button_style_properties();
             if (angelleye_ppcp_is_product_purchasable($product, $this->enable_tokenized_payments) === true) {
                 angelleye_ppcp_add_css_js();
