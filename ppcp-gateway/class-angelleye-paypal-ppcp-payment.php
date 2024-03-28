@@ -3339,6 +3339,13 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_paypal_create_payment_token_free_signup_with_free_trial() {
         try {
             $body_request = array();
+            if(isset($_GET['approval_token_id_json'])) {
+                $approval_token_id_json = json_decode(stripslashes($_GET['approval_token_id_json']), true);
+                if(isset($approval_token_id_json) && !empty($approval_token_id_json['vaultSetupToken']['vaultSetupToken'])) {
+                    $_GET[APPROVAL_TOKEN_ID_PARAM_NAME] = $approval_token_id_json['vaultSetupToken']['vaultSetupToken'];
+                    $_GET['order_id'] = AngellEye_Session_Manager::get('woo_order_id', false);
+                }
+            }
             if (isset($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]) && isset($_GET['order_id'])) {
                 $body_request['payment_source']['token'] = array(
                     'id' => wc_clean($_GET[APPROVAL_TOKEN_ID_PARAM_NAME]),

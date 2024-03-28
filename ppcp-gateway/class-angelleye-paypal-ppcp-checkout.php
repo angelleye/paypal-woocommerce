@@ -85,6 +85,7 @@ if (class_exists('WC_Checkout')) {
                 }
                 do_action('woocommerce_checkout_process');
                     $posted_data = array();
+                    $posted_data['payment_method'] = 'angelleye_ppcp';
                     $this->process_customer($posted_data);
                     $order_id = $this->create_order($posted_data);
                     $order = wc_get_order($order_id);
@@ -97,6 +98,7 @@ if (class_exists('WC_Checkout')) {
                     if(wp_doing_ajax() === false) {
                         define( 'DOING_AJAX', true );
                     }
+                    AngellEye_Session_Manager::set('woo_order_id', $order_id);
                     do_action('woocommerce_checkout_order_processed', $order_id, $posted_data, $order);
                     return $order_id;
             } catch (Exception $e) {
