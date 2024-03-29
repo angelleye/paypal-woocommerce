@@ -1893,7 +1893,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'auto_capture_auth' => array(
                     'title' => __('Automatic Capture of Pending Authorizations', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
-                    'label' => __('Automatic Capture of Pending Authorizations.', 'paypal-for-woocommerce'),
+                    'label' => __('Automatically capture a pending authorization when the order status is updated to Processing or Completed.', 'paypal-for-woocommerce'),
                     'default' => 'yes',
                     'description' => __('', 'paypal-for-woocommerce'),
                     'desc_tip' => true
