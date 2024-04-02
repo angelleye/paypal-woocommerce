@@ -762,6 +762,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'constants' => [
                     'approval_token_id' => APPROVAL_TOKEN_ID_PARAM_NAME
             ],
+            'is_hide_place_order_button' => angelleye_ppcp_is_cart_contains_free_trial() ? 'no' : 'yes',
         ));
     }
 
@@ -873,6 +874,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         try {
             global $product;
             if (angelleye_ppcp_get_order_total() === 0) {
+                return false;
+            }
+            if(angelleye_ppcp_is_cart_contains_free_trial()) {
                 return false;
             }
             $this->angelleye_ppcp_smart_button_style_properties();
