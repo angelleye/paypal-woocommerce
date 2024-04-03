@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily add the PayPal Complete Payments Platform including PayPal Checkout, Pay Later, Venmo, Direct Credit Processing, and alternative payment methods like Apple Pay, Google Pay, and more! Also fully supports Braintree Payments.
- * Version:           4.4.24
+ * Version:           4.4.26
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -15,7 +15,7 @@
  * Requires at least: 5.8
  * Tested up to: 6.4.3
  * WC requires at least: 3.0.0
- * WC tested up to: 8.6.1
+ * WC tested up to: 8.7.0
  *
  * ************
  * Attribution
@@ -37,7 +37,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '4.4.24');
+    define('VERSION_PFW', '4.4.26');
 }
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__);
@@ -346,16 +346,18 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings', array());
             $pp_standard = get_option('woocommerce_paypal_settings', array());
 
-            do_action('angelleye_admin_notices', $pp_pro, $pp_payflow, $pp_standard);
-            $pp_pro['testmode'] = !empty($pp_pro['testmode']) ? $pp_pro['testmode'] : '';
-            $pp_payflow['testmode'] = !empty($pp_payflow['testmode']) ? $pp_payflow['testmode'] : '';
-            $pp_settings['testmode'] = !empty($pp_settings['testmode']) ? $pp_settings['testmode'] : '';
-            $pp_pro['enabled'] = !empty($pp_pro['enabled']) ? $pp_pro['enabled'] : '';
-            $pp_payflow['enabled'] = !empty($pp_payflow['enabled']) ? $pp_payflow['enabled'] : '';
-            $pp_settings['enabled'] = !empty($pp_settings['enabled']) ? $pp_settings['enabled'] : '';
-            $pp_standard['enabled'] = !empty($pp_standard['enabled']) ? $pp_standard['enabled'] : '';
-            if (isset($_GET['page']) && $_GET['page'] == 'wc-settings') {
-                if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || (!empty($pp_payflow['enabled']) && $pp_payflow['enabled'] == 'yes' )) {
+            do_action( 'angelleye_admin_notices', $pp_pro, $pp_payflow, $pp_standard );
+
+            $pp_pro['testmode'] = isset($pp_pro['testmode']) ? $pp_pro['testmode'] : '';
+            $pp_payflow['testmode'] = isset($pp_payflow['testmode']) ? $pp_payflow['testmode'] : '';
+            $pp_settings['testmode'] = isset($pp_settings['testmode']) ? $pp_settings['testmode'] : '';
+            $pp_pro['enabled'] = isset($pp_pro['enabled']) ? $pp_pro['enabled'] : '';
+            $pp_payflow['enabled'] = isset($pp_payflow['enabled']) ? $pp_payflow['enabled'] : '';
+            $pp_settings['enabled'] = isset($pp_settings['enabled']) ? $pp_settings['enabled'] : '';
+            $pp_standard['enabled'] = isset($pp_standard['enabled']) ? $pp_standard['enabled'] : '';
+
+            if(isset($_GET['page']) && $_GET['page'] == 'wc-settings' ) {
+                if ((!empty($pp_pro['enabled']) && $pp_pro['enabled'] == 'yes') || ( !empty($pp_payflow['enabled']) && $pp_payflow['enabled']=='yes' )) {
                     // Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected
                     if ( !is_ssl() && !get_user_meta($user_id, 'ignore_pp_ssl')) {
                             echo '<div class="error angelleye-notice" style="display:none;"><div class="angelleye-notice-logo"><span></span></div><div class="angelleye-notice-message">' . sprintf(__('WooCommerce PayPal Payments Pro requires that the %s option is enabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - PayPal Pro will only work in test mode.', 'paypal-for-woocommerce'), '<a href="'.admin_url('admin.php?page=wc-settings&tab=advanced#woocommerce_force_ssl_checkout').'">Force secure checkout</a>')  . '</div><div class="angelleye-notice-cta"><button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="ignore_pp_ssl">Dismiss</button></div></div>';

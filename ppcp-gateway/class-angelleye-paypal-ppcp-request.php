@@ -258,7 +258,7 @@ class AngellEYE_PayPal_PPCP_Request {
             return false;
         }
 
-        $capabilitiesToCheck = ['advanced_cc' => 'CUSTOM_CARD_PROCESSING', 'vaulting_advanced' => 'PAYPAL_WALLET_VAULTING_ADVANCED',
+        $capabilitiesToCheck = ['advanced_cc' => 'CUSTOM_CARD_PROCESSING',
             'apple_pay' => 'APPLE_PAY', 'google_pay' => 'GOOGLE_PAY'];
 
         if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
@@ -273,6 +273,9 @@ class AngellEYE_PayPal_PPCP_Request {
                     }
                 }
             }
+        }
+        if( angelleye_is_vaulting_enable($result) ) {
+            $availableEndpoints['vaulting_advanced'] = 'SUBSCRIBED';
         }
         self::$capabilitiesToCheck = $availableEndpoints;
         return $availableEndpoints;

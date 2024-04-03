@@ -217,7 +217,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     private function default_data() {
         $testmode = ($this->is_sandbox) ? 'yes' : 'no';
-        return array(
+        $default_data = array(
             'testmode' => $testmode,
             'return_url' => admin_url(
                     'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
@@ -228,6 +228,20 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT'
         ));
+        $country = $this->dcc_applies->country();
+        if (!empty($country)) {
+            if (in_array($this->dcc_applies->country(), $this->dcc_applies->apple_google_vault_supported_country)) {
+                $default_data['capabilities'] = array(
+                    'PAYPAL_WALLET_VAULTING_ADVANCED',
+                    'GOOGLE_PAY',
+                    'APPLE_PAY'
+                );
+                $default_data['third_party_features'] = array('VAULT', 'BILLING_AGREEMENT');
+                $default_data['products'][] = 'ADVANCED_VAULTING';
+                $default_data['products'][] = 'PAYMENT_METHODS';
+            }
+        }
+        return $default_data;
     }
 
     public function ppcp_apple_pay_data() {

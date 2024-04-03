@@ -62,6 +62,9 @@ function canShowPlaceOrderBtn() {
     if (angelleyeOrder.isPpcpPaymentMethodSelected() && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'yes') {
         return true;
     }
+    if (angelleyeOrder.isPpcpPaymentMethodSelected() && angelleye_ppcp_manager.is_hide_place_order_button === 'no') {
+        return true;
+    }
     return !(!isOrderCompletePage
         && angelleyeOrder.isAngelleyePaymentMethodSelected()
         && !angelleyeOrder.isSavedPaymentMethodSelected());

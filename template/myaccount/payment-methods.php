@@ -32,6 +32,7 @@ $ccEndingText = function ($method) {
     return sprintf(esc_html__('%1$s ending in %2$s', 'woocommerce'), esc_html(wc_get_credit_card_type_label($method['method']['brand'])), esc_html($method['method']['last4']));
 };
 do_action('woocommerce_before_account_payment_methods', $has_methods);
+$available_payment_gateways = WC()->payment_gateways->get_available_payment_gateways()
 ?>
 
 <?php if ($has_methods) : ?>
@@ -66,7 +67,6 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                                     } elseif ($method['method']['gateway'] === 'angelleye_ppcp_cc') {
                                         $brand = strtolower($method['method']['brand']);
                                         $brand = str_replace(['-', '_'], '', $brand);
-
                                         $icon_url = array(
                                             'visa' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/visa.png',
                                             'amex' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/icon/credit-cards/amex.png',
@@ -81,8 +81,10 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
                                             echo sprintf('<img class="ppcp_payment_method_icon" src="%s" alt="Credit Card" />', $icon_url[$brand]);
                                         }
                                         echo $ccEndingText($method);
+                                        do_action('angelleye_ppcp_display_deprecated_tag_myaccount', $method, $available_payment_gateways);
                                     } else {
                                         echo $ccEndingText($method);
+                                        do_action('angelleye_ppcp_display_deprecated_tag_myaccount', $method, $available_payment_gateways);
                                     }
                                 } else {
                                     echo esc_html(wc_get_credit_card_type_label($method['method']['brand']));
@@ -110,6 +112,6 @@ do_action('woocommerce_before_account_payment_methods', $has_methods);
 
 <?php do_action('woocommerce_after_account_payment_methods', $has_methods); ?>
 
-<?php if (WC()->payment_gateways->get_available_payment_gateways()) : ?>
+<?php if ($available_payment_gateways) : ?>
     <a class="button" href="<?php echo esc_url(wc_get_endpoint_url('add-payment-method')); ?>"><?php esc_html_e('Add payment method', 'paypal-for-woocommerce'); ?></a>
 <?php endif; ?>

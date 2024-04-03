@@ -6,6 +6,12 @@ class AngellEYE_PayPal_PPCP_DCC_Validate {
 
     protected static $_instance = null;
     public $country;
+    public $apple_google_vault_supported_country = [
+        'AU', 'AT', 'BE', 'BG', 'CA', 'CY', 'CZ', 'DK', 'EE', 'FI',
+        'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU',
+        'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+        'US', 'GB'
+    ];
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -13,6 +19,7 @@ class AngellEYE_PayPal_PPCP_DCC_Validate {
         }
         return self::$_instance;
     }
+    
 
     /**
      * The matrix which countries and currency combinations can be used for DCC.

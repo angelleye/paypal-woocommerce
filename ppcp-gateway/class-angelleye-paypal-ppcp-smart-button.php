@@ -398,6 +398,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         // Always load JS script on checkout page - Fixes the compatibility issue with 0 amount
         // and when shipping config is set to "Hide shipping costs until an address is entered"
         add_action( 'wp_head', [ $this, 'angelleye_load_js_sdk' ], 100 );
+        
+        add_action('angelleye_ppcp_display_deprecated_tag_myaccount', array($this, 'angelleye_ppcp_display_deprecated_tag_myaccount'), 10, 2);
 
         add_filter('wfocu_wc_get_supported_gateways', array($this, 'wfocu_upsell_supported_gateways'), 99, 1);
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
@@ -803,6 +805,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'constants' => [
                     'approval_token_id' => APPROVAL_TOKEN_ID_PARAM_NAME
             ],
+            'is_hide_place_order_button' => angelleye_ppcp_is_cart_contains_free_trial() ? 'no' : 'yes',
         ));
     }
 
@@ -914,6 +917,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         try {
             global $product;
             if (angelleye_ppcp_get_order_total() === 0) {
+                return false;
+            }
+            if(angelleye_ppcp_is_cart_contains_free_trial()) {
                 return false;
             }
             $this->angelleye_ppcp_smart_button_style_properties();
@@ -2065,4 +2071,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } catch (Exception $ex) {
         }
     }
+    
+    public function angelleye_ppcp_display_deprecated_tag_myaccount($method, $available_payment_gateways) {
+        try {
+            $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+            if(isset($method['method']['gateway']) && in_array($method['method']['gateway'], $angelleye_classic_gateway_id_list) && !isset($available_payment_gateways[$method['method']['gateway']])) {
+                echo '<br>' . '<ppcp_tag class="ppcp-tooltip">Deprecated<span class="ppcp-tooltiptext">This payment method is no longer available because the payment gateway it was created with is no longer running on the site.</span></ppcp_tag>';
+            }
+        } catch (Exception $ex) {
+
+        }
+    }
+    
 }
