@@ -355,6 +355,9 @@ apple-pay-button {
 .angelleye_ppcp-order-review .woocommerce-checkout .wfacp-comm-title {
     display: none !important;
 }
+.woocommerce-checkout #payment #wc-angelleye_ppcp_cc-form div.form-row, .woocommerce-checkout #payment div.payment_box #wc-angelleye_ppcp_cc-form .form-row.form-row-first {
+    padding: 3px;
+}  
 @media (min-width: 768px) {
     #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .angelleye_ppcp iframe {
         max-height: 100% !important;
