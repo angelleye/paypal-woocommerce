@@ -305,6 +305,7 @@ if(!class_exists('AngellEYE_Gateway_Paypal')){
             $pp_pro = get_option('woocommerce_paypal_pro_settings', array());
             $pp_payflow = get_option('woocommerce_paypal_pro_payflow_settings', array());
             $pp_standard = get_option('woocommerce_paypal_settings', array());
+            $pp_settings = get_option( 'woocommerce_paypal_express_settings', array() );
 
             do_action( 'angelleye_admin_notices', $pp_pro, $pp_payflow, $pp_standard );
 
