@@ -869,6 +869,22 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
         }
     }
+    
+    public function display_paypal_button_top_cfw() {
+        if (angelleye_ppcp_is_cart_subscription()) {
+            return false;
+        }
+        if (angelleye_ppcp_get_order_total() === 0) {
+            return false;
+        }
+        if (angelleye_ppcp_has_active_session() === false) {
+            $this->angelleye_ppcp_smart_button_style_properties();
+            if (WC()->cart->needs_payment()) {
+                angelleye_ppcp_add_css_js();
+                echo apply_filters('angelleye_ppcp_checkout_top_html', '<div id="angelleye_ppcp_checkout_top"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_checkout_top_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_checkout_top_google_pay"></div>' : '') );
+            }
+        }
+    }
 
     public function display_paypal_button_product_page($is_shortcode = '') {
         try {
@@ -1832,7 +1848,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             return $currency;
         }
     }
-
+    
     public function angelleye_ppcp_plugins_loaded() {
         try {
             if ($this->enable_paypal_checkout_page === true && $this->checkout_page_display_option !== 'regular') {
@@ -1843,8 +1859,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     } else {
                         add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page'), 1);
                     }
-                } elseif ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-	                add_action('cfw_checkout_before_order_review_container', array($this, 'display_paypal_button_top_checkout_page'), 1);
+                } elseif ( defined( 'CFW_VERSION' ) ) {
+	                add_action('cfw_payment_request_buttons', array($this, 'display_paypal_button_top_cfw'), 1);
                 } else {
                     add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page'), 1);
                 }
