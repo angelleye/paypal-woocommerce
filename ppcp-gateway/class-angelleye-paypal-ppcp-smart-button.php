@@ -329,7 +329,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         add_filter('sgo_javascript_combine_excluded_inline_content', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_filter('sgo_js_async_exclude', array($this, 'angelleye_ppcp_exclude_javascript'), 999);
         add_action('woocommerce_pay_order_after_submit', array($this, 'angelleye_ppcp_add_order_id'));
-        add_filter('woocommerce_payment_gateways', array($this, 'angelleye_ppcp_hide_show_gateway'), 9999);
+        //add_filter('woocommerce_payment_gateways', array($this, 'angelleye_ppcp_hide_show_gateway'), 9999);
         add_filter('woocommerce_available_payment_gateways', array($this, 'angelleye_ppcp_short_gateway'), 9999);
 
         add_filter('woocommerce_checkout_fields', array($this, 'angelleye_ppcp_woocommerce_checkout_fields'), 999);
@@ -362,6 +362,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         // Always load JS script on checkout page - Fixes the compatibility issue with 0 amount
         // and when shipping config is set to "Hide shipping costs until an address is entered"
         add_action( 'wp_head', [ $this, 'angelleye_load_js_sdk' ], 100 );
+        
+        add_action('angelleye_ppcp_display_deprecated_tag_myaccount', array($this, 'angelleye_ppcp_display_deprecated_tag_myaccount'), 10, 2);
 
         add_filter('wfocu_wc_get_supported_gateways', array($this, 'wfocu_upsell_supported_gateways'), 99, 1);
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
@@ -762,6 +764,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'constants' => [
                     'approval_token_id' => APPROVAL_TOKEN_ID_PARAM_NAME
             ],
+            'is_hide_place_order_button' => angelleye_ppcp_is_cart_contains_free_trial() ? 'no' : 'yes',
         ));
     }
 
@@ -873,6 +876,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         try {
             global $product;
             if (angelleye_ppcp_get_order_total() === 0) {
+                return false;
+            }
+            if(angelleye_ppcp_is_cart_contains_free_trial()) {
                 return false;
             }
             $this->angelleye_ppcp_smart_button_style_properties();
@@ -1345,9 +1351,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ((isset($_GET['page']) && 'wc-settings' === $_GET['page']) && isset($_GET['tab']) && 'checkout' === $_GET['tab']) {
 
         } else {
-            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
+            
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
-                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-cc-angelleye-subscriptions.php');
+                
                 $methods[] = 'WC_Gateway_CC_AngellEYE_Subscriptions';
             } else {
                 $methods[] = 'WC_Gateway_CC_AngellEYE';
@@ -2017,5 +2023,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $shipping_details = angelleye_ppcp_get_mapped_shipping_address($this->checkout_details);
         $billing_details = angelleye_ppcp_get_mapped_billing_address($this->checkout_details, !$this->set_billing_address);
         angelleye_ppcp_update_customer_addresses_from_paypal($shipping_details, $billing_details);
+    }
+
+    public function angelleye_ppcp_display_deprecated_tag_myaccount($method, $available_payment_gateways) {
+        try {
+            $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest');
+            if(isset($method['method']['gateway']) && in_array($method['method']['gateway'], $angelleye_classic_gateway_id_list) && !isset($available_payment_gateways[$method['method']['gateway']])) {
+                echo '<br>' . '<ppcp_tag class="ppcp-tooltip">Deprecated<span class="ppcp-tooltiptext">This payment method is no longer available because the payment gateway it was created with is no longer running on the site.</span></ppcp_tag>';
+            }
+        } catch (Exception $ex) {
+
+        }
     }
 }

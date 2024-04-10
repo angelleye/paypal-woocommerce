@@ -976,7 +976,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
             $this->setup_api_vars(
                     $this->key, $environment, $this->wc_gateway()->get_option($api_prefix . 'api_username'), $this->wc_gateway()->get_option($api_prefix . 'api_password'), $this->wc_gateway()->get_option($api_prefix . 'api_signature')
             );
-            $this->add_reference_trans_args($this->get_token($order), $order, array(), $product);
+            $this->add_reference_trans_args($this->get_token($order), $order, $product, array());
             $this->add_credentials_param($this->api_username, $this->api_password, $this->api_signature, 124);
             $request = new stdClass();
             $request->path = '';
@@ -1031,7 +1031,7 @@ class Cartflows_Pro_Gateway_Paypal_Express_Angelleye extends Cartflows_Pro_Paypa
      * @param array    $offer_product offer product data.
      * @since 1.0.0
      */
-    public function add_reference_trans_args($reference_id, $order, $args = array(), $offer_product) {
+    public function add_reference_trans_args($reference_id, $order, $offer_product, $args = array()) {
 
         $defaults = array(
             'amount' => $offer_product['total'],

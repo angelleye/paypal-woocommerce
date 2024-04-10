@@ -1,18 +1,15 @@
 <?php
 if (!function_exists('angelleye_ppcp_remove_empty_key')) {
 
-    if (!function_exists('angelleye_ppcp_remove_empty_key')) {
-
-        function angelleye_ppcp_remove_empty_key($data) {
-            $original = $data;
-            $data = array_filter($data);
-            $data = array_map(function ($e) {
-                return is_array($e) ? angelleye_ppcp_remove_empty_key($e) : $e;
-            }, $data);
-            return $original === $data ? $data : angelleye_ppcp_remove_empty_key($data);
-        }
-
+    function angelleye_ppcp_remove_empty_key($data) {
+        $original = $data;
+        $data = array_filter($data);
+        $data = array_map(function ($e) {
+            return is_array($e) ? angelleye_ppcp_remove_empty_key($e) : $e;
+        }, $data);
+        return $original === $data ? $data : angelleye_ppcp_remove_empty_key($data);
     }
+
 }
 
 if (!function_exists('angelleye_ppcp_has_active_session')) {
@@ -148,7 +145,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
             }
             return $HTTP_RAW_POST_DATA;
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -410,7 +407,7 @@ if (!function_exists('angelleye_ppcp_round')) {
             $round_price = round($price, $precision);
             $price = number_format($round_price, $precision, '.', '');
         } catch (Exception $ex) {
-
+            
         }
 
         return $price;
@@ -710,45 +707,45 @@ if (!function_exists('angelleye_ppcp_get_order_total')) {
                 $order_id = absint(get_query_var('order-pay'));
             }
             if (is_product()) {
-	            
-	            if ( $product->is_type('variable') ) {
-		            $variation_id = $product->get_id();
-		            $is_default_variation = false;
-		            
-		            $available_variations = $product->get_available_variations();
-		            
-		            if( !empty( $available_variations ) && is_array( $available_variations ) ) {
-			            
-			            foreach( $available_variations as $variation_values ){
-				            
-				            $attributes = !empty( $variation_values['attributes'] ) ? $variation_values['attributes'] :  '';
-				            
-				            if( !empty( $attributes ) && is_array( $attributes ) ) {
-					            
-					            foreach( $attributes as $key => $attribute_value ) {
-						            
-						            $attribute_name = str_replace( 'attribute_', '', $key );
-						            $default_value = $product->get_variation_default_attribute($attribute_name );
-						            if( $default_value == $attribute_value ){
-							            $is_default_variation = true;
-						            } else {
-							            $is_default_variation = false;
-							            break;
-						            }
-					            }
-				            }
-				            
-				            if( $is_default_variation ) {
-					            $variation_id = !empty( $variation_values['variation_id'] ) ? $variation_values['variation_id'] : 0;
-					            break;
-				            }
-			            }
-		            }
-		            
-		            $variable_product = wc_get_product( $variation_id );
-		            $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($variable_product ) : 1;
-	            } else{
-		            $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 1;
+
+                if ($product->is_type('variable')) {
+                    $variation_id = $product->get_id();
+                    $is_default_variation = false;
+
+                    $available_variations = $product->get_available_variations();
+
+                    if (!empty($available_variations) && is_array($available_variations)) {
+
+                        foreach ($available_variations as $variation_values) {
+
+                            $attributes = !empty($variation_values['attributes']) ? $variation_values['attributes'] : '';
+
+                            if (!empty($attributes) && is_array($attributes)) {
+
+                                foreach ($attributes as $key => $attribute_value) {
+
+                                    $attribute_name = str_replace('attribute_', '', $key);
+                                    $default_value = $product->get_variation_default_attribute($attribute_name);
+                                    if ($default_value == $attribute_value) {
+                                        $is_default_variation = true;
+                                    } else {
+                                        $is_default_variation = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if ($is_default_variation) {
+                                $variation_id = !empty($variation_values['variation_id']) ? $variation_values['variation_id'] : 0;
+                                break;
+                            }
+                        }
+                    }
+
+                    $variable_product = wc_get_product($variation_id);
+                    $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($variable_product) : 1;
+                } else {
+                    $total = ( is_a($product, \WC_Product::class) ) ? wc_get_price_including_tax($product) : 1;
                 }
             } elseif (0 < $order_id) {
                 $order = wc_get_order($order_id);
@@ -855,7 +852,7 @@ if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
             }
             return '';
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -880,7 +877,7 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -889,14 +886,11 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
 if (!function_exists('angelleye_is_vaulting_enable')) {
 
     function angelleye_is_vaulting_enable($result) {
-        if (defined('PPCP_VAULT_DISABLE')) {
-            return PPCP_VAULT_DISABLE;
-        }
         if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
             foreach ($result['products'] as $product) {
-                if ($product['name'] === 'ADVANCED_VAULTING' && 
-                    isset($product['vetting_status']) && $product['vetting_status'] === 'SUBSCRIBED' &&
-                    isset($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
+                if ($product['name'] === 'ADVANCED_VAULTING' &&
+                        isset($product['vetting_status']) && $product['vetting_status'] === 'SUBSCRIBED' &&
+                        isset($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
                     return true;
                 }
             }
@@ -1088,7 +1082,7 @@ if (!function_exists('angelleye_ppcp_get_paypal_details')) {
             }
             return '';
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -1127,7 +1121,7 @@ if (!function_exists('angelleye_ppcp_get_classic_paypal_details')) {
                 }
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -1269,24 +1263,27 @@ if (!function_exists('pfw_print_filters_for')) {
 }
 
 if (!function_exists('angelleye_ppcp_get_platform_fee_refund_amount')) {
+
     function angelleye_ppcp_get_platform_fee_refund_amount() {
         return 0.00;
     }
+
 }
 
 if (!function_exists('angelleye_get_matched_shortcode_attributes')) {
-    function angelleye_get_matched_shortcode_attributes($tag, $text)
-    {
+
+    function angelleye_get_matched_shortcode_attributes($tag, $text) {
         preg_match_all('/' . get_shortcode_regex() . '/s', $text, $matches);
         $out = array();
         if (isset($matches[2])) {
-            foreach ((array)$matches[2] as $key => $value) {
+            foreach ((array) $matches[2] as $key => $value) {
                 if ($tag === $value)
                     $out[] = shortcode_parse_atts($matches[3][$key]);
             }
         }
         return $out;
     }
+
 }
 
 if (!function_exists('angelleye_ppcp_get_awaiting_payment_order_id')) {
@@ -1303,4 +1300,28 @@ if (!function_exists('angelleye_ppcp_get_awaiting_payment_order_id')) {
     }
 }
 
+if (!function_exists('angelleye_ppcp_is_cart_contains_free_trial')) {
 
+    function angelleye_ppcp_is_cart_contains_free_trial() {
+        global $product;
+        if (!class_exists('WC_Subscriptions_Product')) {
+            return false;
+        }
+        if (is_product()) {
+            if (WC_Subscriptions_Product::get_trial_length($product) > 0) {
+                return true;
+            }
+        }
+        $cart_contains_free_trial = false;
+        if (angelleye_ppcp_is_cart_contains_subscription()) {
+            foreach (WC()->cart->cart_contents as $cart_item) {
+                if (WC_Subscriptions_Product::get_trial_length($cart_item['data']) > 0) {
+                    $cart_contains_free_trial = true;
+                    break;
+                }
+            }
+        }
+        return $cart_contains_free_trial;
+    }
+
+}

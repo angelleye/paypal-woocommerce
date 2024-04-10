@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.4.3
-Stable tag: 4.4.23
+Tested up to: 6.5
+Stable tag: 4.4.27
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,22 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.4.27 - 04.02.2024 =
+* Feature - Adds PHP 8.3 compatibility. ([PFW-1791](https://github.com/angelleye/paypal-woocommerce/pull/2032))
+* Tweak - Adjust description for automatic capture of Auth option in settings. ([PFW-1790](https://github.com/angelleye/paypal-woocommerce/pull/2033))
+
+= 4.4.26 - 04.02.2024 =
+* Tweak - Show the 'Place Order' button for subscription products with a free trial. ([PFW-1782](https://github.com/angelleye/paypal-woocommerce/pull/2031))
+* Fix - Display save card deprecated label in my account page. ([PFW-1789](https://github.com/angelleye/paypal-woocommerce/pull/2027))
+
+= 4.4.25 - 03.26.2024 =
+* Feature - Default activation of Vault, Google, and Apple Pay for merchant onboarding.  ([PFW-1787](https://github.com/angelleye/paypal-woocommerce/pull/2028))
+* Tweak - Concealed Google Pay option for subscription products. ([PFW-1788](https://github.com/angelleye/paypal-woocommerce/pull/2029))
+* Fix - Addressed PHP notice issue. ([PFW-1780](https://github.com/angelleye/paypal-woocommerce/pull/2030))
+
+= 4.4.24 - 03.19.2024 =
+* Tweak - Adjust migration order notes. ([PFW-1784](https://github.com/angelleye/paypal-woocommerce/pull/2025))
 
 = 4.4.23 - 03.11.2024 =
 * Tweak - Update function name. ([PFW-1779](https://github.com/angelleye/paypal-woocommerce/pull/2024))

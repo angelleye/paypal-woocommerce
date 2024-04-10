@@ -22,6 +22,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public $is_sandbox;
     public $merchant_id;
     public $paymentaction;
+    public $view_transaction_url;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
