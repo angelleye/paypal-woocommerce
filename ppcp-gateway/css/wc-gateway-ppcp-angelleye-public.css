@@ -38,6 +38,13 @@
 .angelleye_ppcp-order-review .woocommerce-billing-fields .angelleye_ppcp_billing_hide, .angelleye_ppcp-order-review .woocommerce-shipping-fields .angelleye_ppcp_shipping_hide {
     display: none !important;
 }
+.angelleye_ppcp-order-review #cfw-customer-info .woocommerce-billing-fields .angelleye_ppcp_billing_hide, .angelleye_ppcp-order-review #cfw-customer-info .woocommerce-shipping-fields .angelleye_ppcp_shipping_hide {
+    display: block !important;
+}
+.angelleye_ppcp-order-review #cfw-shipping-same-billing .woocommerce-billing-fields .angelleye_ppcp_billing_hide, .angelleye_ppcp-order-review #cfw-shipping-same-billing .woocommerce-shipping-fields .angelleye_ppcp_shipping_hide {
+    display: block !important;
+}
+
 .order_review_page_description {
     margin: 0 0 2em;
     position: relative;
@@ -287,6 +294,9 @@ apple-pay-button {
 .express_payment_method_ppcp #angelleye_ppcp_checkout_top, .express_payment_method_ppcp #angelleye_ppcp_checkout_top_google_pay,
 .express_payment_method_ppcp #angelleye_ppcp_checkout_top_apple_pay {
     margin-bottom: 10px;
+}
+#cfw-payment-request-buttons #angelleye_ppcp_checkout_top {
+    max-width: 300px !important;
 }
 
 @supports (-webkit-appearance: -apple-pay-button) {
