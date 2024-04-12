@@ -13,12 +13,12 @@ trait WC_PPCP_Pre_Orders_Trait {
             return;
         }
         $this->supports[] = 'pre-orders';
-        add_action('wc_pre_orders_process_pre_order_completion_payment_' . $this->id, [$this, 'process_pre_order_release_payment']);
-        if (self::$has_attached_pre_order_integration_hooks || WC_Gateway_PPCP::ID !== $this->id) {
+        
+        /*if (self::$has_attached_pre_order_integration_hooks || WC_Gateway_PPCP::ID !== $this->id) {
             return;
         }
         add_filter('wc_ppcp_display_save_payment_method_checkbox', [$this, 'hide_save_payment_for_pre_orders_charged_upon_release']);
-        self::$has_attached_pre_order_integration_hooks = true;
+        self::$has_attached_pre_order_integration_hooks = true;*/
     }
 
     public function is_pre_orders_enabled() {
@@ -108,37 +108,8 @@ trait WC_PPCP_Pre_Orders_Trait {
 
     public function process_pre_order_release_payment($order, $retry = true) {
         try {
-            $source = $this->prepare_order_source($order);
-            $response = $this->create_and_confirm_intent_for_off_session($order, $source);
-            $is_authentication_required = $this->is_authentication_required_for_payment($response);
-            if (!empty($response->error) && !$is_authentication_required) {
-                if (!$retry) {
-                    throw new Exception($response->error->message);
-                }
-                $this->remove_order_source_before_retry($order);
-                $this->process_pre_order_release_payment($order, false);
-            } elseif ($is_authentication_required) {
-                $charge = end($response->error->payment_intent->charges->data);
-                $id = $charge->id;
-                $order->set_transaction_id($id);
-                $order->update_status('failed', sprintf(__('PPCP charge awaiting authentication by user: %s.', 'paypal-for-woocommerce'), $id));
-                if (is_callable([$order, 'save'])) {
-                    $order->save();
-                }
-                WC_Emails::instance();
-                do_action('wc_gateway_ppcp_process_payment_authentication_required', $order);
-                throw new WC_PPCP_Exception(print_r($response, true), $response->error->message);
-            } else {
-                $this->process_response(end($response->charges->data), $order);
-            }
+            
         } catch (Exception $e) {
-            $error_message = is_callable([$e, 'getLocalizedMessage']) ? $e->getLocalizedMessage() : $e->getMessage();
-            $order_note = sprintf(__('PPCP Transaction Failed (%s)', 'paypal-for-woocommerce'), $error_message);
-            if (!$order->has_status('failed')) {
-                $order->update_status('failed', $order_note);
-            } else {
-                $order->add_order_note($order_note);
-            }
         }
     }
 

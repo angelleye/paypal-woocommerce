@@ -4,6 +4,7 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_Smart_Button {
 
     use WC_Gateway_Base_AngellEYE;
+    use WC_PPCP_Pre_Orders_Trait;
 
     private $angelleye_ppcp_plugin_name;
     private $version;
@@ -1639,6 +1640,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_paymentaction_filter($paymentaction, $order_id) {
         try {
+            if ( $this->is_pre_order_item_in_cart() || ( ! empty( $order_id ) && $this->has_pre_order( $order_id ) ) ) {
+                    $pre_order_product = ( ! empty( $order_id ) ) ? $this->get_pre_order_product_from_order( $order_id ) : $this->get_pre_order_product_from_cart();
+                    if($this->is_pre_order_product_charged_upon_release( $pre_order_product )) {
+                        return $payment_action['authorize'] = 'authorize';
+                    }
+            }
             if ($order_id !== null) {
                 $order = wc_get_order($order_id);
                 if ($order) {
@@ -1681,6 +1688,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_paymentaction_product_page_filter($paymentaction, $product_id) {
         try {
+            if($this->is_pre_orders_enabled() && $this->is_pre_order_product_charged_upon_release($product_id) ) {
+                return $payment_action['authorize'] = 'authorize';
+            }
             $is_enable_payment_action = get_post_meta($product_id, 'enable_payment_action', true);
             if ($is_enable_payment_action === 'yes') {
                 $woo_product_payment_action = get_post_meta($product_id, 'woo_product_payment_action', true);

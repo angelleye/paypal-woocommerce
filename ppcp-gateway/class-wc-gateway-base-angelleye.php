@@ -16,7 +16,8 @@ trait WC_Gateway_Base_AngellEYE
         $baseSupports = array_merge([
             'products',
             'refunds',
-            'pay_button'
+            'pay_button',
+            'pre-orders'
         ], $additionalSupports);
 
         if ($this->isSubscriptionsSupported()) {

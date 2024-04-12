@@ -3,6 +3,7 @@ defined('ABSPATH') || exit;
 
 class AngellEYE_PayPal_PPCP_Admin_Action {
 
+    use WC_PPCP_Pre_Orders_Trait;
     private $angelleye_ppcp_plugin_name;
     public $api_log;
     public ?AngellEYE_PayPal_PPCP_Payment $payment_request;
@@ -86,6 +87,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             add_action('woocommerce_order_status_completed', array($this, 'angelleye_ppcp_capture_payment'));
             add_action('woocommerce_order_status_cancelled', array($this, 'angelleye_ppcp_cancel_authorization'));
             add_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
+        }
+        if($this->is_pre_orders_enabled()) {
+            add_action('wc_pre_order_status_completed', [$this, 'angelleye_ppcp_capture_payment']);
         }
         add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_ppcp_save'), 10, 2);
         add_action('woocommerce_order_item_add_line_buttons', array($this, 'angelleye_ppcp_capture_void_refund_submit'), 10, 1);

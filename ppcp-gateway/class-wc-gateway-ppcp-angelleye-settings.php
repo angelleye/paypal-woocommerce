@@ -49,12 +49,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
                 //add_filter('wcml_gateway_text_keys_to_translate', [$this, 'wpml_add_translatable_setting_fields']);
             } catch (Exception $ex) {
-
+                
             }
         }
 
-        public function wpml_add_translatable_setting_fields($text_keys)
-        {
+        public function wpml_add_translatable_setting_fields($text_keys) {
             $text_keys = array_merge($text_keys, ['advanced_card_payments_title']);
             return $text_keys;
         }
@@ -242,7 +241,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'advanced_card_payments_title' => 'Credit Card',
                 'advanced_card_payments_display_position' => 'after',
                 'disable_cards' => '',
-                'cards_input_size'=> '',
+                'cards_input_size' => '',
                 'cards_input_color' => '',
                 'cards_input_style' => '',
                 'cards_input_weight' => '',
@@ -348,6 +347,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             $default_country = $region['country'];
 
             if ($available_endpoints === false) {
+                
             } elseif (!isset($available_endpoints['advanced_cc'])) {
                 $advanced_cc_text = sprintf(__('The Advanced Credit Cards feature is not yet active on your PayPal account. Please <a href="%s">return to the PayPal Connect screen</a> to apply for this feature and get cheaper rates.', 'paypal-for-woocommerce'), admin_url('options-general.php?page=paypal-for-woocommerce'));
                 $advanced_cc_custom_attributes = array('disabled' => 'disabled');
@@ -696,7 +696,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'options' => $button_height,
                 ),
-
                 'product_apple_style_color' => array(
                     'title' => __('Apple Pay Button Color', 'paypal-for-woocommerce'),
                     'type' => 'select',
@@ -728,7 +727,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'options' => $button_height,
                 ),
-
                 'cart_button_settings' => array(
                     'title' => __('Cart Page Settings', 'paypal-for-woocommerce'),
                     'description' => __('Enable the Cart specific button settings, and the options set will be applied to the PayPal buttons on your Cart page.', 'paypal-for-woocommerce'),
@@ -918,7 +916,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'options' => $button_height,
                 ),
-
                 'cart_apple_style_color' => array(
                     'title' => __('Apple Pay Button Color', 'paypal-for-woocommerce'),
                     'type' => 'select',
@@ -1147,7 +1144,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'options' => $button_height,
                 ),
-
                 'checkout_apple_style_color' => array(
                     'title' => __('Apple Pay Button Color', 'paypal-for-woocommerce'),
                     'type' => 'select',
@@ -1179,7 +1175,6 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'options' => $button_height,
                 ),
-
                 'mini_cart_button_settings' => array(
                     'title' => __('Mini Cart Page Settings', 'paypal-for-woocommerce'),
                     'description' => __('Enable the Mini Cart specific button settings, and the options set will be applied to the PayPal buttons on your Mini Cart page.', 'paypal-for-woocommerce'),
@@ -1856,8 +1851,8 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('This controls the description which the user sees when they select Google Pay payment method during checkout.', 'paypal-for-woocommerce'),
                     'default' => __('Accept payments using Google Pay.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
-                    ),
-                 'paypal_shipment_tracking' => array(
+                ),
+                'paypal_shipment_tracking' => array(
                     'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'description' => '',
@@ -1871,6 +1866,24 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'no',
                     'desc_tip' => true,
                     'class' => 'enable_package_tracking',
+                ),
+                'woo_pre_order' => array(
+                    'title' => __('WooCommerce Pre-Orders Settings', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'woo_pre_order_payment_mode' => array(
+                    'title' => __('Pre-Orders Payment Mode', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'description' => __('Choose whether you wish to Auth/capture OR PayPal Vault.', 'paypal-for-woocommerce'),
+                    'default' => 'vault',
+                    'desc_tip' => true,
+                    'options' => array(
+                        'vault' => __('PayPal Vault (Recommended)', 'paypal-for-woocommerce'),
+                        'authorize' => __('Authorize / Capture', 'paypal-for-woocommerce'),
+                    ),
                 ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
@@ -2127,8 +2140,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             return $this->angelleye_ppcp_gateway_setting;
         }
 
-        public function get_size_listing($from, $to, $step, $postfix): array
-        {
+        public function get_size_listing($from, $to, $step, $postfix): array {
             $numbers = array('' => 'Default');
             for (; $from <= $to; $from = $from + $step) {
                 $numbers[$from . $postfix] = $from . $postfix;
@@ -2136,8 +2148,9 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             return $numbers;
         }
 
-        public function angelleye_get_order_statuses(){
+        public function angelleye_get_order_statuses() {
             return array_merge(["wc-default" => "Default"], wc_get_order_statuses());
         }
     }
+
 }
