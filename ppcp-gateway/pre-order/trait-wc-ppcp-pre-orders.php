@@ -122,6 +122,11 @@ trait WC_PPCP_Pre_Orders_Trait {
         $pre_order_product = $this->get_pre_order_product_from_order($order);
         return $pre_order_product && $this->is_pre_order_product_charged_upon_release($pre_order_product);
     }
+    
+    public function has_pre_order_charged_upfront($order) {
+        $pre_order_product = $this->get_pre_order_product_from_order($order);
+        return $pre_order_product && $this->is_pre_order_product_charged_upfront($pre_order_product);
+    }
 
     public function hide_save_payment_for_pre_orders_charged_upon_release($display_save_option) {
         if (!$display_save_option || !$this->is_pre_order_item_in_cart()) {

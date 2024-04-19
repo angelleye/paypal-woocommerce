@@ -47,6 +47,10 @@ trait WC_Gateway_Base_AngellEYE
             $this->supports = $baseSupports;
         }
     }
+    
+    public function is_paypal_vault_used_for_pre_order() {
+        return 'vault' === $this->setting_obj->get('woo_pre_order_payment_mode');
+    }
 
     public function is_credentials_set(): bool {
         if (!empty($this->merchant_id) || (!empty($this->client_id) && !empty($this->secret_id))) {

@@ -4,8 +4,8 @@ defined('ABSPATH') || exit;
 class AngellEYE_PayPal_PPCP_Admin_Action {
 
     use WC_PPCP_Pre_Orders_Trait;
+    use WC_Gateway_Base_AngellEYE;
     private $angelleye_ppcp_plugin_name;
-    public $api_log;
     public ?AngellEYE_PayPal_PPCP_Payment $payment_request;
     public $payment_response;
     public $ae_capture_amount = 0;
@@ -16,8 +16,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public $ae_void_amount = 0;
     public $angelleye_ppcp_order_status_data = array();
     public $angelleye_ppcp_order_actions = array();
-    protected static $_instance = null;
-    public $setting_obj;
+    protected static $_instance_self = null;
     public $is_auto_capture_auth;
     public ?AngellEYE_PayPal_PPCP_Seller_Onboarding $seller_onboarding;
     public $is_sandbox;
@@ -26,10 +25,10 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
     public $view_transaction_url;
 
     public static function instance() {
-        if (is_null(self::$_instance)) {
-            self::$_instance = new self();
+        if (is_null(self::$_instance_self)) {
+            self::$_instance_self = new self();
         }
-        return self::$_instance;
+        return self::$_instance_self;
     }
 
     public function __construct() {
@@ -88,9 +87,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             add_action('woocommerce_order_status_cancelled', array($this, 'angelleye_ppcp_cancel_authorization'));
             add_action('woocommerce_order_status_refunded', array($this, 'angelleye_ppcp_cancel_authorization'));
         }
-        if($this->is_pre_orders_enabled()) {
-            add_action('wc_pre_order_status_completed', [$this, 'angelleye_ppcp_capture_payment']);
-        }
+        add_action('wc_pre_order_status_completed', [$this, 'angelleye_ppcp_pre_order_order_status_completed'], 10, 1);
         add_action('woocommerce_process_shop_order_meta', array($this, 'angelleye_ppcp_save'), 10, 2);
         add_action('woocommerce_order_item_add_line_buttons', array($this, 'angelleye_ppcp_capture_void_refund_submit'), 10, 1);
         add_action('woocommerce_order_item_add_action_buttons', array($this, 'angelleye_ppcp_add_order_action_buttons'), 10, 1);
@@ -105,6 +102,16 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         add_action('admin_notices', array($this, 'angelleye_ppcp_display_payment_authorization_notice'));
 
         add_filter('angelleye_shipping_tracking_enabled_payment_methods', [$this, 'angelleye_pfw_add_ppcp_payment_methods'], 10, 2);
+    }
+    
+    public function angelleye_ppcp_pre_order_order_status_completed($order_id) {
+        if($this->has_pre_order($order_id) && $this->has_pre_order_charged_upon_release($order_id)){
+            if($this->is_paypal_vault_used_for_pre_order()) {
+                $this->angelleye_ppcp_vault_payment($order_id);
+            } else {
+                $this->angelleye_ppcp_capture_payment ($order_id);
+            }
+        }
     }
 
     public function angelleye_ppcp_admin_void_action_handler($order, $order_data) {
@@ -781,5 +788,9 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
         if ($screen && $this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id())) {
             echo '<div class="updated woocommerce-message"><p>' . __('Capture the authorized order to receive funds in your PayPal account.') . '</p></div>';
         }
+    }
+    
+    public function angelleye_ppcp_vault_payment($order_id) {
+        $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
     }
 }
