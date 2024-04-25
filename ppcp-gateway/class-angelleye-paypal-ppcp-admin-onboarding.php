@@ -347,13 +347,14 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     }
                 }
                 if (count($active_classic_gateway_list) > 0) {
-                    if ('US' === $this->ppcp_paypal_country && $this->subscription_support_enabled) {
+                    $paypal_vault_supported_country = angelleye_ppcp_apple_google_vault_supported_country();
+                    if (in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled) {
                         $this->migration_view($active_classic_gateway_list);
-                    } elseif ('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled) {
+                    } elseif (!in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled) {
                         $this->view();
-                    } elseif ('US' === $this->ppcp_paypal_country && $this->subscription_support_enabled === false) {
+                    } elseif (in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled === false) {
                         $this->migration_view($active_classic_gateway_list);
-                    } elseif ('US' !== $this->ppcp_paypal_country && $this->subscription_support_enabled === false) {
+                    } elseif (!in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled === false) {
                         $this->migration_view($active_classic_gateway_list);
                     } else {
                         $this->view();
@@ -532,6 +533,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     wp_enqueue_script('ppcp_account_request_form_js', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/ppcp_account_request-form-modal.js', null, time(), true);
                     $ppcp_account_request_form_url = add_query_arg(array('testmode' => $this->setting_sandbox), 'https://d1kjd56jkqxpts.cloudfront.net/ppcp-account-request/index.html');
                     include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/ppcp_account_request_form.php');
+                    $paypal_vault_supported_country = angelleye_ppcp_apple_google_vault_supported_country();
                     ?>
                     <div class="paypal_woocommerce_product">
                         <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
@@ -543,7 +545,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 <p><?php echo sprintf(__('You’re currently set up and enjoying the benefits of %s. <br> Built by Angelleye.', 'paypal-for-woocommerce'), AE_PPCP_NAME); ?></p>
                                 <p><?php echo sprintf(__('However, we need additional verification to approve you for the reduced <br>rate of %s on debit/credit cards.', 'paypal-for-woocommerce'), $this->angelleye_ppcp_get_paypal_fee_structure($this->ppcp_paypal_country, 'acc')); ?></p>
                                 <p><?php echo __('To apply for a reduced rate, modify your setup, <br>or learn more about additional options, please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
-                                <?php if ($this->is_paypal_vault_approved === false && $this->ppcp_paypal_country === 'US') { ?>
+                                <?php if ($this->is_paypal_vault_approved === false &&  in_array($this->ppcp_paypal_country, $paypal_vault_supported_country)) { ?>
                                     <p><?php echo __('Your PayPal account is not approved for the Vault functionality<br>which is required for Subscriptions (token payments). <br>Please Reconnect your PayPal account to apply for this feature.', 'paypal-for-woocommerce'); ?></p>
                                 <?php } ?>
                                 <br>
@@ -555,7 +557,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 } else {
                                     $testmode = $this->sandbox ? 'yes' : 'no';
                                 }
-                                if ($this->is_paypal_vault_approved === false && $this->ppcp_paypal_country === 'US') {
+                                if ($this->is_paypal_vault_approved === false && in_array($this->ppcp_paypal_country, $paypal_vault_supported_country)) {
                                     $signup_link = $this->angelleye_get_signup_link_for_vault($testmode, 'admin_settings_onboarding');
                                     if ($signup_link) {
                                         $args = array(
@@ -595,6 +597,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                     if ($is_apple_pay_approved) {
                         AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoRegisterDomain();
                     }
+                    $paypal_vault_supported_country = angelleye_ppcp_apple_google_vault_supported_country();
                     ?>
                     <div class="paypal_woocommerce_product">
                         <div class="paypal_woocommerce_product_onboard" style="text-align:center;">
@@ -605,7 +608,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 <span><img class="green_checkmark" src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/green_checkmark.png'; ?>"></span>
                                 <p><?php echo sprintf(__('You’re currently set up and enjoying the benefits of %s. <br> Built by Angelleye.', 'paypal-for-woocommerce'), AE_PPCP_NAME); ?></p>
                                 <p><?php echo __('To modify your setup or learn more about additional options, <br> please use the buttons below.', 'paypal-for-woocommerce'); ?></p>
-                                <?php if ($this->is_paypal_vault_approved === false && $this->ppcp_paypal_country === 'US') { ?>
+                                <?php if ($this->is_paypal_vault_approved === false && in_array($this->ppcp_paypal_country, $paypal_vault_supported_country)) { ?>
                                     <p><?php echo __('Your PayPal account is not approved for the Vault functionality<br>which is required for Subscriptions (token payments). <br>Please Reconnect your PayPal account to apply for this feature.', 'paypal-for-woocommerce'); ?></p>
                                 <?php } ?>
                                 <br>
@@ -616,7 +619,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                                 } else {
                                     $testmode = $this->sandbox ? 'yes' : 'no';
                                 }
-                                if ($this->is_paypal_vault_approved === false && $this->ppcp_paypal_country === 'US') {
+                                if ($this->is_paypal_vault_approved === false && in_array($this->ppcp_paypal_country, $paypal_vault_supported_country)) {
                                     $signup_link = $this->angelleye_get_signup_link_for_vault($testmode, 'admin_settings_onboarding');
                                     if ($signup_link) {
                                         $args = array(

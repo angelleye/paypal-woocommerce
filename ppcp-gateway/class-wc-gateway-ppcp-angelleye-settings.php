@@ -322,18 +322,8 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             } else {
                 $available_endpoints = false;
             }
-            $google_pay_supported_country = [
-                'AU', 'AT', 'BE', 'BG', 'CA', 'CY', 'CZ', 'DK', 'EE', 'FI',
-                'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU',
-                'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
-                'GB', 'US'
-            ];
-            $apple_pay_supported_country = [
-                'AU', 'AT', 'BE', 'BG', 'CA', 'CY', 'CZ', 'DK', 'EE', 'FI',
-                'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU',
-                'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
-                'US', 'GB'
-            ];
+            $google_pay_supported_country = angelleye_ppcp_apple_google_vault_supported_country();
+            $apple_pay_supported_country = angelleye_ppcp_apple_google_vault_supported_country();
             $advanced_cc_text = '';
             $vaulting_advanced_text = '';
             $applePayText = '';
