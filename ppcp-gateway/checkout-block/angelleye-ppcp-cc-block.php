@@ -1,7 +1,6 @@
 <?php
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
-use WC_Gateway_CC_AngellEYE;
 
 final class AngellEYE_PPCP_CC_Block extends AbstractPaymentMethodType {
 

@@ -90,33 +90,39 @@ var { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistr
 
         const l = Object(u.getSetting)("angelleye_ppcp_cc_data", {});
         const p = () => Object(a.decodeEntities)(l.description || "");
-        const content = createElement(
-            "div",
-            {},
-            createElement("div", { id: "angelleye_ppcp_cc-card-number", className: "input-text wc-credit-card-form-card-number w48" }),
-            createElement("div", { id: "angelleye_ppcp_cc-card-expiry", className: "w48" }),
-            createElement("div", { id: "angelleye_ppcp_cc-card-cvc", className: "w48" })
-        );
         const ppcp_settings = angelleye_ppcp_manager_block.settins;
         const { is_order_confirm_page, is_paylater_enable_incart_page, page } = angelleye_ppcp_manager_block;
         const { useEffect } = window.wp.element;
         const Content = (props) => {
             console.log(props);
             const { eventRegistration, emitResponse, onSubmit } = props;
-            const { onPaymentSetup, onCheckoutValidation } = eventRegistration;
-            useEffect(() => {
+            const { onPaymentSetup} = eventRegistration;
+             useEffect(() => {
                 const unsubscribe = onPaymentSetup(async () => {
-                    jQuery(document.body).trigger('submit_paypal_cc_form');
                     wp.data.dispatch(wc.wcBlocksData.CHECKOUT_STORE_KEY).__internalSetIdle();
+                    jQuery(document.body).trigger('submit_paypal_cc_form');
+                    jQuery('.wc-block-components-checkout-place-order-button').append('<span class="wc-block-components-spinner" aria-hidden="true"></span>');
+                    jQuery('.wp-block-woocommerce-checkout, .wc-block-components-checkout-place-order-button').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                 });
             }, [onPaymentSetup]);
             return createElement(
-                "div",
-                {},
-                createElement("div", { id: "angelleye_ppcp_cc-card-number", className: "input-text wc-credit-card-form-card-number w48" }),
-                createElement("div", { id: "angelleye_ppcp_cc-card-expiry", className: "w48" }),
-                createElement("div", { id: "angelleye_ppcp_cc-card-cvc", className: "w48" })
-            );
+    "fieldset",
+    { id: "wc-angelleye_ppcp_cc-form", className: "wc-credit-card-form wc-payment-form" },
+    createElement("div", { className: "form-row form-row-wide" },
+        createElement("label", { htmlFor: "angelleye_ppcp_cc-card-number" }, "Card number"),
+        createElement("div", { id: "angelleye_ppcp_cc-card-number", className: "input-text wc-credit-card-form-card-number hosted-field-braintree" })
+    ),
+    createElement("div", { className: "form-row form-row-first" },
+        createElement("label", { htmlFor: "angelleye_ppcp_cc-card-expiry" }, "Expiration Date"),
+        createElement("div", { id: "angelleye_ppcp_cc-card-expiry", className: "input-text wc-credit-card-form-card-expiry hosted-field-braintree" })
+    ),
+    createElement("div", { className: "form-row form-row-last" },
+        createElement("label", { htmlFor: "angelleye_ppcp_cc-card-cvc" }, "Card Security Code"),
+        createElement("div", { id: "angelleye_ppcp_cc-card-cvc", className: "input-text wc-credit-card-form-card-cvc hosted-field-braintree" })
+    ),
+    createElement("div", { className: "clear" })
+);
+
         };
         const s = {
             name: "angelleye_ppcp_cc",
@@ -155,7 +161,8 @@ document.addEventListener('DOMContentLoaded', function () {
 jQuery(document).ready(function () {
     jQuery('input[name="radio-control-wc-payment-method-options"]').on('change', function (event) {
         if (jQuery(this).val() === 'angelleye_ppcp_cc') {
-            angelleyeOrder.renderPaymentButtons();
+            jQuery(document.body).trigger('ppcp_block_ready');
+            angelleyeOrder.renderHostedButtons();
         }
     }).change();
 });

@@ -70,17 +70,21 @@ const angelleyeOrder = {
 		return angelleye_ppcp_manager.constants && angelleye_ppcp_manager.constants[constantName] ? angelleye_ppcp_manager.constants[constantName] : defaultValue;
 	},
 	getCheckoutSelectorCss: () => {
-		let checkoutSelector = '.woocommerce';
-		if (angelleyeOrder.isCheckoutPage()) {
-			if (angelleye_ppcp_manager.is_pay_page === 'yes') {
-				checkoutSelector = 'form#order_review';
-			} else {
-				checkoutSelector = 'form.checkout';
-			}
-        } else if (angelleye_ppcp_manager.page === 'add_payment_method') {
-            checkoutSelector = 'form#add_payment_method';
-		}
-		return checkoutSelector;
+        let checkoutSelector = '.woocommerce';
+            if (angelleyeOrder.isCheckoutPage()) {
+                if (angelleye_ppcp_manager.is_pay_page === 'yes') {
+                        checkoutSelector = 'form#order_review';
+                } else {
+                        checkoutSelector = 'form.checkout';
+                }
+            } else if (angelleye_ppcp_manager.page === 'add_payment_method') {
+                checkoutSelector = 'form#add_payment_method';
+            }
+            if (jQuery(checkoutSelector).length === 0) {
+                checkoutSelector = 'form.wc-block-checkout__form';
+            }
+            
+            return checkoutSelector;
 	},
 	getWooNoticeAreaSelector: () => {
 		let wooNoticeClass = '.woocommerce-notices-wrapper:first';
@@ -169,6 +173,7 @@ const angelleyeOrder = {
 				shippingField.appendTo(formSelector);
 			}
 			formData = jQuery(formSelector).serialize();
+                        console.log('176 + ' + formData);
                         if(formData === '') {
                             formData = 'angelleye_ppcp_payment_method_title=' + jQuery('#angelleye_ppcp_payment_method_title').val();
                         }
@@ -376,6 +381,10 @@ const angelleyeOrder = {
 		} else if (angelleyeOrder.isCheckoutPage()) {
 			payment_method_element_selector = angelleyeOrder.getCheckoutSelectorCss();
 		}
+                if (jQuery(payment_method_element_selector).length === 0) {
+                    payment_method_element_selector = 'form.wc-block-checkout__form';
+                }
+                console.log(payment_method_element_selector);
 		return payment_method_element_selector;
 	},
 	setPaymentMethodSelector: (paymentMethod) => {
