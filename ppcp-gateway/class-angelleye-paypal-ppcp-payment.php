@@ -222,17 +222,16 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $body_request['purchase_units'][0]['invoice_id'] = $reference_id;
                 $body_request['purchase_units'][0]['custom_id'] = apply_filters('angelleye_ppcp_custom_id', $reference_id, '');
             }
+            $country_code = "";
+            $full_name = "";
             if (isset($cart['billing_address'])) {
-                $country_code = $cart['billing_address']['country'];
-                $full_name = $cart['billing_address']['first_name'] . ' ' . $cart['billing_address']['last_name'];
-            } else {
-                $country_code = '';
-                $full_name = '';
+                $country_code = isset($cart['billing_address']['country']) ? $cart['billing_address']['country'] : "";
+                $first_name = isset($cart['billing_address']['first_name']) ? $cart['billing_address']['first_name'] : "";
+                $last_name = isset($cart['billing_address']['last_name']) ? $cart['billing_address']['last_name'] : "";
+                $full_name = $first_name . ' ' . $last_name;
             }
             if (strtolower($payment_method) == 'ideal') {
-                $body_request['payment_source'] = [
-                    'ideal' => ["country_code" => strtoupper($country_code), 'name' => trim($full_name)]
-                ];
+                $body_request['payment_source'] = ['ideal' => ["country_code" => strtoupper($country_code), 'name' => trim($full_name)]];
                 $body_request['processing_instruction'] = 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL';
             }
             $body_request['purchase_units'][0]['soft_descriptor'] = angelleye_ppcp_get_value('soft_descriptor', $this->soft_descriptor);
