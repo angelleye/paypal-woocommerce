@@ -16,7 +16,8 @@ trait WC_Gateway_Base_AngellEYE
         $baseSupports = array_merge([
             'products',
             'refunds',
-            'pay_button'
+            'pay_button',
+            'pre-orders'
         ], $additionalSupports);
 
         if ($this->isSubscriptionsSupported()) {
@@ -45,6 +46,10 @@ trait WC_Gateway_Base_AngellEYE
         } else {
             $this->supports = $baseSupports;
         }
+    }
+    
+    public function is_paypal_vault_used_for_pre_order() {
+        return 'vault' === $this->setting_obj->get('woo_pre_order_payment_mode');
     }
 
     public function is_credentials_set(): bool {
