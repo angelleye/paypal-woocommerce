@@ -598,6 +598,7 @@ if (!function_exists('angelleye_ppcp_add_css_js')) {
 
     function angelleye_ppcp_add_css_js() {
         if (!wp_doing_ajax()) {
+            wp_enqueue_script('jquery-blockui');
             wp_enqueue_script('angelleye_ppcp-common-functions');
             wp_enqueue_script('angelleye_ppcp-apple-pay');
             wp_enqueue_script('angelleye_ppcp-google-pay');
