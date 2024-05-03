@@ -114,7 +114,6 @@ var { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistr
         Object(c.registerPaymentMethod)(s);
         const ppcp_settings = angelleye_ppcp_manager_block.settins;
         const { is_order_confirm_page, is_paylater_enable_incart_page, page } = angelleye_ppcp_manager_block;
-        console.log(angelleye_ppcp_manager_block);
         const commonExpressPaymentMethodConfig = {
             name: "angelleye_ppcp_top",
             label: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),

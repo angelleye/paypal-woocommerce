@@ -175,7 +175,25 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     } elseif ('checkout' === $request_from_page) {
                         if (isset($_POST) && !empty($_POST)) {
                             self::$is_user_logged_in_before_checkout = is_user_logged_in();
-                            AngellEye_Session_Manager::set('checkout_post', $_POST);
+                            $address = array();
+                            if(isset($_POST['address'])) {
+                                $address = array();
+                                $address_data = json_decode(stripslashes($_POST['address']), true);
+                                foreach ($address_data as $key => $address_value) {
+                                    foreach ($address_value as $sub_key => $value) {
+                                        $address[$key .'_'. $sub_key] = $value;
+                                    }
+                                }
+                                if(isset($_POST['angelleye_ppcp_payment_method_title'])) {
+                                    $address['angelleye_ppcp_payment_method_title'] = wc_clean($_POST['angelleye_ppcp_payment_method_title']);
+                                }
+                                if(isset($_POST['radio-control-wc-payment-method-options'])) {
+                                    $address['radio-control-wc-payment-method-options'] = wc_clean($_POST['radio-control-wc-payment-method-options']);
+                                    $address['payment_method'] = wc_clean($_POST['radio-control-wc-payment-method-options']);
+                                }
+                                AngellEye_Session_Manager::set('checkout_post', $address);
+                                $_POST = $address;
+                            }
                             add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), PHP_INT_MAX, 2);
                             WC()->checkout->process_checkout();
                             if (wc_notice_count('error') > 0) {
