@@ -93,7 +93,7 @@ var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
                 const ppcp_settings = angelleye_ppcp_manager_block.settins;
                 const {is_order_confirm_page, is_paylater_enable_incart_page, page} = angelleye_ppcp_manager_block;
                 const {useEffect} = window.wp.element;
-                const Content = (props) => {
+                const Content_PPCP_CC = (props) => {
                     const {eventRegistration, emitResponse, onSubmit, billing, shippingData} = props;
                     const {onPaymentSetup} = eventRegistration;
                     useEffect(() => {
@@ -133,7 +133,7 @@ var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
                     label: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
                     icons: ["https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png"],
                     placeOrderButtonLabel: Object(i.__)(angelleye_ppcp_cc_manager_block.placeOrderButtonLabel),
-                    content: createElement(Content, null),
+                    content: createElement(Content_PPCP_CC, null),
                     edit: Object(r.createElement)(p, null),
                     canMakePayment: () => Promise.resolve(true),
                     ariaLabel: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),

@@ -23,7 +23,11 @@ const angelleyeOrder = {
         return url.searchParams.has('paypal_order_id');
     },
     getSelectedPaymentMethod: () => {
-        return jQuery('input[name="payment_method"]:checked').val();
+        if (jQuery('input[name="payment_method"]').length) {
+            return jQuery('input[name="payment_method"]:checked').val();
+        } else if(jQuery('input[name="radio-control-wc-payment-method-options"]').length) {
+            return jQuery('input[name="radio-control-wc-payment-method-options"]:checked').val();
+        }
     },
     isApplePayPaymentMethodSelected: () => {
         return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp_apple_pay';
@@ -349,6 +353,7 @@ const angelleyeOrder = {
         jQuery('#angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay, #angelleye_ppcp_checkout_google_pay').hide();
     },
     hideShowPlaceOrderButton: () => {
+        console.log('352');
         let selectedPaymentMethod = angelleyeOrder.getSelectedPaymentMethod();
         console.log('hideShowPlaceOrderButton', selectedPaymentMethod)
         let isAePpcpMethodSelected = angelleyeOrder.isAngelleyePpcpPaymentMethodSelected();
@@ -408,15 +413,18 @@ const angelleyeOrder = {
         });
     },
     renderSmartButton: () => {
+        console.log('412');
         console.log('render smart buttons');
         jQuery.each(angelleye_ppcp_manager.button_selector, function (key, angelleye_ppcp_button_selector) {
             console.log(angelleye_ppcp_button_selector);
             if (!jQuery(angelleye_ppcp_button_selector).length || jQuery(angelleye_ppcp_button_selector).children().length) {
                 return;
             }
+            console.log('419');
             if (typeof angelleye_paypal_sdk === 'undefined') {
                 return;
             }
+            console.log('423');
             let angelleye_ppcp_style = {
                 layout: angelleye_ppcp_manager.style_layout,
                 color: angelleye_ppcp_manager.style_color,
@@ -429,7 +437,7 @@ const angelleyeOrder = {
             if (angelleye_ppcp_manager.style_layout !== 'vertical') {
                 angelleye_ppcp_style['tagline'] = (angelleye_ppcp_manager.style_tagline === 'yes') ? true : false;
             }
-
+            console.log('436');
             let errorLogId = null;
             angelleye_paypal_sdk.Buttons({
                 style: angelleye_ppcp_style,
@@ -824,6 +832,7 @@ const angelleyeOrder = {
         }
     },
     renderPaymentButtons: (address) => {
+        console.log('827');
         angelleyeOrder.hideShowPlaceOrderButton();
         angelleyeOrder.renderSmartButton();
         if (angelleyeOrder.isHostedFieldEligible() === true) {
@@ -853,6 +862,9 @@ const angelleyeOrder = {
             });
             jQuery(document.body).on('trigger_angelleye_ppcp_cc', function (event, address) {
                 angelleyeOrder.renderPaymentButtons(address);
+            });
+            jQuery(document.body).on('trigger_angelleye_ppcp', function (event, address) {
+                angelleyeOrder.renderPaymentButtons();
             });
         },
         handleRaceConditionOnWooHooks: () => {

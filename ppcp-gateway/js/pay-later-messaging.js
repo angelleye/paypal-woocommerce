@@ -92,7 +92,7 @@ const payLaterMessaging = {
         script_attributes: angelleye_ppcp_manager.paypal_sdk_attributes
     }, function () {
         console.log('PayPal lib loaded, initialize pay later messaging.');
-        jQuery(document.body).on('ppcp_block_ready', async function () {
+        jQuery(document.body).on('ppcp_block_ready, ppcp_block_paylater_ready', async function () {
             payLaterMessaging.init();
         });
         payLaterMessaging.init();
