@@ -2,6 +2,8 @@ var {createElement} = wp.element;
 var {registerPlugin} = wp.plugins;
 var {ExperimentalOrderMeta} = wc.blocksCheckout;
 var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
+var {addAction} = wp.hooks;
+
 (function (e) {
     var t = {};
     function n(o) {
@@ -87,14 +89,36 @@ var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
                 const l = Object(u.getSetting)("angelleye_ppcp_data", {});
                 const p = () => Object(a.decodeEntities)(l.description || "");
                 const {useEffect} = window.wp.element;
-                const Content_PPCP_Smart_Button = () => {
+
+                const {extensionCartUpdate} = window.wc.blocksCheckout;
+                const {dispatch, select} = wp.data;
+                const {CHECKOUT_STORE_KEY} = window.wc.wcBlocksData;
+                const checkoutStore = select(CHECKOUT_STORE_KEY);
+                const Content_PPCP_Smart_Button = (props) => {
+                    const {eventRegistration, emitResponse, onSubmit, billing, shippingData} = props;
+                    const {onPaymentSetup} = eventRegistration;
+                   
+                    jQuery(document.body).on('ppcp_checkout_updated', function () {
+                         let address = {
+                            'billing': billing.billingAddress,
+                            'shipping': shippingData.shippingAddress
+                        };
+                        console.log(address);
+                        angelleyeOrder.renderPaymentButtons(address);
+                    });
                     useEffect(() => {
-                        jQuery(document.body).trigger('trigger_angelleye_ppcp');
+                         let address = {
+                            'billing': billing.billingAddress,
+                            'shipping': shippingData.shippingAddress
+                        };
+                        angelleyeOrder.renderPaymentButtons(address);
                     }, []);
+
+                    //
                     return createElement(
                             "div",
                             {id: "angelleye_ppcp_checkout"}
-                            );
+                    );
                 };
                 const Content_PPCP_Smart_Button_Express = () => {
                     useEffect(() => {
@@ -119,7 +143,6 @@ var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
                 };
                 Object(c.registerPaymentMethod)(s);
                 const ppcp_settings = angelleye_ppcp_manager_block.settins;
-                console.log(ppcp_settings);
                 const {is_order_confirm_page, is_paylater_enable_incart_page, page} = angelleye_ppcp_manager_block;
                 const commonExpressPaymentMethodConfig = {
                     name: "angelleye_ppcp_top",
@@ -161,5 +184,14 @@ var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
 document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
         jQuery(document.body).trigger('ppcp_block_ready');
-    }, 1000);
+    }, 2000);
 });
+
+addAction('experimental__woocommerce_blocks-checkout-set-shipping-address', 'c', function () {
+    jQuery(document.body).trigger('ppcp_checkout_updated');
+});
+addAction('experimental__woocommerce_blocks-checkout-set-billing-address', 'd', function () {
+    jQuery(document.body).trigger('ppcp_checkout_updated');
+});
+
+
