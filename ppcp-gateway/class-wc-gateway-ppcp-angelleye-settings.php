@@ -2109,6 +2109,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => 'everything'
                 )
             );
+            if(class_exists('WC_Pre_Orders') === false) {
+                unset($this->angelleye_ppcp_gateway_setting['woo_pre_order']);
+                unset($this->angelleye_ppcp_gateway_setting['woo_pre_order_payment_mode']);
+            }
             if (wc_ship_to_billing_address_only() === true) {
                 unset($this->angelleye_ppcp_gateway_setting['set_billing_address']);
             }
