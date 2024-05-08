@@ -7,8 +7,10 @@ final class AngellEYE_PPCP_CC_Block extends AbstractPaymentMethodType {
     private $gateway;
     protected $name = 'angelleye_ppcp_cc';
     public $pay_later;
+    public $version;
 
     public function initialize() {
+        $this->version = VERSION_PFW;
         $this->settings = get_option('woocommerce_angelleye_ppcp_settings', []);
         $this->gateway = new WC_Gateway_CC_AngellEYE();
         if (!class_exists('AngellEYE_PayPal_PPCP_Pay_Later')) {
@@ -22,6 +24,7 @@ final class AngellEYE_PPCP_CC_Block extends AbstractPaymentMethodType {
     }
 
     public function get_payment_method_script_handles() {
+        wp_register_style('angelleye_ppcp', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/wc-gateway-ppcp-angelleye-public.css', array(), $this->version, 'all');
         angelleye_ppcp_add_css_js();
         $this->pay_later->add_pay_later_script_in_frontend();
         wp_register_script('angelleye_ppcp_cc-blocks-integration', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/checkout-block/ppcp-cc.js', array(), VERSION_PFW, true);

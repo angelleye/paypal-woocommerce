@@ -104,7 +104,6 @@ var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
             useEffect(() => {
                 jQuery(document.body).trigger('trigger_angelleye_ppcp_cc');
                 jQuery(document.body).on('ppcp_cc_checkout_updated', function () {
-                    console.log('101');
                     let address = {
                         'billing': billing.billingAddress,
                         'shipping': shippingData.shippingAddress
@@ -118,7 +117,7 @@ var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
                     wp.data.dispatch(wc.wcBlocksData.CHECKOUT_STORE_KEY).__internalSetIdle();
                     jQuery(document.body).trigger('submit_paypal_cc_form');
                     jQuery('.wc-block-components-checkout-place-order-button').append('<span class="wc-block-components-spinner" aria-hidden="true"></span>');
-                    jQuery('.wp-block-woocommerce-checkout, .wc-block-components-checkout-place-order-button').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
+                    jQuery('.wc-block-components-checkout-place-order-button, .wp-block-woocommerce-checkout-fields-block #contact-fields, .wp-block-woocommerce-checkout-fields-block #billing-fields, .wp-block-woocommerce-checkout-fields-block #payment-method').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
                 });
             }, [onPaymentSetup]);
             return createElement(
@@ -186,7 +185,6 @@ const ppcp_cc_uniqueEvents = new Set([
 
 ppcp_cc_uniqueEvents.forEach(function(action) {
     addAction(action, 'c', function () {
-        jQuery('#wc-angelleye_ppcp_cc-form').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
         setTimeout(function () {
             jQuery(document.body).trigger('ppcp_cc_checkout_updated');
         }, 1500);

@@ -12,7 +12,7 @@
     margin: 10px 0px 12px;
     text-align: center;
 }
-.angelleye_ppcp-order-review .woocommerce-checkout #payment ul.payment_methods {
+.angelleye_ppcp-order-review .woocommerce-checkout #payment ul.payment_methods, .angelleye_ppcp-order-review #payment-method  {
     display: none;
 }
 .angelleye_ppcp_shipping_details, .angelleye_ppcp_billing_details {
