@@ -142,13 +142,13 @@ var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
 
         const s = {
             name: "angelleye_ppcp_cc",
-            label: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
+            label: Object(a.decodeEntities)(l.cc_title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
             icons: ["https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png"],
             placeOrderButtonLabel: Object(i.__)(angelleye_ppcp_cc_manager_block.placeOrderButtonLabel),
             content: createElement(Content_PPCP_CC, null),
             edit: Object(r.createElement)(p, null),
             canMakePayment: () => Promise.resolve(true),
-            ariaLabel: Object(a.decodeEntities)(l.title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
+            ariaLabel: Object(a.decodeEntities)(l.cc_title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
             supports: {
                 features: null !== (o = l.supports) && void 0 !== o ? o : [],
                 showSavedCards: false,
