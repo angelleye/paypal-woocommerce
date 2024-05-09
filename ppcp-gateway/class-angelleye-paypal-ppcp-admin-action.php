@@ -432,6 +432,8 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     if (isset($this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) && 'PARTIALLY_CAPTURED' === $this->payment_response['purchase_units']['0']['payments']['authorizations']['0']['status']) {
                         if ($this->ae_refund_amount < $this->ae_capture_amount) {
                             $this->angelleye_ppcp_order_actions['refund'] = __('Refund', '');
+                            $this->angelleye_ppcp_order_actions['void'] = __('Void Authorization', '');
+                            $this->angelleye_ppcp_order_actions['capture'] = __('Capture Funds', '');
                         }
                         if ($order_total_amount > $this->ae_capture_amount) {
                             $this->angelleye_ppcp_order_actions['capture'] = __('Capture Funds', '');
