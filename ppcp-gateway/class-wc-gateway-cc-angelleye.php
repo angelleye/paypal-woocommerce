@@ -80,6 +80,21 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         }
         return  implode('', $images) . '<div class="ppcp-clearfix"></div>';
     }
+    
+    public function get_block_icon() {
+        $icons = $this->setting_obj->get('disable_cards', array());
+        $title_options = $this->card_labels();
+        $images = [];
+        foreach ($title_options as $icon_key => $icon_value) {
+            if (!in_array($icon_key, $icons)) {
+                if ($this->dcc_applies->can_process_card($icon_key)) {
+                    $iconUrl = esc_url(PAYPAL_FOR_WOOCOMMERCE_ASSET_URL) . 'ppcp-gateway/images/' . esc_attr($icon_key) . '.svg';
+                    $images[] = $iconUrl;
+                }
+            }
+        }
+        return $images;
+    }
 
     private function card_labels(): array {
         return array(

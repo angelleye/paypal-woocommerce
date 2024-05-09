@@ -73,6 +73,7 @@ final class AngellEYE_PPCP_Checkout_Block extends AbstractPaymentMethodType {
             'title' => $this->get_setting('title'),
             'description' => $this->get_setting('description'),
             'supports' => $this->get_supported_features(),
+            'icon' => $this->gateway->icon
         ];
     }
 }

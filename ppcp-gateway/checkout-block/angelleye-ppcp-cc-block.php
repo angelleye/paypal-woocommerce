@@ -74,6 +74,7 @@ final class AngellEYE_PPCP_CC_Block extends AbstractPaymentMethodType {
             'cc_title' => $this->get_setting('advanced_card_payments_title'),
             'description' => $this->get_setting('description'),
             'supports' => $this->get_supported_features(),
+            'icons' => $this->gateway->get_block_icon()
         ];
     }
 }
