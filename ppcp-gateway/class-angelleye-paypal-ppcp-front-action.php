@@ -176,7 +176,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         if (isset($_POST) && !empty($_POST)) {
                             self::$is_user_logged_in_before_checkout = is_user_logged_in();
                             $address = array();
-                            if(isset($_POST['address'])) {
+                            if(isset($_POST['address']) && strlen($_POST['address']) > 2) {
                                 $address = array();
                                 $address_data = json_decode(stripslashes($_POST['address']), true);
                                 foreach ($address_data as $key => $address_value) {
