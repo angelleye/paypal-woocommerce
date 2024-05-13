@@ -127,7 +127,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.4.31 - 05.13.2024 =
+= 4.4.33 - 05.13.2024 =
+  * Tweak - Adjust Update Cart and Checkout address issue. ([PFW-1799](https://github.com/angelleye/paypal-woocommerce/pull/2042))
+
+= 4.4.32 - 05.13.2024 =
  * Tweak - Adjust Auth and capture procedure. ([PFW-1798](https://github.com/angelleye/paypal-woocommerce/pull/2041))
 
 = 4.4.31 - 05.13.2024 =
