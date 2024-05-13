@@ -14,6 +14,7 @@
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.8
  * Tested up to: 6.5
+ * Requires Plugins: woocommerce
  * WC requires at least: 3.0.0
  * WC tested up to: 8.7.0
  *
