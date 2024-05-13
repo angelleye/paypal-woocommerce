@@ -71,11 +71,10 @@ function canShowPlaceOrderBtn() {
 }
 
 function showHidePlaceOrderBtn() {
-    // console.log(canShowPlaceOrderBtn(), abc.sss);
     if (canShowPlaceOrderBtn()) {
-        jQuery('#place_order').removeClass('hide_place_order_btn').show();
+        jQuery('#place_order, .wc-block-components-checkout-place-order-button').removeClass('hide_place_order_btn').show();
     } else {
-        jQuery('#place_order').addClass('hide_place_order_btn').hide();
+        jQuery('#place_order, .wc-block-components-checkout-place-order-button').addClass('hide_place_order_btn').hide();
     }
 }
 

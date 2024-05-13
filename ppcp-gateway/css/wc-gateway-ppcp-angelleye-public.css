@@ -1,6 +1,10 @@
 .angelleye_ppcp-button-container {
     text-align: center;
     min-width: 305px;
+    border-bottom: none !important;
+}
+.angelleye_ppcp-button-container div {
+    border-bottom: none !important;
 }
 .angelleye_ppcp-proceed-to-checkout-button-separator {
     display:inline-block;
@@ -8,7 +12,7 @@
     margin: 10px 0px 12px;
     text-align: center;
 }
-.angelleye_ppcp-order-review .woocommerce-checkout #payment ul.payment_methods {
+.angelleye_ppcp-order-review .woocommerce-checkout #payment ul.payment_methods, .angelleye_ppcp-order-review #payment-method  {
     display: none;
 }
 .angelleye_ppcp_shipping_details, .angelleye_ppcp_billing_details {
@@ -365,6 +369,9 @@ apple-pay-button {
 .angelleye_ppcp-order-review .woocommerce-checkout .wfacp-comm-title {
     display: none !important;
 }
+#express-payment-method-angelleye_ppcp_top {
+  list-style: none;
+}
 .woocommerce-checkout #payment #wc-angelleye_ppcp_cc-form div.form-row, .woocommerce-checkout #payment div.payment_box #wc-angelleye_ppcp_cc-form .form-row.form-row-first {
     padding: 3px;
 }  
@@ -380,4 +387,7 @@ apple-pay-button {
         margin: 0 auto;
         min-width: auto;
     }
+}
+.w48 {
+    height: 48px;
 }
