@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.5
-Stable tag: 4.4.28
+Tested up to: 6.5.3
+Stable tag: 4.4.33
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,25 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.4.33 - 05.13.2024 =
+  * Tweak - Adjust Update Cart and Checkout address issue. ([PFW-1799](https://github.com/angelleye/paypal-woocommerce/pull/2042))
+
+= 4.4.32 - 05.13.2024 =
+ * Tweak - Adjust Auth and capture procedure. ([PFW-1798](https://github.com/angelleye/paypal-woocommerce/pull/2041))
+
+= 4.4.31 - 05.13.2024 =
+ * Feature - Adds hide/show pre order settings. ([PFW-1797](https://github.com/angelleye/paypal-woocommerce/pull/2040))
+ * Feature - Adds Requires Plugins as woocommerce. ([PFW-1794](https://github.com/angelleye/paypal-woocommerce/pull/2039))
+ * Feature - Adds WooCommerce Block compatibility on Cart and Checkout pages. ([PFW-635](https://github.com/angelleye/paypal-woocommerce/pull/2017))
+
+= 4.4.30 - 04.29.2024 =
+* Feature - Adds WooCommerce Pre-Orders compatibility. ([PFW-1477](https://github.com/angelleye/paypal-woocommerce/pull/2038))
+
+= 4.4.29 - 04.29.2024 =
+* Tweak - Remove old and obsolete notice from WP admin. ([PFW-1795](https://github.com/angelleye/paypal-woocommerce/pull/2037))
+* Tweak - Adds jquery-blockui if someone remove it. ([PFW-1561](https://github.com/angelleye/paypal-woocommerce/pull/2036))
+* Tweak - PHP Notice. ([PFW-1535](https://github.com/angelleye/paypal-woocommerce/pull/2035))
 
 = 4.4.28 - 04.10.2024 =
 * Fix - CheckoutWC Compatibility Issues. ([PFW-1792](https://github.com/angelleye/paypal-woocommerce/pull/2034))

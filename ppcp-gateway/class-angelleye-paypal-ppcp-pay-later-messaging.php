@@ -3,7 +3,7 @@
 defined('ABSPATH') || exit;
 
 class AngellEYE_PayPal_PPCP_Pay_Later {
-
+    use WC_PPCP_Pre_Orders_Trait;
     public $setting_obj;
     public $api_log;
     public $settings;
@@ -141,7 +141,7 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         return false;
     }
 
-    private function add_pay_later_script_in_frontend() {
+    public function add_pay_later_script_in_frontend() {
         $script_versions = empty($this->minified_version) ? time() : VERSION_PFW;
         wp_register_script('angelleye-pay-later-messaging', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/pay-later-messaging' . $this->minified_version . '.js', array('jquery', 'angelleye-paypal-checkout-sdk'), $script_versions, true);
 
@@ -180,6 +180,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_pay_later_messaging_home_page_content($content) {
+        if($this->is_pre_order_item_in_cart()) {
+            return false;
+        }
         if (angelleye_ppcp_is_cart_contains_subscription() !== true && (is_home() || is_front_page())) {
             $this->add_pay_later_script_in_frontend();
             return '<div class="angelleye_ppcp_message_home"></div>' . $content;
@@ -188,6 +191,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_pay_later_messaging_home_page() {
+        if($this->is_pre_order_item_in_cart()) {
+            return false;
+        }
         if (angelleye_ppcp_is_cart_contains_subscription() !== true && is_shop()) {
             $this->add_pay_later_script_in_frontend();
             echo '<div class="angelleye_ppcp_message_home"></div>';
@@ -196,6 +202,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_pay_later_messaging_category_page() {
+        if($this->is_pre_order_item_in_cart()) {
+            return false;
+        }
         if (angelleye_ppcp_is_cart_contains_subscription() !== true && is_shop() === false && $this->pay_later_messaging_category_shortcode === false) {
             $this->add_pay_later_script_in_frontend();
             echo '<div class="angelleye_ppcp_message_category"></div>';
@@ -206,6 +215,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     public function angelleye_ppcp_pay_later_messaging_product_page() {
         try {
             global $product;
+            if($this->is_pre_order_product_charged_upon_release($product)) {
+                return false;
+            }
             if ($product->is_type(array('subscription', 'subscription_variation', 'variable-subscription'))) {
                 return false;
             }
@@ -220,6 +232,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_pay_later_messaging_cart_table() {
+        if($this->is_pre_order_item_in_cart()) {
+            return false;
+        }
         if (!WC()->cart->is_empty() && angelleye_ppcp_is_cart_contains_subscription() !== true && WC()->cart->needs_payment()) {
             echo '<div class="angelleye_ppcp_message_cart"></div>';
         }
@@ -227,6 +242,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_pay_later_messaging_cart_page() {
+        if($this->is_pre_order_item_in_cart()) {
+            return false;
+        }
         if (!WC()->cart->is_empty() && angelleye_ppcp_is_cart_contains_subscription() !== true && WC()->cart->needs_payment()) {
             $this->add_pay_later_script_in_frontend();
             echo '<div class="angelleye_ppcp_message_cart"></div>';
@@ -235,6 +253,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function angelleye_ppcp_pay_later_messaging_payment_page() {
+        if($this->is_pre_order_item_in_cart()) {
+            return false;
+        }
         if (WC()->cart->is_empty() || angelleye_ppcp_has_active_session() || angelleye_ppcp_is_cart_contains_subscription() === true) {
             return false;
         }
@@ -245,6 +266,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
     }
 
     public function is_paypal_pay_later_messaging_enable_for_page($page = '') {
+        if($this->enabled_pay_later_messaging === false && $this->is_valid_for_use() === false) {
+            return false;
+        }
         if (empty($page)) {
             return false;
         }

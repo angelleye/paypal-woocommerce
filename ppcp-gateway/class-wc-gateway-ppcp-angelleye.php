@@ -2,6 +2,7 @@
 
 class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     use WC_Gateway_Base_AngellEYE;
+    use WC_PPCP_Pre_Orders_Trait;
     const PAYMENT_METHOD = 'angelleye_ppcp';
     public static $_instance;
     public $settings_fields;
@@ -375,6 +376,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function process_payment($woo_order_id) {
         try {
             $order = wc_get_order($woo_order_id);
+            if($this->has_pre_order($woo_order_id) && $this->is_paypal_vault_used_for_pre_order() && $this->has_pre_order_charged_upon_release($woo_order_id)) {
+                return $this->angelleye_ppcp_process_free_signup_with_free_trial($woo_order_id);
+            }
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             $order = wc_get_order($woo_order_id);
             $angelleye_ppcp_paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
@@ -459,6 +463,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     }
                 } elseif ($this->checkout_disable_smart_button === true) {
                     $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
+                    if (ob_get_length()) {
+                        ob_end_clean();
+                    }
+                    return $result;
+                } else {
+                    $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id, $return_url = true);
                     if (ob_get_length()) {
                         ob_end_clean();
                     }

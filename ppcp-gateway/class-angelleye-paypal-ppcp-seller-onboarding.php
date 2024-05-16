@@ -187,7 +187,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_generate_signup_link_for_migration($testmode, $products) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
-        if ($this->ppcp_paypal_country === 'US' && angelleye_ppcp_is_subscription_support_enabled() === true) {
+        if (in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && angelleye_ppcp_is_subscription_support_enabled() === true) {
             $body = $this->ppcp_vault_data();
         } else {
             $body = $this->default_data();
@@ -506,36 +506,6 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                             }
                         }
                     }
-                } else {
-                    if (isset($seller_onboarding_status['country']) && 'US' === $seller_onboarding_status['country']) {
-                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __(
-                                sprintf(
-                                        'We see that you are running WooCommerce Subscriptions.<br>
-                                        Unfortunately, your PayPal account was not instantly approved for the %s Vault, which is required for Subscriptions functionality.<br>
-                                        As such, you will not be able to update to %s until your account is fully approved for the PayPal Vault feature.<br>
-                                        No changes have been made, and you can continue running PayPal Classic.<br>
-                                        Please try this wizard again in 2 - 3 business days. If the problem persists, please submit a <a target="_blank" href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">support ticket</a> and we can help you get it approved.',
-                                        AE_PPCP_NAME,
-                                        AE_PPCP_NAME
-                                )
-                        );
-                    } else {
-                        $country = WC()->countries->countries[$country];
-                        $this->angelleye_ppcp_migration_wizard_notice_data['error'][] = __(
-                                sprintf(
-                                        'You are currently running WooCommerce Subscriptions.<br>
-                                        Unfortunately, the PayPal Vault feature (which is required for Subscriptions / Token Payments) is only currently available for United States PayPal accounts.<br>
-                                        Your PayPal account is based in %s. As such, you cannot upgrade to %s Platform at this time.<br>
-                                        Please look for future updates and details about when the PayPal Vault is available in your country.<br>
-                                        For now, you will remain on %s.<br>
-                                        Feel free to submit a <a target="_blank" href="https://angelleye.atlassian.net/servicedesk/customer/portal/1/group/1/create/1">support ticket</a> if you have any questions or concerns.',
-                                        $country,
-                                        AE_PPCP_NAME,
-                                        AE_PPCP_NAME
-                                )
-                        );
-                    }
-                    update_option($this->angelleye_ppcp_migration_wizard_notice_key, $this->angelleye_ppcp_migration_wizard_notice_data);
                 }
                 unset($_GET);
                 wp_safe_redirect($redirect_url, 302);
