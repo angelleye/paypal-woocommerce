@@ -32,11 +32,11 @@ if (!class_exists('WC_Email_PayPal_Onboard_Seller_Invitation', false)) :
         }
 
         public function get_default_subject() {
-            return __('[{site_title}]: PayPal Seller Onboarding.', 'paypal-for-woocommerce');
+            return __('{site_title} - Invitation to Connect PayPal Account', 'paypal-for-woocommerce');
         }
 
         public function get_default_heading() {
-            return __('One step away from receiving funds on your PayPal account.', 'paypal-for-woocommerce');
+            return __('Connect PayPal Account to {site_title}', 'paypal-for-woocommerce');
         }
 
         public function trigger($post_id) {
@@ -78,7 +78,11 @@ if (!class_exists('WC_Email_PayPal_Onboard_Seller_Invitation', false)) :
         }
 
         public function get_default_additional_content() {
-            return __('If you haven’t linked your account within a few hours, the invitation link will be expired.', 'paypal-for-woocommerce');
+            return __('This invitation link will expire in 24 hours and will need to be re-sent if you have not connected your account in that time.
+
+We look forward to our partnership together!
+
+- {site_title}', 'paypal-for-woocommerce');
         }
 
         /**

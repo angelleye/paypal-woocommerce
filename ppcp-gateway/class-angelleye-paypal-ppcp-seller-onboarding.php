@@ -802,7 +802,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         if (function_exists('woocommerce_output_all_notices')) {
             if (false !== get_transient('angelleye_ppcp_multi_account_seller_onboarding_process_done')) {
                 if (function_exists('wc_add_notice')) {
-                    wc_add_notice(__("PayPal onboarding process successfully completed.", 'paypal-for-woocommerce'), 'success');
+                    wc_add_notice(__('Your PayPal account has been connected successfully and you are ready to rock!  You may now list your products/services for sale on [StoreName] and payments will be sent directly to you.', 'paypal-for-woocommerce'), 'success');
                     delete_transient('angelleye_ppcp_multi_account_seller_onboarding_process_done');
                 }
             }

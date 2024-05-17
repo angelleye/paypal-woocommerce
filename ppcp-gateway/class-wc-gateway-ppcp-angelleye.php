@@ -598,7 +598,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     public function angelleye_ppcp_admin_notices() {
         $is_saller_onboarding_done = false;
         $is_saller_onboarding_failed = false;
-        $onboarding_success_message = __('PayPal onboarding process successfully completed.', 'paypal-for-woocommerce');
+        $onboarding_success_message = __('Your PayPal account has been connected successfully and you are ready to rock!  You may now list your products/services for sale on [StoreName] and payments will be sent directly to you.', 'paypal-for-woocommerce');
         if (false !== get_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done')) {
             $is_saller_onboarding_done = true;
             delete_transient('angelleye_ppcp_sandbox_seller_onboarding_process_done');
