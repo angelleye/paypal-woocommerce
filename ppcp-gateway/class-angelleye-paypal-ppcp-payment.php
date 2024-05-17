@@ -1270,8 +1270,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $response_code = __('Processor response code Result', 'paypal-for-woocommerce');
                             $response_code .= "\n";
                             $response_code .= $processor_response['response_code'];
-                            if (angelleye_ppcp_processor_response_code($processor_response['response_code'])) {
-                                $response_code .= ' : ' . angelleye_ppcp_processor_response_code($processor_response['response_code']);
+                            if (isset($this->response_code[$processor_response['response_code']])) {
+                                $response_code .= ' : ' . $this->response_code[$processor_response['response_code']];
                             }
                             $order->add_order_note($response_code);
                         }
