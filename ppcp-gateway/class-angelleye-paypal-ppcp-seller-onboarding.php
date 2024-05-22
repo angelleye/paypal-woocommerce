@@ -171,7 +171,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                         $signup_link = isset($link['href']) ? $link['href'] : false;
                         if ($signup_link) {
                             $url = add_query_arg($args, $signup_link);
-                            $this->angelleye_display_paypal_signup_button($url, 'paypal_onbard', 'Get Start');
+                            $this->angelleye_display_paypal_signup_button($url, 'paypal_onbard', '[CONNECT MY PAYPAL ACCOUNT]');
                         } else {
                             echo __('We could not properly connect to PayPal', '');
                         }
@@ -802,7 +802,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         if (function_exists('woocommerce_output_all_notices')) {
             if (false !== get_transient('angelleye_ppcp_multi_account_seller_onboarding_process_done')) {
                 if (function_exists('wc_add_notice')) {
-                    wc_add_notice(__('Your PayPal account has been connected successfully and you are ready to rock!  You may now list your products/services for sale on [StoreName] and payments will be sent directly to you.', 'paypal-for-woocommerce'), 'success');
+                    wc_add_notice(sprintf(esc_html__('Just one more step to connect your PayPal account to %s and begin receiving payments for your products and services.', 'paypal-for-woocommerce'), wp_specialchars_decode(get_option('blogname'), ENT_QUOTES)), 'success');
                     delete_transient('angelleye_ppcp_multi_account_seller_onboarding_process_done');
                 }
             }

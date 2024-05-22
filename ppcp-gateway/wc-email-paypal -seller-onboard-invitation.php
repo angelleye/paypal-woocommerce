@@ -14,9 +14,9 @@ if (!class_exists('WC_Email_PayPal_Onboard_Seller_Invitation', false)) :
             $this->id = 'paypal_onboard_seller_invitation';
 
             $this->title = __('PayPal Onboard Seller Invitation', 'paypal-for-woocommerce');
-            $this->description = __('PayPal onboard seller invitation emails are sent to chosen recipient(s) when a new account added in Multi-account plugin.', 'paypal-for-woocommerce');
-            $this->template_html = 'emails/angelleye-paypal -seller-onboard-invitation.php';
-            $this->template_plain = 'emails/plain/angelleye-paypal -seller-onboard-invitation.php';
+            $this->description = __('PayPal onboard seller invitation emails are sent to seller when a new account added in Multi-account plugin.', 'paypal-for-woocommerce');
+            $this->template_html = 'emails/angelleye-paypal-seller-onboard-invitation.php';
+            $this->template_plain = 'emails/plain/angelleye-paypal-seller-onboard-invitation.php';
             $this->placeholders = array();
 
             // Triggers for this email.
@@ -97,15 +97,6 @@ We look forward to our partnership together!
                     'type' => 'checkbox',
                     'label' => __('Enable this email notification', 'paypal-for-woocommerce'),
                     'default' => 'yes',
-                ),
-                'recipient' => array(
-                    'title' => __('Recipient(s)', 'paypal-for-woocommerce'),
-                    'type' => 'text',
-                    /* translators: %s: WP admin email */
-                    'description' => sprintf(__('Enter recipients (comma separated) for this email. Defaults to %s.', 'paypal-for-woocommerce'), '<code>' . esc_attr(get_option('admin_email')) . '</code>'),
-                    'placeholder' => '',
-                    'default' => '',
-                    'desc_tip' => true,
                 ),
                 'subject' => array(
                     'title' => __('Subject', 'paypal-for-woocommerce'),
