@@ -743,8 +743,9 @@ if (!function_exists('angelleye_ppcp_get_order_total')) {
                     } else {
                         return 0;
                     }
+                } else {
+                    $total = (float) $order->get_total();
                 }
-                $total = (float) $order->get_total();
             } elseif (isset(WC()->cart) && 0 < WC()->cart->total) {
                 $total = (float) WC()->cart->total;
             }
@@ -1060,6 +1061,7 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
             return $notice_type;
         }
     }
+
 }
 
 
@@ -1111,7 +1113,7 @@ if (!empty($change_proceed_checkout_button_text)) {
             global $change_proceed_checkout_button_text;
             ?>
             <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button alt wc-forward<?php echo esc_attr(wc_wp_theme_get_element_class_name('button') ? ' ' . wc_wp_theme_get_element_class_name('button') : ''); ?>">
-                <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'paypal-for-woocommerce'); ?>
+            <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'paypal-for-woocommerce'); ?>
             </a>
             <?php
         }
@@ -1293,7 +1295,7 @@ if (!function_exists('ae_get_checkout_url')) {
 if (!function_exists('angelleye_ppcp_order_item_meta_key_exists')) {
 
     function angelleye_ppcp_order_item_meta_key_exists($order, $key) {
-        foreach ($order->get_items(array( 'line_item', 'tax', 'shipping', 'fee', 'coupon'  )) as $item) {
+        foreach ($order->get_items(array('line_item', 'tax', 'shipping', 'fee', 'coupon')) as $item) {
             if ($item->meta_exists($key)) {
                 return true;
             }
@@ -1367,17 +1369,25 @@ if (!function_exists('angelleye_get_matched_shortcode_attributes')) {
 }
 
 if (!function_exists('angelleye_ppcp_get_awaiting_payment_order_id')) {
+
     function angelleye_ppcp_get_awaiting_payment_order_id() {
         try {
-            $order_id = absint( WC()->session->get( 'order_awaiting_payment' ) );
-            if(!$order_id) {
-                $order_id = absint( wc()->session->get( 'store_api_draft_order', 0 ) );
+            $order_id = absint(WC()->session->get('order_awaiting_payment'));
+            if (!$order_id) {
+                $order_id = absint(wc()->session->get('store_api_draft_order', 0));
             }
-            return $order_id;
+            if ($order_id) {
+                $order = wc_get_order($order_id);
+                if ($order && in_array($order->get_status(), array('pending', 'failed', 'checkout-draft'))) {
+                    return $order_id;
+                }
+            }
+            return 0;
         } catch (Exception $ex) {
-
+            
         }
     }
+
 }
 
 if (!function_exists('angelleye_ppcp_is_cart_contains_free_trial')) {
