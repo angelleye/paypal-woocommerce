@@ -42,6 +42,12 @@ if (!class_exists('WC_Email_PayPal_Onboard_Seller_Invitation', false)) :
         public function trigger($post_id) {
             $this->setup_locale();
             $this->post_id = $post_id;
+            $ppcp_testmode = get_post_meta($this->post_id, 'woocommerce_angelleye_ppcp_testmode', true);
+            if (!empty($ppcp_testmode) && $ppcp_testmode === 'on') {
+                $this->recipient = get_post_meta($this->post_id, 'woocommerce_angelleye_ppcp_sandbox_email_address', true);
+            } else {
+                $this->recipient = get_post_meta($this->post_id, 'woocommerce_angelleye_ppcp_email_address', true);
+            }
             if ($this->is_enabled() && $this->get_recipient()) {
                 $this->send($this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments());
             }
