@@ -139,7 +139,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_generate_signup_link_for_migration($testmode, $products) {
         $this->is_sandbox = ( $testmode === 'yes' ) ? true : false;
-        if (in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && angelleye_ppcp_is_subscription_support_enabled() === true) {
+        if (is_array($paypal_vault_supported_country) && in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && angelleye_ppcp_is_subscription_support_enabled() === true) {
             $body = $this->ppcp_vault_data();
         } else {
             $body = $this->default_data();
