@@ -1112,11 +1112,54 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     <fieldset>
                         <?php if (!is_plugin_active('angelleye-paypal-shipment-tracking-woocommerce/angelleye-paypal-woocommerce-shipment-tracking.php') && !is_plugin_active('paypal-shipment-tracking-for-woocommerce/angelleye-paypal-woocommerce-shipment-tracking.php')) { ?>
                             <p class="description">When using our PayPal integration for payment processing you get access to our premium add-on plugins for free.  This includes our PayPal Shipment Tracking plugin which will allow you to send tracking numbers from WooCommerce orders to PayPal which can help avoid payment holds.  <a target="_blank" href="https://www.angelleye.com/product/paypal-shipment-tracking-numbers-woocommerce/">Learn More</a></p>
-                            <a class="wplk-button button-primary" href="<?php echo add_query_arg(array('angelleye_ppcp_action' => 'install_plugin', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))); ?>">Activate Shipment Tracking</a>
+                            <a class="wplk-button button-primary" href="<?php echo add_query_arg(array('angelleye_ppcp_action' => 'install_shipment_plugin', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))); ?>">Activate Shipment Tracking</a>
                         <?php } else { ?>
                             <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
                             <b><?php echo __('PayPal Shipment Tracking is enabled!', 'paypal-for-woocommerce'); ?></b>
                             <div style="font-size: smaller; display: inline-block"><a href="<?php echo admin_url('admin.php?page=wc-settings&tab=angelleye_shipment_tracking'); ?>" style="display: inline-block;margin: 0 5px -10px 10px;">View Shipment Tracking Settings</a></div>
+                        <?php } ?>
+                    </fieldset>
+                </td>
+            </tr>
+            <?php
+            return ob_get_clean();
+        }
+    }
+    
+    public function generate_paypal_for_woocommerce_multi_account_management_html($key, $data) {
+        if (isset($data['type']) && $data['type'] === 'paypal_for_woocommerce_multi_account_management') {
+            $testmode = $this->sandbox ? 'yes' : 'no';
+            $field_key = $this->get_field_key($key);
+            $defaults = array(
+                'title' => '',
+                'label' => '',
+                'disabled' => false,
+                'class' => '',
+                'css' => '',
+                'type' => 'text',
+                'desc_tip' => false,
+                'description' => '',
+                'custom_attributes' => array(),
+            );
+            $data = wp_parse_args($data, $defaults);
+            if (!$data['label']) {
+                $data['label'] = $data['title'];
+            }
+            ob_start();
+            ?>
+            <tr valign="top">
+                <th scope="row" class="titledesc">
+                    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
+                </th>
+                <td class="forminp">
+                    <fieldset>
+                        <?php if (!is_plugin_active('paypal-for-woocommerce-multi-account-management/paypal-for-woocommerce-multi-account-management.php')) { ?>
+                            <p class="description">When using our PayPal integration for payment processing you get access to our premium add-on plugins for free.  This includes our PayPal for WooCommerce Multi-Account Management plugin which will allows you to configure multiple PayPal accounts within WooCommerce which are paid based on rules that you create.  <a target="_blank" href="https://www.angelleye.com/product/woocommerce-multiple-paypal-accounts/">Learn More</a></p>
+                            <a class="wplk-button button-primary" href="<?php echo add_query_arg(array('angelleye_ppcp_action' => 'install_pfwma_plugin', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))); ?>">Activate PayPal for WooCommerce Multi-Account Management</a>
+                        <?php } else { ?>
+                            <img src="<?php echo PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/images/ppcp_check_mark_status.png'; ?>" width="25" height="25" style="display: inline-block;margin: 0 5px -10px 10px;">
+                            <b><?php echo __('PayPal for WooCommerce Multi-Account Management is enabled!', 'paypal-for-woocommerce'); ?></b>
+                            <div style="font-size: smaller; display: inline-block"><a href="<?php echo admin_url('admin.php?page=wc-settings&tab=multi_account_management'); ?>" style="display: inline-block;margin: 0 5px -10px 10px;">View PayPal for WooCommerce Multi-Account Management Settings</a></div>
                         <?php } ?>
                     </fieldset>
                 </td>
