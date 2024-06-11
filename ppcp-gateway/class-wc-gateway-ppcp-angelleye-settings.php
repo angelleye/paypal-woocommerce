@@ -1864,14 +1864,14 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'class' => 'enable_package_tracking',
                 ),
                 'paypal_for_woocommerce_multi_account_management' => array(
-                    'title' => __('PayPal for WooCommerce Multi-Account Management', 'paypal-for-woocommerce'),
+                    'title' => __('Multi-Account Management', 'paypal-for-woocommerce'),
                     'type' => 'title',
                     'description' => '',
                     'class' => 'ppcp_separator_heading',
                 ),
                 'enable_paypal_for_woocommerce_multi_account_management' => array(
-                    'title' => __('Enable PayPal for WooCommerce Multi-Account Management', 'paypal-for-woocommerce'),
-                    'label' => __('Enable PayPal for WooCommerce Multi-Account Management', 'paypal-for-woocommerce'),
+                    'title' => __('Enable Multi-Account Management', 'paypal-for-woocommerce'),
+                    'label' => __('Enable Multi-Account Management', 'paypal-for-woocommerce'),
                     'type' => 'paypal_for_woocommerce_multi_account_management',
                     'description' => '',
                     'default' => 'no',
