@@ -68,13 +68,13 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
         $this->live_client_id = $this->setting_obj->get('api_client_id', '');
         $this->live_secret_id = $this->setting_obj->get('api_secret', '');
         if ($this->is_sandbox) {
-            $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
             $this->client_id = $this->sandbox_client_id;
             $this->secret_id = $this->sandbox_secret_id;
+            $this->merchant_id = $this->setting_obj->get('sandbox_merchant_id', '');
         } else {
-            $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
             $this->client_id = $this->live_client_id;
             $this->secret_id = $this->live_secret_id;
+            $this->merchant_id = $this->setting_obj->get('live_merchant_id', '');
         }
         $this->enable_tokenized_payments = 'yes' === $this->setting_obj->get('enable_tokenized_payments', 'no');
         $this->enabled_pay_later_messaging = 'yes' === $this->setting_obj->get('enabled_pay_later_messaging', 'yes');

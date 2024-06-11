@@ -41,6 +41,7 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
+        remove_action('woocommerce_scheduled_subscription_payment_' . $this->id, array($this, 'scheduled_subscription_payment'));
         $payment_tokens_id = $renewal_order->get_meta('_payment_tokens_id', true);
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);

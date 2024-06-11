@@ -89,6 +89,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
     public $fraud_management_filters;
     public $invoice_id_prefix;
     public $checkout_page_disallowed_funding_methods;
+    public $disallowed_card_types;
 
     public function __construct() {
         $this->id = 'paypal_express';

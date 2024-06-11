@@ -11,12 +11,13 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $checkout_details;
     public $client_token;
     public $advanced_card_payments_display_position;
+    public $sdk_merchant_id;
     public $enable_paypal_checkout_page;
     public $checkout_page_display_option;
     public $minified_version;
     public $vault_supported_payment_method = array('card', 'venmo');
     public $vault_not_supported_payment_method = array('credit', 'paylater', 'bancontact', 'blik', 'eps', 'giropay', 'ideal', 'mercadopago', 'mybank', 'p24', 'sepa', 'sofort');
-    public static $jsUrl = '';
+    public $is_multi_account_active;
     public $title;
     public $enabled;
     public $is_sandbox;
@@ -89,6 +90,42 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->angelleye_ppcp_default_set_properties();
         if ($this->is_valid_for_use() === true) {
             $this->angelleye_ppcp_add_hooks();
+        }
+    }
+
+    public function angelleye_ppcp_load_class() {
+        try {
+            if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
+            }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Log')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-log.php';
+            }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Request')) {
+                include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-request.php';
+            }
+            if (!class_exists('AngellEYE_PayPal_PPCP_DCC_Validate')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-dcc-validate.php');
+            }
+            if (!class_exists('AngellEYE_PayPal_PPCP_Payment')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
+            }
+            if (defined('CFW_PATH')) {
+                include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-payment.php');
+            }
+            $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+            $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
+            $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
+            $this->dcc_applies = AngellEYE_PayPal_PPCP_DCC_Validate::instance();
+            $this->payment_request = AngellEYE_PayPal_PPCP_Payment::instance();
+            if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
+                $this->is_multi_account_active = true;
+            } else {
+                $this->is_multi_account_active = false;
+            }
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
         }
     }
 
@@ -371,9 +408,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
             add_filter('wfocu_subscriptions_get_supported_gateways', array($this, 'wfocu_subscription_supported_gateways'), 99, 1);
         }
-
-        $asyncJsParams = $this->getClientIdMerchantId();
-        self::$jsUrl = add_query_arg($asyncJsParams, 'https://www.paypal.com/sdk/js');
     }
 
     public function angelleye_load_js_sdk() {
@@ -409,7 +443,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $smart_js_arg['client-id'] = $this->client_id;
             } else {
                 $smart_js_arg['client-id'] = PAYPAL_PPCP_PARTNER_CLIENT_ID;
-                $smart_js_arg['merchant-id'] = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
+            }
+        }
+        $this->sdk_merchant_id = apply_filters('angelleye_ppcp_merchant_id', $this->merchant_id);
+        if (!empty($this->sdk_merchant_id)) {
+            if(is_string($this->sdk_merchant_id)) {
+                $smart_js_arg['merchant-id'] = $this->sdk_merchant_id;
+            } elseif (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) === 1) {
+                $smart_js_arg['merchant-id'] = implode(',', $this->sdk_merchant_id);
+            } else {
+                $smart_js_arg['merchant-id'] = '*';
             }
         }
 
@@ -1266,6 +1309,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $attributes['data-user-id-token'] = $clientToken;
                 }
             }
+            if (!empty($this->sdk_merchant_id)) {
+                if (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) > 0) {
+                    $sdk_merchant_id_string = implode(',', $this->sdk_merchant_id);
+                    $attributes['data-merchant-id'] = $sdk_merchant_id_string;
+                }
+            }
         }
         return $attributes;
     }
@@ -1277,6 +1326,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
      * @return array|mixed|string|string[]
      */
     public function angelleye_ppcp_clean_url($tag, $handle) {
+        $data_merchant_id = '';
+        if ('angelleye-paypal-checkout-sdk' === $handle) {
+            $data_merchant_id = '';
+            if (!empty($this->sdk_merchant_id)) {
+                if (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) > 0) {
+                    $sdk_merchant_id_string = implode(',', $this->sdk_merchant_id);
+                    $data_merchant_id = " data-merchant-id='{$sdk_merchant_id_string}' ";
+                }
+            }
+        }
         if ('angelleye-paypal-checkout-sdk-disable' === $handle) {
             $client_token = '';
             $user_id_token = '';
@@ -1285,7 +1344,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $client_token = isset($attributes['data-client-token']) ? "data-client-token='{$attributes['data-client-token']}'" : '';
                 $user_id_token = isset($attributes['data-user-id-token']) ? "data-user-id-token='{$attributes['data-user-id-token']}'" : '';
             }
-            $tag = str_replace(' src=', ' ' . $client_token . ' ' . $user_id_token . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
+             $tag = str_replace(' src=', ' ' . $client_token . $user_id_token . $data_merchant_id . ' data-namespace="angelleye_paypal_sdk" src=', $tag);
         }
         return $tag;
     }
@@ -1664,6 +1723,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_paymentaction_filter($paymentaction, $order_id) {
         try {
+            if($this->is_multi_account_active) {
+                $paymentaction = 'capture';
+                return $paymentaction;
+            }
             if ($this->is_pre_order_item_in_cart() || (!empty($order_id) && $this->has_pre_order($order_id) )) {
                 $pre_order_product = (!empty($order_id) ) ? $this->get_pre_order_product_from_order($order_id) : $this->get_pre_order_product_from_cart();
                 if ($this->is_pre_order_product_charged_upon_release($pre_order_product)) {
@@ -1712,6 +1775,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function angelleye_ppcp_paymentaction_product_page_filter($paymentaction, $product_id) {
         try {
+            if($this->is_multi_account_active) {
+                $paymentaction = 'capture';
+                return $paymentaction;
+            }
             if ($this->is_pre_orders_enabled() && $this->is_pre_order_product_charged_upon_release($product_id)) {
                 return $payment_action['authorize'] = 'authorize';
             }

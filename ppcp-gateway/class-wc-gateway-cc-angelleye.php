@@ -170,8 +170,8 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                         ob_end_clean();
                     }
                     return array(
-                        'result' => 'failure',
-                        'redirect' => wc_get_cart_url()
+                        'result' => 'success',
+                        'redirect' => wc_get_checkout_url()
                     );
                 }
             }

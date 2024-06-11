@@ -272,15 +272,16 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $this->merchant_id = $this->get('live_merchant_id', '');
             }
             $this->enable_tokenized_payments = $this->get('enable_tokenized_payments', 'no');
+            $paymentaction_options = array();
             if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
-                $this->enable_tokenized_payments = 'no';
-                $this->is_multi_account_active = 'yes';
+                $paymentaction_options = array(
+                    'capture' => __('Capture', 'paypal-for-woocommerce')
+                );
             } else {
-                $this->is_multi_account_active = 'no';
-            }
-            $credit_messaging_text = '';
-            if ($this->is_multi_account_active == 'yes') {
-                $credit_messaging_text = __('PayPal Pay Later Messaging - Buy Now Pay Later is not available when using the PayPal Multi-Account add-on.', 'paypal-for-woocommerce');
+                $paymentaction_options = array(
+                    'capture' => __('Capture', 'paypal-for-woocommerce'),
+                    'authorize' => __('Authorize', 'paypal-for-woocommerce'),
+                );
             }
             $cards_list = array(
                 'visa' => _x('Visa', 'Name of credit card', 'paypal-for-woocommerce'),
@@ -351,11 +352,11 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $vaulting_custom_attributes = array('disabled' => 'disabled');
                 $this->need_to_display_paypal_vault_onboard_button = true;
                 $this->is_paypal_vault_enable = false;
-            } elseif (isset($available_endpoints['vaulting_advanced'])) {
+            }
+            if (isset($available_endpoints['vaulting_advanced'])) {
                 $this->is_paypal_vault_enable = true;
                 $vaulting_advanced_text = __('The Vault / Subscriptions feature is enabled on your PayPal account.  You need to enable Tokenized Payments here in order this to be available on your site.', 'paypal-for-woocommerce');
             }
-
             if ($available_endpoints === false) {
                 $applePayText = __('Allow buyers to pay using Apple Pay.', 'paypal-for-woocommerce');
                 $this->need_to_display_apple_pay_button = false;
@@ -1862,6 +1863,21 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'class' => 'enable_package_tracking',
                 ),
+                'paypal_for_woocommerce_multi_account_management' => array(
+                    'title' => __('Multi-Account Management', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
+                'enable_paypal_for_woocommerce_multi_account_management' => array(
+                    'title' => __('Enable Multi-Account Management', 'paypal-for-woocommerce'),
+                    'label' => __('Enable Multi-Account Management', 'paypal-for-woocommerce'),
+                    'type' => 'paypal_for_woocommerce_multi_account_management',
+                    'description' => '',
+                    'default' => 'no',
+                    'desc_tip' => true,
+                    'class' => 'enable_pfwma',
+                ),
                 'woo_pre_order' => array(
                     'title' => __('WooCommerce Pre-Orders Settings', 'paypal-for-woocommerce'),
                     'type' => 'title',
@@ -1890,10 +1906,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('Choose whether you wish to capture funds immediately or authorize payment only.', 'paypal-for-woocommerce'),
                     'default' => 'capture',
                     'desc_tip' => true,
-                    'options' => array(
-                        'capture' => __('Capture', 'paypal-for-woocommerce'),
-                        'authorize' => __('Authorize', 'paypal-for-woocommerce'),
-                    ),
+                    'options' => $paymentaction_options,
                 ),
                 'auto_capture_auth' => array(
                     'title' => __('Automatic Capture of Pending Authorizations', 'paypal-for-woocommerce'),

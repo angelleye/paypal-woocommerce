@@ -191,6 +191,16 @@ class AngellEYE_PayPal_PPCP_Request {
         }
     }
 
+    public function multi_account_request($url, $args, $action_name = 'default') {
+        try {
+            $this->result = wp_remote_get($url, $args);
+            return $this->api_response->parse_response($this->result, $url, $args, $action_name);
+        } catch (Exception $ex) {
+            $this->api_log->log("The exception was created on line: " . $ex->getLine(), 'error');
+            $this->api_log->log($ex->getMessage(), 'error');
+        }
+    }
+
     public function angelleye_ppcp_load_class() {
         try {
             if (!class_exists('AngellEYE_PayPal_PPCP_Response')) {

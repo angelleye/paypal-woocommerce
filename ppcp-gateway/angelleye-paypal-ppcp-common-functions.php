@@ -629,19 +629,6 @@ if (!function_exists('angelleye_ppcp_add_css_js')) {
 
 }
 
-if (!function_exists('angelleye_ppcp_add_async_js')) {
-
-    function angelleye_ppcp_add_async_js() {
-        AngellEYE_PayPal_PPCP_Smart_Button::instance();
-        $jsUrl = AngellEYE_PayPal_PPCP_Smart_Button::$jsUrl;
-        if (!empty($jsUrl)) {
-            wp_register_script('angelleye-paypal-checkout-sdk-async', $jsUrl, [], null, true);
-            wp_enqueue_script('angelleye-paypal-checkout-sdk-async');
-        }
-    }
-
-}
-
 if (!function_exists('angelleye_ppcp_get_value')) {
 
     function angelleye_ppcp_get_value($key, $value) {
@@ -756,8 +743,9 @@ if (!function_exists('angelleye_ppcp_get_order_total')) {
                     } else {
                         return 0;
                     }
+                } else {
+                    $total = (float) $order->get_total();
                 }
-                $total = (float) $order->get_total();
             } elseif (isset(WC()->cart) && 0 < WC()->cart->total) {
                 $total = (float) WC()->cart->total;
             }
@@ -884,6 +872,63 @@ if (!function_exists('angelleye_ppcp_add_used_payment_method_name_to_subscriptio
 
 }
 
+if (!function_exists('angelleye_ppcp_account_ready_to_paid')) {
+
+    function angelleye_ppcp_account_ready_to_paid($is_sandbox, $client_id, $secret_id, $email) {
+        if ($is_sandbox) {
+            $paypal_order_api = 'https://api-m.sandbox.paypal.com/v2/checkout/orders/';
+        } else {
+            $paypal_order_api = 'https://api-m.paypal.com/v2/checkout/orders/';
+        }
+        $basicAuth = base64_encode($client_id . ":" . $secret_id);
+        $data = array(
+            'intent' => 'CAPTURE',
+            'purchase_units' =>
+            array(
+                0 =>
+                array(
+                    'reference_id' => time(),
+                    'amount' =>
+                    array(
+                        'currency_code' => angelleye_ppcp_get_currency(),
+                        'value' => '10.00'
+                    ),
+                    'payee' => array(
+                        'email_address' => $email,
+                    )
+                ),
+            ),
+            'application_context' => array(
+                'user_action' => 'CONTINUE',
+                'landing_page' => 'LOGIN',
+                'brand_name' => html_entity_decode(get_bloginfo('name'), ENT_NOQUOTES, 'UTF-8')
+            ),
+            'payment_method' => array(
+                'payee_preferred' => 'IMMEDIATE_PAYMENT_REQUIRED'
+            )
+        );
+        $args = array(
+            'timeout' => 60,
+            'redirection' => 5,
+            'httpversion' => '1.1',
+            'blocking' => true,
+            'headers' => array('Content-Type' => 'application/json', "prefer" => "return=representation", 'PayPal-Request-Id' => time()),
+            'cookies' => array(),
+            'body' => wp_json_encode($data)
+        );
+        $args['headers']['Authorization'] = "Basic " . $basicAuth;
+        $result = wp_remote_post($paypal_order_api, $args);
+        $body = wp_remote_retrieve_body($result);
+        $response = !empty($body) ? json_decode($body, true) : '';
+        if (!empty($response['status']) && 'CREATED' === $response['status']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+}
+
 if (!function_exists('angelleye_is_vaulting_enable')) {
 
     function angelleye_is_vaulting_enable($result) {
@@ -897,6 +942,40 @@ if (!function_exists('angelleye_is_vaulting_enable')) {
             }
         }
         return false;
+    }
+
+}
+
+if (!function_exists('angelleye_is_ppcp_third_party_enable')) {
+
+    function angelleye_is_ppcp_third_party_enable($sandbox) {
+        if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
+            include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
+        }
+        $settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+        if ($sandbox) {
+            $sandbox_client_id = $settings->get('sandbox_client_id', '');
+            $sandbox_secret_id = $settings->get('sandbox_api_secret', '');
+            $sandbox_merchant_id = $settings->get('sandbox_merchant_id', '');
+            if (!empty($sandbox_client_id) && !empty($sandbox_secret_id)) {
+                return false;
+            } else if (!empty($sandbox_merchant_id)) {
+                return true;
+            } else {
+                return '';
+            }
+        } else {
+            $live_client_id = $settings->get('api_client_id', '');
+            $live_secret_id = $settings->get('api_secret', '');
+            $live_merchant_id = $settings->get('merchant_id', '');
+            if (!empty($live_client_id) && !empty($live_secret_id)) {
+                return false;
+            } else if (!empty($live_merchant_id)) {
+                return true;
+            } else {
+                return '';
+            }
+        }
     }
 
 }
@@ -983,49 +1062,50 @@ if (!function_exists('angelleye_ppcp_display_upgrade_notice_type')) {
         }
     }
 
-    if (!function_exists('angelleye_ppcp_display_notice')) {
-
-        function angelleye_ppcp_display_notice($response_data) {
-            global $current_user;
-            $user_id = $current_user->ID;
-            if (get_user_meta($user_id, $response_data->id)) {
-                return;
-            }
-            $message = '<div class="notice notice-warning angelleye-notice" style="display:none;" id="' . $response_data->id . '">'
-                    . '<div class="angelleye-notice-logo-push"><span> <img width="60px"src="' . $response_data->ans_company_logo . '"> </span></div>'
-                    . '<div class="angelleye-notice-message">';
-            if (!empty($response_data->ans_message_title)) {
-                $message .= '<h2>' . $response_data->ans_message_title . '</h2>';
-            }
-            $message .= '<div class="angelleye-notice-message-inner">'
-                    . '<p style="line-height: 20px;">' . $response_data->ans_message_description . '</p><div class="angelleye-notice-action">';
-            if (!empty($response_data->ans_button_url)) {
-                $message .= '<a href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a>';
-            }
-
-            if (isset($response_data->is_button_secondary) && $response_data->is_button_secondary === true) {
-                $message .= '&nbsp&nbsp&nbsp<a target="_blank" href="' . $response_data->ans_secondary_button_url . '" class="button button-secondary">' . $response_data->ans_secondary_button_label . '</a>';
-            }
-            $message .= '</div></div>'
-                    . '</div>';
-            if ($response_data->is_dismiss) {
-                $message .= '<div class="angelleye-notice-cta">'
-                        . '<button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="' . $response_data->id . '">Dismiss</button>'
-                        . '</div>'
-                        . '</div>';
-            } else {
-                $message .= '</div>';
-            }
-            echo $message;
-        }
-
-    }
 }
 
+
+if (!function_exists('angelleye_ppcp_display_notice')) {
+
+    function angelleye_ppcp_display_notice($response_data) {
+        global $current_user;
+        $user_id = $current_user->ID;
+        if (get_user_meta($user_id, $response_data->id)) {
+            return;
+        }
+        $message = '<div class="notice notice-warning angelleye-notice" style="display:none;" id="' . $response_data->id . '">'
+                . '<div class="angelleye-notice-logo-push"><span> <img width="60px"src="' . $response_data->ans_company_logo . '"> </span></div>'
+                . '<div class="angelleye-notice-message">';
+        if (!empty($response_data->ans_message_title)) {
+            $message .= '<h2>' . $response_data->ans_message_title . '</h2>';
+        }
+        $message .= '<div class="angelleye-notice-message-inner">'
+                . '<p style="margin-top: 15px !important;line-height: 20px;">' . $response_data->ans_message_description . '</p><div class="angelleye-notice-action">';
+        if (!empty($response_data->ans_button_url)) {
+            $message .= '<a href="' . $response_data->ans_button_url . '" class="button button-primary">' . $response_data->ans_button_label . '</a>';
+        }
+
+        if (isset($response_data->is_button_secondary) && $response_data->is_button_secondary === true) {
+            $message .= '&nbsp&nbsp&nbsp<a target="_blank" href="' . $response_data->ans_secondary_button_url . '" class="button button-secondary">' . $response_data->ans_secondary_button_label . '</a>';
+        }
+        $message .= '</div></div>'
+                . '</div>';
+        if ($response_data->is_dismiss) {
+            $message .= '<div class="angelleye-notice-cta">'
+                    . '<button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="' . $response_data->id . '">Dismiss</button>'
+                    . '</div>'
+                    . '</div>';
+        } else {
+            $message .= '</div>';
+        }
+        echo $message;
+    }
+
+}
+
+
 global $change_proceed_checkout_button_text;
-
 $change_proceed_checkout_button_text = get_option('change_proceed_checkout_button_text');
-
 if (!empty($change_proceed_checkout_button_text)) {
     if (!function_exists('woocommerce_button_proceed_to_checkout')) {
 
@@ -1033,7 +1113,7 @@ if (!empty($change_proceed_checkout_button_text)) {
             global $change_proceed_checkout_button_text;
             ?>
             <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button alt wc-forward<?php echo esc_attr(wc_wp_theme_get_element_class_name('button') ? ' ' . wc_wp_theme_get_element_class_name('button') : ''); ?>">
-                <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'paypal-for-woocommerce'); ?>
+            <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'paypal-for-woocommerce'); ?>
             </a>
             <?php
         }
@@ -1215,7 +1295,7 @@ if (!function_exists('ae_get_checkout_url')) {
 if (!function_exists('angelleye_ppcp_order_item_meta_key_exists')) {
 
     function angelleye_ppcp_order_item_meta_key_exists($order, $key) {
-        foreach ($order->get_items() as $item) {
+        foreach ($order->get_items(array('line_item', 'tax', 'shipping', 'fee', 'coupon')) as $item) {
             if ($item->meta_exists($key)) {
                 return true;
             }
@@ -1289,17 +1369,25 @@ if (!function_exists('angelleye_get_matched_shortcode_attributes')) {
 }
 
 if (!function_exists('angelleye_ppcp_get_awaiting_payment_order_id')) {
+
     function angelleye_ppcp_get_awaiting_payment_order_id() {
         try {
-            $order_id = absint( WC()->session->get( 'order_awaiting_payment' ) );
-            if(!$order_id) {
-                $order_id = absint( wc()->session->get( 'store_api_draft_order', 0 ) );
+            $order_id = absint(WC()->session->get('order_awaiting_payment'));
+            if (!$order_id) {
+                $order_id = absint(wc()->session->get('store_api_draft_order', 0));
             }
-            return $order_id;
+            if ($order_id) {
+                $order = wc_get_order($order_id);
+                if ($order && in_array($order->get_status(), array('pending', 'failed', 'checkout-draft'))) {
+                    return $order_id;
+                }
+            }
+            return 0;
         } catch (Exception $ex) {
-
+            
         }
     }
+
 }
 
 if (!function_exists('angelleye_ppcp_is_cart_contains_free_trial')) {
