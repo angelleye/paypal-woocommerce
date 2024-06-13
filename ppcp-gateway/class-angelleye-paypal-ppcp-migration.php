@@ -31,6 +31,7 @@ class AngellEYE_PayPal_PPCP_Migration {
         add_action('angelleye_ppcp_migration_schedule', array($this, 'process_subscription_batch'), 10, 2);
         add_action('angelleye_ppcp_migration_progress_report', array($this, 'angelleye_ppcp_migration_progress_report'));
         add_action('wp_ajax_update_progress_bar', array($this, 'angelleye_ppcp_get_progress_status'));
+        add_action('angelleye_paypal_express_to_ppcp_migration', array($this, 'angelleye_paypal_express_to_ppcp_migration'), 10);
     }
 
     public function angelleye_ppcp_load_class() {
@@ -402,13 +403,13 @@ class AngellEYE_PayPal_PPCP_Migration {
         try {
             $old_payment_method = $subscription->get_payment_method();
             $old_payment_method_title = $subscription->get_payment_method_title();
-            if('angelleye_ppcp_cc' === $new_payment_method) {
+            if ('angelleye_ppcp_cc' === $new_payment_method) {
                 $new_payment_method_title = $this->setting_obj->get('advanced_card_payments_title', 'PayPal');
-            } elseif('angelleye_ppcp' === $new_payment_method ) {
+            } elseif ('angelleye_ppcp' === $new_payment_method) {
                 $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
-            } elseif('angelleye_ppcp_google_pay' === $new_payment_method) {
+            } elseif ('angelleye_ppcp_google_pay' === $new_payment_method) {
                 $new_payment_method_title = $this->setting_obj->get('google_pay_payments_title', 'PayPal');
-            } elseif('angelleye_ppcp_apple_pay' === $new_payment_method) {
+            } elseif ('angelleye_ppcp_apple_pay' === $new_payment_method) {
                 $new_payment_method_title = $this->setting_obj->get('apple_pay_payments_title', 'PayPal');
             } else {
                 $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
@@ -516,7 +517,7 @@ class AngellEYE_PayPal_PPCP_Migration {
             // Handle exceptions if needed
         }
     }
-    
+
     public function angelleye_ppcp_skip_migration_profile($subscription) {
         try {
             $old_payment_method = $subscription->get_payment_method();
@@ -667,5 +668,57 @@ class AngellEYE_PayPal_PPCP_Migration {
 
         </style>
         <?php
+    }
+
+    public function angelleye_paypal_express_to_ppcp_migration() {
+        try {
+            $meta_key_mapping = [
+                'woocommerce_paypal_express_enable' => 'woocommerce_angelleye_ppcp_enable',
+                'woocommerce_paypal_express_always_trigger' => 'woocommerce_angelleye_ppcp_always_trigger',
+                'woocommerce_paypal_express_testmode' => 'woocommerce_angelleye_ppcp_testmode',
+                'woocommerce_paypal_express_account_name' => 'woocommerce_angelleye_ppcp_account_name',
+                'woocommerce_paypal_express_sandbox_email' => 'woocommerce_angelleye_ppcp_sandbox_email_address',
+                'woocommerce_paypal_express_sandbox_api_username' => 'woocommerce_angelleye_ppcp_sandbox_client_id',
+                'woocommerce_paypal_express_sandbox_api_password' => 'woocommerce_angelleye_ppcp_sandbox_secret',
+                'woocommerce_paypal_express_email' => 'woocommerce_angelleye_ppcp_email_address',
+                'woocommerce_paypal_express_api_username' => 'woocommerce_angelleye_ppcp_client_id',
+                'woocommerce_paypal_express_api_password' => 'woocommerce_angelleye_ppcp_secret',
+                'always_trigger_commission' => 'ppcp_always_trigger_commission',
+                'always_trigger_commission_item_label' => 'ppcp_always_trigger_commission_item_label',
+                'ec_site_owner_commission' => 'ppcp_site_owner_commission',
+                'ec_site_owner_commission_label' => 'ppcp_site_owner_commission_label'
+            ];
+            $args = array(
+                'post_status' => 'publish',
+                'post_type' => 'microprocessing',
+                'numberposts' => -1,
+                'meta_query' => array(
+                    'relation' => 'AND',
+                    array(
+                        'key' => 'angelleye_multi_account_choose_payment_gateway',
+                        'value' => 'paypal_express',
+                        'compare' => '='
+                    )
+                )
+            );
+            $all_posts = get_posts($args);
+            foreach ($all_posts as $post) {
+                $post_id = $post->ID;
+                $woocommerce_paypal_express_testmode = get_post_meta($post_id, 'woocommerce_paypal_express_testmode', true);
+                $woocommerce_paypal_express_sandbox_email = get_post_meta($post_id, 'woocommerce_paypal_express_sandbox_email', true);
+                $woocommerce_paypal_express_email = get_post_meta($post_id, 'woocommerce_paypal_express_email', true);
+                if (($woocommerce_paypal_express_testmode === 'on' && !empty($woocommerce_paypal_express_sandbox_email) || ($woocommerce_paypal_express_testmode === '' && !empty($woocommerce_paypal_express_email)))) {
+                    update_post_meta($post_id, 'angelleye_multi_account_choose_payment_gateway', true);
+                    foreach ($meta_key_mapping as $old_key => $new_key) {
+                        $meta_value = get_post_meta($post_id, $old_key, true);
+                        delete_post_meta($post_id, $old_key);
+                        update_post_meta($post_id, $new_key, $meta_value);
+                        update_post_meta($post_id, 'old_payment_method', 'paypal_express');
+                    }
+                }
+            }
+        } catch (Exception $ex) {
+            
+        }
     }
 }

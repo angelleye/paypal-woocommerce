@@ -426,6 +426,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                     $existing_paypal_account_details = angelleye_ppcp_get_classic_paypal_details($product);
                                     if (isset($_GET['do_not_check_diffrent_account']) || (!empty($existing_paypal_account_details) && $existing_paypal_account_details === $merchant_id) || empty($existing_paypal_account_details)) {
                                         $this->ppcp_migration->angelleye_ppcp_paypal_express_to_ppcp($seller_onboarding_status);
+                                        do_action('angelleye_paypal_express_to_ppcp_migration');
                                         if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
                                             $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_express', 'angelleye_ppcp');
                                         }
@@ -471,6 +472,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                                 case 'paypal_pro_payflow':
                                     if (angelleye_is_acdc_payments_enable($seller_onboarding_status)) {
                                         $this->ppcp_migration->angelleye_ppcp_paypal_pro_payflow_to_ppcp($seller_onboarding_status);
+                                        do_action('angelleye_paypal_pro_payflow_to_ppcp_migration');
                                         if ($this->subscription_support_enabled === true && $this->is_vaulting_enable === true) {
                                             $this->ppcp_migration->angelleye_ppcp_subscription_order_migration('paypal_pro_payflow', 'angelleye_ppcp');
                                         }
