@@ -15,6 +15,7 @@
                             <li><?php echo __('Direct Credit Cards (No Login Required!)', 'paypal-for-woocommerce'); ?></li>
                             <li><?php echo __('Credit Card Fees Reduced to 2.69%!', 'paypal-for-woocommerce'); ?></li>
                             <li><?php echo __('Pro No Longer Required – No Monthly Fees!', 'paypal-for-woocommerce'); ?></li>
+                            <li><?php echo __('Full Support for Multi-Account Functionality', 'paypal-for-woocommerce'); ?></li>
                         </ul>
                     </div>
                 </div>

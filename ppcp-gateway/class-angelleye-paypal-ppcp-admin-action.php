@@ -254,9 +254,6 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             if (isset($_GET['page']) && 'paypal-for-woocommerce' === $_GET['page']) {
                 return;
             }
-            if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
-                return;
-            }
             $notice_data['classic_upgrade'] = array(
                 'id' => 'ppcp_notice_classic_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',

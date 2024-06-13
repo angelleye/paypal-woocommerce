@@ -327,42 +327,38 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
             }
             $this->angelleye_ppcp_load_variable();
-
-            if (class_exists('Paypal_For_Woocommerce_Multi_Account_Management')) {
-                $this->view();
-            } else {
-                $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest', 'paypal', 'ppec_paypal');
-                $active_classic_gateway_list = array();
-                foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
-                    if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
-                        $active_classic_gateway_list[$gateway->id] = $gateway->id;
+            $angelleye_classic_gateway_id_list = array('paypal_express', 'paypal_pro', 'paypal_pro_payflow', 'paypal_advanced', 'paypal_credit_card_rest', 'paypal', 'ppec_paypal');
+            $active_classic_gateway_list = array();
+            foreach (WC()->payment_gateways->get_available_payment_gateways() as $gateway) {
+                if (in_array($gateway->id, $angelleye_classic_gateway_id_list) && 'yes' === $gateway->enabled && $gateway->is_available() === true) {
+                    $active_classic_gateway_list[$gateway->id] = $gateway->id;
+                }
+            }
+            $other_payment_methods = $this->angelleye_ppcp_get_other_payment_methods();
+            if (!empty($other_payment_methods)) {
+                foreach ($other_payment_methods as $gateway_id) {
+                    if (in_array($gateway_id, array('paypal', 'ppec_paypal'))) {
+                        //$active_classic_gateway_list[$gateway_id] = $gateway_id;
                     }
                 }
-                $other_payment_methods = $this->angelleye_ppcp_get_other_payment_methods();
-                if (!empty($other_payment_methods)) {
-                    foreach ($other_payment_methods as $gateway_id) {
-                        if (in_array($gateway_id, array('paypal', 'ppec_paypal'))) {
-                            //$active_classic_gateway_list[$gateway_id] = $gateway_id;
-                        }
-                    }
-                }
-                if (count($active_classic_gateway_list) > 0) {
-                    $paypal_vault_supported_country = angelleye_ppcp_apple_google_vault_supported_country();
-                    if (in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled) {
-                        $this->migration_view($active_classic_gateway_list);
-                    } elseif (!in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled) {
-                        $this->view();
-                    } elseif (in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled === false) {
-                        $this->migration_view($active_classic_gateway_list);
-                    } elseif (!in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled === false) {
-                        $this->migration_view($active_classic_gateway_list);
-                    } else {
-                        $this->view();
-                    }
+            }
+            if (count($active_classic_gateway_list) > 0) {
+                $paypal_vault_supported_country = angelleye_ppcp_apple_google_vault_supported_country();
+                if (in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled) {
+                    $this->migration_view($active_classic_gateway_list);
+                } elseif (!in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled) {
+                    $this->view();
+                } elseif (in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled === false) {
+                    $this->migration_view($active_classic_gateway_list);
+                } elseif (!in_array($this->ppcp_paypal_country, $paypal_vault_supported_country) && $this->subscription_support_enabled === false) {
+                    $this->migration_view($active_classic_gateway_list);
                 } else {
                     $this->view();
                 }
+            } else {
+                $this->view();
             }
+            
         } catch (Exception $ex) {
             
         }
