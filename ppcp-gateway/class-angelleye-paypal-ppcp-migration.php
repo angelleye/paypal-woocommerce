@@ -678,11 +678,13 @@ class AngellEYE_PayPal_PPCP_Migration {
                 'woocommerce_paypal_express_testmode' => 'woocommerce_angelleye_ppcp_testmode',
                 'woocommerce_paypal_express_account_name' => 'woocommerce_angelleye_ppcp_account_name',
                 'woocommerce_paypal_express_sandbox_email' => 'woocommerce_angelleye_ppcp_sandbox_email_address',
-                'woocommerce_paypal_express_sandbox_api_username' => 'woocommerce_angelleye_ppcp_sandbox_client_id',
-                'woocommerce_paypal_express_sandbox_api_password' => 'woocommerce_angelleye_ppcp_sandbox_secret',
+                'woocommerce_paypal_express_sandbox_api_username' => 'woocommerce_angelleye_ppcp_sandbox_api_username',
+                'woocommerce_paypal_express_sandbox_api_password' => 'woocommerce_angelleye_ppcp_sandbox_api_password',
+                'woocommerce_paypal_express_sandbox_api_signature' => 'woocommerce_angelleye_ppcp_sandbox_api_signature',
                 'woocommerce_paypal_express_email' => 'woocommerce_angelleye_ppcp_email_address',
-                'woocommerce_paypal_express_api_username' => 'woocommerce_angelleye_ppcp_client_id',
-                'woocommerce_paypal_express_api_password' => 'woocommerce_angelleye_ppcp_secret',
+                'woocommerce_paypal_express_api_username' => 'woocommerce_angelleye_ppcp_api_username',
+                'woocommerce_paypal_express_api_password' => 'woocommerce_angelleye_ppcp_api_password',
+                'woocommerce_paypal_express_api_signature' => 'woocommerce_angelleye_ppcp_api_signature',
                 'always_trigger_commission' => 'ppcp_always_trigger_commission',
                 'always_trigger_commission_item_label' => 'ppcp_always_trigger_commission_item_label',
                 'ec_site_owner_commission' => 'ppcp_site_owner_commission',
@@ -721,4 +723,11 @@ class AngellEYE_PayPal_PPCP_Migration {
             
         }
     }
+    
+    
+
+
+
+
+
 }

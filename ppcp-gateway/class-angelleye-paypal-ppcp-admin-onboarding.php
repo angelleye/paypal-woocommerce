@@ -420,7 +420,6 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_header.php');
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/migration/ppcp_' . $layout_type . '.php');
             }
-
             $result = $this->angelleye_ppcp_get_result_migrate_to_ppcp();
             if (!empty($result)) {
                 if (!get_user_meta(get_current_user_id(), 'ppcp_migration_report')) :
@@ -664,6 +663,32 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 }
                 if (as_has_scheduled_action('angelleye_ppcp_migration_schedule')) {
                     do_action('angelleye_ppcp_migration_progress_report');
+                }
+                ?>
+                <?php
+                //$result = $this->angelleye_ppcp_get_result_migrate_to_ppcp();
+                if (!empty($result)) {
+                    if (!get_user_meta(get_current_user_id(), 'ppcp_pfwma_migration_report')) :
+                        ?>
+                        <div class="paypal_woocommerce_product paypal_woocommerce_product_onboard ppcp_migration_report_parent" style="margin-top:30px;">
+                            <button type="button" class="angelleye-notice ppcp-dismiss angelleye-notice-dismiss" data-msg="ppcp_pfwma_migration_report"><span class="screen-reader-text">Dismiss this notice.</span></button>
+                            <div class="ppcp_migration_report">
+                                <h3><?php echo __('Subscription Migration Report', 'paypal-for-woocommerce'); ?></h3>
+                                <div class="wrap" style="margin-bottom: 20px;margin-top: -10px;">
+                                    This report outlines all of the active / on hold subscription profiles that were updated as a part of this migration wizard.
+                                    If you feel you need to, you can use the "Revert Changes" button to undue this migration.
+                                    This will reset the payment gateway(s) and subscription profiles to use PayPal Classic again as if the migration never happened.
+                                </div>
+                                <div class="wrap">
+                                    <?php
+                                    echo $this->angelleye_ppcp_build_html($result);
+                                    ?>
+                                </div>
+                                <a class="wplk-button angelleye_ppcp_revert_changes" href="<?php echo admin_url('options-general.php?page=paypal-for-woocommerce&migration_action=angelleye_ppcp_revert_changes'); ?>">Revert Changes</a>
+                            </div>
+                        </div>
+                        <?php
+                    endif;
                 }
                 ?>
                 <ul class="paypal_woocommerce_support_downloads paypal_woocommerce_product_onboard ppcp_email_confirm">
