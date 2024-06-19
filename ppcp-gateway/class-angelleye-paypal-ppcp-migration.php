@@ -672,6 +672,7 @@ class AngellEYE_PayPal_PPCP_Migration {
 
     public function angelleye_paypal_express_to_ppcp_migration() {
         try {
+            // Enable PPCP Rules
             $is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
             $args = array(
                 'posts_per_page' => -1,
@@ -689,7 +690,7 @@ class AngellEYE_PayPal_PPCP_Migration {
                 )
             );
             array_push($args['meta_query'], array(
-                'key' => ($this->is_sandbox) ? 'woocommerce_angelleye_ppcp_multi_account_on_board_status_sandbox' : 'woocommerce_angelleye_ppcp_multi_account_on_board_status_live',
+                'key' => ($is_sandbox) ? 'woocommerce_angelleye_ppcp_multi_account_on_board_status_sandbox' : 'woocommerce_angelleye_ppcp_multi_account_on_board_status_live',
                 'value' => 'yes',
                 'compare' => '='
             ));
@@ -699,6 +700,30 @@ class AngellEYE_PayPal_PPCP_Migration {
             if ($total_posts > 0) {
                 foreach ($result as $key => $value) {
                     update_post_meta($value->ID, 'woocommerce_angelleye_ppcp_enable', 'on');
+                }
+            }
+            // Disable Classic Rules
+            $args = [
+                'post_type' => 'microprocessing',
+                'post_status' => 'publish',
+                'fields' => 'ids',
+                'meta_query' => [
+                    [
+                        'key' => 'angelleye_multi_account_choose_payment_gateway',
+                        'value' => 'angelleye_ppcp',
+                        'compare' => '!='
+                    ]
+                ]
+            ];
+            $query = new WP_Query($args);
+            if (!empty($query->found_posts) && $query->found_posts > 0) {
+                foreach ($query->posts as $key => $post_id) {
+                    $payment_gateway = get_post_meta($post_id, 'angelleye_multi_account_choose_payment_gateway', true);
+                    if ($payment_gateway === 'paypal_express') {
+                        update_post_meta($post_id, 'woocommerce_paypal_express_enable', '');
+                    } elseif($payment_gateway === 'paypal_pro_payflow') {
+                        update_post_meta($post_id, 'woocommerce_paypal_pro_payflow_enable', '');
+                    }
                 }
             }
         } catch (Exception $ex) {
