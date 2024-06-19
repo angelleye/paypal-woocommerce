@@ -31,7 +31,7 @@ class AngellEYE_PayPal_PPCP_Migration_Revert {
             }
             update_option('woocommerce_paypal_express_settings', $woocommerce_paypal_express_settings);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -48,7 +48,7 @@ class AngellEYE_PayPal_PPCP_Migration_Revert {
             }
             update_option('woocommerce_paypal_pro_settings', $woocommerce_paypal_pro_settings);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -65,7 +65,7 @@ class AngellEYE_PayPal_PPCP_Migration_Revert {
             }
             update_option('woocommerce_paypal_pro_payflow_settings', $woocommerce_paypal_pro_payflow_settings);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -82,7 +82,7 @@ class AngellEYE_PayPal_PPCP_Migration_Revert {
             }
             update_option('woocommerce_paypal_advanced_settings', $woocommerce_paypal_advanced_settings);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -99,7 +99,7 @@ class AngellEYE_PayPal_PPCP_Migration_Revert {
             }
             update_option('woocommerce_paypal_credit_card_rest_settings', $woocommerce_paypal_credit_card_rest_settings);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -109,7 +109,7 @@ class AngellEYE_PayPal_PPCP_Migration_Revert {
             $woocommerce_paypal_settings['enabled'] = 'yes';
             update_option('woocommerce_paypal_settings', $woocommerce_paypal_settings);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -119,8 +119,63 @@ class AngellEYE_PayPal_PPCP_Migration_Revert {
             $woocommerce_ppec_paypal_settings['enabled'] = 'yes';
             update_option('woocommerce_ppec_paypal_settings', $woocommerce_ppec_paypal_settings);
         } catch (Exception $ex) {
-
+            
         }
     }
 
+    public function angelleye_pfwma_revert_to_classic() {
+        try {
+            // Disable PPCP Rules
+            $args = array(
+                'posts_per_page' => -1,
+                'post_type' => 'microprocessing',
+                'order' => 'DESC',
+                'orderby' => 'order_clause',
+                'meta_key' => 'woocommerce_priority',
+                'meta_query' => array(
+                    'relation' => 'AND',
+                    array(
+                        'key' => 'angelleye_multi_account_choose_payment_gateway',
+                        'value' => 'angelleye_ppcp',
+                        'compare' => '='
+                    )
+                )
+            );
+            
+            $query = new WP_Query();
+            $result = $query->query($args);
+            $total_posts = $query->found_posts;
+            if ($total_posts > 0) {
+                foreach ($result as $key => $value) {
+                    update_post_meta($value->ID, 'woocommerce_angelleye_ppcp_enable', '');
+                }
+            }
+            // Enable Classic Rules
+            $args = [
+                'post_type' => 'microprocessing',
+                'post_status' => 'publish',
+                'fields' => 'ids',
+                'meta_query' => [
+                    [
+                        'key' => 'angelleye_multi_account_choose_payment_gateway',
+                        'value' => 'angelleye_ppcp',
+                        'compare' => '!='
+                    ]
+                ]
+            ];
+            $query = new WP_Query($args);
+            if (!empty($query->found_posts) && $query->found_posts > 0) {
+                foreach ($query->posts as $key => $post_id) {
+                    $payment_gateway = get_post_meta($post_id, 'angelleye_multi_account_choose_payment_gateway', true);
+                    if ($payment_gateway === 'paypal_express') {
+                        update_post_meta($post_id, 'woocommerce_paypal_express_enable', 'on');
+                    } elseif ($payment_gateway === 'paypal_pro_payflow') {
+                        update_post_meta($post_id, 'woocommerce_paypal_pro_payflow_enable', 'on');
+                    }
+                }
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
 }
