@@ -2495,7 +2495,14 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $order = wc_get_order($orderid);
             $angelleye_ppcp_payment_method_title = $this->get_payment_method_title_for_order($orderid);
+            $_paypal_order_id = angelleye_ppcp_get_post_meta($order, '_paypal_order_id');
+            $respnse = $this->angelleye_ppcp_get_paypal_order($_paypal_order_id);
+            $payment_status = isset($respnse['status']) ? $respnse['status'] : $payment_status;
             switch (strtoupper($payment_status)) :
+                case 'COMPLETED' :
+                    $order->payment_complete();
+                    $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
+                    break;
                 case 'DECLINED' :
                     $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title));
                     break;
