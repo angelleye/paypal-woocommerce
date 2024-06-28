@@ -193,6 +193,22 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                 }
                                 AngellEye_Session_Manager::set('checkout_post', $address);
                                 $_POST = $address;
+                            } else {
+                                self::$is_user_logged_in_before_checkout = is_user_logged_in();
+                                AngellEye_Session_Manager::set('checkout_post', $_POST);
+                                add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), PHP_INT_MAX, 2);
+                                WC()->checkout->process_checkout();
+                                if (wc_notice_count('error') > 0) {
+                                    WC()->session->set('reload_checkout', true);
+                                    $error_messages_data = wc_get_notices('error');
+                                    $error_messages = array();
+                                    foreach ($error_messages_data as $key => $value) {
+                                        $error_messages[] = $value['notice'];
+                                    }
+                                    wc_clear_notices();
+                                    ob_start();
+                                    wp_send_json_error(array('messages' => $error_messages));
+                                }
                             }
                             add_action('woocommerce_after_checkout_validation', array($this, 'maybe_start_checkout'), PHP_INT_MAX, 2);
                             WC()->checkout->process_checkout();
