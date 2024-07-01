@@ -191,7 +191,7 @@ var { registerExpressPaymentMethod, registerPaymentMethod } = wc.wcBlocksRegistr
 document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
         jQuery(document.body).trigger('ppcp_block_ready');
-    }, 1500);
+    }, 2000);
 });
 
 const ppcp_cc_uniqueEvents = new Set([
@@ -206,6 +206,6 @@ ppcp_cc_uniqueEvents.forEach(function (action) {
     addAction(action, 'c', function () {
         setTimeout(function () {
             jQuery(document.body).trigger('ppcp_cc_checkout_updated');
-        }, 1500);
+        }, 2000);
     });
 });

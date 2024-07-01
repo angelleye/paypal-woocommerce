@@ -240,7 +240,7 @@ var {addAction} = wp.hooks;
 document.addEventListener("DOMContentLoaded", function () {
     setTimeout(function () {
         jQuery(document.body).trigger("ppcp_block_ready");
-    }, 1500);
+    }, 2000);
 });
 
 const ppcp_uniqueEvents = new Set([
@@ -259,6 +259,6 @@ ppcp_uniqueEvents.forEach(function (action) {
         });
         setTimeout(function () {
             jQuery(document.body).trigger("ppcp_checkout_updated");
-        }, 1500);
+        }, 2000);
     });
 });
