@@ -272,7 +272,9 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         $this->checkout_button_label = $this->get_option('checkout_button_label', __('Proceed to PayPal', 'paypal-for-woocommerce'));
         $this->checkout_page_disallowed_funding_methods = $this->get_option('checkout_page_disallowed_funding_methods', array());
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'), 999);
-        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
+        if( !has_action('woocommerce_settings_api_sanitized_fields_' . $this->id)) {
+            add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_express_checkout_encrypt_gateway_api'), 10, 1);
+        }
         if (!has_action('woocommerce_api_' . strtolower('WC_Gateway_PayPal_Express_AngellEYE'))) {
             add_action('woocommerce_api_' . strtolower('WC_Gateway_PayPal_Express_AngellEYE'), array($this, 'handle_wc_api'));
         }
@@ -2179,7 +2181,7 @@ class WC_Gateway_PayPal_Express_AngellEYE extends WC_Payment_Gateway {
         } else {
             $api_password = $settings['api_password'];
         }
-        if (strlen($api_password) > 35) {
+        if (strlen($api_password) > 25) {
             return $settings;
         }
         if (!empty($settings['is_encrypt'])) {
