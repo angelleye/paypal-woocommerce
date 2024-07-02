@@ -127,8 +127,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.5.3 - 06.28.2024
-* Fix - Resolved issue withbilling address issue in the classic cart and checkout template. ([PFW-1808](https://github.com/angelleye/paypal-woocommerce/pull/2051))
+= 4.5.5 - 06.28.2024
+* Fix - Ensure the woocommerce_settings_api_sanitized_fields hook is not triggered twice. ([PFW-1811](https://github.com/angelleye/paypal-woocommerce/pull/2053))
+
+= 4.5.4 - 06.28.2024
+* Fix - Resolved issue with billing address issue in the classic cart and checkout template. ([PFW-1808](https://github.com/angelleye/paypal-woocommerce/pull/2051))
 
 = 4.5.3 - 06.19.2024
 * Fix - Remove Voiding auth cancels order. ([PFW-1807](https://github.com/angelleye/paypal-woocommerce/pull/2050))
