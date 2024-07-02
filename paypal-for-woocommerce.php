@@ -149,7 +149,6 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             register_deactivation_hook( __FILE__,array($this,'deactivate_paypal_for_woocommerce' ));
 
             add_action('admin_notices', array($this, 'admin_notices'));
-            add_action('admin_notices', array($this, 'angelleye_latest_version_announcement'));
             add_action('admin_init', array($this, 'set_ignore_tag'));
             add_filter('woocommerce_product_title', array($this, 'woocommerce_product_title'));
 
@@ -1702,33 +1701,6 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             $pp_settings = get_option( 'woocommerce_paypal_express_settings', array() );
             if(!empty($pp_settings['show_on_product_page']) && $pp_settings['show_on_product_page'] == 'yes' && !empty($pp_settings['enable_newly_products']) && $pp_settings['enable_newly_products'] == 'yes' ) {
                 update_post_meta( $product_id, '_enable_ec_button', 'yes');
-            }
-        }
-
-        public function angelleye_latest_version_announcement() {
-            global $current_user;
-            $user_id = $current_user->ID;
-            if (!get_user_meta($user_id, 'angelleye_notification_3_0_0')) {
-                $admin_notice_latest_version = '<div class="notice notice-success angelleye-notice" id="angelleye_notification_3_0_0">'
-                        . '<div class="angelleye-notice-logo-push">'
-                        . '<span> <img src="https://www.angelleye.com/wp-content/uploads/2019/12/angelleye-icon-25x25.png"> </span>'
-                        . '</div>'
-                        . '<div class="angelleye-notice-message">'
-                        . '<h3>PayPal for WooCommerce v3.0 Important Information!</h3>'
-                        . '<div class="angelleye-notice-message-inner">'
-                        . '<p>This update adds PayPal\'s new "Complete Payments" gateway.  We also still support the "Classic" payment gateways. It is recommended that you use Complete Payments where possible, but some limitations may apply.</p>'
-                        . '<div class="angelleye-notice-action">'
-                        . '<a target="_blank" href="https://www.angelleye.com/paypal-complete-payments/?utm_source=paypal_for_woocommerce&utm_medium=docs_link&utm_campaign=paypal_for_woocommerce" class="button button-primary">More Info</a>'
-                        . '&nbsp&nbsp&nbsp<a target="_blank" href="https://www.angelleye.com/paypal-complete-payments/?utm_source=paypal_for_woocommerce&utm_medium=docs_link&utm_campaign=paypal_for_woocommerce#switchfrompaypalclassic2" class="button button-primary">Switching from Classic Express Checkout?</a>'
-                        . '</div>'
-                        . '</div>'
-                        . '</div>'
-                        . '<div class="angelleye-notice-cta">'
-                        . '<button class="angelleye-notice-dismiss angelleye-dismiss-welcome" data-msg="angelleye_notification_3_0_0">Dismiss</button>'
-                        . '</div>'
-                        . '</div>';
-                echo $admin_notice_latest_version;
-
             }
         }
 
