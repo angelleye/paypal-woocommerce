@@ -298,20 +298,24 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
         public function plugin_action_links($actions, $plugin_file, $plugin_data, $context) {
             global $woocommerce;
             $gateways = $woocommerce->payment_gateways->payment_gateways();
-            $configure = sprintf('<a href="%s">%s</a>', admin_url('options-general.php?page=paypal-for-woocommerce'), __('Configure', 'paypal-for-woocommerce'));
-            if(isset($gateways['angelleye_ppcp']) && ($gateways['angelleye_ppcp']->sandbox === true && $gateways['angelleye_ppcp']->sandbox_merchant_id) || ($gateways['angelleye_ppcp']->sandbox === false && $gateways['angelleye_ppcp']->sandbox_merchant_id)) {
-                $configure = sprintf('<a href="%s">%s</a>', admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'), __('Configure', 'paypal-for-woocommerce'));
+            $base_url = admin_url('options-general.php?page=paypal-for-woocommerce');
+            $configure_url = $base_url;
+            if (isset($gateways['angelleye_ppcp']) && (
+                ($gateways['angelleye_ppcp']->sandbox === true && $gateways['angelleye_ppcp']->sandbox_merchant_id) || 
+                ($gateways['angelleye_ppcp']->sandbox === false && $gateways['angelleye_ppcp']->sandbox_merchant_id)
+            )) {
+                $configure_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
             }
+            $configure = sprintf('<a href="%s">%s</a>', $configure_url, __('Configure', 'paypal-for-woocommerce'));
             $custom_actions = array(
                 'configure' => $configure,
                 'docs' => sprintf('<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/paypal-for-woocommerce-documentation/?utm_source=paypal_for_woocommerce&utm_medium=docs_link&utm_campaign=paypal_for_woocommerce', __('Docs', 'paypal-for-woocommerce')),
                 'support' => sprintf('<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/support', __('Support', 'paypal-for-woocommerce')),
                 'review' => sprintf('<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/product/woocommerce-paypal-plugin?utm_source=pfw&utm_medium=support_link#tab-reviews', __('Write a Review', 'paypal-for-woocommerce')),
             );
-
-            // add the links to the front of the actions list
             return array_merge($custom_actions, $actions);
         }
+
 
         function woocommerce_product_title($title) {
             $title = str_replace(array("&#8211;", "&#8211"), array("-"), $title);
