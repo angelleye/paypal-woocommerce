@@ -78,6 +78,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     private array $apple_pay_button_props;
     private array $common_button_props;
     private array $card_style_props;
+    public $woo_pre_order_payment_mode;
 
     public function __construct() {
         $this->angelleye_ppcp_plugin_name = 'angelleye_ppcp';
