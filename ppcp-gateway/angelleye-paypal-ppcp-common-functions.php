@@ -341,8 +341,14 @@ if (!function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
                 $customer->set_billing_city($billing_details['city']);
             }
             if (!empty($billing_details['email'])) {
-                $customer->set_email($billing_details['email']);
-                $customer->set_billing_email($billing_details['email']);
+                $email = $customer->get_email();
+                if(empty($email)) {
+                    $customer->set_email($billing_details['email']);
+                }
+                $billing_email = $customer->get_billing_email();
+                if(empty($billing_email)) {
+                    $customer->set_billing_email($billing_details['email']);
+                }
             }
             if (!empty($billing_details['postcode'])) {
                 $customer->set_billing_postcode($billing_details['postcode']);
