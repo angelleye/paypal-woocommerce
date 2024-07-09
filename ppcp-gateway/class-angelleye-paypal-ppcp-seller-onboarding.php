@@ -171,7 +171,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                         $signup_link = isset($link['href']) ? $link['href'] : false;
                         if ($signup_link) {
                             $url = add_query_arg($args, $signup_link);
-                            $this->angelleye_display_paypal_signup_button($url, 'paypal_onbard', 'CONNECT MY PAYPAL ACCOUNT');
+                            $this->angelleye_display_paypal_signup_button($url, 'paypal_onbard', 'multi_account');
                         } else {
                             echo __('We could not properly connect to PayPal', '');
                         }
@@ -792,8 +792,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
     }
 
     public function angelleye_display_paypal_signup_button($url, $id, $label) {
-        if($label === 'CONNECT MY PAYPAL ACCOUNT') {
-            ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" style="text-decoration: none;color: white;font-weight: normal" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a> <?php 
+        if($label === 'multi_account') {
+            ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html(__('CONNECT MY PAYPAL ACCOUNT', 'paypal-for-woocommerce')); ?></a> <?php 
         } else {
             ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a> <?php 
         }
