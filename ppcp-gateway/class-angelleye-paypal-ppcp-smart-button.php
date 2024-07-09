@@ -890,7 +890,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_top_checkout_page_stripe() {
-        if (class_exists('WC_Subscriptions_Cart') && WC_Subscriptions_Cart::cart_contains_subscription()) {
+        if (angelleye_ppcp_is_cart_subscription()) {
             return false;
         }
         if (angelleye_ppcp_get_order_total() === 0) {
@@ -1278,16 +1278,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_order_review_page_description() {
-        if ($this->order_review_page_description && angelleye_ppcp_has_active_session()) {
-            ?>
-            <div class="order_review_page_description">
-                <p>
-            <?php
-            echo wp_kses_post($this->order_review_page_description);
-            ?>
-                </p>
-            </div>
-            <?php
+        if ($this->order_review_page_description && angelleye_ppcp_has_active_session()) { ?>
+            <div class="order_review_page_description"><p><?php echo wp_kses_post($this->order_review_page_description); ?></p></div><?php
         }
     }
 
@@ -1953,15 +1945,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_ppcp_plugins_loaded() {
         try {
             if ($this->enable_paypal_checkout_page === true && $this->checkout_page_display_option !== 'regular') {
-                if (!class_exists('WFACP_Compatibility_With_Angel_Eye_PPCP') && class_exists('WC_Stripe_Payment_Request')) {
-                    $payment_request_configuration = new WC_Stripe_Payment_Request();
-                    if ($payment_request_configuration->should_show_payment_request_button()) {
-                        add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page_stripe'), 1);
-                    } else {
-                        add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page'), 1);
-                    }
-                } elseif (defined('CFW_VERSION')) {
-                    add_action('cfw_payment_request_buttons', array($this, 'display_paypal_button_top_cfw'), 1);
+                if (defined('CFW_VERSION')) {
+                    add_action('cfw_payment_request_buttons', array($this, 'display_paypal_button_top_cfw'), 10);
                 } else {
                     add_action('woocommerce_checkout_before_customer_details', array($this, 'display_paypal_button_top_checkout_page'), 1);
                 }
