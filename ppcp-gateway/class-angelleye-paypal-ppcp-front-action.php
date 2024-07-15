@@ -710,7 +710,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $customer->set_billing_state($billing_state);
             $customer->set_billing_postcode($billing_postcode);
             $customer->set_billing_phone($billing_phone);
-            $customer->set_billing_email($billing_email);
+            $billing_email = $customer->get_billing_email();
+            if(empty($billing_email)) {
+                $customer->set_billing_email($billing_email);
+            }
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
