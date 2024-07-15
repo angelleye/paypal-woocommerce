@@ -1159,7 +1159,10 @@ class AngellEYE_PayPal_PPCP_Payment {
         try {
             $order = wc_get_order($woo_order_id);
             if ($need_to_update_order) {
-                $this->angelleye_ppcp_update_order($order);
+                $bool = $this->angelleye_ppcp_update_order($order);
+                if($bool === false) {
+                    return false;
+                }
             }
             $paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id', false);
             $args = array(
@@ -1542,23 +1545,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'user-agent' => 'PPCP/' . VERSION_PFW,
             );
             $this->api_request->request($this->paypal_order_api . $paypal_order_id, $args, 'update_order');
+            return true;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
-
-            // Redirect the user to the checkout page in case order update fails
-            if ($ex->getCode() == 302) {
-                $this->api_log->log('UpdateOrder Request URL: ' . $this->paypal_order_api . $paypal_order_id);
-                $this->api_log->log('UpdateOrder Request Body: ' . wc_print_r($args, true));
-                // Commenting this as I've seen this creates an issue when someone starts the checkout process from
-                // product page with Authorize intent, and on complete my order page if due to some reason this update
-                // order function fails then on complete order action this tries to redirect the user to checkout page
-                // during ajax call, and user starts seeing the "unexpected <" error.
-                // and if its not ajax call, then they will be redirected to checkout page with
-                // "session expired message", that creates issue reported in AHD-20796
-                /* wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
-                  wp_redirect(wc_get_checkout_url()); */
-            }
+            wc_add_notice(__('Sorry, your session has expired.', 'woocommerce'));
+            return false;
         }
     }
 
@@ -1740,7 +1732,10 @@ class AngellEYE_PayPal_PPCP_Payment {
         try {
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             $order = wc_get_order($woo_order_id);
-            $this->angelleye_ppcp_update_order($order);
+            $bool = $this->angelleye_ppcp_update_order($order);
+            if($bool === false) {
+                return false;
+            }
             $paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
             $args = array(
                 'method' => 'POST',
