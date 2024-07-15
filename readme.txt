@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.5.5
-Stable tag: 4.5.5
+Stable tag: 4.5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.5.6 - 07.15.2024
+* Fix - Update "configure" link. ([PFW-1801](https://github.com/angelleye/paypal-woocommerce/pull/2055))
+* Fix - CheckoutWC Bug with Stripe Enabled. ([PFW-1802](https://github.com/angelleye/paypal-woocommerce/pull/2056))
+* Fix - PayPal Order ID Missing - "Unable to parse PayPal response body". ([PFW-1810](https://github.com/angelleye/paypal-woocommerce/pull/2057))
+* Fix - Email getting replaced by what PayPal gives us. ([PFW-1813](https://github.com/angelleye/paypal-woocommerce/pull/2058))
+* Fix - PayPal Onboard Seller Invitation: Link not visible on a white background. ([PFW-1816](https://github.com/angelleye/paypal-woocommerce/pull/2059))
 
 = 4.5.5 - 06.28.2024
 * Fix - Ensure the woocommerce_settings_api_sanitized_fields hook is not triggered twice. ([PFW-1811](https://github.com/angelleye/paypal-woocommerce/pull/2053))
