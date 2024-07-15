@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily add the PayPal Complete Payments Platform including PayPal Checkout, Pay Later, Venmo, Direct Credit Processing, and alternative payment methods like Apple Pay, Google Pay, and more! Also fully supports Braintree Payments.
- * Version:           4.5.5
+ * Version:           4.5.6
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -38,7 +38,7 @@ if (!defined('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL')) {
     define('PAYPAL_FOR_WOOCOMMERCE_ASSET_URL', plugin_dir_url(__FILE__));
 }
 if (!defined('VERSION_PFW')) {
-    define('VERSION_PFW', '4.5.5');
+    define('VERSION_PFW', '4.5.6');
 }
 if (!defined('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE')) {
     define('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE', __FILE__);
@@ -295,16 +295,26 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
          * @return array associative array of plugin action links
          */
         public function plugin_action_links($actions, $plugin_file, $plugin_data, $context) {
+            global $woocommerce;
+            $gateways = $woocommerce->payment_gateways->payment_gateways();
+            $base_url = admin_url('options-general.php?page=paypal-for-woocommerce');
+            $configure_url = $base_url;
+            if (isset($gateways['angelleye_ppcp']) && (
+                ($gateways['angelleye_ppcp']->sandbox === true && $gateways['angelleye_ppcp']->sandbox_merchant_id) || 
+                ($gateways['angelleye_ppcp']->sandbox === false && $gateways['angelleye_ppcp']->sandbox_merchant_id)
+            )) {
+                $configure_url = admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp');
+            }
+            $configure = sprintf('<a href="%s">%s</a>', $configure_url, __('Configure', 'paypal-for-woocommerce'));
             $custom_actions = array(
-                'configure' => sprintf('<a href="%s">%s</a>', admin_url('options-general.php?page=paypal-for-woocommerce'), __('Configure', 'paypal-for-woocommerce')),
+                'configure' => $configure,
                 'docs' => sprintf('<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/paypal-for-woocommerce-documentation/?utm_source=paypal_for_woocommerce&utm_medium=docs_link&utm_campaign=paypal_for_woocommerce', __('Docs', 'paypal-for-woocommerce')),
                 'support' => sprintf('<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/support', __('Support', 'paypal-for-woocommerce')),
                 'review' => sprintf('<a href="%s" target="_blank">%s</a>', 'https://www.angelleye.com/product/woocommerce-paypal-plugin?utm_source=pfw&utm_medium=support_link#tab-reviews', __('Write a Review', 'paypal-for-woocommerce')),
             );
-
-            // add the links to the front of the actions list
             return array_merge($custom_actions, $actions);
         }
+
 
         function woocommerce_product_title($title) {
             $title = str_replace(array("&#8211;", "&#8211"), array("-"), $title);

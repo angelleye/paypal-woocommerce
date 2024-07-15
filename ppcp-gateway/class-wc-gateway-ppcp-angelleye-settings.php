@@ -24,6 +24,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $is_sandbox;
         public $enable_tokenized_payments;
         public $is_multi_account_active;
+        public $woo_pre_order_payment_mode;
 
         public static function instance() {
             if (is_null(self::$_instance)) {
@@ -402,10 +403,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'top-up' => __('Top Up', 'paypal-for-woocommerce'),
                 'continue' => __('Continue', 'paypal-for-woocommerce'),
             ];
-            $woo_pre_order_payment_mode = array();
-            $woo_pre_order_payment_mode['authorize'] = __('Authorize / Capture', 'paypal-for-woocommerce');
+            $this->woo_pre_order_payment_mode = array();
+            $this->woo_pre_order_payment_mode['authorize'] = __('Authorize / Capture', 'paypal-for-woocommerce');
             if ($this->is_paypal_vault_enable) {
-                $woo_pre_order_payment_mode['vault'] = __('PayPal Vault (Recommended)', 'paypal-for-woocommerce');
+                $this->woo_pre_order_payment_mode['vault'] = __('PayPal Vault (Recommended)', 'paypal-for-woocommerce');
             }
 
             $this->angelleye_ppcp_gateway_setting = array(
@@ -1891,7 +1892,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('Choose whether you wish to Auth/capture OR PayPal Vault.', 'paypal-for-woocommerce'),
                     'default' => $this->is_paypal_vault_enable ? 'vault' : 'authorize',
                     'desc_tip' => true,
-                    'options' => $woo_pre_order_payment_mode,
+                    'options' => $this->woo_pre_order_payment_mode,
                 ),
                 'advanced_settings' => array(
                     'title' => __('Advanced Settings', 'paypal-for-woocommerce'),
