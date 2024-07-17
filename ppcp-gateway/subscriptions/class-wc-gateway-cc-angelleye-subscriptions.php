@@ -9,11 +9,13 @@ class WC_Gateway_CC_AngellEYE_Subscriptions extends WC_Gateway_CC_AngellEYE {
     public function __construct() {
         parent::__construct();
         if (class_exists('WC_Subscriptions_Order')) {
-            add_action('woocommerce_scheduled_subscription_payment_' . $this->id, array($this, 'scheduled_subscription_payment'), 10, 2);
+            if (!has_action('woocommerce_scheduled_subscription_payment_angelleye_ppcp_cc', array($this, 'scheduled_subscription_payment'))) {
+                add_action('woocommerce_scheduled_subscription_payment_angelleye_ppcp_cc', array($this, 'scheduled_subscription_payment'), 10, 2);
+            }
             //add_filter('woocommerce_subscription_payment_meta', array($this, 'add_subscription_payment_meta'), 10, 2);
             //add_filter('woocommerce_subscription_validate_payment_meta', array($this, 'validate_subscription_payment_meta'), 10, 3);
             add_action('wcs_resubscribe_order_created', array($this, 'delete_resubscribe_meta'), 10);
-            add_action('woocommerce_subscription_failing_payment_method_updated_' . $this->id, array($this, 'update_failing_payment_method'), 10, 2);
+            add_action('woocommerce_subscription_failing_payment_method_updated_angelleye_ppcp_cc', array($this, 'update_failing_payment_method'), 10, 2);
         }
     }
 
@@ -45,6 +47,9 @@ class WC_Gateway_CC_AngellEYE_Subscriptions extends WC_Gateway_CC_AngellEYE {
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
+        if ($renewal_order->get_meta('_subscription_payment_processed') === 'yes') {
+            return; // Skip the payment processing if it has already been processed
+        }
         $payment_tokens_id = angelleye_ppcp_get_post_meta($renewal_order, '_payment_tokens_id', true);
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);
@@ -66,6 +71,8 @@ class WC_Gateway_CC_AngellEYE_Subscriptions extends WC_Gateway_CC_AngellEYE {
             }
         }
         parent::process_subscription_payment($renewal_order, $amount_to_charge);
+        $renewal_order->update_meta_data('_subscription_payment_processed', 'yes');
+        $renewal_order->save_meta_data();
     }
 
     public function add_subscription_payment_meta($payment_meta, $subscription) {
