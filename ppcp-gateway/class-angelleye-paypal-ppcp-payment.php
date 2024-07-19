@@ -1287,9 +1287,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $seller_protection = isset($this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['seller_protection']['status']) ? $this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['seller_protection']['status'] : '';
                         $payment_status = isset($this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['status']) ? $this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['status'] : '';
                         $order->update_meta_data('_payment_status', $payment_status);
-                        $order->add_order_note(sprintf(__('%s Transaction ID: %s', 'paypal-for-woocommerce'), 'PayPal', $transaction_id));
-                        $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), ucfirst(strtolower($payment_status))));
-                        $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
                         $payment_status_reason = isset($this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['status_details']['reason']) ? $this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['status_details']['reason'] : '';
                         $this->angelleye_ppcp_payment_status_woo_order_note($woo_order_id, $payment_status, $payment_status_reason);
                         if ($payment_status == 'COMPLETED') {
@@ -1334,7 +1331,6 @@ class AngellEYE_PayPal_PPCP_Payment {
                             return $this->get_preferred_order_status($payment_status, $woo_order_id);
                         }, 20, 2);
                         $order->payment_complete($transaction_id);
-                        $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
                     } elseif ($payment_status === 'DECLINED') {
                         $order->update_status('failed', sprintf(__('Payment via %s declined.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title));
                         $order->save();
