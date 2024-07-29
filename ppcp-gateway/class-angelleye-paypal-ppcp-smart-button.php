@@ -2027,7 +2027,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     public function add_cart_data_in_html() {
         $fragments = $this->add_order_checkout_data_for_direct_checkouts([]);
-        echo '<div id="angelleye_cart_totals" style="display:none;">' . $fragments['angelleye_payments_data'] . '</div>';
+        echo '<div id="angelleye_cart_totals" style="display:none;">' . esc_html($fragments['angelleye_payments_data']) . '</div>';
     }
 
     public function angelleye_ppcp_woocommerce_valid_order_statuses_for_payment_complete($order_status_list, $order) {
