@@ -1300,6 +1300,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                     if (count($this->api_response['purchase_units']) === 1) {
                         if ($payment_status == 'COMPLETED') {
+                            add_filter('woocommerce_payment_complete_order_status', function ($payment_status, $order_id) {
+                                return $this->get_preferred_order_status($payment_status, $order_id);
+                            }, 20, 2);
                             $order->payment_complete($transaction_id);
                             $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), ucfirst(strtolower($payment_status))));
                         } else {
@@ -1856,6 +1859,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $seller_protection = $this->api_response['purchase_units']['0']['payments']['authorizations']['0']['seller_protection']['status'] ?? '';
                     $payment_status = $this->api_response['purchase_units']['0']['payments']['authorizations']['0']['status'] ?? '';
                     if ($payment_status == 'COMPLETED') {
+                        add_filter('woocommerce_payment_complete_order_status', function ($payment_status, $order_id) {
+                            return $this->get_preferred_order_status($payment_status, $order_id);
+                        }, 20, 2);
                         $order->payment_complete($transaction_id);
                         $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
                     } elseif ($payment_status === 'DECLINED') {
@@ -2890,6 +2896,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
 
                 if ($payment_status === 'COMPLETED' || 'CAPTURED' === $payment_status) {
+                    add_filter('woocommerce_payment_complete_order_status', function ($payment_status, $order_id) {
+                        return $this->get_preferred_order_status($payment_status, $order_id);
+                    }, 20, 2);
                     $order->payment_complete();
                     $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
                 } elseif ('PARTIALLY_CAPTURED' === $payment_status) {
@@ -3295,6 +3304,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $order->add_order_note($payment_advice_code);
                         }
                         if ($payment_status == 'COMPLETED') {
+                            add_filter('woocommerce_payment_complete_order_status', function ($payment_status, $order_id) {
+                                return $this->get_preferred_order_status($payment_status, $order_id);
+                            }, 20, 2);
                             $order->payment_complete($transaction_id);
                             $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
                         } elseif ($payment_status === 'DECLINED') {
@@ -3360,6 +3372,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                             $order->add_order_note($payment_advice_code);
                         }
                         if ($payment_status == 'COMPLETED') {
+                            add_filter('woocommerce_payment_complete_order_status', function ($payment_status, $order_id) {
+                                return $this->get_preferred_order_status($payment_status, $order_id);
+                            }, 20, 2);
                             $order->payment_complete($transaction_id);
                             $order->add_order_note(sprintf(__('Payment via %s: %s.', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, ucfirst(strtolower($payment_status))));
                         } elseif ($payment_status === 'DECLINED') {
