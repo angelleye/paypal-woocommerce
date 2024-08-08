@@ -513,7 +513,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if ($this->enable_google_pay) {
             wp_register_script($this->angelleye_ppcp_plugin_name . '-google-pay', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay' . $this->minified_version . '.js', array($ae_script_loader_handle), $script_versions, false);
         }
-        $components = ["buttons"];
+        $components = ["buttons", "fastlane"];
 
         $smart_js_arg = array_merge($smart_js_arg, $this->getClientIdMerchantId());
 
@@ -1300,6 +1300,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $clientToken = $this->payment_request->angelleye_ppcp_get_generate_id_token();
                 if (!empty($clientToken)) {
                     $attributes['data-user-id-token'] = $clientToken;
+                }
+            }
+            if (is_checkout() || is_checkout_pay_page()) {
+                $sdk_client_token = $this->payment_request->get_sdk_client_token();
+                if (!empty($sdk_client_token)) {
+                    $attributes['data-sdk-client-token'] = $sdk_client_token;
                 }
             }
             if (!empty($this->sdk_merchant_id)) {
