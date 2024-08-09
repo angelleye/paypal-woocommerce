@@ -32,9 +32,11 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
     function angelleye_ppcp_get_post_meta($order, $key, $bool = true) {
         $order_meta_value = false;
         if (!is_object($order)) {
-            $order = wc_get_order($order);
+            if (  did_action( 'woocommerce_after_register_post_type' ) ) {
+                $order = wc_get_order($order);
+            }
         }
-        if (!is_a($order, 'WC_Order')) {
+        if (!is_a($order, 'WC_Order') || !is_a($order, 'WC_Subscription')) {
             return;
         }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
@@ -342,11 +344,11 @@ if (!function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
             }
             if (!empty($billing_details['email'])) {
                 $email = $customer->get_email();
-                if(empty($email)) {
+                if (empty($email)) {
                     $customer->set_email($billing_details['email']);
                 }
                 $billing_email = $customer->get_billing_email();
-                if(empty($billing_email)) {
+                if (empty($billing_email)) {
                     $customer->set_billing_email($billing_details['email']);
                 }
             }
@@ -1119,7 +1121,7 @@ if (!empty($change_proceed_checkout_button_text)) {
             global $change_proceed_checkout_button_text;
             ?>
             <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button alt wc-forward<?php echo esc_attr(wc_wp_theme_get_element_class_name('button') ? ' ' . wc_wp_theme_get_element_class_name('button') : ''); ?>">
-            <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'paypal-for-woocommerce'); ?>
+                <?php echo!empty($change_proceed_checkout_button_text) ? apply_filters('angelleye_ppcp_proceed_to_checkout_button', $change_proceed_checkout_button_text) : esc_html_e('Proceed to checkout', 'paypal-for-woocommerce'); ?>
             </a>
             <?php
         }
