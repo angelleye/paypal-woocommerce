@@ -1468,5 +1468,3 @@ add_action('woocommerce_blocks_loaded', function () {
         
     }
 });
-?>
-
