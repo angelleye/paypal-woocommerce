@@ -128,7 +128,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 4.5.10 - 08.09.2024
-* Fix - Resolved "headers already sent" messages. ([PFW-1841](https://github.com/angelleye/paypal-woocommerce/pull/2069))
+* Fix - Resolved "headers already sent" messages. ([PFW-1841](https://github.com/angelleye/paypal-woocommerce/pull/2069)) 
 
 = 4.5.10 - 08.09.2024
 * Fix - Implemented logic for creating or updating an existing order during checkout. ([PFW-1840](https://github.com/angelleye/paypal-woocommerce/pull/2068))
