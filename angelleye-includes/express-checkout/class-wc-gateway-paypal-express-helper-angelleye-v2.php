@@ -74,6 +74,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
     public $enabled_credit_messaging_value;
     public $credit_messaging_page_type;
     public $enabled_credit_messaging;
+    public $cart_button_layout;
 
     /**
      * The single instance of the class

@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.5.5
-Stable tag: 4.5.6
+Tested up to: 6.6.0
+Stable tag: 4.5.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,14 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.5.8 - 07.19.2024
+* Fix - Adds PFWMA compatibility without smart button. ([PFW-1825](https://github.com/angelleye/paypal-woocommerce/pull/2063))
+* Fix - Resolved PHP notice. ([PFW-1826](https://github.com/angelleye/paypal-woocommerce/pull/2064))
+* Fix - Resolved duplicate order note. ([PFW-1827](https://github.com/angelleye/paypal-woocommerce/pull/2065))
+
+= 4.5.7 - 07.15.2024
+* Fix - Prevent subscription renewals from triggering twice. ([PFW-1824](https://github.com/angelleye/paypal-woocommerce/pull/2061))
 
 = 4.5.6 - 07.15.2024
 * Fix - Update "configure" link. ([PFW-1801](https://github.com/angelleye/paypal-woocommerce/pull/2055))

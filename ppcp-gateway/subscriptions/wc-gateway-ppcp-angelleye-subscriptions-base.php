@@ -5,7 +5,9 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     public function __construct() {
         parent::__construct();
         if (class_exists('WC_Subscriptions_Order')) {
-            add_action('woocommerce_scheduled_subscription_payment_' . $this->id, array($this, 'scheduled_subscription_payment'), 10, 2);
+            if (!has_action('woocommerce_scheduled_subscription_payment_' . $this->id, array($this, 'scheduled_subscription_payment'))) {
+                add_action('woocommerce_scheduled_subscription_payment_' . $this->id, array($this, 'scheduled_subscription_payment'), 10, 2);
+            }
             // add_filter('woocommerce_subscription_payment_meta', array($this, 'add_subscription_payment_meta'), 10, 2);
             // add_filter('woocommerce_subscription_validate_payment_meta', array($this, 'validate_subscription_payment_meta'), 10, 3);
             add_action('wcs_resubscribe_order_created', array($this, 'delete_resubscribe_meta'), 10);
@@ -41,7 +43,9 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
     }
 
     public function scheduled_subscription_payment($amount_to_charge, $renewal_order) {
-        remove_action('woocommerce_scheduled_subscription_payment_' . $this->id, array($this, 'scheduled_subscription_payment'));
+        if ($renewal_order->get_meta('_subscription_payment_processed') === 'yes') {
+            return; // Skip the payment processing if it has already been processed
+        }
         $payment_tokens_id = $renewal_order->get_meta('_payment_tokens_id', true);
         if (empty($payment_tokens_id) || $payment_tokens_id == false) {
             $this->angelleye_scheduled_subscription_payment_retry_compability($renewal_order);
@@ -68,6 +72,8 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
         $renewal_order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
         $renewal_order->save();
         parent::process_subscription_payment($renewal_order, $amount_to_charge);
+        $renewal_order->update_meta_data('_subscription_payment_processed', 'yes');
+        $renewal_order->save_meta_data();
     }
 
     public function add_subscription_payment_meta($payment_meta, $subscription) {
