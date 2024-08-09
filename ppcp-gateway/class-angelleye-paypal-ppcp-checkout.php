@@ -64,10 +64,10 @@ if (class_exists('WC_Checkout')) {
             } else {
                 $return_arg_url = array();
                 $return_arg_url['utm_nooverride'] = '1';
-                if(!empty($paypal_order_id)) {
+                if (!empty($paypal_order_id)) {
                     $return_arg_url['paypal_order_id'] = $paypal_order_id;
                 }
-                if(!empty($paypal_payer_id)) {
+                if (!empty($paypal_payer_id)) {
                     $return_arg_url['paypal_payer_id'] = $paypal_payer_id;
                 }
                 wp_safe_redirect(add_query_arg($return_arg_url, untrailingslashit(wc_get_checkout_url())));
@@ -85,7 +85,7 @@ if (class_exists('WC_Checkout')) {
             if (WC()->cart->is_empty()) {
                 throw new Exception(sprintf(__('Sorry, your session has expired. <a href="%s" class="wc-backward">Return to shop</a>', 'paypal-for-woocommerce'), esc_url(wc_get_page_permalink('shop'))));
             }
-           
+
             $errors = new WP_Error();
             /**
              * @var AngellEYE_PayPal_PPCP_Smart_Button $smart_button
@@ -93,7 +93,7 @@ if (class_exists('WC_Checkout')) {
             $smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
             $posted_data = $smart_button->angelleye_ppcp_prepare_order_data($this->get_posted_data());
             $this->update_session($posted_data);
-            $this->validate_checkout($posted_data, $errors);
+
             foreach ($errors->errors as $code => $messages) {
                 $data = $errors->get_error_data($code);
                 foreach ($messages as $message) {
@@ -115,13 +115,12 @@ if (class_exists('WC_Checkout')) {
                  * Store the order id in session so that in case of transaction failure user can start with same order
                  */
                 WC()->session->set('order_awaiting_payment', $order_id);
-                do_action( 'woocommerce_checkout_order_processed', $order_id, $posted_data, $order );
+                do_action('woocommerce_checkout_order_processed', $order_id, $posted_data, $order);
                 return $order_id;
             } else {
                 throw new Exception(__('Unable to create order due to following errors.'));
             }
         }
-
     }
 
 }
