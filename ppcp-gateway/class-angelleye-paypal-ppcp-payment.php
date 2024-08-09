@@ -406,9 +406,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             );
             $args = apply_filters('angelleye_ppcp_request_args', $args, 'create_order', $woo_order_id);
             $this->api_response = $this->api_request->request($this->paypal_order_api, $args, 'create_order');
-            if (ob_get_length()) {
-                ob_end_clean();
-            }
             if (!empty($this->api_response['status'])) {
                 $return_response = $this->add_nonce_in_response($return_response);
                 // Add currency code and total for the apple pay orders
@@ -421,6 +418,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->update_meta_data('_paypal_order_id', $this->api_response['id']);
                     $order->save_meta_data();
                 }
+                if (ob_get_length()) {
+                    ob_end_clean();
+                }
                 wp_send_json($return_response, 200);
                 exit();
             } else {
@@ -430,6 +430,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 );
                 $errorMessage = $this->angelleye_ppcp_get_readable_message($this->api_response, $error_email_notification_param);
                 !empty($order) && $order->add_order_note($errorMessage);
+                if (ob_get_length()) {
+                    ob_end_clean();
+                }
                 if (str_contains($errorMessage, 'CURRENCY_NOT_SUPPORTED')) {
                     wp_send_json_error(sprintf(__('Currency code (%s) is not currently supported.', 'paypal-for-woocommerce'), $currency_code));
                 } else {
