@@ -57,6 +57,7 @@ function initSmartButtons() {
     
     $(checkoutSelector).on('checkout_place_order_angelleye_ppcp_fastlane', function (event) {
         event.preventDefault();
+        console.log('fastlane submit');
         $(document.body).trigger('submit_angelleye_ppcp_fastlane');
         return false;
     });

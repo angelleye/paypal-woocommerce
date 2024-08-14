@@ -68,13 +68,31 @@ class PayPalFastlane {
     }
 
     bindPlaceOrderEvent(fastlaneCardComponent) {
-        jQuery(document.body).on('submit_angelleye_ppcp_fastlane', async (event) => {
-            const billingAddress = this.getBillingAddress();
-            this.paymentToken = await fastlaneCardComponent.getPaymentToken({ billingAddress });
-            $('#fastlane_payment_token').val(this.paymentToken);
-            
-        });
-    }
+    jQuery(document.body).on('submit_angelleye_ppcp_fastlane', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+        const billingAddress = this.getBillingAddress();
+        this.paymentToken = await fastlaneCardComponent.getPaymentToken({ billingAddress });
+        $('#fastlane_payment_token').val(this.paymentToken);
+
+        let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
+        console.log(checkoutSelector); // Moved after declaration
+
+        if (jQuery(checkoutSelector).is('.createOrder') === false) {
+            let errorLogId = angelleyeJsErrorLogger.generateErrorId(); // Declare errorLogId
+            angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
+            jQuery(checkoutSelector).addClass('createOrder');
+            return angelleyeOrder.createOrder({ errorLogId })
+                .then(function (data) {
+                    return data.orderID;
+                })
+                .catch((error) => {
+                    angelleyeOrder.showError(error);
+                    return '';
+                });
+        }
+    });
+}
+
 
     getBillingAddress() {
         return {
