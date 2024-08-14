@@ -177,6 +177,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             } else {
                 $cart = $this->angelleye_ppcp_get_details_from_order($woo_order_id);
             }
+            
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $reference_id = wc_generate_order_key();
             AngellEye_Session_Manager::set('reference_id', $reference_id);
@@ -195,6 +196,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                 AngellEye_Session_Manager::set('payment_method_title', $payment_method_title);
                 AngellEye_Session_Manager::set('used_payment_method', 'card');
                 $this->angelleye_ppcp_used_payment_method = 'card';
+            } elseif (!empty($payment_method_id) && $payment_method_id === 'angelleye_ppcp_fastlane') {
+                $payment_method_title = angelleye_ppcp_get_payment_method_title(wc_clean($_POST['angelleye_ppcp_cc_payment_method_title']));
+                AngellEye_Session_Manager::set('payment_method_title', 'Debit or Credit');
+                AngellEye_Session_Manager::set('used_payment_method', 'angelleye_ppcp_fastlane');
+                $this->angelleye_ppcp_used_payment_method = 'angelleye_ppcp_fastlane';
             }
             $intent = ($this->paymentaction === 'capture') ? 'CAPTURE' : 'AUTHORIZE';
             $currency_code = apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($woo_order_id), $cart['order_total']);
@@ -396,6 +402,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $body_request['payment_source']['venmo']['experience_context']['shipping_preference'] = $this->angelleye_ppcp_shipping_preference();
                 }
                 unset($body_request['application_context']);
+            } elseif($this->angelleye_ppcp_used_payment_method === 'angelleye_ppcp_fastlane' && !empty($_POST['fastlane_payment_token'])) {
+                $body_request['payment_source']['card']['single_use_token'] = wc_clean($_POST['fastlane_payment_token']);
             }
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $args = array(
