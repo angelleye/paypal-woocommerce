@@ -651,7 +651,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             }
             if (is_used_save_payment_token() === false) {
                 // check if an existing failed order is being processed.
-                $order_id = angelleye_ppcp_get_awaiting_payment_order_id();
+                if (!class_exists('AngellEYE_PayPal_PPCP_Checkout')) {
+                    include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php';
+                }
+                $ppcp_checkout = AngellEYE_PayPal_PPCP_Checkout::instance();
+                $order_id = $ppcp_checkout->angelleye_ppcp_create_order();
                 $this->payment_request->angelleye_ppcp_create_order_request($order_id > 0 ? $order_id : null);
                 exit();
             }
