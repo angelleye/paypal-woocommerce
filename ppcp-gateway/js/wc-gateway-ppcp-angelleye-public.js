@@ -54,6 +54,12 @@ function initSmartButtons() {
         }
         return true;
     });
+    
+    $(checkoutSelector).on('checkout_place_order_angelleye_ppcp_fastlane', function (event) {
+        event.preventDefault();
+        $(document.body).trigger('submit_angelleye_ppcp_fastlane');
+        return false;
+    });
 
     angelleyeOrder.isCheckoutPage() === false ? angelleyeOrder.renderSmartButton() : null;
 

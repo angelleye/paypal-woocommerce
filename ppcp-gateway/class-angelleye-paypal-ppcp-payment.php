@@ -4931,13 +4931,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
                 'cookies' => array(),
                 'body' => array(
-                    'grant_type' => 'client_credentials',
-                    'response_type' => 'client_token',
-                    'intent' => 'sdk_init',
-                    'domains' => site_url()
+                    'domain' => site_url()
                 )
             );
-            $response = $this->api_request->request($this->token_url, $args, 'abc');
+            $response = $this->api_request->request($this->token_url, $args, 'sdk-init-token');
             if (!empty($response['access_token'])) {
                 return $response['access_token'];
             }

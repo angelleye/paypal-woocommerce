@@ -42,9 +42,12 @@ const angelleyeOrder = {
     isGooglePayPaymentMethodSelected: () => {
         return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp_google_pay';
     },
+    isFastlanePaymentMethodSelected: () => {
+        return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp_fastlane';
+    },
     isAngelleyePpcpPaymentMethodSelected: () => {
         let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
-        return paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay' || paymentMethod === 'angelleye_ppcp_google_pay';
+        return paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay' || paymentMethod === 'angelleye_ppcp_google_pay' || paymentMethod === 'angelleye_ppcp_fastlane';
     },
     isAngelleyePpcpAdditionalPaymentMethodSelected: () => {
         let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
@@ -52,7 +55,7 @@ const angelleyeOrder = {
     },
     isAngelleyePaymentMethodSelected: () => {
         let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
-        return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay' || paymentMethod === 'angelleye_ppcp_google_pay';
+        return paymentMethod === 'paypal_express' || paymentMethod === 'angelleye_ppcp' || paymentMethod === 'angelleye_ppcp_apple_pay' || paymentMethod === 'angelleye_ppcp_google_pay' || paymentMethod === 'angelleye_ppcp_fastlane';
     },
     isSavedPaymentMethodSelected: () => {
         let paymentMethod = angelleyeOrder.getSelectedPaymentMethod();
@@ -70,6 +73,9 @@ const angelleyeOrder = {
     },
     isGooglePayEnabled: () => {
         return angelleye_ppcp_manager.google_sdk_url !== "";
+    },
+    isFastlaneEnabled: () => {
+        return angelleye_ppcp_manager.enable_ppcp_fastlane === "yes";
     },
     getConstantValue: (constantName, defaultValue) => {
         return angelleye_ppcp_manager.constants && angelleye_ppcp_manager.constants[constantName] ? angelleye_ppcp_manager.constants[constantName] : defaultValue;
@@ -347,21 +353,23 @@ const angelleyeOrder = {
         return false;
     },
     showPpcpPaymentMethods: () => {
-        jQuery('#angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay, #angelleye_ppcp_checkout_google_pay').hide();
+        jQuery('#angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay, #angelleye_ppcp_checkout_google_pay, #angelleye_ppcp_checkout_fastlane').hide();
         if (angelleyeOrder.isApplePayPaymentMethodSelected()) {
             jQuery('#angelleye_ppcp_checkout_apple_pay').show();
         } else if (angelleyeOrder.isGooglePayPaymentMethodSelected()) {
             jQuery('#angelleye_ppcp_checkout_google_pay').show();
+        } else if (angelleyeOrder.isFastlanePaymentMethodSelected()) {
+            jQuery('#angelleye_ppcp_checkout_fastlane').show();
         } else {
             jQuery('#angelleye_ppcp_checkout').show();
         }
     },
     hidePpcpPaymentMethods: () => {
-        jQuery('#angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay, #angelleye_ppcp_checkout_google_pay').hide();
+        jQuery('#angelleye_ppcp_checkout, #angelleye_ppcp_checkout_apple_pay, #angelleye_ppcp_checkout_google_pay, #angelleye_ppcp_checkout_fastlane').hide();
     },
     hideShowPlaceOrderButton: () => {
         let selectedPaymentMethod = angelleyeOrder.getSelectedPaymentMethod();
-        console.log('hideShowPlaceOrderButton', selectedPaymentMethod)
+        console.log('hideShowPlaceOrderButton', selectedPaymentMethod);
         let isAePpcpMethodSelected = angelleyeOrder.isAngelleyePpcpPaymentMethodSelected();
         if (isAePpcpMethodSelected === true) {
             jQuery('.wcf-pre-checkout-offer-action').val('');
@@ -474,6 +482,10 @@ const angelleyeOrder = {
             jQuery.each(angelleye_ppcp_manager.google_pay_btn_selector, function (key, angelleye_ppcp_google_button_selector) {
                 (new GooglePayCheckoutButton()).render(angelleye_ppcp_google_button_selector);
             });
+        }
+        if (angelleyeOrder.isFastlaneEnabled()) {
+            const fastlaneInstance = new PayPalFastlane('#angelleye_ppcp_checkout_fastlane');
+            fastlaneInstance.initialize();
         }
     },
     checkoutFormCapture: ({checkoutSelector, payPalOrderId, errorLogId}) => {

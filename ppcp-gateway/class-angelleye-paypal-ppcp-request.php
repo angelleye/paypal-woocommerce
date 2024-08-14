@@ -154,7 +154,9 @@ class AngellEYE_PayPal_PPCP_Request {
             }
         }
         $args['headers']['plugin_version_id'] = VERSION_PFW;
-        if ('generate_id_token' === $action_name) {
+        if ('sdk-init-token' === $action_name) {
+            $this->result = wp_remote_get($this->ppcp_host . 'sdk-init-token', $args);
+        } elseif ('generate_id_token' === $action_name) {
             $this->result = wp_remote_get($this->ppcp_host . 'generate-id-token', $args);
         } else {
             $this->result = wp_remote_get($this->ppcp_host . 'ppcp-request', $args);

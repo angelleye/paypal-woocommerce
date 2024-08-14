@@ -57,9 +57,13 @@ function canShowPlaceOrderBtn() {
     // This is to check if the user is on review order page then there we need to show the place order button.
     // For logged in user we see the payment method that's why on checkout page we keep seeing the place order button
     // that we need to fix by using a way to identify if its checkout or order review page
+    
     let isOrderCompletePage = angelleyeOrder.isOrderCompletePage();
     // console.log('canShowPlaceOrderBtn', isOrderCompletePage, angelleyeOrder.isAngelleyePaymentMethodSelected());
     if (angelleyeOrder.isPpcpPaymentMethodSelected() && angelleye_ppcp_manager.is_checkout_disable_smart_button === 'yes') {
+        return true;
+    }
+    if (angelleyeOrder.isFastlanePaymentMethodSelected()) {
         return true;
     }
     if (angelleyeOrder.isPpcpPaymentMethodSelected() && angelleye_ppcp_manager.is_hide_place_order_button === 'no') {
@@ -82,4 +86,4 @@ jQuery(document).ready(function () {
     jQuery(document.body).on('change', 'input[name="payment_method"]', function () {
         canShowPlaceOrderBtn();
     });
-})
+});

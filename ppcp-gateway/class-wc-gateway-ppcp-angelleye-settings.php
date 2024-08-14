@@ -1849,12 +1849,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => __('Accept payments using Google Pay.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
-                 'fastlane' => array(
+                 'ppcp_fastlane' => array(
                     'title' => __('Fastlane', 'paypal-for-woocommerce'),
                     'class' => 'ppcp_separator_heading',
                     'type' => 'title',
                 ),
-                'enable_fastlane' => array(
+                'enable_ppcp_fastlane' => array(
                     'title' => __('Enable Fastlane', 'paypal-for-woocommerce'),
                     'label' => __('Enable Fastlane', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
