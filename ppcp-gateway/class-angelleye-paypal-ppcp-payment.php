@@ -4931,7 +4931,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'grant_type' => 'client_credentials',
                     'response_type' => 'client_token',
                     'intent' => 'sdk_init',
-                    'domains' => array('example.com', 'example2.com')
+                    'domains' => site_url()
                 )
             );
             $response = $this->api_request->request($this->token_url, $args, 'abc');

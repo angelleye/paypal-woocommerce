@@ -836,23 +836,6 @@ const angelleyeOrder = {
         }
     },
     renderPaymentButtons: () => {
-        
-$.when(
-    angelleye_paypal_sdk.Fastlane({})
-  ).then(function(fastlane) {
-    // Convenience parameters for calling later on
-    var identity = fastlane.identity;
-    var profile = fastlane.profile;
-    var FastlaneCardComponent = fastlane.FastlaneCardComponent;
-    var FastlaneWatermarkComponent = fastlane.FastlaneWatermarkComponent;
-
-    // You can now use the fastlane object and its properties
-    console.log(identity, profile, FastlaneCardComponent, FastlaneWatermarkComponent);
-  }).fail(function(error) {
-    console.error('Failed to initialize Fastlane:', error);
-  });
-
-    
         angelleyeOrder.hideShowPlaceOrderButton();
         angelleyeOrder.renderSmartButton();
         if (angelleyeOrder.isHostedFieldEligible() === true) {

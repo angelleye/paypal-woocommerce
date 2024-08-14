@@ -1849,6 +1849,19 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'default' => __('Accept payments using Google Pay.', 'paypal-for-woocommerce'),
                     'desc_tip' => true,
                 ),
+                 'fastlane' => array(
+                    'title' => __('Fastlane', 'paypal-for-woocommerce'),
+                    'class' => 'ppcp_separator_heading',
+                    'type' => 'title',
+                ),
+                'enable_fastlane' => array(
+                    'title' => __('Enable Fastlane', 'paypal-for-woocommerce'),
+                    'label' => __('Enable Fastlane', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox',
+                    'description' => __('Fastlane is PayPal’s quick guest checkout solution. It securely saves and retrieves payment and shipping information for Fastlane members. Fastlane members enter their email and receive prefilled checkout forms.', 'paypal-for-woocommerce'),
+                    'default' => 'no',
+                    'desc_tip' => true,
+                ),
                 'paypal_shipment_tracking' => array(
                     'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
                     'type' => 'title',
