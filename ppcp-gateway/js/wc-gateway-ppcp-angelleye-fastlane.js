@@ -108,7 +108,7 @@ class PayPalFastlane {
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
                     fieldName: 'fastlane_payment_token',
-                    fieldValue: this.paymentToken,
+                    fieldValue: this.paymentToken.id,
                     appendToSelector: checkoutSelector
                 });
 
