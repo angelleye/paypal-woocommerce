@@ -197,13 +197,6 @@ class PayPalFastlane {
 
                 jQuery('#shipping_country').trigger('change');
             }
-            var paymentMethod = jQuery('#payment_method_angelleye_ppcp_fastlane');
-            if (paymentMethod.length > 0) {
-                paymentMethod.prop('checked', true).trigger('change');
-                jQuery(document.body).trigger('update_checkout');
-            }
-            jQuery(document.body).trigger('update_checkout');
-
         } catch (error) {
             console.error("Error updating WooCommerce checkout fields:", error);
         }
@@ -214,6 +207,11 @@ class PayPalFastlane {
             event.preventDefault();
             const button = jQuery('#lookup_ppcp_fastlane_email_button');
             button.prop('disabled', true);
+            var paymentMethod = jQuery('#payment_method_angelleye_ppcp_fastlane');
+            if (paymentMethod.length > 0) {
+                paymentMethod.prop('checked', true).trigger('change');
+                jQuery(document.body).trigger('update_checkout');
+            }
             try {
                 const email = jQuery('input[name="ppcp_fastlane_email"]').val();
                 jQuery('input[name="billing_email"]').val(email);
