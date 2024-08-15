@@ -4,6 +4,7 @@ class PayPalFastlane {
         this.fastlaneInstance = null;
         this.profileData = null;
         this.paymentToken = null;
+        this.savedCardHtml = ''; // Store the saved card HTML
     }
 
     async initialize() {
@@ -42,21 +43,26 @@ class PayPalFastlane {
     }
 
     renderCardDetails() {
-        try {
-            if (this.profileData?.card) {
-                jQuery(this.containerSelector).html(`
-                    <div class="fastlane-card">
-                        <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.paymentSource.card.lastDigits}</div>
-                        <div class="fastlane-card-expiry">${this.profileData.card.paymentSource.card.expiry}</div>
-                        <button id="change-card">Change Card</button>
-                    </div>
-                `);
-                this.bindChangeCardEvent();
-            } else {
-                this.renderCardForm();
-            }
-        } catch (error) {
-            console.error("Error rendering card details:", error);
+        if (this.profileData?.card) {
+            this.savedCardHtml = `
+                <div class="fastlane-card">
+                    <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.paymentSource.card.lastDigits}</div>
+                    <div class="fastlane-card-expiry">${this.profileData.card.paymentSource.card.expiry}</div>
+                    <button id="change-card">Change Card</button>
+                </div>
+            `;
+            jQuery(this.containerSelector).html(this.savedCardHtml);
+            this.bindChangeCardEvent();
+        } else {
+            this.renderCardForm();
+        }
+    }
+
+    // Restore the saved card details after WooCommerce checkout updates
+    restoreCardDetails() {
+        if (this.savedCardHtml) {
+            jQuery(this.containerSelector).html(this.savedCardHtml);
+            this.bindChangeCardEvent();
         }
     }
 
@@ -125,81 +131,58 @@ class PayPalFastlane {
             } catch (error) {
                 console.error("Failed to place order:", error);
                 angelleyeOrder.showError(error);
+            } finally {
+                this.restoreCardDetails(); // Restore the card details after updating checkout
             }
         });
     }
 
     getBillingAddress() {
-        try {
-            return {
-                addressLine1: jQuery('#billing_address_1').val(),
-                adminArea1: jQuery('#billing_state').val(),
-                adminArea2: jQuery('#billing_city').val(),
-                postalCode: jQuery('#billing_postcode').val(),
-                countryCode: jQuery('#billing_country').val()
-            };
-        } catch (error) {
-            console.error("Error getting billing address:", error);
-            return null;
-        }
+        return {
+            addressLine1: jQuery('#billing_address_1').val(),
+            adminArea1: jQuery('#billing_state').val(),
+            adminArea2: jQuery('#billing_city').val(),
+            postalCode: jQuery('#billing_postcode').val(),
+            countryCode: jQuery('#billing_country').val()
+        };
     }
 
     getShippingAddress() {
-        try {
-            return {
-                addressLine1: jQuery('#shipping_address_1').val(),
-                adminArea1: jQuery('#shipping_state').val(),
-                adminArea2: jQuery('#shipping_city').val(),
-                postalCode: jQuery('#shipping_postcode').val(),
-                countryCode: jQuery('#shipping_country').val()
-            };
-        } catch (error) {
-            console.error("Error getting shipping address:", error);
-            return null;
-        }
+        return {
+            addressLine1: jQuery('#shipping_address_1').val(),
+            adminArea1: jQuery('#shipping_state').val(),
+            adminArea2: jQuery('#shipping_city').val(),
+            postalCode: jQuery('#shipping_postcode').val(),
+            countryCode: jQuery('#shipping_country').val()
+        };
     }
 
     updateWooCheckoutFields(profileData) {
-        try {
-            // Update billing fields
-            if (profileData.card && profileData.card.paymentSource.card.billingAddress) {
-                jQuery('#billing_first_name').val(profileData.name.firstName);
-                jQuery('#billing_last_name').val(profileData.name.lastName);
-                jQuery('#billing_address_1').val(profileData.card.paymentSource.card.billingAddress.addressLine1);
-                jQuery('#billing_city').val(profileData.card.paymentSource.card.billingAddress.adminArea2);
-                jQuery('#billing_postcode').val(profileData.card.paymentSource.card.billingAddress.postalCode);
-                jQuery('#billing_phone').val(profileData.shippingAddress.phoneNumber.nationalNumber || '');
-
-                // Update the country field and trigger the WooCommerce event
-                jQuery('#billing_country').val(profileData.card.paymentSource.card.billingAddress.countryCode).trigger('change');
-
-                // Update the state field once the country has changed
-                jQuery(document.body).on('country_to_state_changed', function () {
-                    jQuery('#billing_state').val(profileData.card.paymentSource.card.billingAddress.adminArea1).trigger('change');
-                });
-
-                // Trigger WooCommerce's country to state change event manually
-               // jQuery('#billing_country').trigger('change');
+        const updateField = (selector, value) => {
+            if (value) {
+                jQuery(selector).val(value).trigger('change');
             }
+        };
 
-            // Update shipping fields
-            if (profileData.shippingAddress) {
-                jQuery('#shipping_first_name').val(profileData.shippingAddress.name.firstName);
-                jQuery('#shipping_last_name').val(profileData.shippingAddress.name.lastName);
-                jQuery('#shipping_address_1').val(profileData.shippingAddress.address.addressLine1);
-                jQuery('#shipping_city').val(profileData.shippingAddress.address.adminArea2);
-                jQuery('#shipping_postcode').val(profileData.shippingAddress.address.postalCode);
-                jQuery('#shipping_country').val(profileData.shippingAddress.address.countryCode).trigger('change');
+        const billingAddress = profileData.card?.paymentSource?.card?.billingAddress || {};
+        const shippingAddress = profileData.shippingAddress?.address || {};
 
-                jQuery(document.body).on('country_to_state_changed', function () {
-                    jQuery('#shipping_state').val(profileData.shippingAddress.address.adminArea1).trigger('change');
-                });
+        updateField('#billing_first_name', profileData.name?.firstName);
+        updateField('#billing_last_name', profileData.name?.lastName);
+        updateField('#billing_address_1', billingAddress.addressLine1);
+        updateField('#billing_city', billingAddress.adminArea2);
+        updateField('#billing_postcode', billingAddress.postalCode);
+        updateField('#billing_country', billingAddress.countryCode);
+        updateField('#billing_state', billingAddress.adminArea1);
+        updateField('#billing_phone', profileData.shippingAddress?.phoneNumber?.nationalNumber);
 
-                //jQuery('#shipping_country').trigger('change');
-            }
-        } catch (error) {
-            console.error("Error updating WooCommerce checkout fields:", error);
-        }
+        updateField('#shipping_first_name', profileData.shippingAddress?.name?.firstName);
+        updateField('#shipping_last_name', profileData.shippingAddress?.name?.lastName);
+        updateField('#shipping_address_1', shippingAddress.addressLine1);
+        updateField('#shipping_city', shippingAddress.adminArea2);
+        updateField('#shipping_postcode', shippingAddress.postalCode);
+        updateField('#shipping_country', shippingAddress.countryCode);
+        updateField('#shipping_state', shippingAddress.adminArea1);
     }
 
     bindEmailLookupEvent() {
@@ -207,22 +190,12 @@ class PayPalFastlane {
             event.preventDefault();
             const button = jQuery('#lookup_ppcp_fastlane_email_button');
             button.prop('disabled', true);
-            var paymentMethod = jQuery('#payment_method_angelleye_ppcp_fastlane');
-            console.log('Payment method element found:', paymentMethod.length > 0);
-            if (paymentMethod.length > 0) {
-                paymentMethod.prop('checked', true);
-                console.log('Payment method checked:', paymentMethod.is(':checked'));
-                //paymentMethod.trigger('change');
-                console.log('Change event triggered on payment method');
-                setTimeout(function () {
-                    //jQuery(document.body).trigger('update_checkout');
-                    console.log('update_checkout triggered');
-                }, 100);
-            }
+
             try {
                 const email = jQuery('input[name="ppcp_fastlane_email"]').val();
                 jQuery('input[name="billing_email"]').val(email);
                 const customerContextId = await this.lookupCustomerByEmail(email);
+
                 if (customerContextId) {
                     const authenticated = await this.authenticateCustomer(customerContextId);
                     if (authenticated) {
@@ -233,6 +206,11 @@ class PayPalFastlane {
                 } else {
                     this.renderCardForm();
                 }
+
+                // Trigger WooCommerce checkout update and restore card details afterward
+                jQuery(document.body).trigger('update_checkout');
+                this.restoreCardDetails();
+
             } catch (error) {
                 console.error("Error during email lookup event:", error);
             } finally {
@@ -242,14 +220,10 @@ class PayPalFastlane {
     }
 
     render() {
-        try {
-            if (this.profileData && this.profileData.card) {
-                this.renderCardDetails();
-            } else {
-                this.renderCardForm();
-            }
-        } catch (error) {
-            console.error("Error during rendering:", error);
+        if (this.profileData?.card) {
+            this.renderCardDetails();
+        } else {
+            this.renderCardForm();
         }
     }
 }
