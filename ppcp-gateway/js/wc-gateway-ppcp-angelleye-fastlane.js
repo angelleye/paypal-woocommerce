@@ -249,7 +249,7 @@ class PayPalFastlane {
                 if (!this.isPaymentMethodSet) {
                     this.setPaymentMethod(this.paymentMethodId);
                 }
-                this.render();
+                console.log(this);
             }, 200);
         });
     }
