@@ -198,8 +198,8 @@ class PayPalFastlane {
         if (paymentMethod.length > 0) {
             paymentMethod.prop('checked', true);
             this.isPaymentMethodSet = true;
+            jQuery( '#payment_method_angelleye_ppcp_fastlane' ).trigger( 'click' );
         }
-        jQuery( document.body ).trigger( 'payment_method_selected' );
     }
 
     bindEmailLookupEvent() {
