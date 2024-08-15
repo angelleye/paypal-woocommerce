@@ -199,7 +199,7 @@ class PayPalFastlane {
                 jQuery('#shipping_country').trigger('change');
             }
 
-            jQuery('#payment_method_angelleye_ppcp_fastlane').prop('checked', true).trigger('change');
+            jQuery('.payment_method_angelleye_ppcp_fastlane').prop('checked', true).trigger('change');
 
             // Update the order review to reflect the selected payment method
             jQuery(document.body).trigger('update_checkout');
