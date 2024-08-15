@@ -44,6 +44,7 @@ class PayPalFastlane {
     renderCardDetails() {
         try {
             if (this.profileData && this.profileData.card) {
+                console.log(this.profileData);
                 jQuery(this.containerSelector).html(`
                     <div class="fastlane-card">
                         <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.last4}</div>
@@ -161,6 +162,7 @@ class PayPalFastlane {
 
     updateWooCheckoutFields(profileData) {
         try {
+            console.log(profileData);
             if (profileData.billingAddress) {
                 jQuery('#billing_address_1').val(profileData.billingAddress.addressLine1);
                 jQuery('#billing_city').val(profileData.billingAddress.adminArea2);
