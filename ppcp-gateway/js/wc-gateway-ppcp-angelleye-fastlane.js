@@ -5,6 +5,7 @@ class PayPalFastlane {
         this.profileData = null;
         this.paymentToken = null;
         this.savedCardHtml = ''; // Store the saved card HTML
+        this.paymentMethodId = 'angelleye_ppcp_fastlane';
     }
 
     async initialize() {
@@ -12,6 +13,7 @@ class PayPalFastlane {
             this.fastlaneInstance = await angelleye_paypal_sdk.Fastlane({});
             this.fastlaneInstance.setLocale('en_us');
             this.bindEmailLookupEvent();
+            this.bindWooCommerceEvents(); // Bind to WooCommerce events
         } catch (error) {
             console.error("Failed to initialize Fastlane:", error);
         }
@@ -19,7 +21,7 @@ class PayPalFastlane {
 
     async lookupCustomerByEmail(email) {
         try {
-            const {customerContextId} = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
+            const { customerContextId } = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
             return customerContextId;
         } catch (error) {
             console.error("Error looking up customer by email:", error);
@@ -29,7 +31,7 @@ class PayPalFastlane {
 
     async authenticateCustomer(customerContextId) {
         try {
-            const {authenticationState, profileData} = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
+            const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
                 this.paymentToken = profileData.card?.id || null;
@@ -68,7 +70,7 @@ class PayPalFastlane {
     bindChangeCardEvent() {
         jQuery('#change-card').on('click', async () => {
             try {
-                const {selectedCard} = await this.fastlaneInstance.profile.showCardSelector();
+                const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
                     this.profileData.card = selectedCard;
                     this.paymentToken = selectedCard.id;
@@ -125,7 +127,7 @@ class PayPalFastlane {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
-                    await angelleyeOrder.createOrder({errorLogId});
+                    await angelleyeOrder.createOrder({ errorLogId });
                 }
             } catch (error) {
                 console.error("Failed to place order:", error);
@@ -184,7 +186,7 @@ class PayPalFastlane {
         updateField('#shipping_state', shippingAddress.adminArea1);
 
         // Force WooCommerce to update the payment method selection
-        this.setPaymentMethod('angelleye_ppcp_fastlane');
+        this.setPaymentMethod(this.paymentMethodId);
     }
 
     setPaymentMethod(paymentMethodId) {
@@ -222,16 +224,20 @@ class PayPalFastlane {
 
                 // Trigger WooCommerce checkout update and restore card details afterward
                 jQuery(document.body).trigger('update_checkout');
-                this.restoreCardDetails();
-
-                // Reapply the payment method after the checkout update
-                this.setPaymentMethod('angelleye_ppcp_fastlane');
 
             } catch (error) {
                 console.error("Error during email lookup event:", error);
             } finally {
                 button.prop('disabled', false);
             }
+        });
+    }
+
+    bindWooCommerceEvents() {
+        // Listen for WooCommerce checkout update events
+        jQuery(document.body).on('updated_checkout', () => {
+            this.restoreCardDetails();
+            this.setPaymentMethod(this.paymentMethodId);
         });
     }
 
