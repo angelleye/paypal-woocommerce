@@ -123,13 +123,13 @@ class PayPalFastlane {
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
                     fieldName: 'fastlane_payment_token',
-                    fieldValue: this.paymentToken,
+                    fieldValue: this.paymentToken.id,
                     appendToSelector: checkoutSelector
                 });
 
                 if (!jQuery(checkoutSelector).hasClass('createOrder')) {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
-                    angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
+                    angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
                     await angelleyeOrder.createOrder({ errorLogId });
                 }
