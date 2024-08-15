@@ -198,12 +198,12 @@ class PayPalFastlane {
 
                 jQuery('#shipping_country').trigger('change');
             }
-            
-            jQuery('input[name="payment_method"][value="angelleye_ppcp_fastlane"]').prop('checked', true);
 
-            // Trigger the WooCommerce update checkout event to refresh the checkout fields
-            jQuery('body').trigger('update_checkout');
-        
+            jQuery('#payment_method_angelleye_ppcp_fastlane').prop('checked', true).trigger('change');
+
+            // Update the order review to reflect the selected payment method
+            jQuery(document.body).trigger('update_checkout');
+
         } catch (error) {
             console.error("Error updating WooCommerce checkout fields:", error);
         }
