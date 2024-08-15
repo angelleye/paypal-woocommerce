@@ -49,7 +49,7 @@ class PayPalFastlane {
     renderCardDetails() {
         if (this.profileData?.card) {
             this.savedCardHtml = `
-                <div class="fastlane-card">
+                <div id="paypal-fastlane-saved-card" class="fastlane-card">
                     <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.paymentSource.card.lastDigits}</div>
                     <div class="fastlane-card-expiry">${this.profileData.card.paymentSource.card.expiry}</div>
                     <button id="change-card">Change Card</button>
@@ -63,15 +63,16 @@ class PayPalFastlane {
     }
 
     restoreCardDetails() {
-        if (this.savedCardHtml && !this.isCardDetailsRestored) {
+        // Ensure the card details are restored if the checkout was updated
+        const existingCardSection = jQuery('#paypal-fastlane-saved-card');
+        if (!existingCardSection.length && this.savedCardHtml) {
             jQuery(this.containerSelector).html(this.savedCardHtml);
             this.bindChangeCardEvent();
-            this.isCardDetailsRestored = true; // Prevent further execution
         }
     }
 
     bindChangeCardEvent() {
-        jQuery('#change-card').on('click', async () => {
+        jQuery(document).on('click', '#change-card', async () => {
             try {
                 const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
