@@ -249,6 +249,7 @@ class PayPalFastlane {
                 if (!this.isPaymentMethodSet) {
                     this.setPaymentMethod(this.paymentMethodId);
                 }
+                this.render();
             }, 200);
         });
     }
