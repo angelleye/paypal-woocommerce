@@ -193,16 +193,10 @@ class PayPalFastlane {
     }
 
     setPaymentMethod(paymentMethodId) {
-        if (!this.isPaymentMethodSet) {
-            const paymentMethod = jQuery(`#payment_method_${paymentMethodId}`);
-            if (paymentMethod.length > 0) {
-                paymentMethod.prop('checked', true);
-                setTimeout(() => {
-                    paymentMethod.trigger('change');
-                    jQuery(document.body).trigger('update_checkout');
-                    this.isPaymentMethodSet = true; // Prevent further execution
-                }, 100);
-            }
+        const paymentMethod = jQuery(`#payment_method_${paymentMethodId}`);
+        if (paymentMethod.length > 0) {
+            paymentMethod.prop('checked', true);
+            this.isPaymentMethodSet = true;
         }
     }
 
@@ -228,8 +222,10 @@ class PayPalFastlane {
                     this.renderCardForm();
                 }
 
-                // Trigger WooCommerce checkout update and restore card details afterward
-                jQuery(document.body).trigger('update_checkout');
+                // Trigger WooCommerce checkout update if necessary
+                if (!this.isPaymentMethodSet) {
+                    this.setPaymentMethod(this.paymentMethodId);
+                }
 
             } catch (error) {
                 console.error("Error during email lookup event:", error);
@@ -246,7 +242,13 @@ class PayPalFastlane {
             this.isPaymentMethodSet = false; // Reset flag
 
             this.restoreCardDetails();
-            this.setPaymentMethod(this.paymentMethodId);
+
+            // Delay setting the payment method to ensure it does not cause an infinite loop
+            setTimeout(() => {
+                if (!this.isPaymentMethodSet) {
+                    this.setPaymentMethod(this.paymentMethodId);
+                }
+            }, 200);
         });
     }
 
