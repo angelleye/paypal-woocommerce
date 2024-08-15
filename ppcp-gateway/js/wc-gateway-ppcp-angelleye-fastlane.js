@@ -18,7 +18,7 @@ class PayPalFastlane {
 
     async lookupCustomerByEmail(email) {
         try {
-            const { customerContextId } = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
+            const {customerContextId} = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
             return customerContextId;
         } catch (error) {
             console.error("Error looking up customer by email:", error);
@@ -28,7 +28,7 @@ class PayPalFastlane {
 
     async authenticateCustomer(customerContextId) {
         try {
-            const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
+            const {authenticationState, profileData} = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
                 this.paymentToken = profileData.card?.id || null;
@@ -63,7 +63,7 @@ class PayPalFastlane {
     bindChangeCardEvent() {
         jQuery('#change-card').on('click', async () => {
             try {
-                const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
+                const {selectedCard} = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
                     this.profileData.card = selectedCard;
                     this.paymentToken = selectedCard.id;
@@ -120,7 +120,7 @@ class PayPalFastlane {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
-                    await angelleyeOrder.createOrder({ errorLogId });
+                    await angelleyeOrder.createOrder({errorLogId});
                 }
             } catch (error) {
                 console.error("Failed to place order:", error);
@@ -161,15 +161,23 @@ class PayPalFastlane {
 
     updateWooCheckoutFields(profileData) {
         try {
+            // Update billing fields
             if (profileData.card && profileData.card.paymentSource.card.billingAddress) {
+                jQuery('#billing_first_name').val(profileData.name.firstName);
+                jQuery('#billing_last_name').val(profileData.name.lastName);
                 jQuery('#billing_address_1').val(profileData.card.paymentSource.card.billingAddress.addressLine1);
                 jQuery('#billing_city').val(profileData.card.paymentSource.card.billingAddress.adminArea2);
                 jQuery('#billing_state').val(profileData.card.paymentSource.card.billingAddress.adminArea1);
                 jQuery('#billing_postcode').val(profileData.card.paymentSource.card.billingAddress.postalCode);
                 jQuery('#billing_country').val(profileData.card.paymentSource.card.billingAddress.countryCode);
+                jQuery('#billing_email').val(profileData.email || '');  // If email is available
+                jQuery('#billing_phone').val(profileData.shippingAddress.phoneNumber.nationalNumber || '');  // If phone number is available
             }
 
+            // Update shipping fields
             if (profileData.shippingAddress) {
+                jQuery('#shipping_first_name').val(profileData.shippingAddress.name.firstName);
+                jQuery('#shipping_last_name').val(profileData.shippingAddress.name.lastName);
                 jQuery('#shipping_address_1').val(profileData.shippingAddress.address.addressLine1);
                 jQuery('#shipping_city').val(profileData.shippingAddress.address.adminArea2);
                 jQuery('#shipping_state').val(profileData.shippingAddress.address.adminArea1);
