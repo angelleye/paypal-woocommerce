@@ -183,6 +183,16 @@ class PayPalFastlane {
         updateField('#shipping_postcode', shippingAddress.postalCode);
         updateField('#shipping_country', shippingAddress.countryCode);
         updateField('#shipping_state', shippingAddress.adminArea1);
+
+        // Force WooCommerce to update the payment method selection
+        var paymentMethod = jQuery('#payment_method_angelleye_ppcp_fastlane');
+        if (paymentMethod.length > 0) {
+            paymentMethod.prop('checked', true);
+            setTimeout(() => {
+                paymentMethod.trigger('change');
+                jQuery(document.body).trigger('update_checkout');
+            }, 100);
+        }
     }
 
     bindEmailLookupEvent() {
