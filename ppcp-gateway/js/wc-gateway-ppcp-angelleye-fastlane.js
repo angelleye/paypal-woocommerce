@@ -199,6 +199,7 @@ class PayPalFastlane {
             paymentMethod.prop('checked', true);
             this.isPaymentMethodSet = true;
         }
+        jQuery( document.body ).trigger( 'payment_method_selected' );
     }
 
     bindEmailLookupEvent() {
