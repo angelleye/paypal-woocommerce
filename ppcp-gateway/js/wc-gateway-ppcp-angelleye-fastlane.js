@@ -207,8 +207,8 @@ class PayPalFastlane {
             event.preventDefault();
             const button = jQuery('#lookup_ppcp_fastlane_email_button');
             button.prop('disabled', true);
-            console.log('Payment method element found:', paymentMethod.length > 0);
             var paymentMethod = jQuery('#payment_method_angelleye_ppcp_fastlane');
+            console.log('Payment method element found:', paymentMethod.length > 0);
             if (paymentMethod.length > 0) {
                 paymentMethod.prop('checked', true);
                 console.log('Payment method checked:', paymentMethod.is(':checked'));
