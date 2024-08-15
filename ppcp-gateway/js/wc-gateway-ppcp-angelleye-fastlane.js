@@ -44,7 +44,7 @@ class PayPalFastlane {
     renderCardDetails() {
         try {
             if (this.profileData && this.profileData.card) {
-                console.log(this.profileData);
+                console.log(JSON.stringify(this.profileData));
                 jQuery(this.containerSelector).html(`
                     <div class="fastlane-card">
                         <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.last4}</div>
