@@ -31,7 +31,7 @@ class PayPalFastlane {
             const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
-                this.paymentToken = profileData.card ? profileData.card.id : null;
+                this.paymentToken = profileData.card?.id || null;
                 this.updateWooCheckoutFields(profileData);
             }
             return authenticationState === 'succeeded';
@@ -43,12 +43,11 @@ class PayPalFastlane {
 
     renderCardDetails() {
         try {
-            if (this.profileData && this.profileData.card) {
-                console.log(JSON.stringify(this.profileData));
+            if (this.profileData?.card) {
                 jQuery(this.containerSelector).html(`
                     <div class="fastlane-card">
-                        <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.last4}</div>
-                        <div class="fastlane-card-expiry">${this.profileData.card.expiry}</div>
+                        <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.paymentSource.card.lastDigits}</div>
+                        <div class="fastlane-card-expiry">${this.profileData.card.paymentSource.card.expiry}</div>
                         <button id="change-card">Change Card</button>
                     </div>
                 `);
@@ -113,7 +112,7 @@ class PayPalFastlane {
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
                     fieldName: 'fastlane_payment_token',
-                    fieldValue: this.paymentToken.id,
+                    fieldValue: this.paymentToken,
                     appendToSelector: checkoutSelector
                 });
 
@@ -162,21 +161,20 @@ class PayPalFastlane {
 
     updateWooCheckoutFields(profileData) {
         try {
-            console.log(profileData);
-            if (profileData.billingAddress) {
-                jQuery('#billing_address_1').val(profileData.billingAddress.addressLine1);
-                jQuery('#billing_city').val(profileData.billingAddress.adminArea2);
-                jQuery('#billing_state').val(profileData.billingAddress.adminArea1);
-                jQuery('#billing_postcode').val(profileData.billingAddress.postalCode);
-                jQuery('#billing_country').val(profileData.billingAddress.countryCode);
+            if (profileData.card && profileData.card.paymentSource.card.billingAddress) {
+                jQuery('#billing_address_1').val(profileData.card.paymentSource.card.billingAddress.addressLine1);
+                jQuery('#billing_city').val(profileData.card.paymentSource.card.billingAddress.adminArea2);
+                jQuery('#billing_state').val(profileData.card.paymentSource.card.billingAddress.adminArea1);
+                jQuery('#billing_postcode').val(profileData.card.paymentSource.card.billingAddress.postalCode);
+                jQuery('#billing_country').val(profileData.card.paymentSource.card.billingAddress.countryCode);
             }
 
             if (profileData.shippingAddress) {
-                jQuery('#shipping_address_1').val(profileData.shippingAddress.addressLine1);
-                jQuery('#shipping_city').val(profileData.shippingAddress.adminArea2);
-                jQuery('#shipping_state').val(profileData.shippingAddress.adminArea1);
-                jQuery('#shipping_postcode').val(profileData.shippingAddress.postalCode);
-                jQuery('#shipping_country').val(profileData.shippingAddress.countryCode);
+                jQuery('#shipping_address_1').val(profileData.shippingAddress.address.addressLine1);
+                jQuery('#shipping_city').val(profileData.shippingAddress.address.adminArea2);
+                jQuery('#shipping_state').val(profileData.shippingAddress.address.adminArea1);
+                jQuery('#shipping_postcode').val(profileData.shippingAddress.address.postalCode);
+                jQuery('#shipping_country').val(profileData.shippingAddress.address.countryCode);
             }
         } catch (error) {
             console.error("Error updating WooCommerce checkout fields:", error);
@@ -184,7 +182,7 @@ class PayPalFastlane {
     }
 
     bindEmailLookupEvent() {
-        jQuery('#lookup_ppcp_fastlane_email_button').off('click').on('click', async () => {
+        jQuery('#lookup_ppcp_fastlane_email_button').on('click', async () => {
             try {
                 const email = jQuery('input[name="ppcp_fastlane_email"]').val();
                 const customerContextId = await this.lookupCustomerByEmail(email);
