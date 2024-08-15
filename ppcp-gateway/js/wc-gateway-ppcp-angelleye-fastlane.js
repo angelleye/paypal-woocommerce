@@ -198,10 +198,11 @@ class PayPalFastlane {
 
                 jQuery('#shipping_country').trigger('change');
             }
-
-            jQuery('.payment_method_angelleye_ppcp_fastlane').prop('checked', true).trigger('change');
-
-            // Update the order review to reflect the selected payment method
+            var paymentMethod = jQuery('#payment_method_angelleye_ppcp_fastlane');
+            if (paymentMethod.length > 0) {
+                paymentMethod.prop('checked', true).trigger('change');
+                jQuery(document.body).trigger('update_checkout');
+            }
             jQuery(document.body).trigger('update_checkout');
 
         } catch (error) {
