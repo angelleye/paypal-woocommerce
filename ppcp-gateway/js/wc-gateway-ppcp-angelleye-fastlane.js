@@ -207,10 +207,17 @@ class PayPalFastlane {
             event.preventDefault();
             const button = jQuery('#lookup_ppcp_fastlane_email_button');
             button.prop('disabled', true);
+            console.log('Payment method element found:', paymentMethod.length > 0);
             var paymentMethod = jQuery('#payment_method_angelleye_ppcp_fastlane');
             if (paymentMethod.length > 0) {
-                paymentMethod.prop('checked', true).trigger('change');
-                jQuery(document.body).trigger('update_checkout');
+                paymentMethod.prop('checked', true);
+                console.log('Payment method checked:', paymentMethod.is(':checked'));
+                paymentMethod.trigger('change');
+                console.log('Change event triggered on payment method');
+                setTimeout(function () {
+                    jQuery(document.body).trigger('update_checkout');
+                    console.log('update_checkout triggered');
+                }, 100);
             }
             try {
                 const email = jQuery('input[name="ppcp_fastlane_email"]').val();
