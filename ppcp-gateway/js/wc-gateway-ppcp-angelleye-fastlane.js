@@ -162,6 +162,7 @@ class PayPalFastlane {
     updateWooCheckoutFields(profileData) {
         try {
             // Update billing fields
+            console.log(JSON.stringify(profileData));
             if (profileData.card && profileData.card.paymentSource.card.billingAddress) {
                 jQuery('#billing_first_name').val(profileData.name.firstName);
                 jQuery('#billing_last_name').val(profileData.name.lastName);
@@ -170,8 +171,8 @@ class PayPalFastlane {
                 jQuery('#billing_state').val(profileData.card.paymentSource.card.billingAddress.adminArea1);
                 jQuery('#billing_postcode').val(profileData.card.paymentSource.card.billingAddress.postalCode);
                 jQuery('#billing_country').val(profileData.card.paymentSource.card.billingAddress.countryCode);
-                jQuery('#billing_email').val(profileData.email || '');  // If email is available
-                jQuery('#billing_phone').val(profileData.shippingAddress.phoneNumber.nationalNumber || '');  // If phone number is available
+                jQuery('#billing_email').val(profileData.email || '');  // Assuming profileData contains email
+                jQuery('#billing_phone').val(profileData.shippingAddress.phoneNumber.nationalNumber || '');  // Assuming phone number comes from shippingAddress
             }
 
             // Update shipping fields
