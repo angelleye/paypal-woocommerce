@@ -58,7 +58,6 @@ class PayPalFastlane {
         }
     }
 
-    // Restore the saved card details after WooCommerce checkout updates
     restoreCardDetails() {
         if (this.savedCardHtml) {
             jQuery(this.containerSelector).html(this.savedCardHtml);
@@ -185,7 +184,11 @@ class PayPalFastlane {
         updateField('#shipping_state', shippingAddress.adminArea1);
 
         // Force WooCommerce to update the payment method selection
-        var paymentMethod = jQuery('#payment_method_angelleye_ppcp_fastlane');
+        this.setPaymentMethod('angelleye_ppcp_fastlane');
+    }
+
+    setPaymentMethod(paymentMethodId) {
+        const paymentMethod = jQuery(`#payment_method_${paymentMethodId}`);
         if (paymentMethod.length > 0) {
             paymentMethod.prop('checked', true);
             setTimeout(() => {
@@ -220,6 +223,9 @@ class PayPalFastlane {
                 // Trigger WooCommerce checkout update and restore card details afterward
                 jQuery(document.body).trigger('update_checkout');
                 this.restoreCardDetails();
+
+                // Reapply the payment method after the checkout update
+                this.setPaymentMethod('angelleye_ppcp_fastlane');
 
             } catch (error) {
                 console.error("Error during email lookup event:", error);
