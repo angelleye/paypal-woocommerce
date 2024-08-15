@@ -6,6 +6,8 @@ class PayPalFastlane {
         this.paymentToken = null;
         this.savedCardHtml = ''; // Store the saved card HTML
         this.paymentMethodId = 'angelleye_ppcp_fastlane';
+        this.isCardDetailsRestored = false; // Flag to prevent infinite loop
+        this.isPaymentMethodSet = false; // Flag to prevent infinite loop
     }
 
     async initialize() {
@@ -61,9 +63,10 @@ class PayPalFastlane {
     }
 
     restoreCardDetails() {
-        if (this.savedCardHtml) {
+        if (this.savedCardHtml && !this.isCardDetailsRestored) {
             jQuery(this.containerSelector).html(this.savedCardHtml);
             this.bindChangeCardEvent();
+            this.isCardDetailsRestored = true; // Prevent further execution
         }
     }
 
@@ -190,13 +193,16 @@ class PayPalFastlane {
     }
 
     setPaymentMethod(paymentMethodId) {
-        const paymentMethod = jQuery(`#payment_method_${paymentMethodId}`);
-        if (paymentMethod.length > 0) {
-            paymentMethod.prop('checked', true);
-            setTimeout(() => {
-                paymentMethod.trigger('change');
-                jQuery(document.body).trigger('update_checkout');
-            }, 100);
+        if (!this.isPaymentMethodSet) {
+            const paymentMethod = jQuery(`#payment_method_${paymentMethodId}`);
+            if (paymentMethod.length > 0) {
+                paymentMethod.prop('checked', true);
+                setTimeout(() => {
+                    paymentMethod.trigger('change');
+                    jQuery(document.body).trigger('update_checkout');
+                    this.isPaymentMethodSet = true; // Prevent further execution
+                }, 100);
+            }
         }
     }
 
@@ -236,6 +242,9 @@ class PayPalFastlane {
     bindWooCommerceEvents() {
         // Listen for WooCommerce checkout update events
         jQuery(document.body).on('updated_checkout', () => {
+            this.isCardDetailsRestored = false; // Reset flag
+            this.isPaymentMethodSet = false; // Reset flag
+
             this.restoreCardDetails();
             this.setPaymentMethod(this.paymentMethodId);
         });
