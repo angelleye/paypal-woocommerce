@@ -162,17 +162,25 @@ class PayPalFastlane {
     updateWooCheckoutFields(profileData) {
         try {
             // Update billing fields
-            console.log(JSON.stringify(profileData));
             if (profileData.card && profileData.card.paymentSource.card.billingAddress) {
                 jQuery('#billing_first_name').val(profileData.name.firstName);
                 jQuery('#billing_last_name').val(profileData.name.lastName);
                 jQuery('#billing_address_1').val(profileData.card.paymentSource.card.billingAddress.addressLine1);
                 jQuery('#billing_city').val(profileData.card.paymentSource.card.billingAddress.adminArea2);
-                jQuery('#billing_state').val(profileData.card.paymentSource.card.billingAddress.adminArea1);
                 jQuery('#billing_postcode').val(profileData.card.paymentSource.card.billingAddress.postalCode);
-                jQuery('#billing_country').val(profileData.card.paymentSource.card.billingAddress.countryCode);
-                jQuery('#billing_email').val(profileData.email || '');  // Assuming profileData contains email
-                jQuery('#billing_phone').val(profileData.shippingAddress.phoneNumber.nationalNumber || '');  // Assuming phone number comes from shippingAddress
+                jQuery('#billing_email').val(profileData.email || '');
+                jQuery('#billing_phone').val(profileData.shippingAddress.phoneNumber.nationalNumber || '');
+
+                // Update the country field and trigger the WooCommerce event
+                jQuery('#billing_country').val(profileData.card.paymentSource.card.billingAddress.countryCode).trigger('change');
+
+                // Update the state field once the country has changed
+                jQuery(document.body).on('country_to_state_changed', function () {
+                    jQuery('#billing_state').val(profileData.card.paymentSource.card.billingAddress.adminArea1).trigger('change');
+                });
+
+                // Trigger WooCommerce's country to state change event manually
+                jQuery('#billing_country').trigger('change');
             }
 
             // Update shipping fields
@@ -181,9 +189,14 @@ class PayPalFastlane {
                 jQuery('#shipping_last_name').val(profileData.shippingAddress.name.lastName);
                 jQuery('#shipping_address_1').val(profileData.shippingAddress.address.addressLine1);
                 jQuery('#shipping_city').val(profileData.shippingAddress.address.adminArea2);
-                jQuery('#shipping_state').val(profileData.shippingAddress.address.adminArea1);
                 jQuery('#shipping_postcode').val(profileData.shippingAddress.address.postalCode);
-                jQuery('#shipping_country').val(profileData.shippingAddress.address.countryCode);
+                jQuery('#shipping_country').val(profileData.shippingAddress.address.countryCode).trigger('change');
+
+                jQuery(document.body).on('country_to_state_changed', function () {
+                    jQuery('#shipping_state').val(profileData.shippingAddress.address.adminArea1).trigger('change');
+                });
+
+                jQuery('#shipping_country').trigger('change');
             }
         } catch (error) {
             console.error("Error updating WooCommerce checkout fields:", error);
