@@ -210,13 +210,16 @@ class PayPalFastlane {
     }
 
     bindEmailLookupEvent() {
-        jQuery('#lookup_ppcp_fastlane_email_button').on('click', async () => {
+        jQuery('#lookup_ppcp_fastlane_email_button').on('click', async (event) => {
+            event.preventDefault();
+            // Disable the button and unbind the click event
+            const button = jQuery('#lookup_ppcp_fastlane_email_button');
+            button.prop('disabled', true).off('click');
             try {
                 const email = jQuery('input[name="ppcp_fastlane_email"]').val();
                 jQuery('input[name="billing_email"]').val(email);
                 const customerContextId = await this.lookupCustomerByEmail(email);
                 if (customerContextId) {
-                   
                     const authenticated = await this.authenticateCustomer(customerContextId);
                     if (authenticated) {
                         this.renderCardDetails();
@@ -228,8 +231,11 @@ class PayPalFastlane {
                 }
             } catch (error) {
                 console.error("Error during email lookup event:", error);
+            } finally {
+                button.prop('disabled', false).on('click');
             }
         });
+
     }
 
     render() {
