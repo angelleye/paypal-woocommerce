@@ -44,7 +44,7 @@ class PayPalFastlane {
     renderCardDetails() {
         try {
             if (this.profileData && this.profileData.card) {
-                $(this.containerSelector).html(`
+                jQuery(this.containerSelector).html(`
                     <div class="fastlane-card">
                         <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.last4}</div>
                         <div class="fastlane-card-expiry">${this.profileData.card.expiry}</div>
@@ -61,7 +61,7 @@ class PayPalFastlane {
     }
 
     bindChangeCardEvent() {
-        $('#change-card').on('click', async () => {
+        jQuery('#change-card').on('click', async () => {
             try {
                 const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
@@ -80,8 +80,12 @@ class PayPalFastlane {
             const fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
                 fields: {
                     cardholderName: {
-                        prefill: `${$('#billing_first_name').val()} ${$('#billing_last_name').val()}`,
+                        prefill: `${jQuery('#billing_first_name').val()} ${jQuery('#billing_last_name').val()}`,
                         enabled: true
+                    },
+                    phoneNumber: {
+                        enabled: true,
+                        prefill: jQuery('#billing_phone').val() || ''
                     }
                 }
             });
@@ -112,7 +116,7 @@ class PayPalFastlane {
                     appendToSelector: checkoutSelector
                 });
 
-                if (jQuery(checkoutSelector).is('.createOrder') === false) {
+                if (!jQuery(checkoutSelector).hasClass('createOrder')) {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
@@ -128,11 +132,11 @@ class PayPalFastlane {
     getBillingAddress() {
         try {
             return {
-                addressLine1: $('#billing_address_1').val(),
-                adminArea1: $('#billing_state').val(),
-                adminArea2: $('#billing_city').val(),
-                postalCode: $('#billing_postcode').val(),
-                countryCode: $('#billing_country').val()
+                addressLine1: jQuery('#billing_address_1').val(),
+                adminArea1: jQuery('#billing_state').val(),
+                adminArea2: jQuery('#billing_city').val(),
+                postalCode: jQuery('#billing_postcode').val(),
+                countryCode: jQuery('#billing_country').val()
             };
         } catch (error) {
             console.error("Error getting billing address:", error);
@@ -143,11 +147,11 @@ class PayPalFastlane {
     getShippingAddress() {
         try {
             return {
-                addressLine1: $('#shipping_address_1').val(),
-                adminArea1: $('#shipping_state').val(),
-                adminArea2: $('#shipping_city').val(),
-                postalCode: $('#shipping_postcode').val(),
-                countryCode: $('#shipping_country').val()
+                addressLine1: jQuery('#shipping_address_1').val(),
+                adminArea1: jQuery('#shipping_state').val(),
+                adminArea2: jQuery('#shipping_city').val(),
+                postalCode: jQuery('#shipping_postcode').val(),
+                countryCode: jQuery('#shipping_country').val()
             };
         } catch (error) {
             console.error("Error getting shipping address:", error);
@@ -158,19 +162,19 @@ class PayPalFastlane {
     updateWooCheckoutFields(profileData) {
         try {
             if (profileData.billingAddress) {
-                $('#billing_address_1').val(profileData.billingAddress.addressLine1);
-                $('#billing_city').val(profileData.billingAddress.adminArea2);
-                $('#billing_state').val(profileData.billingAddress.adminArea1);
-                $('#billing_postcode').val(profileData.billingAddress.postalCode);
-                $('#billing_country').val(profileData.billingAddress.countryCode);
+                jQuery('#billing_address_1').val(profileData.billingAddress.addressLine1);
+                jQuery('#billing_city').val(profileData.billingAddress.adminArea2);
+                jQuery('#billing_state').val(profileData.billingAddress.adminArea1);
+                jQuery('#billing_postcode').val(profileData.billingAddress.postalCode);
+                jQuery('#billing_country').val(profileData.billingAddress.countryCode);
             }
 
             if (profileData.shippingAddress) {
-                $('#shipping_address_1').val(profileData.shippingAddress.addressLine1);
-                $('#shipping_city').val(profileData.shippingAddress.adminArea2);
-                $('#shipping_state').val(profileData.shippingAddress.adminArea1);
-                $('#shipping_postcode').val(profileData.shippingAddress.postalCode);
-                $('#shipping_country').val(profileData.shippingAddress.countryCode);
+                jQuery('#shipping_address_1').val(profileData.shippingAddress.addressLine1);
+                jQuery('#shipping_city').val(profileData.shippingAddress.adminArea2);
+                jQuery('#shipping_state').val(profileData.shippingAddress.adminArea1);
+                jQuery('#shipping_postcode').val(profileData.shippingAddress.postalCode);
+                jQuery('#shipping_country').val(profileData.shippingAddress.countryCode);
             }
         } catch (error) {
             console.error("Error updating WooCommerce checkout fields:", error);
@@ -178,9 +182,9 @@ class PayPalFastlane {
     }
 
     bindEmailLookupEvent() {
-        $('#lookup_ppcp_fastlane_email_button').on('click', async () => {
+        jQuery('#lookup_ppcp_fastlane_email_button').off('click').on('click', async () => {
             try {
-                const email = $('input[name="ppcp_fastlane_email"]').val();
+                const email = jQuery('input[name="ppcp_fastlane_email"]').val();
                 const customerContextId = await this.lookupCustomerByEmail(email);
                 if (customerContextId) {
                     const authenticated = await this.authenticateCustomer(customerContextId);
