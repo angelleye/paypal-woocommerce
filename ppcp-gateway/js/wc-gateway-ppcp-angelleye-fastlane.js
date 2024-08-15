@@ -213,9 +213,10 @@ class PayPalFastlane {
         jQuery('#lookup_ppcp_fastlane_email_button').on('click', async () => {
             try {
                 const email = jQuery('input[name="ppcp_fastlane_email"]').val();
+                jQuery('input[name="billing_email"]').val(email);
                 const customerContextId = await this.lookupCustomerByEmail(email);
                 if (customerContextId) {
-                    jQuery('#billing_email').val(email);
+                   
                     const authenticated = await this.authenticateCustomer(customerContextId);
                     if (authenticated) {
                         this.renderCardDetails();
