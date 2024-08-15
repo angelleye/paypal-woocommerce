@@ -179,7 +179,7 @@ class PayPalFastlane {
                 });
 
                 // Trigger WooCommerce's country to state change event manually
-                jQuery('#billing_country').trigger('change');
+               // jQuery('#billing_country').trigger('change');
             }
 
             // Update shipping fields
@@ -195,7 +195,7 @@ class PayPalFastlane {
                     jQuery('#shipping_state').val(profileData.shippingAddress.address.adminArea1).trigger('change');
                 });
 
-                jQuery('#shipping_country').trigger('change');
+                //jQuery('#shipping_country').trigger('change');
             }
         } catch (error) {
             console.error("Error updating WooCommerce checkout fields:", error);
@@ -215,7 +215,7 @@ class PayPalFastlane {
                 paymentMethod.trigger('change');
                 console.log('Change event triggered on payment method');
                 setTimeout(function () {
-                    jQuery(document.body).trigger('update_checkout');
+                    //jQuery(document.body).trigger('update_checkout');
                     console.log('update_checkout triggered');
                 }, 100);
             }
