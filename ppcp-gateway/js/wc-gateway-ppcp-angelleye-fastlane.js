@@ -168,7 +168,6 @@ class PayPalFastlane {
                 jQuery('#billing_address_1').val(profileData.card.paymentSource.card.billingAddress.addressLine1);
                 jQuery('#billing_city').val(profileData.card.paymentSource.card.billingAddress.adminArea2);
                 jQuery('#billing_postcode').val(profileData.card.paymentSource.card.billingAddress.postalCode);
-                jQuery('#billing_email').val(profileData.email || '');
                 jQuery('#billing_phone').val(profileData.shippingAddress.phoneNumber.nationalNumber || '');
 
                 // Update the country field and trigger the WooCommerce event
