@@ -210,11 +210,10 @@ class PayPalFastlane {
     }
 
     bindEmailLookupEvent() {
-        jQuery('#lookup_ppcp_fastlane_email_button').on('click', async (event) => {
+        jQuery('#lookup_ppcp_fastlane_email_button').off('click').on('click', async (event) => {
             event.preventDefault();
-            // Disable the button and unbind the click event
             const button = jQuery('#lookup_ppcp_fastlane_email_button');
-            button.prop('disabled', true).off('click');
+            button.prop('disabled', true);
             try {
                 const email = jQuery('input[name="ppcp_fastlane_email"]').val();
                 jQuery('input[name="billing_email"]').val(email);
@@ -232,10 +231,9 @@ class PayPalFastlane {
             } catch (error) {
                 console.error("Error during email lookup event:", error);
             } finally {
-                button.prop('disabled', false).on('click');
+                button.prop('disabled', false);
             }
         });
-
     }
 
     render() {
