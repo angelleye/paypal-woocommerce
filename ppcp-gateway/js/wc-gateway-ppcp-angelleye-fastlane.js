@@ -212,7 +212,7 @@ class PayPalFastlane {
             if (paymentMethod.length > 0) {
                 paymentMethod.prop('checked', true);
                 console.log('Payment method checked:', paymentMethod.is(':checked'));
-                paymentMethod.trigger('change');
+                //paymentMethod.trigger('change');
                 console.log('Change event triggered on payment method');
                 setTimeout(function () {
                     //jQuery(document.body).trigger('update_checkout');
