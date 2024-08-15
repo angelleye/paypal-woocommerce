@@ -2186,7 +2186,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 angelleye_ppcp_add_css_js();
                 echo apply_filters('angelleye_ppcp_checkout_top_ppcp_fastlane_email_html', '
                     <div class="col2-set" style="display: flex; align-items: flex-start;">
-                        <div class="col-1 form-row" style="flex: 1; margin: 0;">
+                        <div class="col-1 form-row" style="flex: 1; margin-bottom: 40px;">
                             <label for="ppcp_fastlane_email" style="display: block;">Email address&nbsp;</label>
                             <span class="woocommerce-input-wrapper" style="display: flex; align-items: center;">
                                 <input type="email" class="input-text" name="ppcp_fastlane_email" id="ppcp_fastlane_email" placeholder="" style="flex: 1;">
@@ -2196,7 +2196,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                                 <img src="https://www.paypalobjects.com/fastlane-v1/assets/fastlane-with-tooltip_en_sm_light.0808.svg" alt="Fastlane Watermark" />
                             </div>
                         </div>
-                    </div><br><br>
+                    </div><br>
                 ');
             }
         }
