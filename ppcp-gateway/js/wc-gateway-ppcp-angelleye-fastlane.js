@@ -4,9 +4,7 @@ class PayPalFastlane {
         this.fastlaneInstance = null;
         this.profileData = null;
         this.paymentToken = null;
-        this.savedCardHtml = '';
-        this.paymentMethodId = 'angelleye_ppcp_fastlane';
-        this.$paymentMethod = jQuery(`#payment_method_${this.paymentMethodId}`);
+        this.savedCardHtml = ''; // Store the saved card HTML
     }
 
     async initialize() {
@@ -21,7 +19,7 @@ class PayPalFastlane {
 
     async lookupCustomerByEmail(email) {
         try {
-            const { customerContextId } = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
+            const {customerContextId} = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
             return customerContextId;
         } catch (error) {
             console.error("Error looking up customer by email:", error);
@@ -31,7 +29,7 @@ class PayPalFastlane {
 
     async authenticateCustomer(customerContextId) {
         try {
-            const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
+            const {authenticationState, profileData} = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
                 this.paymentToken = profileData.card?.id || null;
@@ -53,28 +51,24 @@ class PayPalFastlane {
                     <button id="change-card">Change Card</button>
                 </div>
             `;
-            this.updateContainerHTML(this.savedCardHtml);
+            jQuery(this.containerSelector).html(this.savedCardHtml);
             this.bindChangeCardEvent();
         } else {
             this.renderCardForm();
         }
     }
 
-    updateContainerHTML(html) {
-        jQuery(this.containerSelector).html(html);
-    }
-
     restoreCardDetails() {
         if (this.savedCardHtml) {
-            this.updateContainerHTML(this.savedCardHtml);
+            jQuery(this.containerSelector).html(this.savedCardHtml);
             this.bindChangeCardEvent();
         }
     }
 
     bindChangeCardEvent() {
-        jQuery('#change-card').off('click').on('click', async () => {
+        jQuery('#change-card').on('click', async () => {
             try {
-                const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
+                const {selectedCard} = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
                     this.profileData.card = selectedCard;
                     this.paymentToken = selectedCard.id;
@@ -108,7 +102,7 @@ class PayPalFastlane {
     }
 
     bindPlaceOrderEvent(fastlaneCardComponent) {
-        jQuery(document.body).off('submit_angelleye_ppcp_fastlane').on('submit_angelleye_ppcp_fastlane', async (event) => {
+        jQuery(document.body).on('submit_angelleye_ppcp_fastlane', async (event) => {
             event.preventDefault();
             try {
                 const billingAddress = this.getBillingAddress();
@@ -131,13 +125,13 @@ class PayPalFastlane {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
-                    await angelleyeOrder.createOrder({ errorLogId });
+                    await angelleyeOrder.createOrder({errorLogId});
                 }
             } catch (error) {
                 console.error("Failed to place order:", error);
                 angelleyeOrder.showError(error);
             } finally {
-                this.restoreCardDetails();
+                this.restoreCardDetails(); // Restore the card details after updating checkout
             }
         });
     }
@@ -189,15 +183,17 @@ class PayPalFastlane {
         updateField('#shipping_country', shippingAddress.countryCode);
         updateField('#shipping_state', shippingAddress.adminArea1);
 
-        this.setPaymentMethod();
+        // Force WooCommerce to update the payment method selection
+        this.setPaymentMethod('angelleye_ppcp_fastlane');
     }
 
-    setPaymentMethod() {
-        if (this.$paymentMethod.length > 0) {
-            this.$paymentMethod.prop('checked', true);
+    setPaymentMethod(paymentMethodId) {
+        const paymentMethod = jQuery(`#payment_method_${paymentMethodId}`);
+        if (paymentMethod.length > 0) {
+            paymentMethod.prop('checked', true);
             setTimeout(() => {
-                this.$paymentMethod.trigger('change');
-                this.throttledUpdateCheckout();
+                paymentMethod.trigger('change');
+                jQuery(document.body).trigger('update_checkout');
             }, 100);
         }
     }
@@ -224,9 +220,12 @@ class PayPalFastlane {
                     this.renderCardForm();
                 }
 
-                this.throttledUpdateCheckout();
+                // Trigger WooCommerce checkout update and restore card details afterward
+                jQuery(document.body).trigger('update_checkout');
                 this.restoreCardDetails();
-                this.setPaymentMethod();
+
+                // Reapply the payment method after the checkout update
+                this.setPaymentMethod('angelleye_ppcp_fastlane');
 
             } catch (error) {
                 console.error("Error during email lookup event:", error);
@@ -234,17 +233,6 @@ class PayPalFastlane {
                 button.prop('disabled', false);
             }
         });
-    }
-
-    throttledUpdateCheckout() {
-        // Ensure that the checkout update is throttled to avoid too many triggers
-        if (!this.updateCheckoutTimeout) {
-            this.updateCheckoutTimeout = setTimeout(() => {
-                jQuery(document.body).trigger('update_checkout');
-                clearTimeout(this.updateCheckoutTimeout);
-                this.updateCheckoutTimeout = null;
-            }, 200);
-        }
     }
 
     render() {
