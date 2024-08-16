@@ -14,7 +14,16 @@ class PayPalFastlane {
             this.fastlaneInstance = await angelleye_paypal_sdk.Fastlane({});
             this.fastlaneInstance.setLocale('en_us');
             this.bindEvents();
-            this.bindPlaceOrderEvent(); // Ensure it's only bound once
+
+            // Always bind place order event
+            this.bindPlaceOrderEvent();
+
+            // Render the appropriate interface based on the presence of card details
+            if (!this.profileData?.card) {
+                this.renderCardForm(); // Consider as guest checkout if no card details available
+            } else {
+                this.renderCardDetails(); // Consider as existing member if card details are available
+            }
         } catch (error) {
             console.error("Failed to initialize Fastlane:", error);
         }
