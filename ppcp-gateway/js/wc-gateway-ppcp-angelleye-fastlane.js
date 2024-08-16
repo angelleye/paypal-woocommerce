@@ -18,15 +18,22 @@ class PayPalFastlane {
             // Always bind place order event
             this.bindPlaceOrderEvent();
 
-            // Render the appropriate interface based on the presence of card details
-            if (!this.profileData?.card) {
-                this.renderCardForm(); // Consider as guest checkout if no card details available
+            // Check if we should display the saved card details or the card form
+            if (this.shouldDisplaySavedCardDetails()) {
+                this.renderCardDetails(); // Display saved card details for existing members
+                sessionStorage.setItem('displayedSavedCard', 'true');
             } else {
-                this.renderCardDetails(); // Consider as existing member if card details are available
+                this.renderCardForm(); // Display credit card UI after refresh
             }
         } catch (error) {
             console.error("Failed to initialize Fastlane:", error);
         }
+    }
+
+    shouldDisplaySavedCardDetails() {
+        // Check if saved card details should be displayed first
+        const hasDisplayedSavedCard = sessionStorage.getItem('displayedSavedCard');
+        return this.profileData?.card && !hasDisplayedSavedCard;
     }
 
     bindEvents() {
