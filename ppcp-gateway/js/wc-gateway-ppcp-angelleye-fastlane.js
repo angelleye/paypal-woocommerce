@@ -6,46 +6,24 @@ class PayPalFastlane {
         this.paymentToken = null;
         this.savedCardHtml = ''; // Store the saved card HTML
         this.paymentMethodId = 'angelleye_ppcp_fastlane';
-        this.fastlaneCardComponent = null; // Store the FastlaneCardComponent instance
-        this.hasRenderedSavedCard = false; // Track if saved card has been rendered
+        this.isCardDetailsRestored = false; // Flag to prevent infinite loop
+        this.isPaymentMethodSet = false; // Flag to prevent infinite loop
     }
 
     async initialize() {
         try {
             this.fastlaneInstance = await angelleye_paypal_sdk.Fastlane({});
             this.fastlaneInstance.setLocale('en_us');
-            this.bindEvents();
-
-            // Always bind place order event
-            this.bindPlaceOrderEvent();
-
-            // Display saved card details if they exist and haven't been rendered yet
-            if (this.shouldDisplaySavedCardDetails()) {
-                this.renderCardDetails();
-                this.hasRenderedSavedCard = true; // Mark that saved card details have been rendered
-            } else {
-                this.renderCardForm();
-            }
+            this.bindEmailLookupEvent();
+            this.bindWooCommerceEvents(); // Bind to WooCommerce events
         } catch (error) {
             console.error("Failed to initialize Fastlane:", error);
         }
     }
 
-    shouldDisplaySavedCardDetails() {
-        // Check if saved card details should be displayed first
-        return this.profileData?.card && !this.hasRenderedSavedCard;
-    }
-
-    bindEvents() {
-        this.bindEmailLookupEvent();
-        this.bindWooCommerceEvents();
-        this.bindChangeCardEvent();
-    }
-
     async lookupCustomerByEmail(email) {
         try {
             const { customerContextId } = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
-            if (!customerContextId) throw new Error('Customer context ID not found');
             return customerContextId;
         } catch (error) {
             console.error("Error looking up customer by email:", error);
@@ -56,10 +34,11 @@ class PayPalFastlane {
     async authenticateCustomer(customerContextId) {
         try {
             const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
-            if (authenticationState !== 'succeeded') throw new Error('Customer authentication failed');
-            this.profileData = profileData;
-            this.paymentToken = profileData.card?.id || null;
-            this.updateWooCheckoutFields(profileData);
+            if (authenticationState === 'succeeded') {
+                this.profileData = profileData;
+                this.paymentToken = profileData.card?.id || null;
+                this.updateWooCheckoutFields(profileData);
+            }
             return authenticationState === 'succeeded';
         } catch (error) {
             console.error("Error authenticating customer:", error);
@@ -84,13 +63,16 @@ class PayPalFastlane {
     }
 
     restoreCardDetails() {
-        if (!jQuery('#paypal-fastlane-saved-card').length && this.savedCardHtml) {
-            this.renderCardDetails(); // This will re-render the saved card section
+        // Ensure the card details are restored if the checkout was updated
+        const existingCardSection = jQuery('#paypal-fastlane-saved-card');
+        if (!existingCardSection.length && this.savedCardHtml) {
+            jQuery(this.containerSelector).html(this.savedCardHtml);
+            this.bindChangeCardEvent();
         }
     }
 
     bindChangeCardEvent() {
-        jQuery(document).off('click', '#change-card').on('click', '#change-card', async () => {
+        jQuery(document).on('click', '#change-card', async () => {
             try {
                 const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
@@ -106,7 +88,7 @@ class PayPalFastlane {
 
     async renderCardForm() {
         try {
-            this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
+            const fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
                 fields: {
                     cardholderName: {
                         prefill: `${jQuery('#billing_first_name').val()} ${jQuery('#billing_last_name').val()}`,
@@ -118,25 +100,21 @@ class PayPalFastlane {
                     }
                 }
             });
-            this.fastlaneCardComponent.render(this.containerSelector);
+            fastlaneCardComponent.render(this.containerSelector);
+            this.bindPlaceOrderEvent(fastlaneCardComponent);
         } catch (error) {
             console.error("Error rendering card form:", error);
         }
     }
 
-    bindPlaceOrderEvent() {
-        jQuery(document.body).off('submit_angelleye_ppcp_fastlane').on('submit_angelleye_ppcp_fastlane', async (event) => {
+    bindPlaceOrderEvent(fastlaneCardComponent) {
+        jQuery(document.body).on('submit_angelleye_ppcp_fastlane', async (event) => {
             event.preventDefault();
             try {
                 const billingAddress = this.getBillingAddress();
                 const shippingAddress = this.getShippingAddress();
 
-                if (!this.fastlaneCardComponent) {
-                    console.error("FastlaneCardComponent is not initialized.");
-                    return;
-                }
-
-                this.paymentToken = await this.fastlaneCardComponent.getPaymentToken({
+                this.paymentToken = await fastlaneCardComponent.getPaymentToken({
                     billingAddress,
                     shippingAddress
                 });
@@ -211,14 +189,16 @@ class PayPalFastlane {
         updateField('#shipping_country', shippingAddress.countryCode);
         updateField('#shipping_state', shippingAddress.adminArea1);
 
+        // Force WooCommerce to update the payment method selection
         this.setPaymentMethod(this.paymentMethodId);
     }
 
     setPaymentMethod(paymentMethodId) {
-        const $paymentMethod = jQuery(`#payment_method_${paymentMethodId}`);
-        if ($paymentMethod.length > 0 && !$paymentMethod.prop('checked')) {
-            $paymentMethod.prop('checked', true);
-            $paymentMethod.trigger('click');
+        const paymentMethod = jQuery(`#payment_method_${paymentMethodId}`);
+        if (paymentMethod.length > 0) {
+            paymentMethod.prop('checked', true);
+            this.isPaymentMethodSet = true;
+            jQuery( '#payment_method_angelleye_ppcp_fastlane' ).trigger( 'click' );
         }
     }
 
@@ -244,7 +224,8 @@ class PayPalFastlane {
                     this.renderCardForm();
                 }
 
-                if (!jQuery(`#payment_method_${this.paymentMethodId}`).prop('checked')) {
+                // Trigger WooCommerce checkout update if necessary
+                if (!this.isPaymentMethodSet) {
                     this.setPaymentMethod(this.paymentMethodId);
                 }
 
@@ -257,22 +238,28 @@ class PayPalFastlane {
     }
 
     bindWooCommerceEvents() {
+        // Listen for WooCommerce checkout update events
         jQuery(document.body).on('updated_checkout', () => {
+            this.isCardDetailsRestored = false; // Reset flag
+            this.isPaymentMethodSet = false; // Reset flag
+
             this.restoreCardDetails();
 
+            // Delay setting the payment method to ensure it does not cause an infinite loop
             setTimeout(() => {
-                if (!jQuery(`#payment_method_${this.paymentMethodId}`).prop('checked')) {
+                if (!this.isPaymentMethodSet) {
                     this.setPaymentMethod(this.paymentMethodId);
                 }
+                console.log(this);
             }, 200);
         });
     }
 
     render() {
-        if (!this.profileData?.card) {
+        if (this.profileData?.card) {
+            this.renderCardDetails();
+        } else {
             this.renderCardForm();
-            return;
         }
-        this.renderCardDetails();
     }
 }
