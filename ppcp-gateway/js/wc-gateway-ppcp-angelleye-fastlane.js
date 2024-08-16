@@ -24,7 +24,7 @@ class PayPalFastlane {
 
     async lookupCustomerByEmail(email) {
         try {
-            const { customerContextId } = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
+            const {customerContextId} = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
             return customerContextId;
         } catch (error) {
             console.error("Error looking up customer by email:", error);
@@ -34,7 +34,7 @@ class PayPalFastlane {
 
     async authenticateCustomer(customerContextId) {
         try {
-            const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
+            const {authenticationState, profileData} = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
                 this.paymentToken = profileData.card?.id || null;
@@ -106,7 +106,7 @@ class PayPalFastlane {
     bindChangeCardEvent() {
         jQuery(document).on('click', '#change-card', async () => {
             try {
-                const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
+                const {selectedCard} = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
                     this.profileData.card = selectedCard;
                     this.paymentToken = selectedCard.id;
@@ -125,11 +125,22 @@ class PayPalFastlane {
                 const billingAddress = this.getBillingAddress();
                 const shippingAddress = this.getShippingAddress();
 
+                // Validate that billing and shipping addresses are not empty
+                if (!billingAddress || !shippingAddress) {
+                    throw new Error("Billing or shipping address is missing.");
+                }
+
+                // Retrieve payment token from FastlaneCardComponent
                 this.paymentToken = await fastlaneCardComponent.getPaymentToken({
                     billingAddress,
                     shippingAddress
                 });
 
+                if (!this.paymentToken) {
+                    throw new Error("Failed to retrieve payment token.");
+                }
+
+                // Proceed with order creation
                 let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
@@ -142,11 +153,11 @@ class PayPalFastlane {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
-                    await angelleyeOrder.createOrder({ errorLogId });
+                    await angelleyeOrder.createOrder({errorLogId});
                 }
             } catch (error) {
-                console.error("Failed to place order:", error);
-                angelleyeOrder.showError(error);
+                console.error("Failed to place order:", error.message);
+                angelleyeOrder.showError("Failed to place order: " + error.message);
             } finally {
                 this.restoreCardDetails(); // Restore the card details after updating checkout
             }
