@@ -8,6 +8,7 @@ class PayPalFastlane {
         this.paymentMethodId = 'angelleye_ppcp_fastlane';
         this.isCardDetailsRestored = false; // Flag to prevent infinite loop
         this.isPaymentMethodSet = false; // Flag to prevent infinite loop
+        this.fastlaneCardComponent = null; // Store the FastlaneCardComponent instance
     }
 
     async initialize() {
@@ -46,7 +47,7 @@ class PayPalFastlane {
         }
     }
 
-    renderCardDetails() {
+    async renderCardDetails() {
         if (this.profileData?.card) {
             this.savedCardHtml = `
                 <div id="paypal-fastlane-saved-card" class="fastlane-card">
@@ -57,38 +58,18 @@ class PayPalFastlane {
             `;
             jQuery(this.containerSelector).html(this.savedCardHtml);
             this.bindChangeCardEvent();
+
+            // Initialize the FastlaneCardComponent to bind the place order event
+            await this.initializeFastlaneCardComponent();
+            this.bindPlaceOrderEvent(this.fastlaneCardComponent); // Bind the place order event
         } else {
             this.renderCardForm();
         }
     }
 
-    restoreCardDetails() {
-        // Ensure the card details are restored if the checkout was updated
-        const existingCardSection = jQuery('#paypal-fastlane-saved-card');
-        if (!existingCardSection.length && this.savedCardHtml) {
-            jQuery(this.containerSelector).html(this.savedCardHtml);
-            this.bindChangeCardEvent();
-        }
-    }
-
-    bindChangeCardEvent() {
-        jQuery(document).on('click', '#change-card', async () => {
-            try {
-                const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
-                if (selectedCard) {
-                    this.profileData.card = selectedCard;
-                    this.paymentToken = selectedCard.id;
-                    this.renderCardDetails();
-                }
-            } catch (error) {
-                console.error("Error changing card:", error);
-            }
-        });
-    }
-
-    async renderCardForm() {
-        try {
-            const fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
+    async initializeFastlaneCardComponent() {
+        if (!this.fastlaneCardComponent) {
+            this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
                 fields: {
                     cardholderName: {
                         prefill: `${jQuery('#billing_first_name').val()} ${jQuery('#billing_last_name').val()}`,
@@ -100,15 +81,21 @@ class PayPalFastlane {
                     }
                 }
             });
-            fastlaneCardComponent.render(this.containerSelector);
-            this.bindPlaceOrderEvent(fastlaneCardComponent);
+        }
+    }
+
+    async renderCardForm() {
+        try {
+            await this.initializeFastlaneCardComponent();
+            this.fastlaneCardComponent.render(this.containerSelector);
+            this.bindPlaceOrderEvent(this.fastlaneCardComponent);
         } catch (error) {
             console.error("Error rendering card form:", error);
         }
     }
 
     bindPlaceOrderEvent(fastlaneCardComponent) {
-        jQuery(document.body).on('submit_angelleye_ppcp_fastlane', async (event) => {
+        jQuery(document.body).off('submit_angelleye_ppcp_fastlane').on('submit_angelleye_ppcp_fastlane', async (event) => {
             event.preventDefault();
             try {
                 const billingAddress = this.getBillingAddress();
@@ -198,7 +185,7 @@ class PayPalFastlane {
         if (paymentMethod.length > 0) {
             paymentMethod.prop('checked', true);
             this.isPaymentMethodSet = true;
-            jQuery( '#payment_method_angelleye_ppcp_fastlane' ).trigger( 'click' );
+            jQuery('#payment_method_angelleye_ppcp_fastlane').trigger('click');
         }
     }
 
