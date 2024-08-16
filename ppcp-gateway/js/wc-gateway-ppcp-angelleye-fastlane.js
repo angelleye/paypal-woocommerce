@@ -185,7 +185,12 @@ class PayPalFastlane {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
-                    await angelleyeOrder.createOrder({errorLogId});
+                    await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
+                        console.log('orderCreated', orderData);
+                        if (orderData.redirected) {
+                            window.location.href = orderData.url;
+                        }
+                    });
                 }
             } catch (error) {
                 console.error("Failed to place order:", error.message);
