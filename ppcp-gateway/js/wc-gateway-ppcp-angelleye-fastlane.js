@@ -118,7 +118,10 @@ class PayPalFastlane {
     }
 
     bindChangeCardEvent() {
-        jQuery(document).on('click', '#change-card', async () => {
+        jQuery(document).on('click', '#change-card', async (event) => {
+            event.preventDefault();  // Prevent the default behavior (which might include form submission)
+            event.stopPropagation(); // Stop the event from bubbling up and triggering other event handlers
+
             try {
                 const {selectedCard} = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
