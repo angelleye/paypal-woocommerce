@@ -7,6 +7,7 @@ class PayPalFastlane {
         this.savedCardHtml = ''; // Store the saved card HTML
         this.paymentMethodId = 'angelleye_ppcp_fastlane';
         this.fastlaneCardComponent = null; // Store the FastlaneCardComponent instance
+        this.hasRenderedSavedCard = false; // Track if saved card has been rendered
     }
 
     async initialize() {
@@ -18,12 +19,12 @@ class PayPalFastlane {
             // Always bind place order event
             this.bindPlaceOrderEvent();
 
-            // Check if we should display the saved card details or the card form
+            // Display saved card details if they exist and haven't been rendered yet
             if (this.shouldDisplaySavedCardDetails()) {
-                this.renderCardDetails(); // Display saved card details for existing members
-                sessionStorage.setItem('displayedSavedCard', 'true');
+                this.renderCardDetails();
+                this.hasRenderedSavedCard = true; // Mark that saved card details have been rendered
             } else {
-                this.renderCardForm(); // Display credit card UI after refresh
+                this.renderCardForm();
             }
         } catch (error) {
             console.error("Failed to initialize Fastlane:", error);
@@ -32,8 +33,7 @@ class PayPalFastlane {
 
     shouldDisplaySavedCardDetails() {
         // Check if saved card details should be displayed first
-        const hasDisplayedSavedCard = sessionStorage.getItem('displayedSavedCard');
-        return this.profileData?.card && !hasDisplayedSavedCard;
+        return this.profileData?.card && !this.hasRenderedSavedCard;
     }
 
     bindEvents() {
