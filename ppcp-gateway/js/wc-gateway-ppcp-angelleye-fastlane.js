@@ -116,7 +116,7 @@ class PayPalFastlane {
             jQuery(this.containerSelector).html(this.savedCardHtml);
             this.bindChangeCardEvent();
         } else {
-            this.renderCardForm();
+            this.processEmailLookup();
         }
     }
 
