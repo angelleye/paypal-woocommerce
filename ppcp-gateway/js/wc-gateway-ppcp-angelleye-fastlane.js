@@ -6,6 +6,7 @@ class PayPalFastlane {
         this.paymentToken = null;
         this.savedCardHtml = ''; // Store the saved card HTML
         this.paymentMethodId = 'angelleye_ppcp_fastlane';
+        this.fastlaneCardComponent = null; // Store the FastlaneCardComponent instance
     }
 
     async initialize() {
@@ -89,7 +90,7 @@ class PayPalFastlane {
 
     async renderCardForm() {
         try {
-            const fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
+            this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
                 fields: {
                     cardholderName: {
                         prefill: `${jQuery('#billing_first_name').val()} ${jQuery('#billing_last_name').val()}`,
@@ -101,7 +102,7 @@ class PayPalFastlane {
                     }
                 }
             });
-            fastlaneCardComponent.render(this.containerSelector);
+            this.fastlaneCardComponent.render(this.containerSelector);
         } catch (error) {
             console.error("Error rendering card form:", error);
         }
@@ -114,7 +115,12 @@ class PayPalFastlane {
                 const billingAddress = this.getBillingAddress();
                 const shippingAddress = this.getShippingAddress();
 
-                this.paymentToken = await this.fastlaneInstance.FastlaneCardComponent().getPaymentToken({
+                if (!this.fastlaneCardComponent) {
+                    console.error("FastlaneCardComponent is not initialized.");
+                    return;
+                }
+
+                this.paymentToken = await this.fastlaneCardComponent.getPaymentToken({
                     billingAddress,
                     shippingAddress
                 });
