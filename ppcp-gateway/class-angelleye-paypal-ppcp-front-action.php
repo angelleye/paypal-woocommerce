@@ -656,7 +656,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 }
                 $ppcp_checkout = AngellEYE_PayPal_PPCP_Checkout::instance();
                 $order_id = $ppcp_checkout->angelleye_ppcp_create_order();
-                $this->payment_request->angelleye_ppcp_create_order_request($order_id > 0 ? $order_id : null);
+                if(  !empty($_POST['fastlane_payment_token']) && isset($_POST['payment_method']) && $_POST['payment_method'] === 'angelleye_ppcp_fastlane' ) {
+                    $this->payment_request->angelleye_ppcp_create_order_fastlane($order_id > 0 ? $order_id : null);
+                } else {
+                    $this->payment_request->angelleye_ppcp_create_order_request($order_id > 0 ? $order_id : null);
+                }
                 exit();
             }
         } catch (Exception $ex) {
