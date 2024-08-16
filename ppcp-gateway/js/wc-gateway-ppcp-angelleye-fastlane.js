@@ -70,6 +70,8 @@ class PayPalFastlane {
     async initializeFastlaneCardComponent() {
         try {
             if (!this.fastlaneCardComponent) {
+                console.log("Initializing FastlaneCardComponent...");
+
                 this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
                     fields: {
                         cardholderName: {
@@ -151,8 +153,9 @@ class PayPalFastlane {
                     throw new Error("FastlaneCardComponent is not initialized.");
                 }
 
-                // Debugging: Attempt to get payment token
+                // Debugging: Log before attempting to get payment token
                 console.log("Attempting to get payment token...");
+
                 this.paymentToken = await fastlaneCardComponent.getPaymentToken({
                     billingAddress,
                     shippingAddress
