@@ -109,14 +109,19 @@ class PayPalFastlane {
     }
 
     restoreCardDetails() {
-        // Ensure the card details are restored if the checkout was updated
-        console.log("save card data" + this.savedCardHtml);
         const existingCardSection = jQuery('#paypal-fastlane-saved-card');
+
         if (!existingCardSection.length && this.savedCardHtml) {
+            // Restore the saved card HTML if it's available
             jQuery(this.containerSelector).html(this.savedCardHtml);
             this.bindChangeCardEvent();
-        } else {
-            this.processEmailLookup();
+        } else if (!existingCardSection.length && !this.savedCardHtml) {
+            // Only call processEmailLookup if both the saved card HTML and the existing card section are not present
+            console.log("No saved card found, processing email lookup...");
+            this.processEmailLookup().then(() => {
+                // After processing, make sure to update the checkout fields if necessary
+                this.updateWooCheckoutFields(this.profileData);
+            });
         }
     }
 
@@ -198,7 +203,7 @@ class PayPalFastlane {
             } catch (error) {
                 console.error("Failed to place order:", error.message);
                 angelleyeOrder.showError("Failed to place order: " + error.message);
-            } 
+            }
         });
     }
 
