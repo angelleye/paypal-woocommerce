@@ -5263,7 +5263,8 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->save();
                     $order->add_order_note(sprintf(__('%s Capture Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
-                    $return_response['redirected'] = $this->angelleye_ppcp_get_order_return_url($order);
+                    $return_response['url'] = $this->angelleye_ppcp_get_order_return_url($order);
+                    $return_response['redirected'] = true;
                 }
                 wp_send_json($return_response, 200);
                 exit();
