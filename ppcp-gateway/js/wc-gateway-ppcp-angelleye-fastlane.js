@@ -110,6 +110,7 @@ class PayPalFastlane {
 
     restoreCardDetails() {
         // Ensure the card details are restored if the checkout was updated
+        console.log("save card data" + this.savedCardHtml);
         const existingCardSection = jQuery('#paypal-fastlane-saved-card');
         if (!existingCardSection.length && this.savedCardHtml) {
             jQuery(this.containerSelector).html(this.savedCardHtml);
