@@ -94,6 +94,30 @@ class PayPalFastlane {
         }
     }
 
+    restoreCardDetails() {
+        // Ensure the card details are restored if the checkout was updated
+        const existingCardSection = jQuery('#paypal-fastlane-saved-card');
+        if (!existingCardSection.length && this.savedCardHtml) {
+            jQuery(this.containerSelector).html(this.savedCardHtml);
+            this.bindChangeCardEvent();
+        }
+    }
+
+    bindChangeCardEvent() {
+        jQuery(document).on('click', '#change-card', async () => {
+            try {
+                const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
+                if (selectedCard) {
+                    this.profileData.card = selectedCard;
+                    this.paymentToken = selectedCard.id;
+                    this.renderCardDetails();
+                }
+            } catch (error) {
+                console.error("Error changing card:", error);
+            }
+        });
+    }
+
     bindPlaceOrderEvent(fastlaneCardComponent) {
         jQuery(document.body).off('submit_angelleye_ppcp_fastlane').on('submit_angelleye_ppcp_fastlane', async (event) => {
             event.preventDefault();
