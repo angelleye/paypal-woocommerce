@@ -198,9 +198,7 @@ class PayPalFastlane {
             } catch (error) {
                 console.error("Failed to place order:", error.message);
                 angelleyeOrder.showError("Failed to place order: " + error.message);
-            } finally {
-                this.restoreCardDetails(); // Restore the card details after updating checkout
-            }
+            } 
         });
     }
 
@@ -264,33 +262,32 @@ class PayPalFastlane {
         }
     }
 
+    async processEmailLookup() {
+        const email = jQuery('input[name="ppcp_fastlane_email"]').val();
+        jQuery('input[name="billing_email"]').val(email);
+        const customerContextId = await this.lookupCustomerByEmail(email);
+        if (customerContextId) {
+            const authenticated = await this.authenticateCustomer(customerContextId);
+            if (authenticated) {
+                this.renderCardDetails();
+            } else {
+                this.renderCardForm();
+            }
+        } else {
+            this.renderCardForm();
+        }
+    }
+
     bindEmailLookupEvent() {
         jQuery('#lookup_ppcp_fastlane_email_button').off('click').on('click', async (event) => {
             event.preventDefault();
             const button = jQuery('#lookup_ppcp_fastlane_email_button');
             button.prop('disabled', true);
-
             try {
-                const email = jQuery('input[name="ppcp_fastlane_email"]').val();
-                jQuery('input[name="billing_email"]').val(email);
-                const customerContextId = await this.lookupCustomerByEmail(email);
-
-                if (customerContextId) {
-                    const authenticated = await this.authenticateCustomer(customerContextId);
-                    if (authenticated) {
-                        this.renderCardDetails();
-                    } else {
-                        this.renderCardForm();
-                    }
-                } else {
-                    this.renderCardForm();
-                }
-
-                // Trigger WooCommerce checkout update if necessary
+                await this.processEmailLookup();
                 if (!this.isPaymentMethodSet) {
                     this.setPaymentMethod(this.paymentMethodId);
                 }
-
             } catch (error) {
                 console.error("Error during email lookup event:", error);
             } finally {
@@ -300,7 +297,6 @@ class PayPalFastlane {
     }
 
     bindWooCommerceEvents() {
-        // Listen for WooCommerce checkout update events
         jQuery(document.body).on('updated_checkout', () => {
             this.isCardDetailsRestored = false; // Reset flag
             this.isPaymentMethodSet = false; // Reset flag
