@@ -145,15 +145,13 @@ class PayPalFastlane {
 
     bindPlaceOrderEvent(fastlaneCardComponent) {
         jQuery(document.body).off('submit_angelleye_ppcp_fastlane').on('submit_angelleye_ppcp_fastlane', async (event) => {
+            angelleyeOrder.showProcessingSpinner();
             event.preventDefault();
             try {
-                let paymentToken = this.paymentToken; // Default to using the existing paymentToken
-
-                // If no paymentToken exists, generate a new one using FastlaneCardComponent
+                let paymentToken = this.paymentToken; 
                 if (!paymentToken) {
                     const billingAddress = this.getBillingAddress();
                     const shippingAddress = this.getShippingAddress();
-
                     if (!billingAddress || !shippingAddress) {
                         throw new Error("Billing or shipping address is missing.");
                     }
@@ -202,6 +200,7 @@ class PayPalFastlane {
                 }
             } catch (error) {
                 console.error("Failed to place order:", error.message);
+                angelleyeOrder.hideProcessingSpinner();
                 angelleyeOrder.showError("Failed to place order: " + error.message);
             }
         });
