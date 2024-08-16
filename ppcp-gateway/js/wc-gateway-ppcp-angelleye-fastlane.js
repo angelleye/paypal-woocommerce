@@ -114,6 +114,8 @@ class PayPalFastlane {
         if (!existingCardSection.length && this.savedCardHtml) {
             jQuery(this.containerSelector).html(this.savedCardHtml);
             this.bindChangeCardEvent();
+        } else {
+            this.renderCardForm();
         }
     }
 
@@ -301,15 +303,7 @@ class PayPalFastlane {
         jQuery(document.body).on('updated_checkout', () => {
             this.isCardDetailsRestored = false; // Reset flag
             this.isPaymentMethodSet = false; // Reset flag
-
-            if (this.profileData && this.profileData.card) {
-                // Restore saved card details if profileData is available
-                this.restoreCardDetails();
-            } else {
-                // If profileData is empty, render the card UI
-                this.renderCardForm();
-            }
-
+            this.restoreCardDetails();
             // Delay setting the payment method to ensure it does not cause an infinite loop
             setTimeout(() => {
                 if (!this.isPaymentMethodSet) {
