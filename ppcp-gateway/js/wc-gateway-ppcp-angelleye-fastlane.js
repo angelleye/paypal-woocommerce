@@ -68,19 +68,31 @@ class PayPalFastlane {
     }
 
     async initializeFastlaneCardComponent() {
-        if (!this.fastlaneCardComponent) {
-            this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
-                fields: {
-                    cardholderName: {
-                        prefill: `${jQuery('#billing_first_name').val()} ${jQuery('#billing_last_name').val()}`,
-                        enabled: true
-                    },
-                    phoneNumber: {
-                        enabled: true,
-                        prefill: jQuery('#billing_phone').val() || ''
+        try {
+            if (!this.fastlaneCardComponent) {
+                this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
+                    fields: {
+                        cardholderName: {
+                            prefill: `${jQuery('#billing_first_name').val()} ${jQuery('#billing_last_name').val()}`,
+                            enabled: true
+                        },
+                        phoneNumber: {
+                            enabled: true,
+                            prefill: jQuery('#billing_phone').val() || ''
+                        }
                     }
+                });
+
+                if (!this.fastlaneCardComponent) {
+                    throw new Error("FastlaneCardComponent initialization failed.");
                 }
-            });
+
+                // Debugging: Confirm component initialization
+                console.log("FastlaneCardComponent initialized:", this.fastlaneCardComponent);
+            }
+        } catch (error) {
+            console.error("Error initializing FastlaneCardComponent:", error);
+            throw error; // Rethrow to prevent further execution
         }
     }
 
@@ -125,16 +137,29 @@ class PayPalFastlane {
                 const billingAddress = this.getBillingAddress();
                 const shippingAddress = this.getShippingAddress();
 
+                // Debugging: Log addresses
+                console.log("Billing Address:", billingAddress);
+                console.log("Shipping Address:", shippingAddress);
+
                 // Validate that billing and shipping addresses are not empty
                 if (!billingAddress || !shippingAddress) {
                     throw new Error("Billing or shipping address is missing.");
                 }
 
-                // Retrieve payment token from FastlaneCardComponent
+                // Debugging: Check if FastlaneCardComponent is initialized
+                if (!fastlaneCardComponent) {
+                    throw new Error("FastlaneCardComponent is not initialized.");
+                }
+
+                // Debugging: Attempt to get payment token
+                console.log("Attempting to get payment token...");
                 this.paymentToken = await fastlaneCardComponent.getPaymentToken({
                     billingAddress,
                     shippingAddress
                 });
+
+                // Debugging: Log the payment token
+                console.log("Payment Token:", this.paymentToken);
 
                 if (!this.paymentToken) {
                     throw new Error("Failed to retrieve payment token.");
