@@ -147,11 +147,10 @@ class PayPalFastlane {
         jQuery(document.body).off('submit_angelleye_ppcp_fastlane').on('submit_angelleye_ppcp_fastlane', async (event) => {
             event.preventDefault();
             try {
-                let paymentToken = null;
 
                 // Use the saved card's ID if available, otherwise generate a new payment token
                 if (this.profileData?.card?.id) {
-                    paymentToken = this.profileData.card.id;
+                    this.paymentToken = this.profileData.card.id;
                     console.log("Using saved card ID:", paymentToken);
                 } else {
                     const billingAddress = this.getBillingAddress();
