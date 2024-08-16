@@ -302,7 +302,13 @@ class PayPalFastlane {
             this.isCardDetailsRestored = false; // Reset flag
             this.isPaymentMethodSet = false; // Reset flag
 
-            this.restoreCardDetails();
+            if (this.profileData && this.profileData.card) {
+                // Restore saved card details if profileData is available
+                this.restoreCardDetails();
+            } else {
+                // If profileData is empty, render the card UI
+                this.renderCardForm();
+            }
 
             // Delay setting the payment method to ensure it does not cause an infinite loop
             setTimeout(() => {
