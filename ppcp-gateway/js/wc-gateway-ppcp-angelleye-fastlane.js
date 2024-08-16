@@ -136,35 +136,36 @@ class PayPalFastlane {
         jQuery(document.body).off('submit_angelleye_ppcp_fastlane').on('submit_angelleye_ppcp_fastlane', async (event) => {
             event.preventDefault();
             try {
-                const billingAddress = this.getBillingAddress();
-                const shippingAddress = this.getShippingAddress();
+                let paymentToken = null;
 
-                // Debugging: Log addresses
-                console.log("Billing Address:", billingAddress);
-                console.log("Shipping Address:", shippingAddress);
+                // Use the saved card's ID if available, otherwise generate a new payment token
+                if (this.profileData?.card?.id) {
+                    paymentToken = this.profileData.card.id;
+                    console.log("Using saved card ID:", paymentToken);
+                } else {
+                    const billingAddress = this.getBillingAddress();
+                    const shippingAddress = this.getShippingAddress();
 
-                // Validate that billing and shipping addresses are not empty
-                if (!billingAddress || !shippingAddress) {
-                    throw new Error("Billing or shipping address is missing.");
+                    // Validate that billing and shipping addresses are not empty
+                    if (!billingAddress || !shippingAddress) {
+                        throw new Error("Billing or shipping address is missing.");
+                    }
+
+                    // Debugging: Check if FastlaneCardComponent is initialized
+                    if (!fastlaneCardComponent) {
+                        throw new Error("FastlaneCardComponent is not initialized.");
+                    }
+
+                    // Generate a new payment token
+                    console.log("Attempting to get payment token...");
+                    paymentToken = await fastlaneCardComponent.getPaymentToken({
+                        billingAddress,
+                        shippingAddress
+                    });
+                    console.log("Generated new payment token:", paymentToken);
                 }
 
-                // Debugging: Check if FastlaneCardComponent is initialized
-                if (!fastlaneCardComponent) {
-                    throw new Error("FastlaneCardComponent is not initialized.");
-                }
-
-                // Debugging: Log before attempting to get payment token
-                console.log("Attempting to get payment token...");
-
-                this.paymentToken = await fastlaneCardComponent.getPaymentToken({
-                    billingAddress,
-                    shippingAddress
-                });
-
-                // Debugging: Log the payment token
-                console.log("Payment Token:", this.paymentToken);
-
-                if (!this.paymentToken) {
+                if (!paymentToken) {
                     throw new Error("Failed to retrieve payment token.");
                 }
 
@@ -173,7 +174,7 @@ class PayPalFastlane {
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
                     fieldName: 'fastlane_payment_token',
-                    fieldValue: this.paymentToken.id,
+                    fieldValue: paymentToken,
                     appendToSelector: checkoutSelector
                 });
 
