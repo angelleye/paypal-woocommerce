@@ -127,15 +127,15 @@ class PayPalFastlane {
 
     bindChangeCardEvent() {
         jQuery(document).on('click', '#change-card', async (event) => {
-            event.preventDefault();  // Prevent the default behavior (which might include form submission)
-            event.stopPropagation(); // Stop the event from bubbling up and triggering other event handlers
+            event.preventDefault();  // Prevent the default behavior
+            event.stopPropagation(); // Stop the event from bubbling up
 
             try {
                 const {selectedCard} = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
                     this.profileData.card = selectedCard;
-                    this.paymentToken = selectedCard.id;
-                    this.renderCardDetails();
+                    this.paymentToken = selectedCard.id;  // Set the paymentToken to the selected card's ID
+                    this.renderCardDetails();  // Update the UI with the selected card
                 }
             } catch (error) {
                 console.error("Error changing card:", error);
@@ -147,21 +147,17 @@ class PayPalFastlane {
         jQuery(document.body).off('submit_angelleye_ppcp_fastlane').on('submit_angelleye_ppcp_fastlane', async (event) => {
             event.preventDefault();
             try {
+                let paymentToken = this.paymentToken; // Default to using the existing paymentToken
 
-                // Use the saved card's ID if available, otherwise generate a new payment token
-                if (this.profileData?.card?.id) {
-                    this.paymentToken = this.profileData.card.id;
-                    console.log("Using saved card ID:", paymentToken);
-                } else {
+                // If no paymentToken exists, generate a new one using FastlaneCardComponent
+                if (!paymentToken) {
                     const billingAddress = this.getBillingAddress();
                     const shippingAddress = this.getShippingAddress();
 
-                    // Validate that billing and shipping addresses are not empty
                     if (!billingAddress || !shippingAddress) {
                         throw new Error("Billing or shipping address is missing.");
                     }
 
-                    // Debugging: Check if FastlaneCardComponent is initialized
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
                     }
@@ -172,7 +168,12 @@ class PayPalFastlane {
                         billingAddress,
                         shippingAddress
                     });
+
+                    // Update the instance variable with the new token
+                    this.paymentToken = paymentToken;
                     console.log("Generated new payment token:", paymentToken);
+                } else {
+                    console.log("Using existing payment token:", paymentToken);
                 }
 
                 if (!paymentToken) {
@@ -184,7 +185,7 @@ class PayPalFastlane {
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
                     fieldName: 'fastlane_payment_token',
-                    fieldValue: paymentToken.id,
+                    fieldValue: paymentToken.id || paymentToken,
                     appendToSelector: checkoutSelector
                 });
 
