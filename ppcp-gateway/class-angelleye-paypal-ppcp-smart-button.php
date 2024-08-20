@@ -412,7 +412,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             add_filter('wfocu_subscriptions_get_supported_gateways', array($this, 'wfocu_subscription_supported_gateways'), 99, 1);
         }
         // Fastlane by PayPal
-        add_action('woocommerce_checkout_before_customer_details', array($this, 'display_ppcp_fastlane_email_top_checkout_page'), 2);
+        if( $this->enable_ppcp_fastlane ) {
+            add_action('woocommerce_checkout_before_customer_details', array($this, 'display_ppcp_fastlane_email_top_checkout_page'), 2);
+        }
     }
 
     public function angelleye_load_js_sdk() {

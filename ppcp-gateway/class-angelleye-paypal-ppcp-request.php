@@ -261,7 +261,7 @@ class AngellEYE_PayPal_PPCP_Request {
         }
 
         $capabilitiesToCheck = ['advanced_cc' => 'CUSTOM_CARD_PROCESSING',
-            'apple_pay' => 'APPLE_PAY', 'google_pay' => 'GOOGLE_PAY'];
+            'apple_pay' => 'APPLE_PAY', 'google_pay' => 'GOOGLE_PAY', 'fastlane' => 'FASTLANE_CHECKOUT'];
 
         if (isset($result['products']) && isset($result['capabilities']) && !empty($result['products']) && !empty($result['products'])) {
             foreach ($result['products'] as $key => $product) {

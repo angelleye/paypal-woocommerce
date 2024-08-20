@@ -25,6 +25,10 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
         public $enable_tokenized_payments;
         public $is_multi_account_active;
         public $woo_pre_order_payment_mode;
+        public $need_to_display_fastlane_button = false;
+        public $is_fastlane_enable = false;
+        public $is_fastlane_approved = false;
+
 
         public static function instance() {
             if (is_null(self::$_instance)) {
@@ -325,6 +329,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
             }
             $google_pay_supported_country = angelleye_ppcp_apple_google_vault_supported_country();
             $apple_pay_supported_country = angelleye_ppcp_apple_google_vault_supported_country();
+            $fastlane_supported_country = angelleye_ppcp_fastlane_supported_country();
             $advanced_cc_text = '';
             $vaulting_advanced_text = '';
             $applePayText = '';
@@ -371,7 +376,25 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 $this->is_apple_pay_approved = true; //$available_endpoints['apple_pay'] == 'APPROVED';
                 $applePayText = __('Apple Pay feature is enabled on your PayPal account.', 'paypal-for-woocommerce');
             }
+            
+            $fastlaneText = '';
+            if ($available_endpoints === false) {
+                $fastlaneText = __('Fastlane is PayPal’s quick guest checkout solution. It securely saves and retrieves payment and shipping information for Fastlane members. Fastlane members enter their email and receive prefilled checkout forms.', 'paypal-for-woocommerce');
+                $this->need_to_display_fastlane_button = false;
+                $this->is_fastlane_enable = false;
+            } elseif (!isset($available_endpoints['fastlane'])) {
+                $fastlaneText = __('Fastlane is not enabled on your PayPal account.', 'paypal-for-woocommerce');
+                $this->need_to_display_fastlane_button = in_array($default_country, $fastlane_supported_country);
+                $this->is_fastlane_enable = true;
+            } elseif (isset($available_endpoints['fastlane'])) {
+                $this->is_fastlane_enable = true;
+                $this->is_fastlane_approved = true; 
+                $fastlaneText = __('Fastlane is PayPal’s quick guest checkout solution. It securely saves and retrieves payment and shipping information for Fastlane members. Fastlane members enter their email and receive prefilled checkout forms.', 'paypal-for-woocommerce');
+            }
+            
             $apple_pay_custom_attributes = $this->is_apple_pay_approved ? [] : array('disabled' => 'disabled');
+            
+            $fastlane_custom_attributes = $this->is_apple_pay_approved ? [] : array('disabled' => 'disabled');
 
             if ($available_endpoints === false) {
                 $googlePayText = __('Allow buyers to pay using Google Pay.', 'paypal-for-woocommerce');
@@ -1857,11 +1880,18 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'enable_ppcp_fastlane' => array(
                     'title' => __('Enable Fastlane', 'paypal-for-woocommerce'),
                     'label' => __('Enable Fastlane', 'paypal-for-woocommerce'),
-                    'type' => 'checkbox',
-                    'description' => __('Fastlane is PayPal’s quick guest checkout solution. It securely saves and retrieves payment and shipping information for Fastlane members. Fastlane members enter their email and receive prefilled checkout forms.', 'paypal-for-woocommerce'),
+                    'type' => 'checkbox_enable_paypal_fastlane',
+                    'description' => $fastlaneText,
                     'default' => 'no',
                     'desc_tip' => true,
+                    'class' => 'enable_fastlane',
+                    'need_to_display_fastlane_button' => $this->need_to_display_fastlane_button,
+                    'is_fastlane_enable' => $this->is_fastlane_enable,
+                    'is_fastlane_approved' => $this->is_fastlane_approved,
+                    'custom_attributes' => $fastlane_custom_attributes,
+                    'is_ppcp_connected' => $this->is_ppcp_connected
                 ),
+               
                 'paypal_shipment_tracking' => array(
                     'title' => __('PayPal Shipment Tracking', 'paypal-for-woocommerce'),
                     'type' => 'title',

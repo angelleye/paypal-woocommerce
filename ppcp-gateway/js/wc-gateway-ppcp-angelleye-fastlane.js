@@ -70,8 +70,6 @@ class PayPalFastlane {
     async initializeFastlaneCardComponent() {
         try {
             if (!this.fastlaneCardComponent) {
-                console.log("Initializing FastlaneCardComponent...");
-
                 this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
                     fields: {
                         cardholderName: {
@@ -88,9 +86,6 @@ class PayPalFastlane {
                 if (!this.fastlaneCardComponent) {
                     throw new Error("FastlaneCardComponent initialization failed.");
                 }
-
-                // Debugging: Confirm component initialization
-                console.log("FastlaneCardComponent initialized:", this.fastlaneCardComponent);
             }
         } catch (error) {
             console.error("Error initializing FastlaneCardComponent:", error);
@@ -116,10 +111,7 @@ class PayPalFastlane {
             jQuery(this.containerSelector).html(this.savedCardHtml);
             this.bindChangeCardEvent();
         } else if (!existingCardSection.length && !this.savedCardHtml) {
-            // Only call processEmailLookup if both the saved card HTML and the existing card section are not present
-            console.log("No saved card found, processing email lookup...");
             this.processEmailLookup().then(() => {
-                // After processing, make sure to update the checkout fields if necessary
                 this.updateWooCheckoutFields(this.profileData);
             });
         }
@@ -159,17 +151,11 @@ class PayPalFastlane {
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
                     }
-
-                    // Generate a new payment token
-                    console.log("Attempting to get payment token...");
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
                         billingAddress,
                         shippingAddress
                     });
-
-                    // Update the instance variable with the new token
                     this.paymentToken = paymentToken;
-                    console.log("Generated new payment token:", paymentToken);
                 } else {
                     console.log("Using existing payment token:", paymentToken);
                 }
@@ -192,7 +178,6 @@ class PayPalFastlane {
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
                     await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
-                        console.log('orderCreated', orderData);
                         if (orderData.redirected) {
                             window.location.href = orderData.url;
                         }
@@ -310,7 +295,6 @@ class PayPalFastlane {
                 if (!this.isPaymentMethodSet) {
                     this.setPaymentMethod(this.paymentMethodId);
                 }
-                console.log(this);
             }, 200);
         });
     }

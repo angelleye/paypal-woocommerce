@@ -1438,3 +1438,13 @@ if (!function_exists('angelleye_ppcp_apple_google_vault_supported_country')) {
 
 }
 
+
+if (!function_exists('angelleye_ppcp_fastlane_supported_country')) {
+
+    function angelleye_ppcp_fastlane_supported_country() {
+        return array(
+           'US'
+        );
+    }
+
+}
