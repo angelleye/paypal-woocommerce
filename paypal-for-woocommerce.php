@@ -1465,11 +1465,13 @@ add_action('woocommerce_blocks_loaded', function () {
         }
         require_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/checkout-block/angelleye-ppcp-checkout-block.php');
         require_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/checkout-block/angelleye-ppcp-cc-block.php');
+        require_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/checkout-block/angelleye-ppcp-fastlane-block.php');
         add_action(
                 'woocommerce_blocks_payment_method_type_registration',
                 function (Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry) {
                     $payment_method_registry->register(new AngellEYE_PPCP_Checkout_Block);
                     $payment_method_registry->register(new AngellEYE_PPCP_CC_Block);
+                    $payment_method_registry->register(new AngellEYE_PPCP_Fastlane_Block);
                 }
         );
     } catch (Exception $ex) {

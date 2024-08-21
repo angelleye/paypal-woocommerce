@@ -878,6 +878,9 @@ const angelleyeOrder = {
             jQuery(document.body).on('trigger_angelleye_ppcp_cc', function (event) {
                 angelleyeOrder.renderPaymentButtons();
             });
+            jQuery(document.body).on('trigger_angelleye_ppcp_fastlane', function (event) {
+                angelleyeOrder.renderPaymentButtons();
+            });
         },
         handleRaceConditionOnWooHooks: () => {
             jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_block_ready', function (event, data) {

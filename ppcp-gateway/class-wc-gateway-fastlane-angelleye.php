@@ -227,7 +227,6 @@ class WC_Gateway_Fastlane_AngellEYE extends WC_Payment_Gateway_CC {
     public function payment_fields() {
         ?>
         <div id="angelleye_ppcp_checkout_fastlane"></div>
-        <input id="fastlane_payment_token" type="hidden">
         <?php
     }
 
