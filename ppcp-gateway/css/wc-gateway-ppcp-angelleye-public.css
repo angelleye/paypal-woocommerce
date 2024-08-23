@@ -391,3 +391,85 @@ apple-pay-button {
 .w48 {
     height: 48px;
 }
+
+/* Container styling */
+#angelleye_ppcp_checkout_fastlane {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    max-width: 400px;
+}
+
+/* Card details styling */
+.fastlane-card {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.fastlane-card-number {
+    font-weight: bold;
+    font-size: 18px;
+    color: #333333;
+    margin-bottom: 5px;
+}
+
+.fastlane-card-expiry {
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 15px;
+}
+
+/* Button styling */
+#change-card {
+    align-self: flex-start;
+    padding: 10px 20px;
+    background-color: #0070ba;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+#change-card:hover {
+    background-color: #005a99;
+}
+
+#change-card:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 112, 186, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    #angelleye_ppcp_checkout_fastlane {
+        padding: 15px;
+    }
+
+    .fastlane-card {
+        padding: 15px;
+    }
+
+    .fastlane-card-number {
+        font-size: 16px;
+    }
+
+    .fastlane-card-expiry {
+        font-size: 12px;
+    }
+
+    #change-card {
+        width: 100%;
+        text-align: center;
+    }
+}

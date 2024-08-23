@@ -24,7 +24,7 @@ class PayPalFastlane {
 
     async lookupCustomerByEmail(email) {
         try {
-            const {customerContextId} = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
+            const { customerContextId } = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
             return customerContextId;
         } catch (error) {
             console.error("Error looking up customer by email:", error);
@@ -34,7 +34,7 @@ class PayPalFastlane {
 
     async authenticateCustomer(customerContextId) {
         try {
-            const {authenticationState, profileData} = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
+            const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
                 this.paymentToken = profileData.card?.id || null;
@@ -52,7 +52,7 @@ class PayPalFastlane {
             this.savedCardHtml = `
                 <div id="paypal-fastlane-saved-card" class="fastlane-card">
                     <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.paymentSource.card.lastDigits}</div>
-                    <div class="fastlane-card-expiry">${this.profileData.card.paymentSource.card.expiry}</div>
+                    <div class="fastlane-card-expiry">Expires: ${this.profileData.card.paymentSource.card.expiry}</div>
                     <button id="change-card">Change Card</button>
                 </div>
             `;
@@ -123,7 +123,7 @@ class PayPalFastlane {
             event.stopPropagation(); // Stop the event from bubbling up
 
             try {
-                const {selectedCard} = await this.fastlaneInstance.profile.showCardSelector();
+                const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
                     this.profileData.card = selectedCard;
                     this.paymentToken = selectedCard.id;  // Set the paymentToken to the selected card's ID
@@ -177,7 +177,7 @@ class PayPalFastlane {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
-                    await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
+                    await angelleyeOrder.createOrder({ errorLogId }).then((orderData) => {
                         if (orderData.redirected) {
                             window.location.href = orderData.url;
                         }
@@ -212,6 +212,9 @@ class PayPalFastlane {
     }
 
     updateWooCheckoutFields(profileData) {
+        
+        
+        
         const updateField = (selector, value) => {
             if (value) {
                 jQuery(selector).val(value).trigger('change');
@@ -220,7 +223,8 @@ class PayPalFastlane {
 
         const billingAddress = profileData.card?.paymentSource?.card?.billingAddress || {};
         const shippingAddress = profileData.shippingAddress?.address || {};
-
+        
+        updateField('#billing_first_name', profileData.email);
         updateField('#billing_first_name', profileData.name?.firstName);
         updateField('#billing_last_name', profileData.name?.lastName);
         updateField('#billing_address_1', billingAddress.addressLine1);
@@ -237,6 +241,25 @@ class PayPalFastlane {
         updateField('#shipping_postcode', shippingAddress.postalCode);
         updateField('#shipping_country', shippingAddress.countryCode);
         updateField('#shipping_state', shippingAddress.adminArea1);
+        
+        jQuery.ajax({
+        url: fastlane_object.ajaxurl, // Provided by WordPress
+        method: 'POST',
+        data: {
+            action: 'angelleye_ppcp_save_fastlane_data',
+            profileData: profileData
+        },
+        success: function(response) {
+            if (response.success) {
+                console.log('Checkout fields saved successfully.');
+            } else {
+                console.log('Failed to save checkout fields.');
+            }
+        },
+        error: function() {
+            console.log('Error during AJAX request.');
+        }
+    });
 
         // Force WooCommerce to update the payment method selection
         this.setPaymentMethod(this.paymentMethodId);
@@ -252,7 +275,7 @@ class PayPalFastlane {
     }
 
     async processEmailLookup() {
-        const email = jQuery('input[name="ppcp_fastlane_email"]').val();
+        const email = jQuery('input[name="fastlane-email"]').val();
         jQuery('input[name="billing_email"]').val(email);
         const customerContextId = await this.lookupCustomerByEmail(email);
         if (customerContextId) {
@@ -268,9 +291,9 @@ class PayPalFastlane {
     }
 
     bindEmailLookupEvent() {
-        jQuery('#lookup_ppcp_fastlane_email_button').off('click').on('click', async (event) => {
+        jQuery('.fastlane-submit-button').off('click').on('click', async (event) => {
             event.preventDefault();
-            const button = jQuery('#lookup_ppcp_fastlane_email_button');
+            const button = jQuery('.fastlane-submit-button');
             button.prop('disabled', true);
             try {
                 await this.processEmailLookup();

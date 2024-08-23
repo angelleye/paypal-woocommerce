@@ -412,9 +412,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             add_filter('wfocu_subscriptions_get_supported_gateways', array($this, 'wfocu_subscription_supported_gateways'), 99, 1);
         }
         // Fastlane by PayPal
-        if( $this->enable_ppcp_fastlane ) {
+        if ($this->enable_ppcp_fastlane) {
             add_action('woocommerce_checkout_before_customer_details', array($this, 'display_ppcp_fastlane_email_top_checkout_page'), 2);
         }
+
+        add_action('wp_ajax_angelleye_ppcp_save_fastlane_data', array($this, 'angelleye_ppcp_save_fastlane_data'), 10);
+        add_action('wp_ajax_nopriv_angelleye_ppcp_save_fastlane_data', array($this, 'angelleye_ppcp_save_fastlane_data'), 10);
     }
 
     public function angelleye_load_js_sdk() {
@@ -520,7 +523,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             wp_register_script($this->angelleye_ppcp_plugin_name . '-google-pay', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-google-pay' . $this->minified_version . '.js', array($ae_script_loader_handle), $script_versions, false);
         }
         if ($this->enable_ppcp_fastlane) {
-            wp_register_script($this->angelleye_ppcp_plugin_name . '-ppcp-fastlane', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-fastlane' . $this->minified_version . '.js', array($ae_script_loader_handle), $script_versions, false);
+            wp_register_script($this->angelleye_ppcp_plugin_name . '-ppcp-fastlane', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/js/wc-gateway-ppcp-angelleye-fastlane' . $this->minified_version . '.js', array($ae_script_loader_handle), $script_versions, true);
+            wp_localize_script($this->angelleye_ppcp_plugin_name . '-ppcp-fastlane', 'fastlane_object', array(
+                'ajaxurl' => admin_url('admin-ajax.php')
+            ));
         }
         $components = ["buttons"];
 
@@ -2187,20 +2193,61 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             if (WC()->cart->needs_payment()) {
                 angelleye_ppcp_add_css_js();
                 echo apply_filters('angelleye_ppcp_checkout_top_ppcp_fastlane_email_html', '
-                    <div class="col2-set" style="display: flex; align-items: flex-start;">
-                        <div class="col-1 form-row" style="flex: 1; margin-bottom: 40px;">
-                            <label for="ppcp_fastlane_email" style="display: block;">Email address&nbsp;</label>
-                            <span class="woocommerce-input-wrapper" style="display: flex; align-items: center;">
-                                <input type="email" class="input-text" name="ppcp_fastlane_email" id="ppcp_fastlane_email" placeholder="" style="flex: 1;">
-                                <button type="button" class="button alt" id="lookup_ppcp_fastlane_email_button" style="margin-left: 10px;">Continue</button>
-                            </span>
-                            <div id="watermark-container" style="margin-top: 5px;">
-                                <img src="https://www.paypalobjects.com/fastlane-v1/assets/fastlane-with-tooltip_en_sm_light.0808.svg" alt="Fastlane Watermark" />
-                            </div>
-                        </div>
-                    </div><br>
+                    <div class="fastlane-checkout-container">
+        <div class="fastlane-email-row">
+            <label for="fastlane-email" class="fastlane-label">Email address</label>
+            <div class="fastlane-input-wrapper">
+                <input type="email" id="fastlane-email" name="fastlane-email" class="fastlane-input" placeholder="Email" required>
+                <button type="button" class="fastlane-submit-button">Continue</button>
+            </div>
+            <div class="fastlane-watermark-container">
+                <img src="https://www.paypalobjects.com/fastlane-v1/assets/fastlane-with-tooltip_en_sm_light.0808.svg" alt="Fastlane Watermark">
+            </div>
+        </div>
+    </div>
                 ');
             }
         }
+    }
+
+    public function angelleye_ppcp_save_fastlane_data() {
+        if (!isset($_POST['profileData']) || !is_array($_POST['profileData'])) {
+            wp_send_json_error('Invalid data');
+            return;
+        }
+
+        // Extract billing and shipping details from profileData
+        $profileData = $_POST['profileData'];
+
+        // Billing address extraction
+        $billingAddress = isset($profileData['card']['paymentSource']['card']['billingAddress']) ? $profileData['card']['paymentSource']['card']['billingAddress'] : [];
+        $billing_details = [
+            'first_name' => isset($profileData['name']['firstName']) ? $profileData['name']['firstName'] : '',
+            'last_name' => isset($profileData['name']['lastName']) ? $profileData['name']['lastName'] : '',
+            'email' => isset($profileData['email']) ? $profileData['email'] : '',
+            'address_1' => isset($billingAddress['addressLine1']) ? $billingAddress['addressLine1'] : '',
+            'city' => isset($billingAddress['adminArea2']) ? $billingAddress['adminArea2'] : '',
+            'postcode' => isset($billingAddress['postalCode']) ? $billingAddress['postalCode'] : '',
+            'country' => isset($billingAddress['countryCode']) ? $billingAddress['countryCode'] : '',
+            'state' => isset($billingAddress['adminArea1']) ? $billingAddress['adminArea1'] : '',
+            'phone' => isset($profileData['shippingAddress']['phoneNumber']['nationalNumber']) ? $profileData['shippingAddress']['phoneNumber']['nationalNumber'] : ''
+        ];
+
+        // Shipping address extraction
+        $shippingAddress = isset($profileData['shippingAddress']['address']) ? $profileData['shippingAddress']['address'] : [];
+        $shipping_details = [
+            'first_name' => isset($profileData['shippingAddress']['name']['firstName']) ? $profileData['shippingAddress']['name']['firstName'] : '',
+            'last_name' => isset($profileData['shippingAddress']['name']['lastName']) ? $profileData['shippingAddress']['name']['lastName'] : '',
+            'address_1' => isset($shippingAddress['addressLine1']) ? $shippingAddress['addressLine1'] : '',
+            'city' => isset($shippingAddress['adminArea2']) ? $shippingAddress['adminArea2'] : '',
+            'postcode' => isset($shippingAddress['postalCode']) ? $shippingAddress['postalCode'] : '',
+            'country' => isset($shippingAddress['countryCode']) ? $shippingAddress['countryCode'] : '',
+            'state' => isset($shippingAddress['adminArea1']) ? $shippingAddress['adminArea1'] : ''
+        ];
+
+        // Call the update function with the extracted data
+        angelleye_ppcp_update_customer_addresses_from_paypal($shipping_details, $billing_details);
+
+        wp_send_json_success('Customer addresses updated successfully.');
     }
 }
