@@ -370,11 +370,11 @@ apple-pay-button {
     display: none !important;
 }
 #express-payment-method-angelleye_ppcp_top {
-  list-style: none;
+    list-style: none;
 }
 .woocommerce-checkout #payment #wc-angelleye_ppcp_cc-form div.form-row, .woocommerce-checkout #payment div.payment_box #wc-angelleye_ppcp_cc-form .form-row.form-row-first {
     padding: 3px;
-}  
+}
 @media (min-width: 768px) {
     #wfacp_smart_buttons.wfacp_smart_buttons .wfacp_smart_button_container .angelleye_ppcp iframe {
         max-height: 100% !important;
@@ -415,16 +415,15 @@ apple-pay-button {
 }
 
 .fastlane-card-number {
-    font-weight: bold;
-    font-size: 18px;
+    font-size: 14px;
     color: #333333;
     margin-bottom: 5px;
 }
 
 .fastlane-card-expiry {
     font-size: 14px;
-    color: #666666;
-    margin-bottom: 15px;
+    color: #333333;
+    margin-bottom: 5px;
 }
 
 /* Button styling */

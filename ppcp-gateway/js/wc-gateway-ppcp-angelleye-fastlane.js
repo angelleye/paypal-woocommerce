@@ -250,7 +250,9 @@ class PayPalFastlane {
             profileData: profileData
         },
         success: function(response) {
+            
             if (response.success) {
+                $( document.body ).trigger( 'update_checkout' );
                 console.log('Checkout fields saved successfully.');
             } else {
                 console.log('Failed to save checkout fields.');

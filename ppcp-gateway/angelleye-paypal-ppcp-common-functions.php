@@ -389,7 +389,7 @@ if (!function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
             if (!empty($shipping_details['country'])) {
                 $customer->set_shipping_country($shipping_details['country']);
             }
-            $customer->save();
+            WC()->customer->save();
         }
     }
 
