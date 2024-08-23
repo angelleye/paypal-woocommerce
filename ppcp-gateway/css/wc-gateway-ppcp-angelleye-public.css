@@ -472,3 +472,10 @@ apple-pay-button {
         text-align: center;
     }
 }
+.fastlane-submit-button:disabled {
+  background-color: #d3d3d3; /* Light gray background */
+  color: #a9a9a9; /* Darker gray text */
+  cursor: not-allowed; /* Change cursor to indicate the button is not clickable */
+  border: 1px solid #a9a9a9; /* Gray border */
+  opacity: 0.6; /* Slightly transparent to indicate it's disabled */
+}
