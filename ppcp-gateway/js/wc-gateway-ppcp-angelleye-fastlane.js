@@ -24,7 +24,7 @@ class PayPalFastlane {
 
     async lookupCustomerByEmail(email) {
         try {
-            const { customerContextId } = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
+            const {customerContextId} = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
             return customerContextId;
         } catch (error) {
             console.error("Error looking up customer by email:", error);
@@ -34,7 +34,7 @@ class PayPalFastlane {
 
     async authenticateCustomer(customerContextId) {
         try {
-            const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
+            const {authenticationState, profileData} = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
                 this.paymentToken = profileData.card?.id || null;
@@ -123,7 +123,7 @@ class PayPalFastlane {
             event.stopPropagation(); // Stop the event from bubbling up
 
             try {
-                const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
+                const {selectedCard} = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
                     this.profileData.card = selectedCard;
                     this.paymentToken = selectedCard.id;  // Set the paymentToken to the selected card's ID
@@ -140,7 +140,7 @@ class PayPalFastlane {
             angelleyeOrder.showProcessingSpinner();
             event.preventDefault();
             try {
-                let paymentToken = this.paymentToken; 
+                let paymentToken = this.paymentToken;
                 if (!paymentToken) {
                     const billingAddress = this.getBillingAddress();
                     const shippingAddress = this.getShippingAddress();
@@ -177,7 +177,7 @@ class PayPalFastlane {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
-                    await angelleyeOrder.createOrder({ errorLogId }).then((orderData) => {
+                    await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
                         if (orderData.redirected) {
                             window.location.href = orderData.url;
                         }
@@ -212,9 +212,9 @@ class PayPalFastlane {
     }
 
     updateWooCheckoutFields(profileData) {
-        
-        
-        
+
+
+
         const updateField = (selector, value) => {
             if (value) {
                 jQuery(selector).val(value).trigger('change');
@@ -223,7 +223,7 @@ class PayPalFastlane {
 
         const billingAddress = profileData.card?.paymentSource?.card?.billingAddress || {};
         const shippingAddress = profileData.shippingAddress?.address || {};
-        
+
         updateField('#billing_first_name', profileData.email);
         updateField('#billing_first_name', profileData.name?.firstName);
         updateField('#billing_last_name', profileData.name?.lastName);
@@ -241,27 +241,32 @@ class PayPalFastlane {
         updateField('#shipping_postcode', shippingAddress.postalCode);
         updateField('#shipping_country', shippingAddress.countryCode);
         updateField('#shipping_state', shippingAddress.adminArea1);
-        
+
         jQuery.ajax({
-        url: fastlane_object.ajaxurl, // Provided by WordPress
-        method: 'POST',
-        data: {
-            action: 'angelleye_ppcp_save_fastlane_data',
-            profileData: profileData
-        },
-        success: function(response) {
-            
-            if (response.success) {
-                $( document.body ).trigger( 'update_checkout' );
-                console.log('Checkout fields saved successfully.');
-            } else {
-                console.log('Failed to save checkout fields.');
+            url: fastlane_object.ajaxurl, // Provided by WordPress
+            method: 'POST',
+            data: {
+                action: 'angelleye_ppcp_save_fastlane_data',
+                profileData: profileData
+            },
+            success: function (response) {
+
+                if (response.success) {
+                    if ($('#place_order').length) {
+                        $('html, body').animate({
+                            scrollTop: ($('#place_order').offset().top - 500)
+                        }, 1000);
+                    }
+                    $(document.body).trigger('update_checkout');
+                    console.log('Checkout fields saved successfully.');
+                } else {
+                    console.log('Failed to save checkout fields.');
+                }
+            },
+            error: function () {
+                console.log('Error during AJAX request.');
             }
-        },
-        error: function() {
-            console.log('Error during AJAX request.');
-        }
-    });
+        });
 
         // Force WooCommerce to update the payment method selection
         this.setPaymentMethod(this.paymentMethodId);
