@@ -121,3 +121,28 @@ if (!function_exists('ae_is_active_screen')) {
         return $screen_id == $screen;
     }
 }
+
+if( !function_exists( 'ae_override_paypal_email_template') ) {
+    function ae_override_paypal_email_template($template, $template_name, $template_path) {
+        $basename = basename($template_name);
+
+        error_log('Base Name: ' . $basename);
+
+        if ($basename === 'angelleye-paypal-seller-onboard-invitation.php') {
+            // Check the theme directory first
+            $theme_template = get_stylesheet_directory() . '/woocommerce/emails/' . $basename;
+
+            error_log('Template: ' . $theme_template);
+
+            error_log("Exists: " . file_exists( $theme_template ) );
+
+            if (file_exists($theme_template)) {
+                return $theme_template;
+            }
+        }
+
+        return $template;
+    }
+
+    add_filter('woocommerce_locate_template', 'ae_override_paypal_email_template', 99999, 3);
+}
