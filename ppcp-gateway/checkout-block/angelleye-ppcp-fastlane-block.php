@@ -14,9 +14,14 @@ final class AngellEYE_PPCP_Fastlane_Block extends AbstractPaymentMethodType {
         $this->settings = get_option('woocommerce_angelleye_ppcp_settings', []);
         $this->gateway = new WC_Gateway_Fastlane_AngellEYE();
         if (!class_exists('AngellEYE_PayPal_PPCP_Pay_Later')) {
-            include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-pay-later-messaging.php');
+            include_once (PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-pay-later-messaging.php');
         }
         $this->pay_later = AngellEYE_PayPal_PPCP_Pay_Later::instance();
+
+        // Register the custom block
+        add_action('init', [$this, 'register_fastlane_checkout_block']);
+        // Inject custom block after express payment block
+        add_filter('render_block', [$this, 'inject_fastlane_email_block'], 10, 2);
     }
 
     public function is_active() {
@@ -77,5 +82,40 @@ final class AngellEYE_PPCP_Fastlane_Block extends AbstractPaymentMethodType {
             'supports' => $this->get_supported_features(),
             'icons' => $this->gateway->get_block_icon()
         ];
+    }
+
+    public function register_fastlane_checkout_block() {
+        // Register block with a render callback
+        register_block_type('fastlane/checkout-email-button', array(
+            'render_callback' => [$this, 'fastlane_checkout_block_render']
+        ));
+    }
+
+    public function fastlane_checkout_block_render() {
+        // Render the custom email field and submit button
+        ob_start();
+        ?>
+        <div class="fastlane-checkout-container">
+            <div class="fastlane-email-row">
+                <label for="fastlane-email" class="fastlane-label">Email address</label>
+                <div class="fastlane-input-wrapper">
+                    <input type="email" id="fastlane-email" name="fastlane-email" class="fastlane-input" placeholder="Email" required>
+                    <button type="button" class="fastlane-submit-button">Continue</button>
+                </div>
+                <div class="fastlane-watermark-container">
+                    <img src="https://www.paypalobjects.com/fastlane-v1/assets/fastlane-with-tooltip_en_sm_light.0808.svg" alt="Fastlane Watermark">
+                </div>
+            </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    public function inject_fastlane_email_block($block_content, $block) {
+        // Inject custom block after express payment block
+        if ('woocommerce/checkout-express-payment-block' === $block['blockName']) {
+            $block_content .= $this->fastlane_checkout_block_render();
+        }
+        return $block_content;
     }
 }
