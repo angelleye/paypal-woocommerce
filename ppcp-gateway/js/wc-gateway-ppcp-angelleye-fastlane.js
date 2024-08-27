@@ -250,14 +250,15 @@ class PayPalFastlane {
                 profileData: profileData
             },
             success: function (response) {
-
+                console.log(response);
                 if (response.success) {
+                    $(document.body).trigger('custom_action_to_refresh_checkout');
                     if ($('#place_order').length) {
                         $('html, body').animate({
                             scrollTop: ($('#place_order').offset().top - 500)
                         }, 1000);
                     }
-                    $(document.body).trigger('update_checkout');
+                    
                     console.log('Checkout fields saved successfully.');
                 } else {
                     console.log('Failed to save checkout fields.');

@@ -479,3 +479,93 @@ apple-pay-button {
   border: 1px solid #a9a9a9; /* Gray border */
   opacity: 0.6; /* Slightly transparent to indicate it's disabled */
 }
+
+/* Main container for the Fastlane checkout block */
+.fastlane-checkout-container {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Flex container for the email field and button */
+.fastlane-email-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+/* Label styling */
+.fastlane-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Wrapper for input, button, and watermark to ensure alignment */
+.fastlane-input-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Input field styling with increased specificity */
+.fastlane-checkout-container .fastlane-input {
+    flex: 1;
+    padding: 16px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    background-color: #fff;
+    transition: all 0.3s ease-in-out;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.fastlane-checkout-container .fastlane-input:focus {
+    border-color: #0070ba;
+    box-shadow: 0 0 5px rgba(0, 112, 186, 0.5);
+    outline: none;
+}
+
+/* Button styling */
+.fastlane-submit-button {
+    margin-left: 10px;
+    padding: 16px 25px; /* Adjusted padding to match the height of the input */
+    background-color: #0070ba;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2);
+    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.fastlane-submit-button:hover {
+    background-color: #005a94;
+    box-shadow: 0 6px 10px rgba(0, 90, 148, 0.3);
+}
+
+/* Watermark container styling */
+.fastlane-watermark-container {
+    margin-left: 10px; /* Reduce the space between the button and the watermark */
+    display: flex;
+    align-items: center; /* Aligns the watermark vertically with the button */
+    padding-top: 5px; /* Adjust to bring it closer to the email field */
+}
+
+.fastlane-watermark-container img {
+    max-width: 150px;
+    height: auto;
+    opacity: 0.8;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.fastlane-watermark-container img:hover {
+    opacity: 1;
+}
