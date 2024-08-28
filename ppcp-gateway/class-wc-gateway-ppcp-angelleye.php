@@ -162,13 +162,19 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
     }
 
     public function admin_options() {
+        $GLOBALS['hide_save_button'] = true;
         $this->angelleye_ppcp_admin_notices();
-        wp_deregister_script('woocommerce_settings');
-        wp_enqueue_script('wc-clipboard');
-        echo '<div id="angelleye_paypal_marketing_table">';
-        parent::admin_options();
-        echo '</div>';
-        AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id);
+        wp_enqueue_script('wc-clipboard'); ?>
+        <div id="angelleye_paypal_marketing_table">
+        <table class="form-table">
+            <?php  $this->generate_settings_html(); ?>
+        </table>
+        <p class="submit">
+            <button name="save" class="button-primary woocommerce-save-button" type="submit" value="<?php esc_attr_e( 'Save changes', 'paypal-for-woocommerce' ); ?>"><?php esc_html_e( 'Save changes', 'paypal-for-woocommerce' ); ?></button>
+            <?php wp_nonce_field( 'woocommerce-settings' ); ?>
+        </p>
+        </div>
+        <?php AngellEYE_Utility::angelleye_display_marketing_sidebar($this->id);
     }
 
     public function init_form_fields() {
