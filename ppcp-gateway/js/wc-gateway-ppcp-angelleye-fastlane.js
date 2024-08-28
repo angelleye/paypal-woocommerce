@@ -253,6 +253,7 @@ class PayPalFastlane {
         jQuery(document.body).trigger('custom_action_to_refresh_checkout', profileData);
         
         jQuery(document.body).trigger('trigger_angelleye_ppcp_fastlane');
+        jQuery(document.body).trigger('ppcp_fastlane_checkout_updated');
 
 
         // AJAX Request to save the profile data (Same for both classic and block checkouts)

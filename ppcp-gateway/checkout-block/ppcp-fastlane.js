@@ -102,22 +102,20 @@ const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
                 const Content_PPCP_Fastlane = (props) => {
                     const {eventRegistration, emitResponse, onSubmit, billing, shippingData} = props;
                     const {onPaymentSetup} = eventRegistration;
-
                     useEffect(() => {
                         jQuery(document.body).trigger('trigger_angelleye_ppcp_fastlane');
                         jQuery(document.body).on('ppcp_fastlane_checkout_updated', function () {
-                            let address = {
-                                'billing': billing.billingAddress,
-                                'shipping': shippingData.shippingAddress,
-                            };
-                            angelleyeOrder.ppcp_address = [];
-                            angelleyeOrder.ppcp_address = address;
                             jQuery('#wc-angelleye_ppcp_fastlane-form').unblock();
                             const fastlaneInstance = new PayPalFastlane('#angelleye_ppcp_checkout_fastlane');
                             fastlaneInstance.initialize();
                         });
-
                         const unsubscribe = onPaymentSetup(async () => {
+                            let address = {
+                                'billing': billing.billingAddress,
+                                'shipping': shippingData.shippingAddress
+                            };
+                            angelleyeOrder.ppcp_address = [];
+                            angelleyeOrder.ppcp_address = address;
                             wp.data.dispatch(wc.wcBlocksData.CHECKOUT_STORE_KEY).__internalSetIdle();
                             jQuery(document.body).trigger('submit_angelleye_ppcp_fastlane');
                             jQuery('.wc-block-components-checkout-place-order-button').append('<span class="wc-block-components-spinner" aria-hidden="true"></span>');
