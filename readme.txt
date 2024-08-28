@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.6.1
-Stable tag: 4.5.12
+Stable tag: 4.5.13
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,10 +127,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.5.11 - 08.23.2024
+= 4.5.13 - 08.29.2024
+* Fix - Resolved global save conflict issue. ([PFW-1863](https://github.com/angelleye/paypal-woocommerce/pull/2071)) 
+
+= 4.5.12 - 08.23.2024
 * Fix - Fixed the email template override issue. ([PFWMA-3141](https://github.com/angelleye/paypal-woocommerce/pull/2070)) 
 
-= 4.5.10 - 08.09.2024
+= 4.5.11 - 08.09.2024
 * Fix - Resolved "headers already sent" messages. ([PFW-1841](https://github.com/angelleye/paypal-woocommerce/pull/2069)) 
 
 = 4.5.10 - 08.09.2024
