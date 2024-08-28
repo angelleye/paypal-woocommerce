@@ -191,6 +191,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                                     $address['radio-control-wc-payment-method-options'] = wc_clean($_POST['radio-control-wc-payment-method-options']);
                                     $address['payment_method'] = wc_clean($_POST['radio-control-wc-payment-method-options']);
                                 }
+                                if (isset($_POST['fastlane_payment_token'])) {
+                                    $address['fastlane_payment_token'] = wc_clean($_POST['fastlane_payment_token']);
+                                }
                                 AngellEye_Session_Manager::set('checkout_post', $address);
                                 $_POST = $address;
                             } else {

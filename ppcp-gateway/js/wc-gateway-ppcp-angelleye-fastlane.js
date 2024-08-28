@@ -17,6 +17,7 @@ class PayPalFastlane {
             this.fastlaneInstance.setLocale('en_us');
             this.bindEmailLookupEvent();
             this.bindWooCommerceEvents(); // Bind to WooCommerce events
+
         } catch (error) {
             console.error("Failed to initialize Fastlane:", error);
         }
@@ -178,15 +179,22 @@ class PayPalFastlane {
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
                     await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
+                        console.log(orderData);
                         if (orderData.redirected) {
                             window.location.href = orderData.url;
+                        } else {
+                            jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
+                            jQuery('.wc-block-components-checkout-place-order-button, .wp-block-woocommerce-checkout-fields-block #contact-fields, .wp-block-woocommerce-checkout-fields-block #billing-fields, .wp-block-woocommerce-checkout-fields-block #payment-method').unblock();
+                            console.error("Failed to place order:", orderData.data.messages);
+                            angelleyeOrder.showError("Failed to place order: " + orderData.data.messages);
                         }
                     });
                 }
             } catch (error) {
-                console.error("Failed to place order:", error.message);
+                console.log(error);
+                jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
                 angelleyeOrder.hideProcessingSpinner();
-                angelleyeOrder.showError("Failed to place order: " + error.message);
+                angelleyeOrder.showError(error);
             }
         });
     }
@@ -212,9 +220,6 @@ class PayPalFastlane {
     }
 
     updateWooCheckoutFields(profileData) {
-
-
-
         const updateField = (selector, value) => {
             if (value) {
                 jQuery(selector).val(value).trigger('change');
@@ -224,7 +229,8 @@ class PayPalFastlane {
         const billingAddress = profileData.card?.paymentSource?.card?.billingAddress || {};
         const shippingAddress = profileData.shippingAddress?.address || {};
 
-        updateField('#billing_first_name', profileData.email);
+
+        // Classic WooCommerce Checkout Fields Update
         updateField('#billing_first_name', profileData.name?.firstName);
         updateField('#billing_last_name', profileData.name?.lastName);
         updateField('#billing_address_1', billingAddress.addressLine1);
@@ -233,6 +239,7 @@ class PayPalFastlane {
         updateField('#billing_country', billingAddress.countryCode);
         updateField('#billing_state', billingAddress.adminArea1);
         updateField('#billing_phone', profileData.shippingAddress?.phoneNumber?.nationalNumber);
+        updateField('#billing_email', profileData.email);
 
         updateField('#shipping_first_name', profileData.shippingAddress?.name?.firstName);
         updateField('#shipping_last_name', profileData.shippingAddress?.name?.lastName);
@@ -242,8 +249,15 @@ class PayPalFastlane {
         updateField('#shipping_country', shippingAddress.countryCode);
         updateField('#shipping_state', shippingAddress.adminArea1);
 
+        // Refresh checkout for classic checkout
+        jQuery(document.body).trigger('custom_action_to_refresh_checkout', profileData);
+        
+        jQuery(document.body).trigger('trigger_angelleye_ppcp_fastlane');
+
+
+        // AJAX Request to save the profile data (Same for both classic and block checkouts)
         jQuery.ajax({
-            url: fastlane_object.ajaxurl, // Provided by WordPress
+            url: fastlane_object.ajaxurl,
             method: 'POST',
             data: {
                 action: 'angelleye_ppcp_save_fastlane_data',
@@ -252,13 +266,11 @@ class PayPalFastlane {
             success: function (response) {
                 console.log(response);
                 if (response.success) {
-                    $(document.body).trigger('custom_action_to_refresh_checkout');
-                    if ($('#place_order').length) {
-                        $('html, body').animate({
-                            scrollTop: ($('#place_order').offset().top - 500)
+                    if (jQuery('#place_order').length) {
+                        jQuery('html, body').animate({
+                            scrollTop: (jQuery('#place_order').offset().top - 500)
                         }, 1000);
                     }
-                    
                     console.log('Checkout fields saved successfully.');
                 } else {
                     console.log('Failed to save checkout fields.');
@@ -270,15 +282,24 @@ class PayPalFastlane {
         });
 
         // Force WooCommerce to update the payment method selection
+
         this.setPaymentMethod(this.paymentMethodId);
+
     }
 
     setPaymentMethod(paymentMethodId) {
         const paymentMethod = jQuery(`#payment_method_${paymentMethodId}`);
+        console.log('292');
         if (paymentMethod.length > 0) {
+            console.log('294');
             paymentMethod.prop('checked', true);
             this.isPaymentMethodSet = true;
             jQuery('#payment_method_angelleye_ppcp_fastlane').trigger('click');
+        } else {
+            console.log('299');
+            jQuery('#radio-control-wc-payment-method-options-angelleye_ppcp_fastlane').prop('checked', true);
+            this.isPaymentMethodSet = true;
+            jQuery('#radio-control-wc-payment-method-options-angelleye_ppcp_fastlane').parent('label').parent('div').trigger('click');
         }
     }
 

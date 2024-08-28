@@ -3,6 +3,7 @@ var {registerPlugin} = wp.plugins;
 var {ExperimentalOrderMeta} = wc.blocksCheckout;
 var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
 var cartStore = wp.data.select('wc/store/cart');
+const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
 
 (function (e) {
     var t = {};
@@ -98,7 +99,7 @@ var cartStore = wp.data.select('wc/store/cart');
                 const {is_order_confirm_page, is_paylater_enable_incart_page, page} = angelleye_ppcp_manager_block;
                 const {useEffect} = window.wp.element;
 
-                const Content_PPCP_CC = (props) => {
+                const Content_PPCP_Fastlane = (props) => {
                     const {eventRegistration, emitResponse, onSubmit, billing, shippingData} = props;
                     const {onPaymentSetup} = eventRegistration;
 
@@ -112,12 +113,13 @@ var cartStore = wp.data.select('wc/store/cart');
                             angelleyeOrder.ppcp_address = [];
                             angelleyeOrder.ppcp_address = address;
                             jQuery('#wc-angelleye_ppcp_fastlane-form').unblock();
-                            angelleyeOrder.renderPaymentButtons();
+                            const fastlaneInstance = new PayPalFastlane('#angelleye_ppcp_checkout_fastlane');
+                            fastlaneInstance.initialize();
                         });
 
                         const unsubscribe = onPaymentSetup(async () => {
                             wp.data.dispatch(wc.wcBlocksData.CHECKOUT_STORE_KEY).__internalSetIdle();
-                            jQuery(document.body).trigger('submit_paypal_cc_form');
+                            jQuery(document.body).trigger('submit_angelleye_ppcp_fastlane');
                             jQuery('.wc-block-components-checkout-place-order-button').append('<span class="wc-block-components-spinner" aria-hidden="true"></span>');
                             jQuery('.wc-block-components-checkout-place-order-button, .wp-block-woocommerce-checkout-fields-block #contact-fields, .wp-block-woocommerce-checkout-fields-block #billing-fields, .wp-block-woocommerce-checkout-fields-block #payment-method').block({
                                 message: null,
@@ -140,28 +142,19 @@ var cartStore = wp.data.select('wc/store/cart');
                             ),
                     icons: ["https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png"],
                     placeOrderButtonLabel: Object(i.__)(angelleye_ppcp_fastlane_manager_block.placeOrderButtonLabel),
-                    content: createElement(Content_PPCP_CC, null),
+                    content: createElement(Content_PPCP_Fastlane, null),
                     edit: Object(r.createElement)(p, null),
                     canMakePayment: () => Promise.resolve(true),
                     ariaLabel: Object(a.decodeEntities)(l.cc_title || Object(i.__)("Payment via PayPal", "woo-gutenberg-products-block")),
                     supports: {
                         features: null !== (o = l.supports) && void 0 !== o ? o : [],
                         showSavedCards: false,
-                        showSaveOption: false,
-                    },
+                        showSaveOption: false
+                    }
                 };
                 Object(c.registerPaymentMethod)(s);
 
-                const render = () => {
-                    const shouldShowDiv = is_paylater_enable_incart_page === 'yes';
-                    return shouldShowDiv && (
-                            wp.element.createElement(ExperimentalOrderMeta, null,
-                                    Object(r.createElement)("div", {className: "angelleye_ppcp_message_cart"})
-                                    )
-                            );
-                };
-
-                registerPlugin('wc-ppcp-fastlane-checkout', {render, scope: 'woocommerce-checkout'});
+                
             }
 ]);
 
@@ -188,20 +181,17 @@ ppcp_fastlane_uniqueEvents.forEach(function (action) {
 });
 
 jQuery(document.body).on('custom_action_to_refresh_checkout', function (event, profileData) {
-    // Ensure wp.data and WooCommerce Blocks store are available
     if (typeof wp !== 'undefined' && typeof wp.data !== 'undefined' && wp.data.select('wc/store/cart')) {
-        // Use wp.data.dispatch to get the dispatch function for WooCommerce Blocks store
-        const { dispatch } = wp.data;
-
-        // Get the specific actions from the checkout store
-        const { setBillingAddress, setShippingAddress } = dispatch('wc/store/cart');
-
-        // Extract billing and shipping addresses from profileData
+        const {dispatch} = wp.data;
+        const {setBillingAddress, setShippingAddress} = dispatch('wc/store/cart');
         const billingAddress = profileData.card?.paymentSource?.card?.billingAddress || {};
         const shippingAddress = profileData.shippingAddress?.address || {};
         const email = profileData.email || jQuery('#fastlane-email').val() || '';
         console.log(JSON.stringify(profileData));
-        // Update billing address using setBillingAddress action
+        const {__internalSetActivePaymentMethod: setActivePaymentMethod} = dispatch(PAYMENT_STORE_KEY);
+        if (setActivePaymentMethod) {
+            setActivePaymentMethod('angelleye_ppcp_fastlane');
+        }
         setBillingAddress({
             first_name: profileData.name?.firstName || '',
             last_name: profileData.name?.lastName || '',
@@ -210,10 +200,8 @@ jQuery(document.body).on('custom_action_to_refresh_checkout', function (event, p
             postcode: billingAddress.postalCode || '',
             country: billingAddress.countryCode || '',
             state: billingAddress.adminArea1 || '',
-            email: email,
+            email: email
         });
-
-        // Update shipping address using setShippingAddress action
         setShippingAddress({
             first_name: profileData.shippingAddress?.name?.firstName || '',
             last_name: profileData.shippingAddress?.name?.lastName || '',
@@ -224,9 +212,7 @@ jQuery(document.body).on('custom_action_to_refresh_checkout', function (event, p
             state: shippingAddress.adminArea1 || '',
             phone: profileData.shippingAddress?.phoneNumber?.nationalNumber || ''
         });
-
         jQuery('.wc-block-components-address-address-wrapper').removeClass('is-editing');
-        // Refresh the checkout state if necessary
     } else {
         console.error('WooCommerce Blocks or wp.data is not available.');
     }
