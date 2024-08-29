@@ -35,6 +35,7 @@ class PayPalFastlane {
 
     async authenticateCustomer(customerContextId) {
         try {
+            console.log('38');
             const {authenticationState, profileData} = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
@@ -71,17 +72,31 @@ class PayPalFastlane {
     async initializeFastlaneCardComponent() {
         try {
             if (!this.fastlaneCardComponent) {
-                this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
-                    fields: {
-                        cardholderName: {
-                            prefill: `${jQuery('#billing_first_name').val()} ${jQuery('#billing_last_name').val()}`,
-                            enabled: true
-                        },
-                        phoneNumber: {
-                            enabled: true,
-                            prefill: jQuery('#billing_phone').val() || ''
-                        }
+                // Determine the appropriate selectors based on which checkout is being used
+                const firstNameSelector = jQuery('#billing_first_name').length ? '#billing_first_name' : '#billing-first_name';
+                const lastNameSelector = jQuery('#billing_last_name').length ? '#billing_last_name' : '#billing-last_name';
+                const phoneSelector = jQuery('#billing_phone').length ? '#billing_phone' : '#billing-phone';
+
+                // Get values from the determined selectors
+                const firstName = jQuery(firstNameSelector).val() ? jQuery(firstNameSelector).val().trim() : '';
+                const lastName = jQuery(lastNameSelector).val() ? jQuery(lastNameSelector).val().trim() : '';
+                const phoneNumber = jQuery(phoneSelector).val() ? jQuery(phoneSelector).val().trim() : '';
+
+                // Prepare fields for FastlaneCardComponent initialization
+                const fields = {
+                    cardholderName: {
+                        enabled: true,
+                        ...(firstName && lastName ? {prefill: `${firstName} ${lastName}`} : {})
+                    },
+                    phoneNumber: {
+                        enabled: true,
+                        ...(phoneNumber ? {prefill: phoneNumber} : {})
                     }
+                };
+
+                // Initialize FastlaneCardComponent with the prepared fields
+                this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
+                    fields: fields
                 });
 
                 if (!this.fastlaneCardComponent) {
@@ -138,7 +153,15 @@ class PayPalFastlane {
 
     bindPlaceOrderEvent(fastlaneCardComponent) {
         jQuery(document.body).off('submit_angelleye_ppcp_fastlane').on('submit_angelleye_ppcp_fastlane', async (event) => {
-            angelleyeOrder.showProcessingSpinner();
+            if (jQuery('#fastlane-email').length > 0 && jQuery('#fastlane-email').val().trim() === '') {
+                jQuery('#fastlane-email').addClass('fastlane-input-error');
+                angelleyeOrder.hideProcessingSpinner();
+                angelleyeOrder.removeError();
+                angelleyeOrder.showError('Email address is required in the Fastlane email field to continue.');
+                throw new Error("Email address is required in the Fastlane email field to continue.");
+            } else {
+                jQuery('#fastlane-email').removeClass('fastlane-input-error');
+            }
             event.preventDefault();
             try {
                 let paymentToken = this.paymentToken;
@@ -251,9 +274,9 @@ class PayPalFastlane {
 
         // Refresh checkout for classic checkout
         jQuery(document.body).trigger('custom_action_to_refresh_checkout', profileData);
-        
-        jQuery(document.body).trigger('trigger_angelleye_ppcp_fastlane');
-        jQuery(document.body).trigger('ppcp_fastlane_checkout_updated');
+
+
+
 
 
         // AJAX Request to save the profile data (Same for both classic and block checkouts)
@@ -305,6 +328,7 @@ class PayPalFastlane {
     }
 
     async processEmailLookup() {
+        console.log('309');
         const email = jQuery('input[name="fastlane-email"]').val();
         jQuery('input[name="billing_email"]').val(email);
         const customerContextId = await this.lookupCustomerByEmail(email);
@@ -313,9 +337,13 @@ class PayPalFastlane {
             if (authenticated) {
                 this.renderCardDetails();
             } else {
+                jQuery(document.body).trigger('custom_action_to_refresh_checkout_email');
+                this.setPaymentMethod(this.paymentMethodId);
                 this.renderCardForm();
             }
         } else {
+            jQuery(document.body).trigger('custom_action_to_refresh_checkout_email');
+            this.setPaymentMethod(this.paymentMethodId);
             this.renderCardForm();
         }
     }

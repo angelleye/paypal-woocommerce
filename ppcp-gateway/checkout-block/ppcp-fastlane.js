@@ -3,7 +3,8 @@ var {registerPlugin} = wp.plugins;
 var {ExperimentalOrderMeta} = wc.blocksCheckout;
 var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
 var cartStore = wp.data.select('wc/store/cart');
-const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
+const {PAYMENT_STORE_KEY} = window.wc.wcBlocksData;
+const {registerPaymentMethodExtensionCallbacks} = window.wc.wcBlocksRegistry;
 
 (function (e) {
     var t = {};
@@ -104,12 +105,17 @@ const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
                     const {onPaymentSetup} = eventRegistration;
                     useEffect(() => {
                         jQuery(document.body).trigger('trigger_angelleye_ppcp_fastlane');
-                        jQuery(document.body).on('ppcp_fastlane_checkout_updated', function () {
-                            jQuery('#wc-angelleye_ppcp_fastlane-form').unblock();
-                            const fastlaneInstance = new PayPalFastlane('#angelleye_ppcp_checkout_fastlane');
-                            fastlaneInstance.initialize();
-                        });
                         const unsubscribe = onPaymentSetup(async () => {
+                            if (jQuery('#fastlane-email').length > 0 && jQuery('#fastlane-email').val().trim() === '') {
+                               jQuery('#fastlane-email').addClass('fastlane-input-error');
+                                return {
+                                    type: emitResponse.responseTypes.ERROR,
+                                    message: 'Email address is required in the Fastlane email field to continue.'
+                                };
+                            } else {
+                                jQuery('#fastlane-email').removeClass('fastlane-input-error');
+                            }
+                            
                             let address = {
                                 'billing': billing.billingAddress,
                                 'shipping': shippingData.shippingAddress
@@ -125,7 +131,8 @@ const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
                             });
                         });
 
-                    }, [onPaymentSetup]);
+                    },
+                            [emitResponse.responseTypes.ERROR, onPaymentSetup]);
 
                     return createElement("div", {id: "angelleye_ppcp_checkout_fastlane"});
                 };
@@ -152,7 +159,7 @@ const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
                 };
                 Object(c.registerPaymentMethod)(s);
 
-                
+
             }
 ]);
 
@@ -215,5 +222,20 @@ jQuery(document.body).on('custom_action_to_refresh_checkout', function (event, p
         console.error('WooCommerce Blocks or wp.data is not available.');
     }
 });
-
-
+jQuery(document.body).on('custom_action_to_refresh_checkout_email', function (event) {
+    console.log('121211121');
+    if (typeof wp !== 'undefined' && typeof wp.data !== 'undefined' && wp.data.select('wc/store/cart')) {
+        const {dispatch} = wp.data;
+        const {setBillingAddress} = dispatch('wc/store/cart');
+        const email = jQuery('#fastlane-email').val() || '';
+        const {__internalSetActivePaymentMethod: setActivePaymentMethod} = dispatch(PAYMENT_STORE_KEY);
+        if (setActivePaymentMethod) {
+            setActivePaymentMethod('angelleye_ppcp_fastlane');
+        }
+        setBillingAddress({
+            email: email
+        });
+    } else {
+        console.error('WooCommerce Blocks or wp.data is not available.');
+    }
+});
