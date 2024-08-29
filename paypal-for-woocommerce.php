@@ -4,7 +4,7 @@
  * Plugin Name:       PayPal for WooCommerce
  * Plugin URI:        http://www.angelleye.com/product/paypal-for-woocommerce-plugin/
  * Description:       Easily add the PayPal Complete Payments Platform including PayPal Checkout, Pay Later, Venmo, Direct Credit Processing, and alternative payment methods like Apple Pay, Google Pay, and more! Also fully supports Braintree Payments.
- * Version:           4.5.12
+ * Version:           4.5.13
  * Author:            Angell EYE
  * Author URI:        http://www.angelleye.com/
  * License:           GNU General Public License v3.0
@@ -13,10 +13,10 @@
  * Domain Path:       /i18n/languages/
  * GitHub Plugin URI: https://github.com/angelleye/paypal-woocommerce
  * Requires at least: 5.8
- * Tested up to: 6.6.0
+ * Tested up to: 6.6.1
  * Requires Plugins: woocommerce
  * WC requires at least: 3.0.0
- * WC tested up to: 9.2.2
+ * WC tested up to: 9.2.3
  *
  * ************
  * Attribution
