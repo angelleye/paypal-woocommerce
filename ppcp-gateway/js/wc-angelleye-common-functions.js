@@ -184,7 +184,6 @@ const angelleyeOrder = {
                 shippingField.appendTo(formSelector);
             }
             formData = jQuery(formSelector).serialize();
-            console.log(formData);
             if (formData === '') {
                 formData = 'angelleye_ppcp_payment_method_title=' + jQuery('#angelleye_ppcp_payment_method_title').val();
                 if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {

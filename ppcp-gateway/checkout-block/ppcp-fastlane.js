@@ -99,15 +99,24 @@ const {registerPaymentMethodExtensionCallbacks} = window.wc.wcBlocksRegistry;
                 const ppcp_settings = angelleye_ppcp_manager_block.settins;
                 const {is_order_confirm_page, is_paylater_enable_incart_page, page} = angelleye_ppcp_manager_block;
                 const {useEffect} = window.wp.element;
-
                 const Content_PPCP_Fastlane = (props) => {
                     const {eventRegistration, emitResponse, onSubmit, billing, shippingData} = props;
                     const {onPaymentSetup} = eventRegistration;
                     useEffect(() => {
+                        console.log('kaila');
+                        console.log(props);
                         jQuery(document.body).trigger('trigger_angelleye_ppcp_fastlane');
+                        jQuery(document.body).on('ppcp_fastlane_checkout_updated', function () {
+                            let address = {
+                                'billing': billing.billingAddress,
+                                'shipping': shippingData.shippingAddress
+                            };
+                            angelleyeOrder.ppcp_address = [];
+                            angelleyeOrder.ppcp_address = address;
+                        });
                         const unsubscribe = onPaymentSetup(async () => {
                             if (jQuery('#fastlane-email').length > 0 && jQuery('#fastlane-email').val().trim() === '') {
-                               jQuery('#fastlane-email').addClass('fastlane-input-error');
+                                jQuery('#fastlane-email').addClass('fastlane-input-error');
                                 return {
                                     type: emitResponse.responseTypes.ERROR,
                                     message: 'Email address is required in the Fastlane email field to continue.'
@@ -115,7 +124,6 @@ const {registerPaymentMethodExtensionCallbacks} = window.wc.wcBlocksRegistry;
                             } else {
                                 jQuery('#fastlane-email').removeClass('fastlane-input-error');
                             }
-                            
                             let address = {
                                 'billing': billing.billingAddress,
                                 'shipping': shippingData.shippingAddress
@@ -132,8 +140,7 @@ const {registerPaymentMethodExtensionCallbacks} = window.wc.wcBlocksRegistry;
                         });
 
                     },
-                            [emitResponse.responseTypes.ERROR, onPaymentSetup]);
-
+                    [emitResponse.responseTypes.ERROR, onPaymentSetup]);
                     return createElement("div", {id: "angelleye_ppcp_checkout_fastlane"});
                 };
 
@@ -185,45 +192,95 @@ ppcp_fastlane_uniqueEvents.forEach(function (action) {
     });
 });
 
+
+
 jQuery(document.body).on('custom_action_to_refresh_checkout', function (event, profileData) {
+    // Ensure wp.data and WooCommerce Blocks store are available
     if (typeof wp !== 'undefined' && typeof wp.data !== 'undefined' && wp.data.select('wc/store/cart')) {
         const {dispatch} = wp.data;
-        const {setBillingAddress, setShippingAddress} = dispatch('wc/store/cart');
+
+        // Get the specific actions from the cart store
+        const {setBillingAddress, setShippingAddress, updateCustomerData} = dispatch('wc/store/cart');
+
+        // Extract billing and shipping addresses from profileData
         const billingAddress = profileData.card?.paymentSource?.card?.billingAddress || {};
         const shippingAddress = profileData.shippingAddress?.address || {};
         const email = profileData.email || jQuery('#fastlane-email').val() || '';
-        console.log(JSON.stringify(profileData));
+
         const {__internalSetActivePaymentMethod: setActivePaymentMethod} = dispatch(PAYMENT_STORE_KEY);
-        if (setActivePaymentMethod) {
-            setActivePaymentMethod('angelleye_ppcp_fastlane');
-        }
+
+
+        // Update billing address using setBillingAddress action
         setBillingAddress({
             first_name: profileData.name?.firstName || '',
             last_name: profileData.name?.lastName || '',
+            company: billingAddress.company || '',
             address_1: billingAddress.addressLine1 || '',
+            address_2: billingAddress.addressLine2 || '',
             city: billingAddress.adminArea2 || '',
+            state: billingAddress.adminArea1 || '',
             postcode: billingAddress.postalCode || '',
             country: billingAddress.countryCode || '',
-            state: billingAddress.adminArea1 || '',
-            email: email
+            email: email,
+            phone: profileData.shippingAddress?.phoneNumber?.nationalNumber || ''
         });
+
+        // Update shipping address using setShippingAddress action
         setShippingAddress({
             first_name: profileData.shippingAddress?.name?.firstName || '',
             last_name: profileData.shippingAddress?.name?.lastName || '',
+            company: shippingAddress.company || '',
             address_1: shippingAddress.addressLine1 || '',
+            address_2: shippingAddress.addressLine2 || '',
             city: shippingAddress.adminArea2 || '',
-            postcode: shippingAddress.postalCode || '',
-            country: shippingAddress.countryCode || '',
             state: shippingAddress.adminArea1 || '',
-            phone: profileData.shippingAddress?.phoneNumber?.nationalNumber || ''
+            postcode: shippingAddress.postalCode || '',
+            country: shippingAddress.countryCode || ''
         });
-        jQuery('.wc-block-components-address-address-wrapper').removeClass('is-editing');
+
+        // Prepare the customer data object
+        const customerData = {
+            shippingAddress: {
+                first_name: profileData.shippingAddress?.name?.firstName || '',
+                last_name: profileData.shippingAddress?.name?.lastName || '',
+                company: shippingAddress.company || '',
+                address_1: shippingAddress.addressLine1 || '',
+                address_2: shippingAddress.addressLine2 || '',
+                city: shippingAddress.adminArea2 || '',
+                state: shippingAddress.adminArea1 || '',
+                postcode: shippingAddress.postalCode || '',
+                country: shippingAddress.countryCode || ''
+            },
+            billingAddress: {
+                first_name: profileData.name?.firstName || '',
+                last_name: profileData.name?.lastName || '',
+                company: billingAddress.company || '',
+                address_1: billingAddress.addressLine1 || '',
+                address_2: billingAddress.addressLine2 || '',
+                city: billingAddress.adminArea2 || '',
+                state: billingAddress.adminArea1 || '',
+                postcode: billingAddress.postalCode || '',
+                country: billingAddress.countryCode || '',
+                email: email,
+                phone: profileData.shippingAddress?.phoneNumber?.nationalNumber || ''
+            }
+        };
+
+        // Update customer data using updateCustomerData action
+        updateCustomerData(customerData, true);
+
+        if (setActivePaymentMethod) {
+            setActivePaymentMethod('angelleye_ppcp_fastlane');
+        }
+
+        // Remove 'is-editing' class from the address wrapper if it exists
+        // jQuery('.wc-block-components-address-address-wrapper').removeClass('is-editing');
     } else {
         console.error('WooCommerce Blocks or wp.data is not available.');
     }
 });
+
 jQuery(document.body).on('custom_action_to_refresh_checkout_email', function (event) {
-    console.log('121211121');
     if (typeof wp !== 'undefined' && typeof wp.data !== 'undefined' && wp.data.select('wc/store/cart')) {
         const {dispatch} = wp.data;
         const {setBillingAddress} = dispatch('wc/store/cart');
@@ -238,4 +295,6 @@ jQuery(document.body).on('custom_action_to_refresh_checkout_email', function (ev
     } else {
         console.error('WooCommerce Blocks or wp.data is not available.');
     }
+
+
 });

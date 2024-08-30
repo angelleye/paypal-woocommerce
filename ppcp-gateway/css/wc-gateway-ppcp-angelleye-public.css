@@ -537,6 +537,20 @@ apple-pay-button {
     transition: border-color 0.3s, background-color 0.3s, color 0.3s;  /* Smooth transition */
 }
 
+/* Normal styling when the user focuses on the input field */
+.fastlane-input:focus {
+    border-color: initial;  /* Reset to initial border color */
+    background-color: initial;  /* Reset to initial background color */
+    color: initial;  /* Reset to initial text color */
+}
+
+/* Remove the error class when the input is focused */
+.fastlane-input.fastlane-input-error:focus {
+    border-color: initial;  /* Reset border color */
+    background-color: initial;  /* Reset background color */
+    color: initial;  /* Reset text color */
+}
+
 .fastlane-checkout-container .fastlane-input:focus {
     border-color: #0070ba;
     box-shadow: 0 0 5px rgba(0, 112, 186, 0.5);

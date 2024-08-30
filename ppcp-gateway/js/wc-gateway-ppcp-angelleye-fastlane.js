@@ -35,7 +35,6 @@ class PayPalFastlane {
 
     async authenticateCustomer(customerContextId) {
         try {
-            console.log('38');
             const {authenticationState, profileData} = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
@@ -72,17 +71,12 @@ class PayPalFastlane {
     async initializeFastlaneCardComponent() {
         try {
             if (!this.fastlaneCardComponent) {
-                // Determine the appropriate selectors based on which checkout is being used
                 const firstNameSelector = jQuery('#billing_first_name').length ? '#billing_first_name' : '#billing-first_name';
                 const lastNameSelector = jQuery('#billing_last_name').length ? '#billing_last_name' : '#billing-last_name';
                 const phoneSelector = jQuery('#billing_phone').length ? '#billing_phone' : '#billing-phone';
-
-                // Get values from the determined selectors
                 const firstName = jQuery(firstNameSelector).val() ? jQuery(firstNameSelector).val().trim() : '';
                 const lastName = jQuery(lastNameSelector).val() ? jQuery(lastNameSelector).val().trim() : '';
                 const phoneNumber = jQuery(phoneSelector).val() ? jQuery(phoneSelector).val().trim() : '';
-
-                // Prepare fields for FastlaneCardComponent initialization
                 const fields = {
                     cardholderName: {
                         enabled: true,
@@ -93,8 +87,6 @@ class PayPalFastlane {
                         ...(phoneNumber ? {prefill: phoneNumber} : {})
                     }
                 };
-
-                // Initialize FastlaneCardComponent with the prepared fields
                 this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
                     fields: fields
                 });
@@ -166,14 +158,28 @@ class PayPalFastlane {
             try {
                 let paymentToken = this.paymentToken;
                 if (!paymentToken) {
-                    const billingAddress = this.getBillingAddress();
-                    const shippingAddress = this.getShippingAddress();
-                    if (!billingAddress || !shippingAddress) {
-                        throw new Error("Billing or shipping address is missing.");
-                    }
-
+                    let billingAddress = this.getBillingAddress();
+                    let shippingAddress = this.getShippingAddress();
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
+                    }
+                    if (!billingAddress || Object.keys(billingAddress).length === 0 || !billingAddress.addressLine1) {
+                        billingAddress = {
+                            addressLine1: shippingAddress.addressLine1 || '',
+                            adminArea1: shippingAddress.adminArea1 || '',
+                            adminArea2: shippingAddress.adminArea2 || '',
+                            postalCode: shippingAddress.postalCode || '',
+                            countryCode: shippingAddress.countryCode || ''
+                        };
+                    }
+                    if (!shippingAddress || Object.keys(shippingAddress).length === 0 || !shippingAddress.addressLine1) {
+                        shippingAddress = {
+                            addressLine1: billingAddress.addressLine1 || '',
+                            adminArea1: billingAddress.adminArea1 || '',
+                            adminArea2: billingAddress.adminArea2 || '',
+                            postalCode: billingAddress.postalCode || '',
+                            countryCode: billingAddress.countryCode || ''
+                        };
                     }
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
                         billingAddress,
@@ -183,12 +189,9 @@ class PayPalFastlane {
                 } else {
                     console.log("Using existing payment token:", paymentToken);
                 }
-
                 if (!paymentToken) {
                     throw new Error("Failed to retrieve payment token.");
                 }
-
-                // Proceed with order creation
                 let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
@@ -202,7 +205,6 @@ class PayPalFastlane {
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
                     await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
-                        console.log(orderData);
                         if (orderData.redirected) {
                             window.location.href = orderData.url;
                         } else {
@@ -214,31 +216,64 @@ class PayPalFastlane {
                     });
                 }
             } catch (error) {
-                console.log(error);
                 jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
                 angelleyeOrder.hideProcessingSpinner();
-                angelleyeOrder.showError(error);
+                //angelleyeOrder.showError(error.message);
+                console.log(error);
+
             }
         });
     }
 
     getBillingAddress() {
+        // Check for classic checkout fields first
+        let addressLine1 = jQuery('#billing_address_1').val();
+        let adminArea1 = jQuery('#billing_state').val();
+        let adminArea2 = jQuery('#billing_city').val();
+        let postalCode = jQuery('#billing_postcode').val();
+        let countryCode = jQuery('#billing_country').val();
+
+        // If classic checkout fields are not found, check for checkout block fields
+        if (!addressLine1 && jQuery('#billing-address_1').length > 0) {
+            addressLine1 = jQuery('#billing-address_1').val();
+            adminArea1 = jQuery('#billing-state').val();
+            adminArea2 = jQuery('#billing-city').val();
+            postalCode = jQuery('#billing-postcode').val();
+            countryCode = jQuery('#billing-country').val();
+        }
+
         return {
-            addressLine1: jQuery('#billing_address_1').val(),
-            adminArea1: jQuery('#billing_state').val(),
-            adminArea2: jQuery('#billing_city').val(),
-            postalCode: jQuery('#billing_postcode').val(),
-            countryCode: jQuery('#billing_country').val()
+            addressLine1: addressLine1,
+            adminArea1: adminArea1,
+            adminArea2: adminArea2,
+            postalCode: postalCode,
+            countryCode: countryCode
         };
     }
 
     getShippingAddress() {
+        // Check for classic checkout fields first
+        let addressLine1 = jQuery('#shipping_address_1').val();
+        let adminArea1 = jQuery('#shipping_state').val();
+        let adminArea2 = jQuery('#shipping_city').val();
+        let postalCode = jQuery('#shipping_postcode').val();
+        let countryCode = jQuery('#shipping_country').val();
+
+        // If classic checkout fields are not found, check for checkout block fields
+        if (!addressLine1 && jQuery('#shipping-address_1').length > 0) {
+            addressLine1 = jQuery('#shipping-address_1').val();
+            adminArea1 = jQuery('#shipping-state').val();
+            adminArea2 = jQuery('#shipping-city').val();
+            postalCode = jQuery('#shipping-postcode').val();
+            countryCode = jQuery('#shipping-country').val();
+        }
+
         return {
-            addressLine1: jQuery('#shipping_address_1').val(),
-            adminArea1: jQuery('#shipping_state').val(),
-            adminArea2: jQuery('#shipping_city').val(),
-            postalCode: jQuery('#shipping_postcode').val(),
-            countryCode: jQuery('#shipping_country').val()
+            addressLine1: addressLine1,
+            adminArea1: adminArea1,
+            adminArea2: adminArea2,
+            postalCode: postalCode,
+            countryCode: countryCode
         };
     }
 
@@ -248,11 +283,8 @@ class PayPalFastlane {
                 jQuery(selector).val(value).trigger('change');
             }
         };
-
         const billingAddress = profileData.card?.paymentSource?.card?.billingAddress || {};
         const shippingAddress = profileData.shippingAddress?.address || {};
-
-
         // Classic WooCommerce Checkout Fields Update
         updateField('#billing_first_name', profileData.name?.firstName);
         updateField('#billing_last_name', profileData.name?.lastName);
@@ -263,7 +295,6 @@ class PayPalFastlane {
         updateField('#billing_state', billingAddress.adminArea1);
         updateField('#billing_phone', profileData.shippingAddress?.phoneNumber?.nationalNumber);
         updateField('#billing_email', profileData.email);
-
         updateField('#shipping_first_name', profileData.shippingAddress?.name?.firstName);
         updateField('#shipping_last_name', profileData.shippingAddress?.name?.lastName);
         updateField('#shipping_address_1', shippingAddress.addressLine1);
@@ -271,14 +302,8 @@ class PayPalFastlane {
         updateField('#shipping_postcode', shippingAddress.postalCode);
         updateField('#shipping_country', shippingAddress.countryCode);
         updateField('#shipping_state', shippingAddress.adminArea1);
-
         // Refresh checkout for classic checkout
         jQuery(document.body).trigger('custom_action_to_refresh_checkout', profileData);
-
-
-
-
-
         // AJAX Request to save the profile data (Same for both classic and block checkouts)
         jQuery.ajax({
             url: fastlane_object.ajaxurl,
@@ -288,16 +313,13 @@ class PayPalFastlane {
                 profileData: profileData
             },
             success: function (response) {
-                console.log(response);
                 if (response.success) {
                     if (jQuery('#place_order').length) {
                         jQuery('html, body').animate({
                             scrollTop: (jQuery('#place_order').offset().top - 500)
                         }, 1000);
                     }
-                    console.log('Checkout fields saved successfully.');
                 } else {
-                    console.log('Failed to save checkout fields.');
                 }
             },
             error: function () {
@@ -313,14 +335,11 @@ class PayPalFastlane {
 
     setPaymentMethod(paymentMethodId) {
         const paymentMethod = jQuery(`#payment_method_${paymentMethodId}`);
-        console.log('292');
         if (paymentMethod.length > 0) {
-            console.log('294');
             paymentMethod.prop('checked', true);
             this.isPaymentMethodSet = true;
             jQuery('#payment_method_angelleye_ppcp_fastlane').trigger('click');
         } else {
-            console.log('299');
             jQuery('#radio-control-wc-payment-method-options-angelleye_ppcp_fastlane').prop('checked', true);
             this.isPaymentMethodSet = true;
             jQuery('#radio-control-wc-payment-method-options-angelleye_ppcp_fastlane').parent('label').parent('div').trigger('click');
@@ -328,7 +347,6 @@ class PayPalFastlane {
     }
 
     async processEmailLookup() {
-        console.log('309');
         const email = jQuery('input[name="fastlane-email"]').val();
         jQuery('input[name="billing_email"]').val(email);
         const customerContextId = await this.lookupCustomerByEmail(email);
@@ -340,17 +358,33 @@ class PayPalFastlane {
                 jQuery(document.body).trigger('custom_action_to_refresh_checkout_email');
                 this.setPaymentMethod(this.paymentMethodId);
                 this.renderCardForm();
+                this.scrolltobottom();
             }
         } else {
             jQuery(document.body).trigger('custom_action_to_refresh_checkout_email');
             this.setPaymentMethod(this.paymentMethodId);
             this.renderCardForm();
+            this.scrolltobottom();
+        }
+    }
+
+    scrolltobottom() {
+        if (jQuery('#place_order').length) {
+            jQuery('html, body').animate({
+                scrollTop: (jQuery('#place_order').offset().top - 500)
+            }, 1000);
         }
     }
 
     bindEmailLookupEvent() {
         jQuery('.fastlane-submit-button').off('click').on('click', async (event) => {
             event.preventDefault();
+            const emailInput = jQuery('#fastlane-email');
+            if (emailInput.val().trim() === '') {
+                emailInput.addClass('fastlane-input-error');
+                return;
+            }
+            emailInput.removeClass('fastlane-input-error');
             const button = jQuery('.fastlane-submit-button');
             button.prop('disabled', true);
             try {
@@ -364,6 +398,7 @@ class PayPalFastlane {
                 button.prop('disabled', false);
             }
         });
+
     }
 
     bindWooCommerceEvents() {
