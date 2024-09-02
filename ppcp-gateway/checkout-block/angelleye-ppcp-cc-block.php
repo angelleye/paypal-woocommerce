@@ -25,8 +25,6 @@ final class AngellEYE_PPCP_CC_Block extends AbstractPaymentMethodType {
 
     public function get_payment_method_script_handles() {
         wp_register_style('angelleye_ppcp', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/wc-gateway-ppcp-angelleye-public.css', array(), $this->version, 'all');
-        angelleye_ppcp_add_css_js();
-        $this->pay_later->add_pay_later_script_in_frontend();
         wp_register_script('angelleye_ppcp_cc-blocks-integration', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/checkout-block/ppcp-cc.js', array(), VERSION_PFW, true);
         if (angelleye_ppcp_has_active_session()) {
             $order_button_text = apply_filters('angelleye_ppcp_cc_order_review_page_place_order_button_text', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));

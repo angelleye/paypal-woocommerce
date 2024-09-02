@@ -202,6 +202,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         if (empty($this->pay_later_messaging_page_type)) {
             $this->enabled_pay_later_messaging = false;
+        } else {
+            $page = angelleye_ppcp_pay_later_messaging();
+            if (!empty($page) && in_array($page, $this->pay_later_messaging_page_type)) {
+                $this->enabled_pay_later_messaging = false;
+            }
         }
         if ($this->dcc_applies->for_country_currency() === false) {
             $this->advanced_card_payments = false;
@@ -414,7 +419,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function angelleye_load_js_sdk() {
         if (is_checkout() || is_checkout_pay_page()) {
             angelleye_ppcp_add_css_js();
-        }
+        } elseif(is_product() && $this->enable_product_button) {
+            angelleye_ppcp_add_css_js();
+        } elseif (is_cart() && !WC()->cart->is_empty() && $this->enable_cart_button) {
+            angelleye_ppcp_add_css_js();
+        } 
     }
 
     /*

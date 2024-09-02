@@ -32,7 +32,7 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
     function angelleye_ppcp_get_post_meta($order, $key, $bool = true) {
         $order_meta_value = false;
         if (!is_object($order)) {
-            if (  did_action( 'woocommerce_after_register_post_type' ) ) {
+            if (did_action('woocommerce_after_register_post_type')) {
                 $order = wc_get_order($order);
             }
         }
@@ -1437,3 +1437,21 @@ if (!function_exists('angelleye_ppcp_apple_google_vault_supported_country')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_pay_later_messaging')) {
+
+    function angelleye_ppcp_pay_later_messaging() {
+        $page = '';
+        if (is_front_page() || is_home()) {
+            $page = 'home';
+        } elseif (is_product_category() || is_category()) {
+            $page = 'category';
+        } elseif (is_product()) {
+            $page = 'product';
+        } elseif (is_cart()) {
+            $page = 'cart';
+        } elseif (is_checkout() || is_checkout_pay_page()) {
+            $page = 'payment';
+        }
+    }
+
+}
