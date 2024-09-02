@@ -409,6 +409,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
             add_filter('wfocu_subscriptions_get_supported_gateways', array($this, 'wfocu_subscription_supported_gateways'), 99, 1);
         }
+        //disable the instant order confirmation sent by Germanized
+        add_filter('woocommerce_germanized_send_instant_order_confirmation', array($this, 'angelleye_ppcp_disable_instant_order_confirmation'), 99, 2);
     }
 
     public function angelleye_load_js_sdk() {
@@ -2135,5 +2137,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } catch (Exception $ex) {
             
         }
+    }
+    
+    public function angelleye_ppcp_disable_instant_order_confirmation($bool, $order) {
+        if ( is_numeric( $order ) ) {
+		$order = wc_get_order( $order );
+	}
+        $payment_method = $order->get_payment_method();
+        if (strpos($payment_method, 'angelleye') !== false) {
+            return false; 
+        }
+        return $bool;
     }
 }
