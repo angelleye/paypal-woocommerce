@@ -36,7 +36,7 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
                 $order = wc_get_order($order);
             }
         }
-        if (!is_a($order, 'WC_Order') || !is_a($order, 'WC_Subscription')) {
+        if (!is_a($order, 'WC_Order') && !is_a($order, 'WC_Subscription')) {
             return;
         }
         $old_wc = version_compare(WC_VERSION, '3.0', '<');
