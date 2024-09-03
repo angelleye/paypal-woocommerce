@@ -402,16 +402,19 @@ class PayPalFastlane {
     }
 
     bindWooCommerceEvents() {
-        jQuery(document.body).on('updated_checkout', () => {
-            this.isCardDetailsRestored = false; // Reset flag
-            this.isPaymentMethodSet = false; // Reset flag
-            this.restoreCardDetails();
-            // Delay setting the payment method to ensure it does not cause an infinite loop
-            setTimeout(() => {
-                if (!this.isPaymentMethodSet) {
-                    this.setPaymentMethod(this.paymentMethodId);
-                }
-            }, 200);
+        jQuery(document.body).on('updated_checkout ppcp_fastlane_checkout_updated', () => {
+            var selectedpayment = $('input[name="radio-control-wc-payment-method-options"]:checked').val();
+            if (selectedpayment === 'angelleye_ppcp_fastlane') {
+                this.isCardDetailsRestored = false; // Reset flag
+                this.isPaymentMethodSet = false; // Reset flag
+                this.restoreCardDetails();
+                // Delay setting the payment method to ensure it does not cause an infinite loop
+                setTimeout(() => {
+                    if (!this.isPaymentMethodSet) {
+                        this.setPaymentMethod(this.paymentMethodId);
+                    }
+                }, 200);
+            }
         });
     }
 
