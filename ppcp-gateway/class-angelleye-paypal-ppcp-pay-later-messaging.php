@@ -112,7 +112,6 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                 add_action('woocommerce_proceed_to_checkout', array($this, 'angelleye_ppcp_pay_later_messaging_cart_page'), 10);
             }
             if ($this->is_paypal_pay_later_messaging_enable_for_page($page = 'payment') && $this->pay_later_messaging_payment_shortcode === false) {
-                //add_action('woocommerce_before_checkout_form', array($this, 'angelleye_ppcp_pay_later_messaging_payment_page'), 4);
                 add_action('angelleye_ppcp_display_paypal_button_checkout_page', array($this, 'angelleye_ppcp_pay_later_messaging_payment_page'), 9);
             }
             add_shortcode('aepfw_bnpl_message', array($this, 'aepfw_bnpl_message_shortcode'), 10);
