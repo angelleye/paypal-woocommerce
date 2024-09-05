@@ -172,10 +172,12 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
                 $finalArray[$placement][$onlyKey] = $this->settings[$key] ?? $value;
             }
         }
-        wp_localize_script('angelleye-pay-later-messaging', 'angelleye_pay_later_messaging', ['placements' => $finalArray, 'amount' => angelleye_ppcp_number_format(angelleye_ppcp_get_order_total()),
-            'currencyCode' => angelleye_ppcp_get_currency(),
-            'currencySymbol' => get_woocommerce_currency_symbol(),
-        ]);
+        if (wp_script_is('angelleye-pay-later-messaging', 'enqueued')) {
+            wp_localize_script('angelleye-pay-later-messaging', 'angelleye_pay_later_messaging', ['placements' => $finalArray, 'amount' => angelleye_ppcp_number_format(angelleye_ppcp_get_order_total()),
+                'currencyCode' => angelleye_ppcp_get_currency(),
+                'currencySymbol' => get_woocommerce_currency_symbol(),
+            ]);
+        }
         angelleye_ppcp_add_css_js();
     }
 
@@ -411,7 +413,9 @@ class AngellEYE_PayPal_PPCP_Pay_Later {
 
         $uniqueShortcodeKey = wp_unique_id('angelleye_pay_later_messaging_');
         $this->add_pay_later_script_in_frontend();
-        wp_localize_script('angelleye-pay-later-messaging', $uniqueShortcodeKey, $finalParams);
+        if (wp_script_is('angelleye-pay-later-messaging', 'enqueued')) {
+            wp_localize_script('angelleye-pay-later-messaging', $uniqueShortcodeKey, $finalParams);
+        }
         return '<div class="angelleye_ppcp_message_shortcode" data-key="' . $uniqueShortcodeKey . '"></div>';
     }
 
