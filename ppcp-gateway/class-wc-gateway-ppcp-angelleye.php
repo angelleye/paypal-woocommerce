@@ -152,7 +152,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         }
         parent::process_admin_options();
         if ($cacheCleared) {
-            // reload the page so that all the initialized classes are able to load the new config changes
             if (ob_get_length()) {
                 ob_end_clean();
             }
@@ -399,7 +398,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 $order->set_payment_method($payment_method_id);
             }
             $order->save();
-            // When a user chooses existing saved card then detect it and process the order payment using that.
             $saved_tokens = ['wc-angelleye_ppcp_apple_pay-payment-token', 'wc-angelleye_ppcp-payment-token'];
             $token_id = null;
             foreach ($saved_tokens as $saved_token) {
@@ -890,7 +888,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
                 </th>
                 <td class="forminp">
-                    <?php //var_dump($data, $is_enabled, $is_apple_pay_approved, $is_apple_pay_enabled, $need_to_display_apple_pay_button, $is_domain_added, $is_domain_added_new); ?>
                     <fieldset>
                         <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
                         <label for="<?php echo esc_attr($field_key); ?>">
@@ -981,7 +978,6 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             ?>
             <tr valign="top">
                 <th scope="row" class="titledesc">
-                    <?php //var_dump($data['disabled'], $is_google_pay_approved, $is_disabled); ?>
                     <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); ?></label>
                 </th>
                 <td class="forminp">
@@ -1131,7 +1127,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             return ob_get_clean();
         }
     }
-    
+
     public function generate_paypal_for_woocommerce_multi_account_management_html($key, $data) {
         if (isset($data['type']) && $data['type'] === 'paypal_for_woocommerce_multi_account_management') {
             $testmode = $this->sandbox ? 'yes' : 'no';
