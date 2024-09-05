@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.6.1
-Stable tag: 4.5.13
+Stable tag: 4.5.14
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,14 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.5.14 - 09.05.2024
+* Fix - PayPal buttons occasionally fail to load. ([PFW-1866](https://github.com/angelleye/paypal-woocommerce/pull/2078)) 
+* Fix - Resolved the PayPal fee issue. ([PFW-1846](https://github.com/angelleye/paypal-woocommerce/pull/2073))
+* Fix - Load JS and CSS only when needed. ([PFW-1845](https://github.com/angelleye/paypal-woocommerce/pull/2074))
+* Fix - Disabled the instant order confirmation. ([PFW-1842](https://github.com/angelleye/paypal-woocommerce/pull/2075))
+* Fix - Prevent duplicate loading of JavaScript variables. ([PFW-1852](https://github.com/angelleye/paypal-woocommerce/pull/2076))
+* Fix - Conducted an admin notice audit. ([PFW-1800](https://github.com/angelleye/paypal-woocommerce/pull/2077))
 
 = 4.5.13 - 08.29.2024
 * Fix - Resolved global save conflict issue. ([PFW-1863](https://github.com/angelleye/paypal-woocommerce/pull/2071)) 
