@@ -263,7 +263,7 @@ if (!function_exists('angelleye_ppcp_get_mapped_billing_address')) {
 
 }
 
-if (!function_exists('  ')) {
+if (!function_exists('angelleye_ppcp_get_mapped_shipping_address')) {
 
     function angelleye_ppcp_get_mapped_shipping_address($checkout_details) {
         $initialData = [];
