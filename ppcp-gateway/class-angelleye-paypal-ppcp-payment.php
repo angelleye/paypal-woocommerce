@@ -2785,8 +2785,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order_id = $order->get_id();
             $total_order_value = floatval($order->get_total(''));
             $angelleye_ppcp_payment_method_title = $this->get_payment_method_title_for_order($order_id);
-            $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
-            $amount_value = isset($order_data['ppcp_refund_amount']) ? angelleye_ppcp_round($order_data['ppcp_refund_amount'], $decimals) : '';
+            $amount_value = isset($order_data['ppcp_refund_amount']) ? wc_format_decimal( $order_data['ppcp_refund_amount'], wc_get_price_decimals() ) : '';
             $capture_arg = array(
                 'amount' =>
                 array(

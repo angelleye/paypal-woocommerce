@@ -460,7 +460,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $should_display_transaction_details = $this->angelleye_ppcp_is_display_paypal_transaction_details($order->get_id(), ['authorize', 'capture']);
 
             // angelleye_ppcp_order_actions variable will be only set when order is and Authorization order
-            if ($should_display_transaction_details && !empty($this->angelleye_ppcp_order_actions)) {
+            if ($should_display_transaction_details && !empty($this->angelleye_ppcp_order_actions) && $this->is_auto_capture_auth === false) {
                 wp_enqueue_script('angelleye-ppcp-order-action');
                 if ($this->ae_capture_amount === 0) { ?>
                     <style>.button.refund-items {
