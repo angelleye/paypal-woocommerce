@@ -972,6 +972,19 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'desc_tip' => true,
                     'css' => 'min-width: 440px;',
                 ),
+                'checkout_placement_button_stack' => array(
+                    'title' => __('Placement of the PayPal button stack', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'options' => array(
+                        'embedded' => __('Embedded in the Radio Button option','paypal-for-woocommerce'),
+                        'replace' => __('Replacing the Place Order button at the bottom of the Woo page','paypal-for-woocommerce')
+                    ),
+                    'default' => 'replace',
+                    'class' => 'wc-enhanced-select',
+                    'description' => __('Displaying the PayPal stack at after the PayPal radio button or replacing the checkout button','paypal-for-woocommerce'),
+                    'desc_tip' => true,
+                    'css' => 'min-width: 440px;'
+                ),
                 'checkout_disable_smart_button' => array(
                     'title' => __('Enable/Disable', 'paypal-for-woocommerce'),
                     'class' => '',
