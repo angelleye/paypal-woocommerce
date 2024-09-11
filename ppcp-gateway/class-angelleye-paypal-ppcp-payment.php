@@ -4456,6 +4456,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $paypal_subscription_id = angelleye_ppcp_get_post_meta($order, '_paypal_subscription_id', true);
             if (empty($all_payment_tokens) && empty($payment_tokens_id) && empty($paypal_subscription_id)) {
+                $order->add_order_note("Payment token unavailable for order renewal");
                 return $body_request;
             } elseif (!empty($paypal_subscription_id)) {
                 $payment_tokens_id = $paypal_subscription_id;
