@@ -146,6 +146,13 @@ trait WC_Gateway_PPCP_Angelleye_Subscriptions_Base {
                             $renewal_order->update_meta_data('_payment_tokens_id', $payment_tokens_id);
                             $renewal_order->save();
                         }
+                        $paypal_subscription_id = $subscription_parent->get_meta('_paypal_subscription_id', true);
+                        if (!empty($payment_tokens_id)) {
+                            $subscription->update_meta_data('_paypal_subscription_id', $paypal_subscription_id);
+                            $subscription->save();
+                            $renewal_order->update_meta_data('_paypal_subscription_id', $paypal_subscription_id);
+                            $renewal_order->save();
+                        }
                     }
                 }
             }
