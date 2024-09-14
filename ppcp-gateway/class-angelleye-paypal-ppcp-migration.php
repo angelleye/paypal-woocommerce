@@ -323,17 +323,13 @@ class AngellEYE_PayPal_PPCP_Migration {
             );
             $orders = wc_get_orders($args);
             $order_count = 0;
-            // Check if $orders is empty
             if (empty($orders)) {
-                // Handle the case where no orders match the criteria
                 $order_count = 0;
             } else {
-                // Get the count of order IDs
                 $order_count = count($orders);
             }
             return $order_count;
         } catch (Exception $ex) {
-            // Handle exceptions if needed
             return array();
         }
     }
@@ -398,89 +394,6 @@ class AngellEYE_PayPal_PPCP_Migration {
         }
     }
 
-    public function angelleye_ppcp_update_payment_method($subscription, $new_payment_method) {
-        try {
-            $old_payment_method = $subscription->get_payment_method();
-            $old_payment_method_title = $subscription->get_payment_method_title();
-            if('angelleye_ppcp_cc' === $new_payment_method) {
-                $new_payment_method_title = $this->setting_obj->get('advanced_card_payments_title', 'PayPal');
-            } elseif('angelleye_ppcp' === $new_payment_method ) {
-                $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
-            } elseif('angelleye_ppcp_google_pay' === $new_payment_method) {
-                $new_payment_method_title = $this->setting_obj->get('google_pay_payments_title', 'PayPal');
-            } elseif('angelleye_ppcp_apple_pay' === $new_payment_method) {
-                $new_payment_method_title = $this->setting_obj->get('apple_pay_payments_title', 'PayPal');
-            } else {
-                $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
-            }
-            do_action('woocommerce_subscriptions_pre_update_payment_method', $subscription, $new_payment_method, $old_payment_method);
-            WC_Subscriptions_Core_Plugin::instance()->get_gateways_handler_class()::trigger_gateway_status_updated_hook($subscription, 'cancelled');
-            $old_payment_method_title = empty($old_payment_method_title) ? $old_payment_method : $old_payment_method_title;
-            $new_payment_method_title = empty($new_payment_method_title) ? $new_payment_method : $new_payment_method_title;
-
-            // Apply filters for old and new payment method titles
-            $old_payment_method_title = apply_filters('woocommerce_subscription_note_old_payment_method_title', $old_payment_method_title, $old_payment_method, $subscription);
-            $new_payment_method_title = apply_filters('woocommerce_subscription_note_new_payment_method_title', $new_payment_method_title, $new_payment_method, $subscription);
-            // Add order note about payment method change
-
-            $subscription->set_payment_method($new_payment_method);
-            $subscription->set_payment_method_title($new_payment_method_title);
-            $subscription->update_meta_data('_old_payment_method', $old_payment_method);
-            $subscription->update_meta_data('_angelleye_ppcp_old_payment_method', $old_payment_method);
-            $subscription->update_meta_data('_old_payment_method_title', $old_payment_method_title);
-
-            $note_message = sprintf(
-                    _x('Payment method changed from "%1$s" to "%2$s" by the Angelleye Migration.', '%1$s: old payment title, %2$s: new payment title', 'woocommerce-subscriptions'),
-                    $old_payment_method_title,
-                    $new_payment_method_title
-            );
-            $subscription->add_order_note($note_message);
-            // Save changes and trigger relevant actions
-            $subscription->save();
-            do_action('woocommerce_subscription_payment_method_updated', $subscription, $new_payment_method, $old_payment_method);
-            do_action('woocommerce_subscription_payment_method_updated_to_' . $new_payment_method, $subscription, $old_payment_method);
-            if ($old_payment_method) {
-                do_action('woocommerce_subscription_payment_method_updated_from_' . $old_payment_method, $subscription, $new_payment_method);
-            }
-        } catch (Exception $e) {
-            // Handle exceptions and provide a user-friendly error message
-            $error_message = sprintf(
-                    __('%1$sError:%2$s %3$s', 'woocommerce-subscriptions'),
-                    '<strong>',
-                    '</strong>',
-                    $e->getMessage()
-            );
-            $subscription->add_order_note($error_message);
-            $subscription->add_order_note(__('An error occurred updating your subscription\'s payment method. Please contact us for assistance.', 'woocommerce-subscriptions'));
-        }
-    }
-
-    public function is_angelleye_ppcp_old_payment_token_exist($user_subscription) {
-        try {
-            $meta_keys = [
-                '_payment_tokens_id',
-                'payment_token_id',
-                '_ppec_billing_agreement_id',
-                '_paypal_subscription_id'
-            ];
-            foreach ($meta_keys as $key) {
-                $payment_tokens_id = $user_subscription->get_meta($key);
-                if (!empty($payment_tokens_id)) {
-                    return true;
-                }
-            }
-            foreach ($meta_keys as $key) {
-                $payment_tokens_id = get_post_meta($user_subscription->get_id(), $key, true);
-                if (!empty($payment_tokens_id)) {
-                    return true;
-                }
-            }
-            return false;
-        } catch (Exception $ex) {
-            return false;
-        }
-    }
-
     public function schedule_next_batch($from_payment_method, $to_payment_method) {
         try {
             $action_hook = 'angelleye_ppcp_migration_schedule';
@@ -499,7 +412,6 @@ class AngellEYE_PayPal_PPCP_Migration {
     public function process_subscription_batch($from_payment_method, $to_payment_method) {
         try {
             $subscription_ids = $this->angelleye_ppcp_get_subscription_order_list($from_payment_method);
-            // Check if subscription_ids is not empty before processing the batch
             if (!empty($subscription_ids)) {
                 foreach ($subscription_ids as $subscription_id) {
                     $subscription = wcs_get_subscription($subscription_id);
@@ -514,32 +426,6 @@ class AngellEYE_PayPal_PPCP_Migration {
             }
         } catch (Exception $ex) {
             // Handle exceptions if needed
-        }
-    }
-    
-    public function angelleye_ppcp_skip_migration_profile($subscription) {
-        try {
-            $old_payment_method = $subscription->get_payment_method();
-            $old_payment_method_title = $subscription->get_payment_method_title();
-            WC_Subscriptions_Core_Plugin::instance()->get_gateways_handler_class()::trigger_gateway_status_updated_hook($subscription, 'cancelled');
-            $old_payment_method_title = empty($old_payment_method_title) ? $old_payment_method : $old_payment_method_title;
-            $old_payment_method_title = apply_filters('woocommerce_subscription_note_old_payment_method_title', $old_payment_method_title, $old_payment_method, $subscription);
-            $subscription->set_payment_method('_manual_renewal');
-            $subscription->set_payment_method_title('Manual Renewal');
-            $subscription->update_meta_data('_old_payment_method', $old_payment_method);
-            $subscription->update_meta_data('_angelleye_ppcp_old_payment_method', $old_payment_method);
-            $subscription->update_meta_data('_old_payment_method_title', $old_payment_method_title);
-            $subscription->add_order_note('No payment token found for subscription profile.');
-            $subscription->save();
-        } catch (Exception $e) {
-            $error_message = sprintf(
-                    __('%1$sError:%2$s %3$s', 'woocommerce-subscriptions'),
-                    '<strong>',
-                    '</strong>',
-                    $e->getMessage()
-            );
-            $subscription->add_order_note($error_message);
-            $subscription->add_order_note(__('An error occurred updating your subscription\'s payment method. Please contact us for assistance.', 'woocommerce-subscriptions'));
         }
     }
 
@@ -667,5 +553,96 @@ class AngellEYE_PayPal_PPCP_Migration {
 
         </style>
         <?php
+    }
+
+    public function is_angelleye_ppcp_old_payment_token_exist($user_subscription) {
+        try {
+            $meta_keys = [
+                '_payment_tokens_id',
+                'payment_token_id',
+                '_ppec_billing_agreement_id',
+                '_paypal_subscription_id'
+            ];
+            foreach ($meta_keys as $key) {
+                $payment_tokens_id = $user_subscription->get_meta($key);
+                if (empty($payment_tokens_id)) {
+                    $payment_tokens_id = get_post_meta($user_subscription->get_id(), $key, true);
+                }
+                if (!empty($payment_tokens_id)) {
+                    if ($key === '_paypal_subscription_id' && 'B-' !== substr($payment_tokens_id, 0, 2)) {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception $ex) {
+            return false;
+        }
+    }
+
+    public function angelleye_ppcp_skip_migration_profile($subscription) {
+        try {
+            $subscription->add_order_note('No payment token found for subscription profile.');
+            $subscription->save();
+        } catch (Exception $e) {
+            $error_message = sprintf(
+                    __('%1$sError:%2$s %3$s', 'woocommerce-subscriptions'),
+                    '<strong>',
+                    '</strong>',
+                    $e->getMessage()
+            );
+            $subscription->add_order_note($error_message);
+            $subscription->add_order_note(__('An error occurred updating your subscription\'s payment method. Please contact us for assistance.', 'woocommerce-subscriptions'));
+        }
+    }
+
+    public function angelleye_ppcp_update_payment_method($subscription, $new_payment_method) {
+        try {
+            $old_payment_method = $subscription->get_payment_method();
+            $old_payment_method_title = $subscription->get_payment_method_title();
+            if ('angelleye_ppcp_cc' === $new_payment_method) {
+                $new_payment_method_title = $this->setting_obj->get('advanced_card_payments_title', 'PayPal');
+            } elseif ('angelleye_ppcp' === $new_payment_method) {
+                $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
+            } elseif ('angelleye_ppcp_google_pay' === $new_payment_method) {
+                $new_payment_method_title = $this->setting_obj->get('google_pay_payments_title', 'PayPal');
+            } elseif ('angelleye_ppcp_apple_pay' === $new_payment_method) {
+                $new_payment_method_title = $this->setting_obj->get('apple_pay_payments_title', 'PayPal');
+            } else {
+                $new_payment_method_title = $this->setting_obj->get('title', 'PayPal');
+            }
+            do_action('woocommerce_subscriptions_pre_update_payment_method', $subscription, $new_payment_method, $old_payment_method);
+            $old_payment_method_title = empty($old_payment_method_title) ? $old_payment_method : $old_payment_method_title;
+            $new_payment_method_title = empty($new_payment_method_title) ? $new_payment_method : $new_payment_method_title;
+            $old_payment_method_title = apply_filters('woocommerce_subscription_note_old_payment_method_title', $old_payment_method_title, $old_payment_method, $subscription);
+            $new_payment_method_title = apply_filters('woocommerce_subscription_note_new_payment_method_title', $new_payment_method_title, $new_payment_method, $subscription);
+            $subscription->set_payment_method($new_payment_method);
+            $subscription->set_payment_method_title($new_payment_method_title);
+            $subscription->update_meta_data('_old_payment_method', $old_payment_method);
+            $subscription->update_meta_data('_angelleye_ppcp_old_payment_method', $old_payment_method);
+            $subscription->update_meta_data('_old_payment_method_title', $old_payment_method_title);
+            $note_message = sprintf(
+                    _x('Payment method changed from "%1$s" to "%2$s" by the Angelleye Migration.', '%1$s: old payment title, %2$s: new payment title', 'woocommerce-subscriptions'),
+                    $old_payment_method_title,
+                    $new_payment_method_title
+            );
+            $subscription->add_order_note($note_message);
+            $subscription->save();
+            do_action('woocommerce_subscription_payment_method_updated', $subscription, $new_payment_method, $old_payment_method);
+            do_action('woocommerce_subscription_payment_method_updated_to_' . $new_payment_method, $subscription, $old_payment_method);
+            if ($old_payment_method) {
+                do_action('woocommerce_subscription_payment_method_updated_from_' . $old_payment_method, $subscription, $new_payment_method);
+            }
+        } catch (Exception $e) {
+            $error_message = sprintf(
+                    __('%1$sError:%2$s %3$s', 'woocommerce-subscriptions'),
+                    '<strong>',
+                    '</strong>',
+                    $e->getMessage()
+            );
+            $subscription->add_order_note($error_message);
+            $subscription->add_order_note(__('An error occurred updating your subscription\'s payment method. Please contact us for assistance.', 'woocommerce-subscriptions'));
+        }
     }
 }
