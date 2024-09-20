@@ -1445,9 +1445,9 @@ if (!function_exists('angelleye_ppcp_pay_later_messaging')) {
 
     function angelleye_ppcp_pay_later_messaging() {
         $page = '';
-        if (is_front_page() || is_home()) {
+        if ( (did_action('wp') && is_front_page()) || (did_action('wp') && is_home())) {
             $page = 'home';
-        } elseif (is_product_category() || is_category()) {
+        } elseif (is_product_category() || (did_action('wp') && is_category())) {
             $page = 'category';
         } elseif (is_product()) {
             $page = 'product';
