@@ -689,7 +689,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
 
             if ((is_checkout() || is_checkout_pay_page()) && $this->advanced_card_payments) {
-                array_push($components, "hosted-fields");
+                array_push($components, "card-fields");
                 if (is_checkout_pay_page() && isset($wp->query_vars['order-pay'])) {
                     $order_id = $wp->query_vars['order-pay'];
                     $order_id = absint($order_id);

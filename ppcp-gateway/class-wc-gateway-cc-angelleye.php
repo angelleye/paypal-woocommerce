@@ -272,45 +272,11 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
     }
 
     public function form() {
-        try {
-            wp_enqueue_script('wc-credit-card-form');
-            $fields = array();
-            $cvc_field = '<div class="form-row form-row-last">
-                        <label for="' . esc_attr($this->id) . '-card-cvc">' . apply_filters('cc_form_label_card_code', __('Card Security Code', 'paypal-for-woocommerce'), $this->id) . ' </label>
-                        <div id="' . esc_attr($this->id) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc hosted-field-braintree"></div>
-                    </div>';
-            $default_fields = array(
-                'card-number-field' => '<div class="form-row form-row-wide">
-                        <label for="' . esc_attr($this->id) . '-card-number">' . apply_filters('cc_form_label_card_number', __('Card number', 'paypal-for-woocommerce'), $this->id) . '</label>
-                        <div id="' . esc_attr($this->id) . '-card-number"  class="input-text wc-credit-card-form-card-number hosted-field-braintree"></div>
-                    </div>',
-                'card-expiry-field' => '<div class="form-row form-row-first">
-                        <label for="' . esc_attr($this->id) . '-card-expiry">' . apply_filters('cc_form_label_expiry', __('Expiration Date', 'paypal-for-woocommerce'), $this->id) . ' </label>
-                        <div id="' . esc_attr($this->id) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry hosted-field-braintree"></div>
-                    </div>',
-            );
-            if (!$this->supports('credit_card_form_cvc_on_saved_method')) {
-                $default_fields['card-cvc-field'] = $cvc_field;
-            }
-            $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->id));
-            ?>
-            <fieldset id="wc-<?php echo esc_attr($this->id); ?>-form" class='wc-credit-card-form wc-payment-form'>
-                <?php do_action('woocommerce_credit_card_form_start', $this->id); ?>
-                <?php
-                foreach ($fields as $field) {
-                    echo $field;
-                }
-                ?>
-                <?php do_action('woocommerce_credit_card_form_end', $this->id); ?>
-                <div class="clear"></div>
-            </fieldset>
-            <?php
-            if ($this->supports('credit_card_form_cvc_on_saved_method')) {
-                echo '<fieldset>' . $cvc_field . '</fieldset>';
-            }
-        } catch (Exception $ex) {
-
-        }
+        ?>
+        <div id='angelleye_ppcp_cc-card-number'></div>
+        <div id='angelleye_ppcp_cc-card-expiry'></div>
+        <div id='angelleye_ppcp_cc-card-cvc'></div>
+        <?php
     }
 
     public function add_payment_method_form() {
