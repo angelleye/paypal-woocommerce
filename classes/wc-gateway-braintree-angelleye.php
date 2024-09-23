@@ -104,14 +104,15 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         $this->enable_braintree_ach = 'yes' === $this->get_option('enable_braintree_ach', 'no');
         $this->ach_tokenization_key = $this->get_option('ach_tokenization_key', '');
         $this->ach_business_name = $this->get_option('ach_business_name', '');
-        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
+        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'), 999);
+        if( !has_action('woocommerce_settings_api_sanitized_fields_' . $this->id)) {
+            add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_braintree_encrypt_gateway_api'), 10, 1);
+        }
         $this->response = '';
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'), 0);
         add_filter('woocommerce_credit_card_form_fields', array($this, 'angelleye_braintree_credit_card_form_fields'), 10, 2);
         $this->customer_id;
         add_filter('clean_url', array($this, 'adjust_fraud_script_tag'));
-       // add_action('woocommerce_admin_order_data_after_order_details', array($this, 'woocommerce_admin_order_data_after_order_details'), 10, 1);
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_update_settings'), 10, 1);
         do_action('angelleye_paypal_for_woocommerce_multi_account_api_' . $this->id, $this, null, null);
         if($this->enable_braintree_ach) {
@@ -119,6 +120,10 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $this->storeInVaultOnSuccess = false;
 
+    }
+    
+    public function process_admin_options() {
+        parent::process_admin_options();
     }
 
     /**
@@ -2434,8 +2439,16 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             wc_maybe_reduce_stock_levels($order->get_id());
         }
     }
-
+    
     public function angelleye_braintree_encrypt_gateway_api($settings) {
+        if (!empty($settings['sandbox_public_key'])) {
+            $api_password = $settings['sandbox_public_key'];
+        } else {
+            $api_password = $settings['public_key'];
+        }
+        if (strlen($api_password) > 20) {
+            return $settings;
+        }
         if (!empty($settings['is_encrypt'])) {
             $gateway_settings_key_array = array('sandbox_public_key', 'sandbox_private_key', 'sandbox_merchant_id', 'public_key', 'private_key', 'merchant_id');
             foreach ($gateway_settings_key_array as $gateway_settings_key => $gateway_settings_value) {
@@ -2446,7 +2459,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         return $settings;
     }
-
+ 
     public function angelleye_braintree_get_merchant_account_id($order_id = null) {
         try {
             $merchant_account_id = $this->get_option('merchant_account_id');

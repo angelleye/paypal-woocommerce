@@ -2036,43 +2036,12 @@ class AngellEYE_Utility {
 
     public static function angelleye_get_pre_option($bool, $option) {
         global $wpdb;
-        if (!wp_installing()) {
-            $notoptions = wp_cache_get('notoptions', 'options');
-            if (isset($notoptions[$option])) {
-
-                return $bool;
-            }
-            $alloptions = wp_load_alloptions();
-            if (isset($alloptions[$option])) {
-                $value = $alloptions[$option];
-            } else {
-                $value = wp_cache_get($option, 'options');
-                if (false === $value) {
-                    $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", $option));
-                    if (is_object($row)) {
-                        $value = $row->option_value;
-                        wp_cache_add($option, $value, 'options');
-                    } else {
-                        if (!is_array($notoptions)) {
-                            $notoptions = array();
-                        }
-                        $notoptions[$option] = true;
-                        wp_cache_set('notoptions', $notoptions, 'options');
-                        return $bool;
-                    }
-                }
-            }
+        $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", $option));
+        if (is_object($row)) {
+            $value = $row->option_value;
         } else {
-            $suppress = $wpdb->suppress_errors();
-            $row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", $option));
-            $wpdb->suppress_errors($suppress);
-            if (is_object($row)) {
-                $value = $row->option_value;
-            } else {
-                return $bool;
-            }
+            return $bool;
         }
-
         return maybe_unserialize($value);
     }
 
