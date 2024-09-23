@@ -4,7 +4,9 @@ if (!defined('ABSPATH')) {
 }
 
 class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
+
     use WC_Gateway_Base_AngellEYE;
+
     public $enable_paypal_checkout_page;
     public $checkout_page_display_option;
     public $sandbox;
@@ -59,7 +61,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 $this->secret_id = $this->live_secret_id;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -78,7 +80,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 }
             }
         }
-        return  implode('', $images) . '<div class="ppcp-clearfix"></div>';
+        return implode('', $images) . '<div class="ppcp-clearfix"></div>';
     }
 
     public function get_block_icon() {
@@ -109,9 +111,9 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                     'paypal-for-woocommerce'
             ),
             'maestro' => _x(
-                'Maestro',
-                'Name of credit card',
-                'paypal-for-woocommerce'
+                    'Maestro',
+                    'Name of credit card',
+                    'paypal-for-woocommerce'
             ),
             'amex' => _x(
                     'American Express',
@@ -225,7 +227,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 return $result;
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -243,7 +245,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 if (count($this->get_tokens()) > 0) {
                     $this->saved_payment_methods();
                 }
-                $this->angelleye_ppcp_cc_form();
+                $this->form();
             } elseif (is_checkout() || is_checkout_pay_page()) {
                 if (angelleye_ppcp_get_order_total() > 0) {
                     if (count($this->get_tokens()) > 0) {
@@ -261,21 +263,24 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 } elseif (angelleye_ppcp_get_order_total() === 0) {
                     $this->angelleye_ppcp_cc_form();
                 }
-            } elseif(is_add_payment_method_page()) {
+            } elseif (is_add_payment_method_page()) {
                 wp_enqueue_script('angelleye_ppcp-add-payment-method');
                 $this->add_payment_method_form();
                 echo '<div id="payments-sdk__contingency-lightbox"></div>';
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
     public function form() {
         ?>
-        <div id='angelleye_ppcp_cc-card-number'></div>
-        <div id='angelleye_ppcp_cc-card-expiry'></div>
-        <div id='angelleye_ppcp_cc-card-cvc'></div>
+        <fieldset id="wc-<?php echo esc_attr($this->id); ?>-cc-form" class='wc-credit-card-form wc-payment-form'>
+            <div id='angelleye_ppcp_cc-card-number'></div>
+            <div id='angelleye_ppcp_cc-card-expiry'></div>
+            <div id='angelleye_ppcp_cc-card-cvc'></div>
+        </fieldset>
+
         <?php
     }
 
@@ -293,7 +298,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $posted_card = $this->get_posted_card();
             return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens_free_signup_with_free_trial($posted_card, $order_id);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -302,7 +307,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
             $order_id = $order->get_id();
             $this->payment_request->angelleye_ppcp_capture_order_using_payment_method_token($order_id);
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -324,7 +329,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 return $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens_sub_change_payment($posted_card, $order_id);
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -343,7 +348,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 );
             }
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -364,14 +369,15 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                         'exp_year' => $card_exp_year,
             );
         } catch (Exception $ex) {
-
+            
         }
     }
 
     public function add_payment_method() {
         try {
+            
         } catch (Exception $ex) {
-
+            
         }
     }
 
@@ -400,9 +406,9 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
 			</p>',
         );
 
-	    if (!$this->supports('credit_card_form_cvc_on_saved_method')) {
-		    $default_fields['card-cvc-field'] = $cvc_field;
-	    }
+        if (!$this->supports('credit_card_form_cvc_on_saved_method')) {
+            $default_fields['card-cvc-field'] = $cvc_field;
+        }
 
         $fields = wp_parse_args($fields, apply_filters('woocommerce_credit_card_form_fields', $default_fields, $this->id));
         ?>
@@ -414,7 +420,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 echo $field; // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
             }
             ?>
-            <?php do_action('woocommerce_credit_card_form_end', $this->id); ?>
+        <?php do_action('woocommerce_credit_card_form_end', $this->id); ?>
             <div class="clear"></div>
         </fieldset>
         <?php
@@ -476,5 +482,4 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         }
         return parent::get_transaction_url($order);
     }
-
 }

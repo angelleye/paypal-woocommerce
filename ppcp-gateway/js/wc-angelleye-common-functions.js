@@ -546,8 +546,25 @@ const angelleyeOrder = {
                     });
                 }
             },
+            onApprove: function (data, actions) {
+                if (data.orderID) {
+                    angelleyeOrder.checkoutFormCapture({checkoutSelector, payPalOrderId: data.orderID, errorLogId});
+                }
+            },
             onError: function (err) {
-                console.log(err);
+                console.log('Error occurred:', err);
+
+                // Check if err contains expected properties (e.g., a message)
+                if (typeof err === 'object' && err !== null) {
+                    console.log('Error message:', err.message || 'No error message available');
+
+                    // Log the stack trace if available
+                    if (err.stack) {
+                        console.log('Stack trace:', err.stack);
+                    }
+                } else {
+                    console.log('Unexpected error format:', err);
+                }
             },
             style: {
                 'input': {
@@ -586,38 +603,20 @@ const angelleyeOrder = {
         jQuery(document.body).off('submit_paypal_cc_form');
         jQuery(document.body).on('submit_paypal_cc_form', (event) => {
             event.preventDefault();
-            let state = cardFields.getState();
-
-            if (!state.fields.number.isValid) {
-                angelleyeOrder.showError(localizedMessages.fields_not_valid);
-                return;
-            }
-
-            let formValid = Object.keys(state.fields).every(function (key) {
-                return state.fields[key].isValid;
-            });
-
-            if (!formValid) {
-                angelleyeOrder.showError(localizedMessages.fields_not_valid);
-                return;
-            }
-
-            let contingencies = [angelleye_ppcp_manager.three_d_secure_contingency];
-            let firstName = document.getElementById('billing_first_name') ? document.getElementById('billing_first_name').value : '';
-            let lastName = document.getElementById('billing_last_name') ? document.getElementById('billing_last_name').value : '';
-
-            angelleyeOrder.showProcessingSpinner(spinnerSelectors);
-
-            cardFields.submit({
-                contingencies: contingencies,
-                cardholderName: `${firstName} ${lastName}`
-            }).then(function (payload) {
-                if (payload.orderId) {
-                    angelleyeOrder.checkoutFormCapture({checkoutSelector, payPalOrderId: payload.orderId, errorLogId});
+            cardFields.getState().then((data) => {
+                console.log('602');
+                if (data.isFormValid) {
+                    console.log('604');
+                    angelleyeOrder.showProcessingSpinner(spinnerSelectors);
+                    cardFields.submit().then(() => {
+                    }).catch((error) => {
+                        console.log(error);
+                    });
+                } else if (data.errors) {
+                    data.errors.forEach(error => {
+                        console.log(error);
+                    });
                 }
-            }).catch(function (error) {
-                console.log('submit_error_handler', error);
-                angelleyeOrder.showError(error.message || localizedMessages.fields_not_valid);
             });
         });
     },
