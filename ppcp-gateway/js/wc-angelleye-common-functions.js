@@ -553,12 +553,8 @@ const angelleyeOrder = {
             },
             onError: function (err) {
                 console.log('Error occurred:', err);
-
-                // Check if err contains expected properties (e.g., a message)
                 if (typeof err === 'object' && err !== null) {
                     console.log('Error message:', err.message || 'No error message available');
-
-                    // Log the stack trace if available
                     if (err.stack) {
                         console.log('Stack trace:', err.stack);
                     }
@@ -600,7 +596,6 @@ const angelleyeOrder = {
         } else {
             jQuery('.payment_method_angelleye_ppcp_cc').hide();
         }
-        jQuery(document.body).off('submit_paypal_cc_form');
         jQuery(document.body).on('submit_paypal_cc_form', (event) => {
             event.preventDefault();
             cardFields.getState().then((data) => {
@@ -612,7 +607,12 @@ const angelleyeOrder = {
                     }).catch((error) => {
                         console.log(error);
                     });
+                } else if (!data.isFormValid) {
+                    jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting CardFields createOrder');
+                    angelleyeOrder.showError(localizedMessages.fields_not_valid);
+                    return;
                 } else if (data.errors) {
+                    console.log(data);
                     data.errors.forEach(error => {
                         console.log(error);
                     });
