@@ -200,14 +200,23 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $this->is_first_party_used = 'no';
             }
         }
-        if (empty($this->pay_later_messaging_page_type)) {
-            $this->enabled_pay_later_messaging = false;
-        } else {
-            $page = angelleye_ppcp_pay_later_messaging();
-            if (!empty($page) && in_array($page, $this->pay_later_messaging_page_type)) {
+
+        /**
+         * 09.24.2024 - Drew Angell
+         * Defer the Pay Later messaging logic until WordPress has initialized the query.
+         * Resolves PFW-1895
+         */
+        add_action( 'wp', function() {
+            if (empty($this->pay_later_messaging_page_type)) {
                 $this->enabled_pay_later_messaging = false;
+            } else {
+                $page = angelleye_ppcp_pay_later_messaging();
+                if (!empty($page) && in_array($page, $this->pay_later_messaging_page_type)) {
+                    $this->enabled_pay_later_messaging = false;
+                }
             }
-        }
+        });
+
         if ($this->dcc_applies->for_country_currency() === false) {
             $this->advanced_card_payments = false;
         }
