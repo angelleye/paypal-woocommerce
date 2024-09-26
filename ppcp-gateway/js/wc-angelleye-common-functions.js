@@ -342,7 +342,7 @@ const angelleyeOrder = {
         if (angelleyeOrder.isCheckoutPage()) {
             if (angelleye_ppcp_manager.advanced_card_payments === 'yes') {
                 return typeof angelleye_paypal_sdk !== 'undefined' && typeof angelleye_paypal_sdk.CardFields !== 'undefined'
-                        ? angelleye_paypal_sdk.CardFields().isEligible() === true
+                        ? angelleye_paypal_sdk.CardFields.isEligible() === true
                         : false;
             }
         }
