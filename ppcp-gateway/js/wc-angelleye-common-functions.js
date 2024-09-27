@@ -37,7 +37,6 @@ const angelleyeOrder = {
         return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp';
     },
     isCCPaymentMethodSelected: () => {
-        console.log("40 : " + angelleyeOrder.getSelectedPaymentMethod());
         return angelleyeOrder.getSelectedPaymentMethod() === 'angelleye_ppcp_cc';
     },
     isGooglePayPaymentMethodSelected: () => {
@@ -153,8 +152,6 @@ const angelleyeOrder = {
                 value: JSON.stringify(shippingDetails)
             });
         }
-
-        console.log('formSelector', angelleye_ppcp_button_selector, formSelector, jQuery(formSelector).length);
         let topCheckoutSelectors = ['#angelleye_ppcp_checkout_top', '#angelleye_ppcp_checkout_top_google_pay', '#angelleye_ppcp_checkout_top_apple_pay'];
         if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
             formData = '';
@@ -513,24 +510,19 @@ const angelleyeOrder = {
         });
     },
     renderHostedButtons: () => {
-        console.log('hello');
         if (typeof angelleye_paypal_sdk === 'undefined') {
             return;
         }
-        console.log('519');
         let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
         if (jQuery(checkoutSelector).is('.CardFields')) {
             return false;
         }
-        console.log('524');
         if (angelleyeOrder.isCCPaymentMethodSelected() === false) {
             return false;
         }
-        console.log('528');
         let spinnerSelectors = checkoutSelector;
         jQuery(checkoutSelector).addClass('CardFields');
         let errorLogId = null;
-        console.log('532');
         const cardFields = angelleye_paypal_sdk.CardFields({
             createOrder: function (data, actions) {
                 jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
@@ -599,9 +591,7 @@ const angelleyeOrder = {
         jQuery(document.body).on('submit_paypal_cc_form', (event) => {
             event.preventDefault();
             cardFields.getState().then((data) => {
-                console.log('602');
                 if (data.isFormValid) {
-                    console.log('604');
                     angelleyeOrder.showProcessingSpinner(spinnerSelectors);
                     cardFields.submit().then(() => {
                     }).catch((error) => {

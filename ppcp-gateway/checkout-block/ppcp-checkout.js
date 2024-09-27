@@ -110,7 +110,6 @@ var {addAction} = wp.hooks;
                     jQuery(document.body).on(
                             "ppcp_checkout_updated",
                             function () {
-                                console.log("101");
                                 let address = {
                                     billing: billing.billingAddress,
                                     shipping: shippingData.shippingAddress,
