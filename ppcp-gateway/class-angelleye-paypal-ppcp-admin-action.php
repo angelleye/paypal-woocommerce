@@ -258,7 +258,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'id' => 'ppcp_notice_classic_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
                 'ans_message_title' => 'Important: Upgrade to PayPal Complete Payments Today!',
-                'ans_message_description' => sprintf('Your current PayPal integration is outdated and could lead to missed features, higher fees, and potential security risks. PayPal Complete Payments offers:<br>
+                'ans_message_description' => sprintf('Your current PayPal integration is outdated and could lead to missed features, higher fees, potential security risks, or disruptions in payment processing.<br /><br />PayPal Complete Payments offers:<br>
                     - <b>Lower transaction fees</b><br>
                     - <b>Enhanced security for you and your customers</b><br>
                     - <b>Access to new features and future updates like PayPal Fastlane, Google Pay, Apple Pay, and more!</b><br><br>
