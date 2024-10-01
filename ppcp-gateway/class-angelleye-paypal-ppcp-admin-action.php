@@ -257,15 +257,21 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
             $notice_data['classic_upgrade'] = array(
                 'id' => 'ppcp_notice_classic_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
-                'ans_message_title' => 'Important PayPal Update Required',
-                'ans_message_description' => sprintf('Upgrade now to %s for better features, enhanced security, <b>reduced fees</b>, and future-proof integration. <a target="_blank" href="%s">Click to learn more about the upgrade process.</a> Don\'t miss out on the advantages of %s! <br>', AE_PPCP_NAME, 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/', AE_PPCP_NAME),
+                'ans_message_title' => 'Important: Upgrade to PayPal Complete Payments Today!',
+                'ans_message_description' => sprintf('Your current PayPal integration is outdated and could lead to missed features, higher fees, and potential security risks. PayPal Complete Payments offers:<br>
+                    - <b>Lower transaction fees</b><br>
+                    - <b>Enhanced security for you and your customers</b><br>
+                    - <b>Access to new features and future updates like PayPal Fastlane, Google Pay, Apple Pay, and more!</b><br><br>
+                    <b>Action Required:</b> Upgrade now to keep your PayPal integration secure, cost-effective, and fully supported. <a target="_blank" href="%s">Click here to start your upgrade</a>—it only takes a few minutes!',
+                    admin_url('options-general.php?page=paypal-for-woocommerce')),
                 'ans_button_url' => admin_url('options-general.php?page=paypal-for-woocommerce'),
                 'ans_button_label' => 'Upgrade Now',
                 'is_dismiss' => false,
                 'is_button_secondary' => true,
-                'ans_secondary_button_label' => "Learn More",
+                'ans_secondary_button_label' => 'Docs',
                 'ans_secondary_button_url' => 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/'
             );
+
             $notice_data['vault_upgrade'] = array(
                 'id' => 'ppcp_notice_vault_upgrade',
                 'ans_company_logo' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/images/admin/angelleye-icon.jpg',
