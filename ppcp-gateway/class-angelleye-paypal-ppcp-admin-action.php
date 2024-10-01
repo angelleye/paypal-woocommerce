@@ -262,7 +262,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                     - <b>Lower transaction fees</b><br>
                     - <b>Enhanced security for you and your customers</b><br>
                     - <b>Access to new features and future updates like PayPal Fastlane, Google Pay, Apple Pay, and more!</b><br><br>
-                    <b>Action Required:</b> Upgrade now to keep your PayPal integration secure, cost-effective, and fully supported. <a href="%s">Click here to start your upgrade</a>—it only takes a few minutes!',
+                    <b>Action Required:</b> Upgrade now to keep your PayPal integration secure, cost-effective, and fully supported. <a href="%s">Click here to start your upgrade</a> — it only takes a few minutes!',
                     admin_url('options-general.php?page=paypal-for-woocommerce')),
                 'ans_button_url' => admin_url('options-general.php?page=paypal-for-woocommerce'),
                 'ans_button_label' => 'Upgrade Now',
