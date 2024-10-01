@@ -213,7 +213,9 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         add_action('woocommerce_api_wc_gateway_paypal_pro_angelleye', array($this, 'handle_3dsecure'));
         /* 2.0.0 */
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-        add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_pro_encrypt_gateway_api'), 10, 1);
+        if( !has_action('woocommerce_settings_api_sanitized_fields_' . $this->id)) {
+            add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'angelleye_paypal_pro_encrypt_gateway_api'), 10, 1);
+        }
         if ($this->enable_cardholder_first_last_name) {
             add_action('woocommerce_credit_card_form_start', array($this, 'angelleye_woocommerce_credit_card_form_start'), 10, 1);
         }
@@ -234,6 +236,10 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         if( $this->enable_google_recaptcha ) {
             add_action('angelleye_pfw_add_google_recaptcha', array($this, 'own_angelleye_pfw_add_google_recaptcha'));
         }
+    }
+    
+    public function process_admin_options() {
+        parent::process_admin_options();
     }
 
     /**
@@ -1763,7 +1769,7 @@ class WC_Gateway_PayPal_Pro_AngellEYE extends WC_Payment_Gateway_CC {
         } else {
             $api_password = $settings['api_password'];
         }
-        if(strlen($api_password) > 35 ) {
+        if(strlen($api_password) > 25 ) {
             return $settings;
         }
         if( !empty($settings['is_encrypt']) ) {
