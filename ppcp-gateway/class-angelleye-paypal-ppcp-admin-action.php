@@ -269,7 +269,7 @@ class AngellEYE_PayPal_PPCP_Admin_Action {
                 'is_dismiss' => false,
                 'is_button_secondary' => true,
                 'ans_secondary_button_label' => 'Docs',
-                'ans_secondary_button_url' => 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-commerce-platform/'
+                'ans_secondary_button_url' => 'https://www.angelleye.com/how-to-migrate-classic-paypal-to-complete-payments/?utm_source=pfw&utm_medium=wp-admin-notice&utm_campaign=ppcp-upgrade&utm_id=ppcp-upgrade'
             );
 
             $notice_data['vault_upgrade'] = array(
