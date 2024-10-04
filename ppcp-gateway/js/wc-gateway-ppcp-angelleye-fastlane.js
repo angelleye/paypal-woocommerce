@@ -144,7 +144,7 @@ class PayPalFastlane {
     }
 
     bindPlaceOrderEvent(fastlaneCardComponent) {
-        jQuery(document.body).off('submit_angelleye_ppcp_fastlane').on('submit_angelleye_ppcp_fastlane', async (event) => {
+        jQuery(document.body).on('submit_angelleye_ppcp_fastlane', async (event) => {
             if (jQuery('#fastlane-email').length > 0 && jQuery('#fastlane-email').val().trim() === '') {
                 jQuery('#fastlane-email').addClass('fastlane-input-error');
                 angelleyeOrder.hideProcessingSpinner();
@@ -377,16 +377,23 @@ class PayPalFastlane {
     }
 
     bindEmailLookupEvent() {
-        jQuery('.fastlane-submit-button').off('click').on('click', async (event) => {
+        jQuery('.fastlane-submit-button').on('click', async (event) => {
             event.preventDefault();
+            console.log('382');
             const emailInput = jQuery('#fastlane-email');
-            if (emailInput.val().trim() === '') {
+            const emailValue = emailInput.val().trim();
+            console.log('385');
+            // Validate email input
+            if (!emailValue) {
                 emailInput.addClass('fastlane-input-error');
                 return;
             }
+            console.log('391');
             emailInput.removeClass('fastlane-input-error');
+
             const button = jQuery('.fastlane-submit-button');
             button.prop('disabled', true);
+
             try {
                 await this.processEmailLookup();
                 if (!this.isPaymentMethodSet) {
@@ -398,6 +405,7 @@ class PayPalFastlane {
                 button.prop('disabled', false);
             }
         });
+
 
     }
 

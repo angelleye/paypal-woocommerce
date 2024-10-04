@@ -483,6 +483,7 @@ const angelleyeOrder = {
                 (new GooglePayCheckoutButton()).render(angelleye_ppcp_google_button_selector);
             });
         }
+        console.log('486');
         if (angelleyeOrder.isFastlaneEnabled()&& angelleyeOrder.isCheckoutPage()) {
             const fastlaneInstance = new PayPalFastlane('#angelleye_ppcp_checkout_fastlane');
             fastlaneInstance.initialize();

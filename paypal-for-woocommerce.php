@@ -82,7 +82,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 'PAYPAL_PPCP_PARTNER_MERCHANT_ID' => 'J9L24TCUDZ6ZS',
                 'PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID' => 'AaYsUf4lXeKOnLmKhDWbak0YYWNk5SW0Lt1lk22gFvsgu74h1Vawg1y6rcmt60f8JIx-x81J5bMA-q7O',
                 'PAYPAL_PPCP_PARTNER_CLIENT_ID' => 'ATgw55qRjaDSlPur2FAkdAiB-QQuG5jlLsees-8dcxLiLla_nwbBSvSnCbUaGlmzxq9t2b8R9JGGSz1e',
-                'PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE' => 'https://zpyql2kd39.execute-api.us-east-2.amazonaws.com/production/PayPalMerchantIntegration/',
+                'PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE' => 'https://3yjtbtgz0m.execute-api.us-east-2.amazonaws.com/default/PayPalMerchantIntegrationTest/',
                 'PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE' => 'https://ppcp.angelleye.com/production/PayPalMerchantIntegration/',
                 'AE_FEE' => 'ae_p_f',
                 'AE_PPCP_NAME' => 'PayPal Complete Payments'
