@@ -36,11 +36,24 @@ class PayPalFastlane {
     async authenticateCustomer(customerContextId) {
         try {
             const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
+            
+            // Log the profile data to check for card information
+            console.log("Profile Data after authentication:", profileData);
+            
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
                 this.paymentToken = profileData.card?.id || null;
+
+                // Log if the card is found or not
+                if (this.paymentToken) {
+                    console.log("Card found:", this.paymentToken);
+                } else {
+                    console.log("No card found in profileData.");
+                }
+
                 this.updateWooCheckoutFields(profileData);
             }
+
             return authenticationState === 'succeeded';
         } catch (error) {
             console.error("Error authenticating customer:", error);
@@ -49,7 +62,9 @@ class PayPalFastlane {
     }
 
     async renderCardDetails() {
+        // Check if card details are present in the profile data
         if (this.profileData?.card) {
+            console.log("Rendering saved card details...");
             this.savedCardHtml = `
                 <div id="paypal-fastlane-saved-card" class="fastlane-card">
                     <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.paymentSource.card.lastDigits}</div>
@@ -64,6 +79,8 @@ class PayPalFastlane {
             await this.initializeFastlaneCardComponent();
             this.bindPlaceOrderEvent(this.fastlaneCardComponent); // Bind the place order event
         } else {
+            // No card found, render the card form instead
+            console.log("No saved card found, rendering card form...");
             this.renderCardForm();
         }
     }
@@ -379,7 +396,7 @@ class PayPalFastlane {
             emailInput.removeClass('fastlane-input-error');
 
             const button = jQuery('.fastlane-submit-button');
-            button.prop('disabled', true);
+            button.prop('disabled', true); // Disable button to prevent multiple clicks
 
             try {
                 await this.processEmailLookup();
@@ -389,7 +406,7 @@ class PayPalFastlane {
             } catch (error) {
                 console.error("Error during email lookup event:", error);
             } finally {
-                button.prop('disabled', false);
+                button.prop('disabled', false); // Re-enable the button
             }
         });
     }
