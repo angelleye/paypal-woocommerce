@@ -379,16 +379,13 @@ class PayPalFastlane {
     bindEmailLookupEvent() {
         jQuery('.fastlane-submit-button').on('click', async (event) => {
             event.preventDefault();
-            console.log('382');
             const emailInput = jQuery('#fastlane-email');
             const emailValue = emailInput.val().trim();
-            console.log('385');
             // Validate email input
             if (!emailValue) {
                 emailInput.addClass('fastlane-input-error');
                 return;
             }
-            console.log('391');
             emailInput.removeClass('fastlane-input-error');
 
             const button = jQuery('.fastlane-submit-button');

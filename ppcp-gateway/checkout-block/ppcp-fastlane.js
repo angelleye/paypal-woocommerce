@@ -103,8 +103,6 @@ const {registerPaymentMethodExtensionCallbacks} = window.wc.wcBlocksRegistry;
                     const {eventRegistration, emitResponse, onSubmit, billing, shippingData} = props;
                     const {onPaymentSetup} = eventRegistration;
                     useEffect(() => {
-                        console.log('kaila');
-                        console.log(props);
                         jQuery(document.body).trigger('trigger_angelleye_ppcp_fastlane');
                         jQuery(document.body).on('ppcp_fastlane_checkout_updated', function () {
                             let address = {
