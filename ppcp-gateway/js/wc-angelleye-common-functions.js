@@ -483,7 +483,6 @@ const angelleyeOrder = {
                 (new GooglePayCheckoutButton()).render(angelleye_ppcp_google_button_selector);
             });
         }
-        console.log('486');
         if (angelleyeOrder.isFastlaneEnabled()&& angelleyeOrder.isCheckoutPage()) {
             const fastlaneInstance = new PayPalFastlane('#angelleye_ppcp_checkout_fastlane');
             fastlaneInstance.initialize();
@@ -801,10 +800,6 @@ const angelleyeOrder = {
         },
         handleRaceConditionOnWooHooks: () => {
             jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_block_ready', function (event, data) {
-                if (angelleyeOrder.isFastlaneEnabled() && angelleyeOrder.isCheckoutPage()) {
-                    const fastlaneInstance = new PayPalFastlane('#angelleye_ppcp_checkout_fastlane');
-                    fastlaneInstance.initialize();
-                }
                 if (!angelleyeOrder.isPendingEventTriggering) {
                     angelleyeOrder.addEventsForCallback(event.type, event, data);
                 }
