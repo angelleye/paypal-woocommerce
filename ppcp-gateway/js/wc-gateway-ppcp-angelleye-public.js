@@ -4,15 +4,15 @@ function initSmartButtons() {
     if (typeof angelleye_ppcp_manager === 'undefined') {
         return false;
     }
-    
+
     let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
     if ($('.variations_form').length) {
-            let div_to_hide_show = '#angelleye_ppcp_product, #angelleye_ppcp_product_google_pay, #angelleye_ppcp_product_apple_pay';
-            $('.variations_form').on('show_variation', function () {
-                    $(div_to_hide_show).show();
-            }).on('hide_variation', function () {
-                    $(div_to_hide_show).hide();
-            });
+        let div_to_hide_show = '#angelleye_ppcp_product, #angelleye_ppcp_product_google_pay, #angelleye_ppcp_product_apple_pay';
+        $('.variations_form').on('show_variation', function () {
+            $(div_to_hide_show).show();
+        }).on('hide_variation', function () {
+            $(div_to_hide_show).hide();
+        });
     }
 
     if ($(document.body).hasClass('woocommerce-order-pay')) {
@@ -35,7 +35,7 @@ function initSmartButtons() {
             return true;
         });
     }
-    
+
     $(checkoutSelector).on('checkout_place_order_angelleye_ppcp_cc', function (event) {
         if (angelleyeOrder.isHostedFieldEligible() === true) {
             event.preventDefault();
@@ -53,6 +53,19 @@ function initSmartButtons() {
             return false;
         }
         return true;
+    });
+
+    $(checkoutSelector).on('checkout_place_order_angelleye_ppcp_fastlane', function (event) {
+        event.preventDefault();
+        if (jQuery('#fastlane-email').length > 0 && jQuery('#fastlane-email').val().trim() === '') {
+            jQuery('#fastlane-email').addClass('fastlane-input-error');
+            angelleyeOrder.hideProcessingSpinner();
+            angelleyeOrder.showError('Email address is required in the Fastlane email field to continue.');
+        } else {
+            jQuery('#fastlane-email').removeClass('fastlane-input-error');
+        }
+        $(document.body).trigger('submit_angelleye_ppcp_fastlane');
+        return false;
     });
 
     angelleyeOrder.isCheckoutPage() === false ? angelleyeOrder.renderSmartButton() : null;
@@ -143,13 +156,13 @@ function initSmartButtons() {
 
 
 
-    
+
 })(jQuery);
 
 window.onerror = function (msg, source, lineNo) {
-	angelleyeJsErrorLogger.logJsError({
-		'msg': msg,
-		'source': source,
-		'line': lineNo,
-	});
+    angelleyeJsErrorLogger.logJsError({
+        'msg': msg,
+        'source': source,
+        'line': lineNo,
+    });
 }
