@@ -65,6 +65,17 @@ class PayPalFastlane {
         // Check if card details are present in the profile data
         if (this.profileData?.card) {
             console.log("Rendering saved card details...");
+
+            // Check if the container selector exists in the DOM
+            const containerExists = jQuery(this.containerSelector).length > 0;
+            console.log("Container exists:", containerExists);
+
+            if (!containerExists) {
+                console.error("Error: Container selector does not exist in the DOM. Unable to render saved card.");
+                return;
+            }
+
+            // Render saved card HTML
             this.savedCardHtml = `
                 <div id="paypal-fastlane-saved-card" class="fastlane-card">
                     <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.paymentSource.card.lastDigits}</div>
@@ -72,14 +83,16 @@ class PayPalFastlane {
                     <button id="change-card">Change Card</button>
                 </div>
             `;
+            // Inject the saved card HTML into the container
             jQuery(this.containerSelector).html(this.savedCardHtml);
-            this.bindChangeCardEvent();
 
-            // Initialize the FastlaneCardComponent to bind the place order event
+            // Check if the HTML is successfully injected
+            console.log("Saved card element added to DOM:", jQuery('#paypal-fastlane-saved-card').length > 0);
+
+            this.bindChangeCardEvent();
             await this.initializeFastlaneCardComponent();
-            this.bindPlaceOrderEvent(this.fastlaneCardComponent); // Bind the place order event
+            this.bindPlaceOrderEvent(this.fastlaneCardComponent);
         } else {
-            // No card found, render the card form instead
             console.log("No saved card found, rendering card form...");
             this.renderCardForm();
         }
