@@ -17,7 +17,6 @@ class PayPalFastlane {
             this.fastlaneInstance.setLocale('en_us');
             this.bindEmailLookupEvent(); // Calling the event binding
             this.bindWooCommerceEvents(); // Bind to WooCommerce events
-
         } catch (error) {
             console.error("Failed to initialize Fastlane:", error);
         }
@@ -36,10 +35,10 @@ class PayPalFastlane {
     async authenticateCustomer(customerContextId) {
         try {
             const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
-            
+
             // Log the profile data to check for card information
             console.log("Profile Data after authentication:", profileData);
-            
+
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
                 this.paymentToken = profileData.card?.id || null;
@@ -85,6 +84,9 @@ class PayPalFastlane {
             `;
             // Inject the saved card HTML into the container
             jQuery(this.containerSelector).html(this.savedCardHtml);
+
+            // Force the visibility of the saved card in case it's hidden
+            jQuery('#paypal-fastlane-saved-card').css('display', 'block');
 
             // Check if the HTML is successfully injected
             console.log("Saved card element added to DOM:", jQuery('#paypal-fastlane-saved-card').length > 0);
