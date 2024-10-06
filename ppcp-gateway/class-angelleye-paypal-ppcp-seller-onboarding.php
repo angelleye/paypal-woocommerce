@@ -181,7 +181,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -580,6 +580,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 $body['tracking_id'] = $tracking_id;
                 $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
             }
+            if (isset($_GET['is_migration']) && $_GET['is_migration'] == 'yes') {
+                $body['is_migration'] = 'yes';
+            }
             $args = array(
                 'method' => 'POST',
                 'body' => wp_json_encode($body),
@@ -744,7 +747,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             }
             return false;
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -793,9 +796,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
 
     public function angelleye_display_paypal_signup_button($url, $id, $label) {
         if($label === 'multi_account') {
-            ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html(__('CONNECT MY PAYPAL ACCOUNT', 'paypal-for-woocommerce')); ?></a> <?php 
+            ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html(__('CONNECT MY PAYPAL ACCOUNT', 'paypal-for-woocommerce')); ?></a> <?php
         } else {
-            ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a> <?php 
+            ?><a target="_blank" class="button-primary" id="<?php echo esc_attr($id); ?>" data-paypal-onboard-complete="onboardingCallback" href="<?php echo esc_url($url); ?>" data-paypal-button="true"><?php echo esc_html($label); ?></a> <?php
         }
     }
 
@@ -807,7 +810,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     delete_transient('angelleye_ppcp_multi_account_seller_onboarding_process_done');
                 }
             }
-            
+
         }
     }
 }
