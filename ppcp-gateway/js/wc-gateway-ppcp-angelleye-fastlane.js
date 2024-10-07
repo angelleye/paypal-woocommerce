@@ -35,24 +35,11 @@ class PayPalFastlane {
     async authenticateCustomer(customerContextId) {
         try {
             const {authenticationState, profileData} = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
-
-            // Log the profile data to check for card information
-            console.log("Profile Data after authentication:", profileData);
-
             if (authenticationState === 'succeeded') {
                 this.profileData = profileData;
                 this.paymentToken = profileData.card?.id || null;
-
-                // Log if the card is found or not
-                if (this.paymentToken) {
-                    console.log("Card found:", this.paymentToken);
-                } else {
-                    console.log("No card found in profileData.");
-                }
-
                 this.updateWooCheckoutFields(profileData);
             }
-
             return authenticationState === 'succeeded';
         } catch (error) {
             console.error("Error authenticating customer:", error);
@@ -61,24 +48,14 @@ class PayPalFastlane {
     }
 
     async renderCardDetails() {
-        // Check if card details are present in the profile data
         if (this.profileData?.card) {
             this.bindChangeCardEvent();
             await this.initializeFastlaneCardComponent();
             this.bindPlaceOrderEvent(this.fastlaneCardComponent);
-            console.log("Rendering saved card details...");
-            console.log("67", this.profileData);
-            console.log("68", '#angelleye_ppcp_checkout_fastlane');
-            // Check if the container selector exists in the DOM
             const containerExists = jQuery('#angelleye_ppcp_checkout_fastlane').length > 0;
-            console.log("Container exists:", containerExists);
-
             if (!containerExists) {
-                console.error("Error: Container selector does not exist in the DOM. Unable to render saved card.");
                 return;
             }
-
-            // Render saved card HTML
             this.savedCardHtml = `
                 <div id="paypal-fastlane-saved-card" class="fastlane-card">
                     <div class="fastlane-card-number">•••• •••• •••• ${this.profileData.card.paymentSource.card.lastDigits}</div>
@@ -86,23 +63,9 @@ class PayPalFastlane {
                     <button id="change-card">Change Card</button>
                 </div>
             `;
-            // Inject the saved card HTML into the container
             jQuery('#angelleye_ppcp_checkout_fastlane').html(this.savedCardHtml);
-
-            console.log("Saved card HTML:", this.savedCardHtml);
-
-            console.log("Injected HTML:", jQuery('#angelleye_ppcp_checkout_fastlane').html());
-            setInterval(console.log("Injected HTML:", jQuery('#angelleye_ppcp_checkout_fastlane').html()), 100);
-
-            // Force the visibility of the saved card in case it's hidden
             jQuery('#paypal-fastlane-saved-card').css('display', 'block');
-
-            // Check if the HTML is successfully injected
-            console.log("Saved card element added to DOM:", jQuery('#paypal-fastlane-saved-card').length > 0);
-
-
         } else {
-            console.log("No saved card found, rendering card form...");
             this.renderCardForm();
         }
     }
@@ -135,8 +98,7 @@ class PayPalFastlane {
                 }
             }
         } catch (error) {
-            console.error("Error initializing FastlaneCardComponent:", error);
-            throw error; // Rethrow to prevent further execution
+            throw error;
         }
     }
 
@@ -152,9 +114,7 @@ class PayPalFastlane {
 
     restoreCardDetails() {
         const existingCardSection = jQuery('#paypal-fastlane-saved-card');
-
         if (!existingCardSection.length && this.savedCardHtml) {
-            // Restore the saved card HTML if it's available
             jQuery('#angelleye_ppcp_checkout_fastlane').html(this.savedCardHtml);
             this.bindChangeCardEvent();
         } else if (!existingCardSection.length && !this.savedCardHtml) {
@@ -165,17 +125,16 @@ class PayPalFastlane {
     }
 
     bindChangeCardEvent() {
-        jQuery(document).off('click', '#change-card');  // Unbind any existing event listeners first
+        jQuery(document).off('click', '#change-card');
         jQuery(document).on('click', '#change-card', async (event) => {
-            event.preventDefault();  // Prevent the default behavior
-            event.stopPropagation(); // Stop the event from bubbling up
-
+            event.preventDefault();
+            event.stopPropagation();
             try {
                 const {selectedCard} = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
                     this.profileData.card = selectedCard;
-                    this.paymentToken = selectedCard.id;  // Set the paymentToken to the selected card's ID
-                    this.renderCardDetails();  // Update the UI with the selected card
+                    this.paymentToken = selectedCard.id;
+                    this.renderCardDetails();
                 }
             } catch (error) {
                 console.error("Error changing card:", error);
@@ -184,7 +143,7 @@ class PayPalFastlane {
     }
 
     bindPlaceOrderEvent(fastlaneCardComponent) {
-        jQuery(document.body).off('submit_angelleye_ppcp_fastlane'); // Unbind to prevent multiple bindings
+        jQuery(document.body).off('submit_angelleye_ppcp_fastlane');
         jQuery(document.body).on('submit_angelleye_ppcp_fastlane', async (event) => {
             if (jQuery('#fastlane-email').length > 0 && jQuery('#fastlane-email').val().trim() === '') {
                 jQuery('#fastlane-email').addClass('fastlane-input-error');
@@ -259,7 +218,6 @@ class PayPalFastlane {
             } catch (error) {
                 jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
                 angelleyeOrder.hideProcessingSpinner();
-                console.log(error);
             }
         });
     }
@@ -278,7 +236,6 @@ class PayPalFastlane {
             postalCode = jQuery('#billing-postcode').val();
             countryCode = jQuery('#billing-country').val();
         }
-
         return {
             addressLine1: addressLine1,
             adminArea1: adminArea1,
@@ -294,7 +251,6 @@ class PayPalFastlane {
         let adminArea2 = jQuery('#shipping_city').val();
         let postalCode = jQuery('#shipping_postcode').val();
         let countryCode = jQuery('#shipping_country').val();
-
         if (!addressLine1 && jQuery('#shipping-address_1').length > 0) {
             addressLine1 = jQuery('#shipping-address_1').val();
             adminArea1 = jQuery('#shipping-state').val();
@@ -302,7 +258,6 @@ class PayPalFastlane {
             postalCode = jQuery('#shipping-postcode').val();
             countryCode = jQuery('#shipping-country').val();
         }
-
         return {
             addressLine1: addressLine1,
             adminArea1: adminArea1,
@@ -314,8 +269,7 @@ class PayPalFastlane {
 
     updateWooCheckoutFields(profileData) {
         if (!profileData || !profileData.card) {
-            console.error("Profile data or card information is missing.");
-            return;  // Exit the function if profileData or card is null/undefined
+            return;
         }
         const updateField = (selector, value) => {
             if (value) {
@@ -341,7 +295,6 @@ class PayPalFastlane {
         updateField('#shipping_country', shippingAddress.countryCode);
         updateField('#shipping_state', shippingAddress.adminArea1);
         jQuery(document.body).trigger('custom_action_to_refresh_checkout', profileData);
-
         jQuery.ajax({
             url: fastlane_object.ajaxurl,
             method: 'POST',
@@ -362,7 +315,6 @@ class PayPalFastlane {
                 console.log('Error during AJAX request.');
             }
         });
-
         this.setPaymentMethod(this.paymentMethodId);
     }
 
@@ -410,7 +362,7 @@ class PayPalFastlane {
     }
 
     bindEmailLookupEvent() {
-        jQuery('.fastlane-submit-button').off('click');  // Unbind any existing event listeners first
+        jQuery('.fastlane-submit-button').off('click');
         jQuery('.fastlane-submit-button').on('click', async (event) => {
             event.preventDefault();
             const emailInput = jQuery('#fastlane-email');
@@ -420,10 +372,8 @@ class PayPalFastlane {
                 return;
             }
             emailInput.removeClass('fastlane-input-error');
-
             const button = jQuery('.fastlane-submit-button');
-            button.prop('disabled', true); // Disable button to prevent multiple clicks
-
+            button.prop('disabled', true);
             try {
                 await this.processEmailLookup();
                 if (!this.isPaymentMethodSet) {
@@ -439,11 +389,7 @@ class PayPalFastlane {
 
     bindWooCommerceEvents() {
         jQuery(document.body).on('updated_checkout ppcp_fastlane_checkout_updated updated_cart_totals payment_method_selected', () => {
-            console.log('438');
-
-            // Try the first selector and if it doesn't return a value, try the second one
             var selectedpayment = $('input[name="payment_method"]:checked').val() || $('input[name="radio-control-wc-payment-method-options"]:checked').val();
-
             console.log(selectedpayment);
             if (selectedpayment === 'angelleye_ppcp_fastlane') {
                 console.log(selectedpayment);
