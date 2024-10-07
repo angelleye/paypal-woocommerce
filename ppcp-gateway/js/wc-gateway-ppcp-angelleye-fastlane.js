@@ -155,6 +155,7 @@ class PayPalFastlane {
                 jQuery('#fastlane-email').removeClass('fastlane-input-error');
             }
             event.preventDefault();
+            angelleyeOrder.showProcessingSpinner();
             try {
                 let paymentToken = this.paymentToken;
                 if (!paymentToken) {
