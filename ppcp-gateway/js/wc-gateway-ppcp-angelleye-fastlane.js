@@ -64,8 +64,8 @@ class PayPalFastlane {
         // Check if card details are present in the profile data
         if (this.profileData?.card) {
             console.log("Rendering saved card details...");
-            console.log(this.profileData);
-            console.log(this.containerSelector);
+            console.log("67" + this.profileData);
+            console.log("68" + this.containerSelector);
             // Check if the container selector exists in the DOM
             const containerExists = jQuery(this.containerSelector).length > 0;
             console.log("Container exists:", containerExists);
