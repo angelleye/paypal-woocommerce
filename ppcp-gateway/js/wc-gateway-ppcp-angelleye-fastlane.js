@@ -24,7 +24,7 @@ class PayPalFastlane {
 
     async lookupCustomerByEmail(email) {
         try {
-            const { customerContextId } = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
+            const {customerContextId} = await this.fastlaneInstance.identity.lookupCustomerByEmail(email);
             return customerContextId;
         } catch (error) {
             console.error("Error looking up customer by email:", error);
@@ -34,7 +34,7 @@ class PayPalFastlane {
 
     async authenticateCustomer(customerContextId) {
         try {
-            const { authenticationState, profileData } = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
+            const {authenticationState, profileData} = await this.fastlaneInstance.identity.triggerAuthenticationFlow(customerContextId);
 
             // Log the profile data to check for card information
             console.log("Profile Data after authentication:", profileData);
@@ -63,6 +63,9 @@ class PayPalFastlane {
     async renderCardDetails() {
         // Check if card details are present in the profile data
         if (this.profileData?.card) {
+            this.bindChangeCardEvent();
+            await this.initializeFastlaneCardComponent();
+            this.bindPlaceOrderEvent(this.fastlaneCardComponent);
             console.log("Rendering saved card details...");
             console.log("67", this.profileData);
             console.log("68", '#angelleye_ppcp_checkout_fastlane');
@@ -92,9 +95,7 @@ class PayPalFastlane {
             // Check if the HTML is successfully injected
             console.log("Saved card element added to DOM:", jQuery('#paypal-fastlane-saved-card').length > 0);
 
-            this.bindChangeCardEvent();
-            await this.initializeFastlaneCardComponent();
-            this.bindPlaceOrderEvent(this.fastlaneCardComponent);
+
         } else {
             console.log("No saved card found, rendering card form...");
             this.renderCardForm();
@@ -113,11 +114,11 @@ class PayPalFastlane {
                 const fields = {
                     cardholderName: {
                         enabled: true,
-                        ...(firstName && lastName ? { prefill: `${firstName} ${lastName}` } : {})
+                        ...(firstName && lastName ? {prefill: `${firstName} ${lastName}`} : {})
                     },
                     phoneNumber: {
                         enabled: true,
-                        ...(phoneNumber ? { prefill: phoneNumber } : {})
+                        ...(phoneNumber ? {prefill: phoneNumber} : {})
                     }
                 };
                 this.fastlaneCardComponent = await this.fastlaneInstance.FastlaneCardComponent({
@@ -165,7 +166,7 @@ class PayPalFastlane {
             event.stopPropagation(); // Stop the event from bubbling up
 
             try {
-                const { selectedCard } = await this.fastlaneInstance.profile.showCardSelector();
+                const {selectedCard} = await this.fastlaneInstance.profile.showCardSelector();
                 if (selectedCard) {
                     this.profileData.card = selectedCard;
                     this.paymentToken = selectedCard.id;  // Set the paymentToken to the selected card's ID
@@ -239,7 +240,7 @@ class PayPalFastlane {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
-                    await angelleyeOrder.createOrder({ errorLogId }).then((orderData) => {
+                    await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
                         if (orderData.redirected) {
                             window.location.href = orderData.url;
                         } else {
