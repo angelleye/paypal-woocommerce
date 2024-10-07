@@ -65,9 +65,9 @@ class PayPalFastlane {
         if (this.profileData?.card) {
             console.log("Rendering saved card details...");
             console.log("67", this.profileData);
-            console.log("68", this.containerSelector);
+            console.log("68", '#angelleye_ppcp_checkout_fastlane');
             // Check if the container selector exists in the DOM
-            const containerExists = jQuery(this.containerSelector).length > 0;
+            const containerExists = jQuery('#angelleye_ppcp_checkout_fastlane').length > 0;
             console.log("Container exists:", containerExists);
 
             if (!containerExists) {
@@ -84,7 +84,7 @@ class PayPalFastlane {
                 </div>
             `;
             // Inject the saved card HTML into the container
-            jQuery(this.containerSelector).html(this.savedCardHtml);
+            jQuery('#angelleye_ppcp_checkout_fastlane').html(this.savedCardHtml);
 
             // Force the visibility of the saved card in case it's hidden
             jQuery('#paypal-fastlane-saved-card').css('display', 'block');
@@ -137,7 +137,7 @@ class PayPalFastlane {
     async renderCardForm() {
         try {
             await this.initializeFastlaneCardComponent();
-            this.fastlaneCardComponent.render(this.containerSelector);
+            this.fastlaneCardComponent.render('#angelleye_ppcp_checkout_fastlane');
             this.bindPlaceOrderEvent(this.fastlaneCardComponent);
         } catch (error) {
             console.error("Error rendering card form:", error);
@@ -149,7 +149,7 @@ class PayPalFastlane {
 
         if (!existingCardSection.length && this.savedCardHtml) {
             // Restore the saved card HTML if it's available
-            jQuery(this.containerSelector).html(this.savedCardHtml);
+            jQuery('#angelleye_ppcp_checkout_fastlane').html(this.savedCardHtml);
             this.bindChangeCardEvent();
         } else if (!existingCardSection.length && !this.savedCardHtml) {
             this.processEmailLookup().then(() => {
