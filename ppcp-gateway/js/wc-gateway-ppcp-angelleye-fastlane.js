@@ -1,6 +1,6 @@
 class PayPalFastlane {
     constructor(containerSelector) {
-        this.containerSelector = containerSelector;
+        this.containerSelector = '#angelleye_ppcp_checkout_fastlane';
         this.fastlaneInstance = null;
         this.profileData = null;
         this.paymentToken = null;
