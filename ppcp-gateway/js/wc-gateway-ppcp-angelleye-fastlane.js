@@ -434,7 +434,7 @@ class PayPalFastlane {
     }
 
     bindWooCommerceEvents() {
-        jQuery(document.body).on('updated_checkout ppcp_fastlane_checkout_updated', () => {
+        jQuery(document.body).on('updated_checkout ppcp_fastlane_checkout_updated updated_cart_totals payment_method_selected', () => {
             var selectedpayment = $('input[name="radio-control-wc-payment-method-options"]:checked').val();
             if (selectedpayment === 'angelleye_ppcp_fastlane') {
                 this.isCardDetailsRestored = false; // Reset flag
