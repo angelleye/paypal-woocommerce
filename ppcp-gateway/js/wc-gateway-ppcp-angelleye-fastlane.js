@@ -91,7 +91,7 @@ class PayPalFastlane {
             
             console.log("Saved card HTML:", this.savedCardHtml);
             
-            console.log("Injected HTML:", jQuery(this.containerSelector).html());
+            console.log("Injected HTML:", jQuery('#angelleye_ppcp_checkout_fastlane').html());
 
             // Force the visibility of the saved card in case it's hidden
             jQuery('#paypal-fastlane-saved-card').css('display', 'block');
