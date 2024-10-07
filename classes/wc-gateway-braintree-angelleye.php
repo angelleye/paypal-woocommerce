@@ -1136,6 +1136,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $payment_method_token = $this->braintree_ach_create_payment_method($braintree_customer_id);
             if($payment_method_token) {
                 $success = $this->angelleye_ach_process_payment($order, $payment_method_token);
+            } else {
+                $this->add_log("Error: Unable to create ach payment method.");
+                $order->update_status('failed', __('Unable to create Braintree ACH payment token.', 'paypal-for-woocommerce'));
             }
         } else {
             if( $this->payment_action == 'Sale' ) {
