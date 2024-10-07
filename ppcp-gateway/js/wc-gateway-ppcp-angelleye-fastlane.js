@@ -313,6 +313,10 @@ class PayPalFastlane {
     }
 
     updateWooCheckoutFields(profileData) {
+        if (!profileData || !profileData.card) {
+            console.error("Profile data or card information is missing.");
+            return;  // Exit the function if profileData or card is null/undefined
+        }
         const updateField = (selector, value) => {
             if (value) {
                 jQuery(selector).val(value).trigger('change');
