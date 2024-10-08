@@ -153,76 +153,78 @@ class PayPalFastlane {
             } else {
                 jQuery('#fastlane-email').removeClass('fastlane-input-error');
             }
-            console.log('fastland submit');
+
+            console.log('fastlane submit');
             event.preventDefault();
             angelleyeOrder.showProcessingSpinner();
+
             try {
                 let paymentToken = this.paymentToken;
                 console.log('161', paymentToken);
+
+                // Initialize billingAddress and shippingAddress with default values
+                let billingAddress = this.getBillingAddress() || {
+                    addressLine1: '',
+                    adminArea1: '',
+                    adminArea2: '',
+                    postalCode: '',
+                    countryCode: ''
+                };
+
+                let shippingAddress = this.getShippingAddress() || {
+                    addressLine1: '',
+                    adminArea1: '',
+                    adminArea2: '',
+                    postalCode: '',
+                    countryCode: ''
+                };
+
                 if (!paymentToken) {
                     console.log('163', paymentToken);
-                    let billingAddress = this.getBillingAddress();
-                    let shippingAddress = this.getShippingAddress();
+
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
                     }
-                    if (!shippingAddress || Object.keys(shippingAddress).length === 0 || !shippingAddress.addressLine1) {
-                        shippingAddress = {
-                            addressLine1: billingAddress.addressLine1 || '',
-                            adminArea1: billingAddress.adminArea1 || '',
-                            adminArea2: billingAddress.adminArea2 || '',
-                            postalCode: billingAddress.postalCode || '',
-                            countryCode: billingAddress.countryCode || ''
-                        };
-                    } 
-                    if (!billingAddress || Object.keys(billingAddress).length === 0 || !billingAddress.addressLine1) {
-                        billingAddress = {
-                            addressLine1: shippingAddress.addressLine1 || '',
-                            adminArea1: shippingAddress.adminArea1 || '',
-                            adminArea2: shippingAddress.adminArea2 || '',
-                            postalCode: shippingAddress.postalCode || '',
-                            countryCode: shippingAddress.countryCode || ''
-                        };
-                    } else {
-                        billingAddress = shippingAddress;
+
+                    // Ensure shippingAddress falls back to billingAddress if needed
+                    if (!shippingAddress.addressLine1) {
+                        shippingAddress = {...billingAddress};
                     }
+
+                    // Ensure billingAddress falls back to shippingAddress if needed
+                    if (!billingAddress.addressLine1) {
+                        billingAddress = {...shippingAddress};
+                    }
+
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
                         billingAddress,
                         shippingAddress
                     });
+
                     this.paymentToken = paymentToken;
                 } else {
                     console.log("Using existing payment token:", paymentToken);
-                    let billingAddress = this.getBillingAddress();
-                    let shippingAddress = this.getShippingAddress();
+
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
                     }
-                    if (!shippingAddress || Object.keys(shippingAddress).length === 0 || !shippingAddress.addressLine1) {
-                        shippingAddress = {
-                            addressLine1: billingAddress.addressLine1 || '',
-                            adminArea1: billingAddress.adminArea1 || '',
-                            adminArea2: billingAddress.adminArea2 || '',
-                            postalCode: billingAddress.postalCode || '',
-                            countryCode: billingAddress.countryCode || ''
-                        };
-                    } 
-                    if (!billingAddress || Object.keys(billingAddress).length === 0 || !billingAddress.addressLine1) {
-                        billingAddress = {
-                            addressLine1: shippingAddress.addressLine1 || '',
-                            adminArea1: shippingAddress.adminArea1 || '',
-                            adminArea2: shippingAddress.adminArea2 || '',
-                            postalCode: shippingAddress.postalCode || '',
-                            countryCode: shippingAddress.countryCode || ''
-                        };
-                    } else {
-                        billingAddress = shippingAddress;
+
+                    if (!shippingAddress.addressLine1) {
+                        shippingAddress = {...billingAddress};
+                    }
+
+                    if (!billingAddress.addressLine1) {
+                        billingAddress = {...shippingAddress};
                     }
                 }
+
                 if (!paymentToken) {
                     throw new Error("Failed to retrieve payment token.");
                 }
-                console.log('200', paymentToken);
+
+                console.log('shippingAddress', shippingAddress);
+                console.log('billingAddress', billingAddress);
+
                 let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
@@ -230,33 +232,26 @@ class PayPalFastlane {
                     fieldValue: paymentToken.id || paymentToken,
                     appendToSelector: checkoutSelector
                 });
-                console.log('208', checkoutSelector);
-                
+
                 let errorLogId = angelleyeJsErrorLogger.generateErrorId();
-                console.log('211', errorLogId);
                 angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
+
                 let address = {
                     'billing': billingAddress,
                     'shipping': shippingAddress
                 };
                 angelleyeOrder.ppcp_address = [];
                 angelleyeOrder.ppcp_address = address;
-                console.log(angelleyeOrder.ppcp_address);
-                console.log('220');
+
                 await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
                     if (orderData.redirected) {
-                        console.log('223');
                         window.location.href = orderData.url;
                     } else {
-                        console.log('226');
-                        console.log('227', orderData.data.messages);
-                        jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
-                        jQuery('.wc-block-components-checkout-place-order-button, .wp-block-woocommerce-checkout-fields-block #contact-fields, .wp-block-woocommerce-checkout-fields-block #billing-fields, .wp-block-woocommerce-checkout-fields-block #payment-method').unblock();
                         console.error("Failed to place order:", orderData.data.messages);
                         angelleyeOrder.showError("Failed to place order: " + orderData.data.messages);
                     }
                 });
-                
+
             } catch (error) {
                 console.log('236', error);
                 jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
