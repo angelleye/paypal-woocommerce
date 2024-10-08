@@ -176,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 const ppcp_fastlane_uniqueEvents = new Set([
     'experimental__woocommerce_blocks-checkout-render-checkout-form',
+    'experimental__woocommerce_blocks-checkout-set-active-payment-method'
 ]);
 
 ppcp_fastlane_uniqueEvents.forEach(function (action) {
