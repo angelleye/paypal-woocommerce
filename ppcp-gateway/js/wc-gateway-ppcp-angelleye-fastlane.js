@@ -329,6 +329,7 @@ class PayPalFastlane {
             this.isPaymentMethodSet = true;
             jQuery('#radio-control-wc-payment-method-options-angelleye_ppcp_fastlane').parent('label').parent('div').trigger('click');
         }
+        angelleyeOrder.hideShowPlaceOrderButton();
     }
 
     async processEmailLookup() {
