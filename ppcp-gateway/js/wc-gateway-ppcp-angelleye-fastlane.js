@@ -160,7 +160,7 @@ class PayPalFastlane {
                 if (!paymentToken) {
                     let billingAddress = this.getBillingAddress();
                     console.log('billingAddress', billingAddress);
-                    
+
                     let shippingAddress = this.getShippingAddress();
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
@@ -188,7 +188,7 @@ class PayPalFastlane {
 
                     }
                     console.log('shippingAddress', shippingAddress);
-                    
+
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
                         billingAddress,
                         shippingAddress
@@ -212,6 +212,12 @@ class PayPalFastlane {
                     let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
+                    let address = {
+                        'billing': billingAddress,
+                        'shipping': shippingAddress
+                    };
+                    angelleyeOrder.ppcp_address = [];
+                    angelleyeOrder.ppcp_address = address;
                     await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
                         if (orderData.redirected) {
                             window.location.href = orderData.url;
