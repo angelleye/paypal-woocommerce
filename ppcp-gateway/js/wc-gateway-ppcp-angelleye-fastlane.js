@@ -242,8 +242,9 @@ class PayPalFastlane {
                 };
                 angelleyeOrder.ppcp_address = [];
                 angelleyeOrder.ppcp_address = address;
-
-                await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
+                let shippingDetails = {...shippingAddress};
+                let billingDetails = {...billingAddress};
+                await angelleyeOrder.createOrder({shippingDetails, billingDetails, errorLogId}).then((orderData) => {
                     if (orderData.redirected) {
                         window.location.href = orderData.url;
                     } else {
