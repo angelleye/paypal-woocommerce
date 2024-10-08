@@ -185,7 +185,7 @@ ppcp_fastlane_uniqueEvents.forEach(function (action) {
     addAction(action, 'c', function () {
         setTimeout(function () {
             jQuery(document.body).trigger('ppcp_fastlane_checkout_updated');
-        }, 2000);
+        }, 20);
     });
 });
 
