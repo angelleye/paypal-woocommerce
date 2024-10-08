@@ -158,7 +158,9 @@ class PayPalFastlane {
             angelleyeOrder.showProcessingSpinner();
             try {
                 let paymentToken = this.paymentToken;
+                console.log('161', paymentToken);
                 if (!paymentToken) {
+                    console.log('163', paymentToken);
                     let billingAddress = this.getBillingAddress();
                     let shippingAddress = this.getShippingAddress();
                     if (!fastlaneCardComponent) {
@@ -195,6 +197,7 @@ class PayPalFastlane {
                 if (!paymentToken) {
                     throw new Error("Failed to retrieve payment token.");
                 }
+                console.log('200', paymentToken);
                 let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
@@ -202,9 +205,10 @@ class PayPalFastlane {
                     fieldValue: paymentToken.id || paymentToken,
                     appendToSelector: checkoutSelector
                 });
-
+                console.log('208', checkoutSelector);
                 
                 let errorLogId = angelleyeJsErrorLogger.generateErrorId();
+                console.log('211', errorLogId);
                 angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                 jQuery(checkoutSelector).addClass('createOrder');
                 let address = {
