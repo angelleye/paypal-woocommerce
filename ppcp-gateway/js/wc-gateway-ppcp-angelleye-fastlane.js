@@ -193,6 +193,31 @@ class PayPalFastlane {
                     this.paymentToken = paymentToken;
                 } else {
                     console.log("Using existing payment token:", paymentToken);
+                    let billingAddress = this.getBillingAddress();
+                    let shippingAddress = this.getShippingAddress();
+                    if (!fastlaneCardComponent) {
+                        throw new Error("FastlaneCardComponent is not initialized.");
+                    }
+                    if (!shippingAddress || Object.keys(shippingAddress).length === 0 || !shippingAddress.addressLine1) {
+                        shippingAddress = {
+                            addressLine1: billingAddress.addressLine1 || '',
+                            adminArea1: billingAddress.adminArea1 || '',
+                            adminArea2: billingAddress.adminArea2 || '',
+                            postalCode: billingAddress.postalCode || '',
+                            countryCode: billingAddress.countryCode || ''
+                        };
+                    } 
+                    if (!billingAddress || Object.keys(billingAddress).length === 0 || !billingAddress.addressLine1) {
+                        billingAddress = {
+                            addressLine1: shippingAddress.addressLine1 || '',
+                            adminArea1: shippingAddress.adminArea1 || '',
+                            adminArea2: shippingAddress.adminArea2 || '',
+                            postalCode: shippingAddress.postalCode || '',
+                            countryCode: shippingAddress.countryCode || ''
+                        };
+                    } else {
+                        billingAddress = shippingAddress;
+                    }
                 }
                 if (!paymentToken) {
                     throw new Error("Failed to retrieve payment token.");
