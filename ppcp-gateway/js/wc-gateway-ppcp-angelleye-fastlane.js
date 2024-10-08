@@ -153,6 +153,7 @@ class PayPalFastlane {
             } else {
                 jQuery('#fastlane-email').removeClass('fastlane-input-error');
             }
+            console.log('fastland submit');
             event.preventDefault();
             angelleyeOrder.showProcessingSpinner();
             try {
