@@ -159,6 +159,8 @@ class PayPalFastlane {
                 let paymentToken = this.paymentToken;
                 if (!paymentToken) {
                     let billingAddress = this.getBillingAddress();
+                    console.log('billingAddress', billingAddress);
+                    
                     let shippingAddress = this.getShippingAddress();
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
@@ -185,7 +187,8 @@ class PayPalFastlane {
                     } else {
 
                     }
-                    console.log(wcAddresses);
+                    console.log('shippingAddress', shippingAddress);
+                    
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
                         billingAddress,
                         shippingAddress
