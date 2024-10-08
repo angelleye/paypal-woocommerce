@@ -296,7 +296,7 @@ const angelleyeOrder = {
             jQuery(errorMessageLocation).css('display', 'block');
         jQuery(errorMessageLocation).find('.input-text, select, input:checkbox').trigger('validate').trigger('blur');
         if (!errorMessageLocation.length) {
-            throw new Error(errorMessage);
+           // throw new Error(errorMessage);
         }
         angelleyeOrder.scrollToWooCommerceNoticesSection();
     },
