@@ -143,7 +143,6 @@ class PayPalFastlane {
     }
 
     bindPlaceOrderEvent(fastlaneCardComponent) {
-        jQuery(document.body).off('submit_angelleye_ppcp_fastlane');
         jQuery(document.body).on('submit_angelleye_ppcp_fastlane', async (event) => {
             if (jQuery('#fastlane-email').length > 0 && jQuery('#fastlane-email').val().trim() === '') {
                 jQuery('#fastlane-email').addClass('fastlane-input-error');
