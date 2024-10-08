@@ -171,6 +171,10 @@ class PayPalFastlane {
                             postalCode: shippingAddress.postalCode || '',
                             countryCode: shippingAddress.countryCode || ''
                         };
+                    } else {
+                        const wcAddresses = wp.data
+				.select( 'wc/store/cart' )
+				.getCustomerData();
                     }
                     if (!shippingAddress || Object.keys(shippingAddress).length === 0 || !shippingAddress.addressLine1) {
                         shippingAddress = {
@@ -180,7 +184,12 @@ class PayPalFastlane {
                             postalCode: billingAddress.postalCode || '',
                             countryCode: billingAddress.countryCode || ''
                         };
+                    } else {
+                        const wcAddresses = wp.data
+				.select( 'wc/store/cart' )
+				.getCustomerData();
                     }
+                    console.log(wcAddresses);
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
                         billingAddress,
                         shippingAddress
