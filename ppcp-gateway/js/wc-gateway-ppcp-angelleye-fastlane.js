@@ -210,7 +210,6 @@ class PayPalFastlane {
                 let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                 console.log('211', errorLogId);
                 angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
-                jQuery(checkoutSelector).addClass('createOrder');
                 let address = {
                     'billing': billingAddress,
                     'shipping': shippingAddress
@@ -218,10 +217,14 @@ class PayPalFastlane {
                 angelleyeOrder.ppcp_address = [];
                 angelleyeOrder.ppcp_address = address;
                 console.log(angelleyeOrder.ppcp_address);
+                console.log('220');
                 await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
                     if (orderData.redirected) {
+                        console.log('223');
                         window.location.href = orderData.url;
                     } else {
+                        console.log('226');
+                        console.log('227', orderData.data.messages);
                         jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
                         jQuery('.wc-block-components-checkout-place-order-button, .wp-block-woocommerce-checkout-fields-block #contact-fields, .wp-block-woocommerce-checkout-fields-block #billing-fields, .wp-block-woocommerce-checkout-fields-block #payment-method').unblock();
                         console.error("Failed to place order:", orderData.data.messages);
@@ -230,6 +233,7 @@ class PayPalFastlane {
                 });
                 
             } catch (error) {
+                console.log('236', error);
                 jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
                 angelleyeOrder.hideProcessingSpinner();
             }
