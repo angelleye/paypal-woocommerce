@@ -159,22 +159,9 @@ class PayPalFastlane {
                 let paymentToken = this.paymentToken;
                 if (!paymentToken) {
                     let billingAddress = this.getBillingAddress();
-                    console.log('billingAddress', billingAddress);
-
                     let shippingAddress = this.getShippingAddress();
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
-                    }
-                    if (!billingAddress || Object.keys(billingAddress).length === 0 || !billingAddress.addressLine1) {
-                        billingAddress = {
-                            addressLine1: shippingAddress.addressLine1 || '',
-                            adminArea1: shippingAddress.adminArea1 || '',
-                            adminArea2: shippingAddress.adminArea2 || '',
-                            postalCode: shippingAddress.postalCode || '',
-                            countryCode: shippingAddress.countryCode || ''
-                        };
-                    } else {
-
                     }
                     if (!shippingAddress || Object.keys(shippingAddress).length === 0 || !shippingAddress.addressLine1) {
                         shippingAddress = {
@@ -184,11 +171,18 @@ class PayPalFastlane {
                             postalCode: billingAddress.postalCode || '',
                             countryCode: billingAddress.countryCode || ''
                         };
+                    } 
+                    if (!billingAddress || Object.keys(billingAddress).length === 0 || !billingAddress.addressLine1) {
+                        billingAddress = {
+                            addressLine1: shippingAddress.addressLine1 || '',
+                            adminArea1: shippingAddress.adminArea1 || '',
+                            adminArea2: shippingAddress.adminArea2 || '',
+                            postalCode: shippingAddress.postalCode || '',
+                            countryCode: shippingAddress.countryCode || ''
+                        };
                     } else {
-
+                        billingAddress = shippingAddress;
                     }
-                    console.log('shippingAddress', shippingAddress);
-
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
                         billingAddress,
                         shippingAddress
