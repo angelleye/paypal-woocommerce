@@ -203,27 +203,28 @@ class PayPalFastlane {
                     appendToSelector: checkoutSelector
                 });
 
-                if (!jQuery(checkoutSelector).hasClass('createOrder')) {
-                    let errorLogId = angelleyeJsErrorLogger.generateErrorId();
-                    angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
-                    jQuery(checkoutSelector).addClass('createOrder');
-                    let address = {
-                        'billing': billingAddress,
-                        'shipping': shippingAddress
-                    };
-                    angelleyeOrder.ppcp_address = [];
-                    angelleyeOrder.ppcp_address = address;
-                    await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
-                        if (orderData.redirected) {
-                            window.location.href = orderData.url;
-                        } else {
-                            jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
-                            jQuery('.wc-block-components-checkout-place-order-button, .wp-block-woocommerce-checkout-fields-block #contact-fields, .wp-block-woocommerce-checkout-fields-block #billing-fields, .wp-block-woocommerce-checkout-fields-block #payment-method').unblock();
-                            console.error("Failed to place order:", orderData.data.messages);
-                            angelleyeOrder.showError("Failed to place order: " + orderData.data.messages);
-                        }
-                    });
-                }
+                
+                let errorLogId = angelleyeJsErrorLogger.generateErrorId();
+                angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
+                jQuery(checkoutSelector).addClass('createOrder');
+                let address = {
+                    'billing': billingAddress,
+                    'shipping': shippingAddress
+                };
+                angelleyeOrder.ppcp_address = [];
+                angelleyeOrder.ppcp_address = address;
+                console.log(angelleyeOrder.ppcp_address);
+                await angelleyeOrder.createOrder({errorLogId}).then((orderData) => {
+                    if (orderData.redirected) {
+                        window.location.href = orderData.url;
+                    } else {
+                        jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
+                        jQuery('.wc-block-components-checkout-place-order-button, .wp-block-woocommerce-checkout-fields-block #contact-fields, .wp-block-woocommerce-checkout-fields-block #billing-fields, .wp-block-woocommerce-checkout-fields-block #payment-method').unblock();
+                        console.error("Failed to place order:", orderData.data.messages);
+                        angelleyeOrder.showError("Failed to place order: " + orderData.data.messages);
+                    }
+                });
+                
             } catch (error) {
                 jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
                 angelleyeOrder.hideProcessingSpinner();
