@@ -172,9 +172,7 @@ class PayPalFastlane {
                             countryCode: shippingAddress.countryCode || ''
                         };
                     } else {
-                        const wcAddresses = wp.data
-				.select( 'wc/store/cart' )
-				.getCustomerData();
+
                     }
                     if (!shippingAddress || Object.keys(shippingAddress).length === 0 || !shippingAddress.addressLine1) {
                         shippingAddress = {
@@ -185,9 +183,7 @@ class PayPalFastlane {
                             countryCode: billingAddress.countryCode || ''
                         };
                     } else {
-                        const wcAddresses = wp.data
-				.select( 'wc/store/cart' )
-				.getCustomerData();
+
                     }
                     console.log(wcAddresses);
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
