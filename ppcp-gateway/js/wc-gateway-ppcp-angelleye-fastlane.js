@@ -261,7 +261,6 @@ class PayPalFastlane {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
             const {billingAddress, shippingAddress} = customerData;
             const addressData = (prefix === 'billing') ? billingAddress : shippingAddress;
-            console.log(`Fallback for ${prefix} address:`, addressData);
             addressLine1 = addressData.address_1;
             addressLine2 = addressData.address_2;
             adminArea1 = addressData.state;
