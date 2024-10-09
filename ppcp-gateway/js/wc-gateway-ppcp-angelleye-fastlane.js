@@ -269,13 +269,10 @@ class PayPalFastlane {
         });
     }
 
-    const isValidAddress = (address) => {
-        // At least one name must be present.
+    isValidAddress(address) {
         if (!address.name.firstName && !address.name.lastName) {
             return false;
         }
-
-        // Street, city, postcode, and country are mandatory; state is optional.
         return (
                 address.address.addressLine1 &&
                 address.address.adminArea2 && // city
@@ -283,8 +280,8 @@ class PayPalFastlane {
                 address.address.countryCode
                 );
     }
-    ;
-            getAddress(prefix) {
+
+    getAddress(prefix) {
         let addressLine1 = jQuery(`#${prefix}_address_1`).val();
         let addressLine2 = jQuery(`#${prefix}_address_2`).val();
         let adminArea1 = jQuery(`#${prefix}_state`).val();
