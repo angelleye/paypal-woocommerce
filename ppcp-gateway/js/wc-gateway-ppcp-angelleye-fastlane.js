@@ -269,101 +269,91 @@ class PayPalFastlane {
         });
     }
 
-    getBillingAddress() {
-        let addressLine1 = jQuery('#billing_address_1').val();
-        let addressLine2 = jQuery('#billing_address_2').val();
-        let adminArea1 = jQuery('#billing_state').val();
-        let adminArea2 = jQuery('#billing_city').val();
-        let postalCode = jQuery('#billing_postcode').val();
-        let countryCode = jQuery('#billing_country').val();
-        let firstName = jQuery('#billing_first_name').val();
-        let lastName = jQuery('#billing_last_name').val();
-        let phoneNumber = jQuery('#billing_phone').val();
-        let email = jQuery('#billing_email').val();
+    const isValidAddress = (address) => {
+        // At least one name must be present.
+        if (!address.name.firstName && !address.name.lastName) {
+            return false;
+        }
+
+        // Street, city, postcode, and country are mandatory; state is optional.
+        return (
+                address.address.addressLine1 &&
+                address.address.adminArea2 && // city
+                address.address.postalCode &&
+                address.address.countryCode
+                );
+    }
+    ;
+            getAddress(prefix) {
+        let addressLine1 = jQuery(`#${prefix}_address_1`).val();
+        let addressLine2 = jQuery(`#${prefix}_address_2`).val();
+        let adminArea1 = jQuery(`#${prefix}_state`).val();
+        let adminArea2 = jQuery(`#${prefix}_city`).val();
+        let postalCode = jQuery(`#${prefix}_postcode`).val();
+        let countryCode = jQuery(`#${prefix}_country`).val();
+        let firstName = jQuery(`#${prefix}_first_name`).val();
+        let lastName = jQuery(`#${prefix}_last_name`).val();
+        let phoneNumber = jQuery(`#${prefix}_phone`).val();
+        let email = jQuery(`#${prefix}_email`).val();
 
         // Fallback for different field selectors
-        if (!addressLine1 && jQuery('#billing-address_1').length > 0) {
+        if (!addressLine1 && jQuery(`#${prefix}-address_1`).length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
-            const {billingAddress} = customerData;
-            console.log('288', billingAddress);
-            addressLine1 = billingAddress.address_1;
-            addressLine2 = billingAddress.address_2;
-            adminArea1 = billingAddress.state;
-            adminArea2 = billingAddress.city;
-            postalCode = billingAddress.postcode;
-            countryCode = billingAddress.country;
-            firstName = billingAddress.first_name;
-            lastName = billingAddress.last_name;
-            phoneNumber = billingAddress.phone;
-            email = billingAddress.email;
+            const addressData = customerData[prefix];
+
+            console.log(`Fallback for ${prefix} address:`, addressData);
+            addressLine1 = addressData.address_1;
+            addressLine2 = addressData.address_2;
+            adminArea1 = addressData.state;
+            adminArea2 = addressData.city;
+            postalCode = addressData.postcode;
+            countryCode = addressData.country;
+            firstName = addressData.first_name;
+            lastName = addressData.last_name;
+            phoneNumber = addressData.phone;
+            email = addressData.email;
         }
 
         return {
             name: {
-                firstName: firstName,
-                lastName: lastName
+                firstName: firstName || '',
+                lastName: lastName || ''
             },
             address: {
-                addressLine1: addressLine1,
-                addressLine2: addressLine2,
-                adminArea1: adminArea1,
-                adminArea2: adminArea2,
-                postalCode: postalCode,
-                countryCode: countryCode
+                addressLine1: addressLine1 || '',
+                addressLine2: addressLine2 || '',
+                adminArea1: adminArea1 || '',
+                adminArea2: adminArea2 || '',
+                postalCode: postalCode || '',
+                countryCode: countryCode || ''
             },
             phoneNumber: {
-                countryCode: countryCode,
-                nationalNumber: phoneNumber
+                countryCode: countryCode || '',
+                nationalNumber: phoneNumber || ''
             },
-            email: email
+            email: email || ''
         };
     }
 
-    getShippingAddress() {
-        let addressLine1 = jQuery('#shipping_address_1').val();
-        let addressLine2 = jQuery('#shipping_address_2').val();
-        let adminArea1 = jQuery('#shipping_state').val();
-        let adminArea2 = jQuery('#shipping_city').val();
-        let postalCode = jQuery('#shipping_postcode').val();
-        let countryCode = jQuery('#shipping_country').val();
-        let firstName = jQuery('#shipping_first_name').val();
-        let lastName = jQuery('#shipping_last_name').val();
-        let phoneNumber = jQuery('#shipping_phone').val(); // If shipping phone is used
+    getValidAddress(prefix) {
+        const billingAddress = this.getAddress('billing');
+        const shippingAddress = this.getAddress('shipping');
 
-        // Fallback for different field selectors
-        if (!addressLine1 && jQuery('#shipping-address_1').length > 0) {
-            const customerData = wp.data.select('wc/store/cart').getCustomerData();
-            const {shippingAddress} = customerData;
-            console.log('377', shippingAddress);
-            addressLine1 = shippingAddress.address_1;
-            addressLine2 = shippingAddress.address_2;
-            adminArea1 = shippingAddress.state;
-            adminArea2 = shippingAddress.city;
-            postalCode = shippingAddress.postcode;
-            countryCode = shippingAddress.country;
-            firstName = shippingAddress.first_name;
-            lastName = shippingAddress.last_name;
-            phoneNumber = shippingAddress.phone;
+        if (prefix === 'billing') {
+            // If billing is valid, use billing; otherwise, use shipping
+            return isValidAddress(billingAddress) ? billingAddress : shippingAddress;
+        } else if (prefix === 'shipping') {
+            // If shipping is valid, use shipping; otherwise, use billing
+            return isValidAddress(shippingAddress) ? shippingAddress : billingAddress;
         }
+    }
 
-        return {
-            name: {
-                firstName: firstName,
-                lastName: lastName
-            },
-            address: {
-                addressLine1: addressLine1,
-                addressLine2: addressLine2,
-                adminArea1: adminArea1,
-                adminArea2: adminArea2,
-                postalCode: postalCode,
-                countryCode: countryCode
-            },
-            phoneNumber: {
-                countryCode: countryCode,
-                nationalNumber: phoneNumber
-            }
-        };
+    getBillingAddress() {
+        return this.getValidAddress('billing');
+    }
+
+    getShippingAddress() {
+        return this.getValidAddress('shipping');
     }
 
     updateWooCheckoutFields(profileData) {
