@@ -319,16 +319,17 @@ class PayPalFastlane {
         // Fallback for different field selectors
         if (!addressLine1 && jQuery('#billing-address_1').length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
-            addressLine1 = customerData.billing.address_1;
-            addressLine2 = customerData.billing.address_2;
-            adminArea1 = customerData.billing.state;
-            adminArea2 = customerData.billing.city;
-            postalCode = customerData.billing.postcode;
-            countryCode = customerData.billing.country;
-            firstName = customerData.billing.first_name;
-            lastName = customerData.billing.last_name;
-            phoneNumber = customerData.billing.phone;
-            email = customerData.billing.email;
+            const { billingAddress } = customerData;
+            addressLine1 = billingAddress.address_1;
+            addressLine2 = billingAddress.address_2;
+            adminArea1 = billingAddress.state;
+            adminArea2 = billingAddress.city;
+            postalCode = billingAddress.postcode;
+            countryCode = billingAddress.country;
+            firstName = billingAddress.first_name;
+            lastName = billingAddress.last_name;
+            phoneNumber = billingAddress.phone;
+            email = billingAddress.email;
         }
 
         return {
@@ -366,16 +367,17 @@ class PayPalFastlane {
         // Fallback for different field selectors
         if (!addressLine1 && jQuery('#shipping-address_1').length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
+            const { billingAddress } = customerData;
             console.log(customerData);
-            addressLine1 = customerData.shipping.address_1;
-            addressLine2 = customerData.shipping.address_2;
-            adminArea1 = customerData.shipping.state;
-            adminArea2 = customerData.shipping.city;
-            postalCode = customerData.shipping.postcode;
-            countryCode = customerData.shipping.country;
-            firstName = customerData.shipping.first_name;
-            lastName = customerData.shipping.last_name;
-            phoneNumber = customerData.shipping.phone;
+            addressLine1 = shippingAddress.address_1;
+            addressLine2 = shippingAddress.address_2;
+            adminArea1 = shippingAddress.state;
+            adminArea2 = shippingAddress.city;
+            postalCode = shippingAddress.postcode;
+            countryCode = shippingAddress.country;
+            firstName = shippingAddress.first_name;
+            lastName = shippingAddress.last_name;
+            phoneNumber = shippingAddress.phone;
         }
 
         return {
