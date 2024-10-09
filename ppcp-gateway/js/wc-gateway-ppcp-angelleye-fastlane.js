@@ -221,10 +221,8 @@ class PayPalFastlane {
                 if (!paymentToken) {
                     throw new Error("Failed to retrieve payment token.");
                 }
-
                 console.log('shippingAddress', shippingAddress);
                 console.log('billingAddress', billingAddress);
-
                 let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
@@ -232,18 +230,35 @@ class PayPalFastlane {
                     fieldValue: paymentToken.id || paymentToken,
                     appendToSelector: checkoutSelector
                 });
-
                 let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                 angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
-
-                let address = {
-                    'billing': billingAddress,
-                    'shipping': shippingAddress
+                let billingDetails = {
+                    first_name: billingAddress?.name?.firstName || '',
+                    last_name: billingAddress?.name?.lastName || '',
+                    address_1: billingAddress?.addressLine1 || '',
+                    address_2: billingAddress?.addressLine2 || '',  // Fallback if addressLine2 is missing
+                    city: billingAddress?.adminArea2 || '',
+                    state: billingAddress?.adminArea1 || '',
+                    postcode: billingAddress?.postalCode || '',
+                    country: billingAddress?.countryCode || ''
+                };
+                let shippingDetails = {
+                    first_name: shippingAddress?.name?.firstName || '',
+                    last_name: shippingAddress?.name?.lastName || '',
+                    address_1: shippingAddress?.addressLine1 || '',
+                    address_2: shippingAddress?.addressLine2 || '',  // Fallback if addressLine2 is missing
+                    city: shippingAddress?.adminArea2 || '',
+                    state: shippingAddress?.adminArea1 || '',
+                    postcode: shippingAddress?.postalCode || '',
+                    country: shippingAddress?.countryCode || ''
+                };
+               let address = {
+                    'billing': billingDetails,
+                    'shipping': shippingDetails
                 };
                 angelleyeOrder.ppcp_address = [];
                 angelleyeOrder.ppcp_address = address;
-                let shippingDetails = {...shippingAddress};
-                let billingDetails = {...billingAddress};
+               
                 await angelleyeOrder.createOrder({shippingDetails, billingDetails, errorLogId}).then((orderData) => {
                     if (orderData.redirected) {
                         window.location.href = orderData.url;
