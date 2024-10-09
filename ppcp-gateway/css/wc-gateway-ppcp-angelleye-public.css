@@ -596,23 +596,25 @@ apple-pay-button {
     opacity: 1;
 }
 
-/* Desktop: Full width for CC number, half width for Expiry and CVC */
+/* Container styling */
 #wc-angelleye_ppcp_cc-cc-form {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
 
+/* Full width for card number */
 #angelleye_ppcp_cc-card-number {
     width: 100%;
 }
 
+/* Half width for MM/YY and CVV on larger screens */
 #angelleye_ppcp_cc-card-expiry, 
 #angelleye_ppcp_cc-card-cvc {
-    width: 48%;
+    width: calc(50% - 5px);
 }
 
-/* Mobile: Separate lines for each field */
+/* For smaller screens, stack all elements full width */
 @media only screen and (max-width: 768px) {
     #angelleye_ppcp_cc-card-number,
     #angelleye_ppcp_cc-card-expiry,
@@ -620,3 +622,4 @@ apple-pay-button {
         width: 100%;
     }
 }
+
