@@ -306,6 +306,8 @@ class PayPalFastlane {
     getValidAddress(prefix, forPaymentToken = false) {
         const billingAddress = this.getAddress('billing', forPaymentToken);
         const shippingAddress = this.getAddress('shipping', forPaymentToken);
+        console.log('getValidAddress - billingAddress', billingAddress);
+        console.log('getValidAddress - shippingAddress', shippingAddress);
         if (prefix === 'billing') {
             return this.isValidAddress(billingAddress) ? billingAddress : shippingAddress;
         } else if (prefix === 'shipping') {
