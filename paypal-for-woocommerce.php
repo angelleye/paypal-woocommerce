@@ -72,7 +72,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             $constants = [
                 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR' => dirname(__FILE__),
                 'PAYPAL_FOR_WOOCOMMERCE_ASSET_URL' => plugin_dir_url(__FILE__),
-                'VERSION_PFW' => '4.5.19',
+                'VERSION_PFW' => time(),
                 'PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE' => __FILE__,
                 'PAYPAL_FOR_WOOCOMMERCE_BASENAME' => plugin_basename(__FILE__),
                 'PAYPAL_FOR_WOOCOMMERCE_DIR_PATH' => untrailingslashit(plugin_dir_path(__FILE__)),
