@@ -272,6 +272,7 @@ class PayPalFastlane {
             countryCode = addressData.country;
             firstName = addressData.first_name;
             lastName = addressData.last_name;
+            email = addressData.email;
         }
         if (forPaymentToken) {
             return {
