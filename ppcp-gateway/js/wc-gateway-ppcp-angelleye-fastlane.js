@@ -309,8 +309,7 @@ class PayPalFastlane {
             countryCode = addressData.country;
             firstName = addressData.first_name;
             lastName = addressData.last_name;
-            phoneNumber = addressData.phone;
-            email = addressData.email;
+           
         }
 
         return {
@@ -325,12 +324,8 @@ class PayPalFastlane {
                 adminArea2: adminArea2 || '',
                 postalCode: postalCode || '',
                 countryCode: countryCode || ''
-            },
-            phoneNumber: {
-                countryCode: countryCode || '',
-                nationalNumber: phoneNumber || ''
-            },
-            email: email || ''
+            }
+            
         };
     }
 
