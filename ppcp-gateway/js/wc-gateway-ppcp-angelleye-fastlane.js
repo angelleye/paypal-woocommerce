@@ -236,14 +236,14 @@ class PayPalFastlane {
     }
 
     isValidAddress(address) {
-        if (!address.address.firstName && !address.address.lastName) {
+        if (!address.firstName && !address.lastName) {
             return false;
         }
         return (
-                address.address.addressLine1 &&
-                address.address.adminArea2 && // city
-                address.address.postalCode &&
-                address.address.countryCode
+                address.addressLine1 &&
+                address.adminArea2 && // city
+                address.postalCode &&
+                address.countryCode
                 );
     }
 
