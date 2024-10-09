@@ -219,7 +219,7 @@ class PayPalFastlane {
                     if (!billingAddress.addressLine1) {
                         billingAddress = {...shippingAddress};
                     }
-                    
+
                     console.log('for payment token billingAddress', billingAddress);
                     console.log('for payment token shippingAddress', shippingAddress);
 
@@ -318,16 +318,17 @@ class PayPalFastlane {
 
         // Fallback for different field selectors
         if (!addressLine1 && jQuery('#billing-address_1').length > 0) {
-            addressLine1 = jQuery('#billing-address_1').val();
-            addressLine2 = jQuery('#billing-address_2').val();
-            adminArea1 = jQuery('#billing-state').val();
-            adminArea2 = jQuery('#billing-city').val();
-            postalCode = jQuery('#billing-postcode').val();
-            countryCode = jQuery('#billing-country').val();
-            firstName = jQuery('#billing-first_name').val();
-            lastName = jQuery('#billing-last_name').val();
-            phoneNumber = jQuery('#billing-phone').val();
-            email = jQuery('#billing-email').val();
+            const customerData = wp.data.select('wc/store/cart').getCustomerData();
+            addressLine1 = customerData.billing.address_1;
+            addressLine2 = customerData.billing.address_2;
+            adminArea1 = customerData.billing.state;
+            adminArea2 = customerData.billing.city;
+            postalCode = customerData.billing.postcode;
+            countryCode = customerData.billing.country;
+            firstName = customerData.billing.first_name;
+            lastName = customerData.billing.last_name;
+            phoneNumber = customerData.billing.phone;
+            email = customerData.billing.email;
         }
 
         return {
@@ -364,15 +365,16 @@ class PayPalFastlane {
 
         // Fallback for different field selectors
         if (!addressLine1 && jQuery('#shipping-address_1').length > 0) {
-            addressLine1 = jQuery('#shipping-address_1').val();
-            addressLine2 = jQuery('#shipping-address_2').val();
-            adminArea1 = jQuery('#shipping-state').val();
-            adminArea2 = jQuery('#shipping-city').val();
-            postalCode = jQuery('#shipping-postcode').val();
-            countryCode = jQuery('#shipping-country').val();
-            firstName = jQuery('#shipping-first_name').val();
-            lastName = jQuery('#shipping-last_name').val();
-            phoneNumber = jQuery('#shipping-phone').val();
+            const customerData = wp.data.select('wc/store/cart').getCustomerData();
+            addressLine1 = customerData.shipping.address_1;
+            addressLine2 = customerData.shipping.address_2;
+            adminArea1 = customerData.shipping.state;
+            adminArea2 = customerData.shipping.city;
+            postalCode = customerData.shipping.postcode;
+            countryCode = customerData.shipping.country;
+            firstName = customerData.shipping.first_name;
+            lastName = customerData.shipping.last_name;
+            phoneNumber = customerData.shipping.phone;
         }
 
         return {
