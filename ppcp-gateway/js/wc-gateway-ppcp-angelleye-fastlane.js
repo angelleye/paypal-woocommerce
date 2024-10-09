@@ -285,6 +285,7 @@ class PayPalFastlane {
         if (!addressLine1 && jQuery('#billing-address_1').length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
             const {billingAddress} = customerData;
+            console.log('288', billingAddress);
             addressLine1 = billingAddress.address_1;
             addressLine2 = billingAddress.address_2;
             adminArea1 = billingAddress.state;
@@ -333,7 +334,7 @@ class PayPalFastlane {
         if (!addressLine1 && jQuery('#shipping-address_1').length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
             const {shippingAddress} = customerData;
-            console.log(customerData);
+            console.log('377', shippingAddress);
             addressLine1 = shippingAddress.address_1;
             addressLine2 = shippingAddress.address_2;
             adminArea1 = shippingAddress.state;
