@@ -219,6 +219,9 @@ class PayPalFastlane {
                     if (!billingAddress.addressLine1) {
                         billingAddress = {...shippingAddress};
                     }
+                    
+                    console.log('for payment token billingAddress', billingAddress);
+                    console.log('for payment token shippingAddress', shippingAddress);
 
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
                         billingAddress,
