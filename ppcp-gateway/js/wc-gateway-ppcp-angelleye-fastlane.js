@@ -170,12 +170,7 @@ class PayPalFastlane {
                         adminArea2: '',
                         postalCode: '',
                         countryCode: ''
-                    },
-                    phoneNumber: {
-                        countryCode: '',
-                        nationalNumber: ''
-                    },
-                    email: ''
+                    }
                 };
                 let shippingAddress = this.getShippingAddress() || {
                     name: {
@@ -189,10 +184,6 @@ class PayPalFastlane {
                         adminArea2: '',
                         postalCode: '',
                         countryCode: ''
-                    },
-                    phoneNumber: {
-                        countryCode: '',
-                        nationalNumber: ''
                     }
                 };
                 console.log('for payment token billingAddress', billingAddress);
