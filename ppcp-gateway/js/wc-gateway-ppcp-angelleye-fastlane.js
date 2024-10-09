@@ -153,12 +153,10 @@ class PayPalFastlane {
             } else {
                 jQuery('#fastlane-email').removeClass('fastlane-input-error');
             }
-            console.log('fastlane submit');
             event.preventDefault();
             angelleyeOrder.showProcessingSpinner();
             try {
                 let paymentToken = this.paymentToken;
-
                 if (!paymentToken) {
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
@@ -202,8 +200,6 @@ class PayPalFastlane {
                     email: billingAddresswoo?.email || '',
                     phone: billingAddresswoo?.phoneNumber || ''
                 };
-                console.log('billingAddresswoo', billingAddresswoo);
-                console.log('billingDetails', billingDetails);
                 let shippingDetails = {
                     first_name: shippingAddresswoo?.firstName || '',
                     last_name: shippingAddresswoo?.lastName || '',
@@ -216,8 +212,6 @@ class PayPalFastlane {
                    email: shippingAddresswoo?.email || '',
                     phone: shippingAddresswoo?.phoneNumber || ''
                 };
-                console.log('shippingAddresswoo', shippingAddresswoo);
-                console.log('shippingDetails', shippingDetails);
                 let address = {
                     'billing': billingDetails,
                     'shipping': shippingDetails
@@ -234,7 +228,6 @@ class PayPalFastlane {
                 });
 
             } catch (error) {
-                console.log('236', error);
                 jQuery('.wc-block-components-checkout-place-order-button .wc-block-components-spinner').remove();
                 angelleyeOrder.hideProcessingSpinner();
             }
@@ -266,7 +259,6 @@ class PayPalFastlane {
         let email = jQuery(`#${prefix}_email`).val();
         if (!addressLine1) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
-            console.log('customerData', customerData);
             const {billingAddress, shippingAddress} = customerData;
             const addressData = (prefix === 'billing') ? billingAddress : shippingAddress;
             console.log(`Fallback for ${prefix} address:`, addressData);
@@ -306,8 +298,6 @@ class PayPalFastlane {
     getValidAddress(prefix, forPaymentToken = false) {
         const billingAddress = this.getAddress('billing', forPaymentToken);
         const shippingAddress = this.getAddress('shipping', forPaymentToken);
-        console.log('getValidAddress - billingAddress', billingAddress);
-        console.log('getValidAddress - shippingAddress', shippingAddress);
         if (prefix === 'billing') {
             return this.isValidAddress(billingAddress) ? billingAddress : shippingAddress;
         } else if (prefix === 'shipping') {
