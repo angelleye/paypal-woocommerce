@@ -188,8 +188,8 @@ class PayPalFastlane {
                 });
                 let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                 angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
-                let billingAddresswoo = this.getBillingAddress();
-                let shippingAddresswoo = this.getShippingAddress();
+                let billingAddresswoo = this.getBillingAddress(false);
+                let shippingAddresswoo = this.getShippingAddress(false);
                 let billingDetails = {
                     first_name: billingAddresswoo?.firstName || '',
                     last_name: billingAddresswoo?.lastName || '',
@@ -202,7 +202,7 @@ class PayPalFastlane {
                     email: billingAddresswoo?.email || '',
                     phone: billingAddresswoo?.phoneNumber || ''
                 };
-                console.log('shippingAddresswoo', billingAddresswoo);
+                console.log('billingAddresswoo', billingAddresswoo);
                 console.log('billingDetails', billingDetails);
                 let shippingDetails = {
                     first_name: shippingAddresswoo?.firstName || '',
