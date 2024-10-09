@@ -190,6 +190,7 @@ class PayPalFastlane {
                 angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
                 let billingAddresswoo = this.getBillingAddress();
                 let shippingAddresswoo = this.getShippingAddress();
+                console.log('shippingAddresswoo', shippingAddresswoo);
                 let billingDetails = {
                     first_name: billingAddresswoo?.firstName || '',
                     last_name: billingAddresswoo?.lastName || '',
@@ -202,6 +203,7 @@ class PayPalFastlane {
                     email: billingAddresswoo?.email || '',
                     phone: billingAddresswoo?.phoneNumber || ''
                 };
+                console.log('billingDetails', billingDetails);
                 let shippingDetails = {
                     first_name: shippingAddresswoo?.firstName || '',
                     last_name: shippingAddresswoo?.lastName || '',
@@ -214,14 +216,14 @@ class PayPalFastlane {
                    email: shippingAddresswoo?.email || '',
                     phone: shippingAddresswoo?.phoneNumber || ''
                 };
+                console.log('shippingAddresswoo', shippingAddresswoo);
+                console.log('shippingDetails', shippingDetails);
                 let address = {
                     'billing': billingDetails,
                     'shipping': shippingDetails
                 };
                 angelleyeOrder.ppcp_address = [];
                 angelleyeOrder.ppcp_address = address;
-                console.log('billingDetails', billingDetails);
-                console.log('shippingDetails', shippingDetails);
                 await angelleyeOrder.createOrder({shippingDetails, billingDetails, errorLogId}).then((orderData) => {
                     if (orderData.redirected) {
                         window.location.href = orderData.url;
