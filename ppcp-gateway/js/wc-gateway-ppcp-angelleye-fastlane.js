@@ -153,16 +153,11 @@ class PayPalFastlane {
             } else {
                 jQuery('#fastlane-email').removeClass('fastlane-input-error');
             }
-
             console.log('fastlane submit');
             event.preventDefault();
             angelleyeOrder.showProcessingSpinner();
-
             try {
                 let paymentToken = this.paymentToken;
-                console.log('161', paymentToken);
-
-                // Initialize billingAddress and shippingAddress with default values
                 let billingAddress = this.getBillingAddress() || {
                     name: {
                         firstName: '',
@@ -182,7 +177,6 @@ class PayPalFastlane {
                     },
                     email: ''
                 };
-
                 let shippingAddress = this.getShippingAddress() || {
                     name: {
                         firstName: '',
@@ -201,55 +195,26 @@ class PayPalFastlane {
                         nationalNumber: ''
                     }
                 };
-
-
+                console.log('for payment token billingAddress', billingAddress);
+                console.log('for payment token shippingAddress', shippingAddress);
                 if (!paymentToken) {
-                    console.log('163', paymentToken);
-
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
                     }
-
-                    // Ensure shippingAddress falls back to billingAddress if needed
-                    if (!shippingAddress.addressLine1) {
-                        shippingAddress = {...billingAddress};
-                    }
-
-                    // Ensure billingAddress falls back to shippingAddress if needed
-                    if (!billingAddress.addressLine1) {
-                        billingAddress = {...shippingAddress};
-                    }
-
-                    console.log('for payment token billingAddress', billingAddress);
-                    console.log('for payment token shippingAddress', shippingAddress);
-
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
                         billingAddress,
                         shippingAddress
                     });
-
                     this.paymentToken = paymentToken;
                 } else {
                     console.log("Using existing payment token:", paymentToken);
-
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
                     }
-
-                    if (!shippingAddress.addressLine1) {
-                        shippingAddress = {...billingAddress};
-                    }
-
-                    if (!billingAddress.addressLine1) {
-                        billingAddress = {...shippingAddress};
-                    }
                 }
-
                 if (!paymentToken) {
                     throw new Error("Failed to retrieve payment token.");
                 }
-                console.log('shippingAddress', shippingAddress);
-                console.log('billingAddress', billingAddress);
                 let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
                 angelleyeOrder.createHiddenInputField({
                     fieldId: 'fastlane_payment_token',
@@ -319,7 +284,7 @@ class PayPalFastlane {
         // Fallback for different field selectors
         if (!addressLine1 && jQuery('#billing-address_1').length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
-            const { billingAddress } = customerData;
+            const {billingAddress} = customerData;
             addressLine1 = billingAddress.address_1;
             addressLine2 = billingAddress.address_2;
             adminArea1 = billingAddress.state;
@@ -367,7 +332,7 @@ class PayPalFastlane {
         // Fallback for different field selectors
         if (!addressLine1 && jQuery('#shipping-address_1').length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
-            const { shippingAddress } = customerData;
+            const {shippingAddress} = customerData;
             console.log(customerData);
             addressLine1 = shippingAddress.address_1;
             addressLine2 = shippingAddress.address_2;
