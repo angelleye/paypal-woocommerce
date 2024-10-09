@@ -260,6 +260,7 @@ class PayPalFastlane {
         let email = jQuery(`#${prefix}_email`).val();
         if (!addressLine1 && jQuery(`#${prefix}-address_1`).length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
+            console.log('customerData', customerData);
             const {billingAddress, shippingAddress} = customerData;
             const addressData = (prefix === 'billing') ? billingAddress : shippingAddress;
             console.log(`Fallback for ${prefix} address:`, addressData);
