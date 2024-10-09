@@ -277,8 +277,11 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
         ?>
         <fieldset id="wc-<?php echo esc_attr($this->id); ?>-cc-form" class='wc-credit-card-form wc-payment-form'>
             <div id='angelleye_ppcp_cc-card-number'></div>
-            <div id='angelleye_ppcp_cc-card-expiry'></div>
-            <div id='angelleye_ppcp_cc-card-cvc'></div>
+            <div>
+                <div id='angelleye_ppcp_cc-card-expiry'></div>
+                <div id='angelleye_ppcp_cc-card-cvc'></div>
+            </div>
+
         </fieldset>
 
         <?php
@@ -420,7 +423,7 @@ class WC_Gateway_CC_AngellEYE extends WC_Payment_Gateway_CC {
                 echo $field; // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
             }
             ?>
-        <?php do_action('woocommerce_credit_card_form_end', $this->id); ?>
+            <?php do_action('woocommerce_credit_card_form_end', $this->id); ?>
             <div class="clear"></div>
         </fieldset>
         <?php
