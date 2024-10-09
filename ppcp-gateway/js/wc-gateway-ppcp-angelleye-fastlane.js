@@ -158,40 +158,13 @@ class PayPalFastlane {
             angelleyeOrder.showProcessingSpinner();
             try {
                 let paymentToken = this.paymentToken;
-                let billingAddress = this.getBillingAddress() || {
-                    name: {
-                        firstName: '',
-                        lastName: ''
-                    },
-                    address: {
-                        addressLine1: '',
-                        addressLine2: '',
-                        adminArea1: '',
-                        adminArea2: '',
-                        postalCode: '',
-                        countryCode: ''
-                    }
-                };
-                let shippingAddress = this.getShippingAddress() || {
-                    name: {
-                        firstName: '',
-                        lastName: ''
-                    },
-                    address: {
-                        addressLine1: '',
-                        addressLine2: '',
-                        adminArea1: '',
-                        adminArea2: '',
-                        postalCode: '',
-                        countryCode: ''
-                    }
-                };
-                console.log('for payment token billingAddress', billingAddress);
-                console.log('for payment token shippingAddress', shippingAddress);
+
                 if (!paymentToken) {
                     if (!fastlaneCardComponent) {
                         throw new Error("FastlaneCardComponent is not initialized.");
                     }
+                    let billingAddress = this.getBillingAddress(true);
+                    let shippingAddress = this.getShippingAddress(true);
                     paymentToken = await fastlaneCardComponent.getPaymentToken({
                         billingAddress,
                         shippingAddress
@@ -215,25 +188,27 @@ class PayPalFastlane {
                 });
                 let errorLogId = angelleyeJsErrorLogger.generateErrorId();
                 angelleyeJsErrorLogger.addToLog(errorLogId, 'Fastlane Payment Started');
+                let billingAddresswoo = this.getBillingAddress();
+                let shippingAddresswoo = this.getShippingAddress();
                 let billingDetails = {
-                    first_name: billingAddress?.name?.firstName || '',
-                    last_name: billingAddress?.name?.lastName || '',
-                    address_1: billingAddress?.addressLine1 || '',
-                    address_2: billingAddress?.addressLine2 || '', // Fallback if addressLine2 is missing
-                    city: billingAddress?.adminArea2 || '',
-                    state: billingAddress?.adminArea1 || '',
-                    postcode: billingAddress?.postalCode || '',
-                    country: billingAddress?.countryCode || ''
+                    first_name: billingAddresswoo?.firstName || '',
+                    last_name: billingAddresswoo?.lastName || '',
+                    address_1: billingAddresswoo?.addressLine1 || '',
+                    address_2: billingAddresswoo?.addressLine2 || '', // Fallback if addressLine2 is missing
+                    city: billingAddresswoo?.adminArea2 || '',
+                    state: billingAddresswoo?.adminArea1 || '',
+                    postcode: billingAddresswoo?.postalCode || '',
+                    country: billingAddresswoo?.countryCode || ''
                 };
                 let shippingDetails = {
-                    first_name: shippingAddress?.name?.firstName || '',
-                    last_name: shippingAddress?.name?.lastName || '',
-                    address_1: shippingAddress?.addressLine1 || '',
-                    address_2: shippingAddress?.addressLine2 || '', // Fallback if addressLine2 is missing
-                    city: shippingAddress?.adminArea2 || '',
-                    state: shippingAddress?.adminArea1 || '',
-                    postcode: shippingAddress?.postalCode || '',
-                    country: shippingAddress?.countryCode || ''
+                    first_name: shippingAddresswoo?.firstName || '',
+                    last_name: shippingAddresswoo?.lastName || '',
+                    address_1: shippingAddresswoo?.addressLine1 || '',
+                    address_2: shippingAddresswoo?.addressLine2 || '', // Fallback if addressLine2 is missing
+                    city: shippingAddresswoo?.adminArea2 || '',
+                    state: shippingAddresswoo?.adminArea1 || '',
+                    postcode: shippingAddresswoo?.postalCode || '',
+                    country: shippingAddresswoo?.countryCode || ''
                 };
                 let address = {
                     'billing': billingDetails,
@@ -261,7 +236,7 @@ class PayPalFastlane {
     }
 
     isValidAddress(address) {
-        if (!address.name.firstName && !address.name.lastName) {
+        if (!address.address.firstName && !address.address.lastName) {
             return false;
         }
         return (
@@ -272,7 +247,7 @@ class PayPalFastlane {
                 );
     }
 
-    getAddress(prefix) {
+    getAddress(prefix, forPaymentToken = false) {
         let addressLine1 = jQuery(`#${prefix}_address_1`).val();
         let addressLine2 = jQuery(`#${prefix}_address_2`).val();
         let adminArea1 = jQuery(`#${prefix}_state`).val();
@@ -283,14 +258,10 @@ class PayPalFastlane {
         let lastName = jQuery(`#${prefix}_last_name`).val();
         let phoneNumber = jQuery(`#${prefix}_phone`).val();
         let email = jQuery(`#${prefix}_email`).val();
-
-        // Fallback for different field selectors
         if (!addressLine1 && jQuery(`#${prefix}-address_1`).length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
             const {billingAddress, shippingAddress} = customerData;
-
             const addressData = (prefix === 'billing') ? billingAddress : shippingAddress;
-
             console.log(`Fallback for ${prefix} address:`, addressData);
             addressLine1 = addressData.address_1;
             addressLine2 = addressData.address_2;
@@ -300,45 +271,46 @@ class PayPalFastlane {
             countryCode = addressData.country;
             firstName = addressData.first_name;
             lastName = addressData.last_name;
-           
         }
-
-        return {
-            name: {
-                firstName: firstName || '',
-                lastName: lastName || ''
-            },
-            address: {
+        if (forPaymentToken) {
+            return {
                 addressLine1: addressLine1 || '',
-                addressLine2: addressLine2 || '',
                 adminArea1: adminArea1 || '',
                 adminArea2: adminArea2 || '',
                 postalCode: postalCode || '',
                 countryCode: countryCode || ''
-            }
-            
+            };
+        }
+        return {
+            addressLine1: addressLine1 || '',
+            addressLine2: addressLine2 || '',
+            adminArea1: adminArea1 || '',
+            adminArea2: adminArea2 || '',
+            postalCode: postalCode || '',
+            countryCode: countryCode || '',
+            firstName: firstName || '',
+            lastName: lastName || '',
+            email: email,
+            phoneNumber: phoneNumber
         };
     }
 
-    getValidAddress(prefix) {
-        const billingAddress = this.getAddress('billing');
-        const shippingAddress = this.getAddress('shipping');
-
+    getValidAddress(prefix, forPaymentToken = false) {
+        const billingAddress = this.getAddress('billing', forPaymentToken);
+        const shippingAddress = this.getAddress('shipping', forPaymentToken);
         if (prefix === 'billing') {
-            // If billing is valid, use billing; otherwise, use shipping
             return this.isValidAddress(billingAddress) ? billingAddress : shippingAddress;
         } else if (prefix === 'shipping') {
-            // If shipping is valid, use shipping; otherwise, use billing
             return this.isValidAddress(shippingAddress) ? shippingAddress : billingAddress;
-        }
+    }
     }
 
-    getBillingAddress() {
-        return this.getValidAddress('billing');
+    getBillingAddress(forPaymentToken = false) {
+        return this.getValidAddress('billing', forPaymentToken);
     }
 
-    getShippingAddress() {
-        return this.getValidAddress('shipping');
+    getShippingAddress(forPaymentToken = false) {
+        return this.getValidAddress('shipping', forPaymentToken);
     }
 
     updateWooCheckoutFields(profileData) {
