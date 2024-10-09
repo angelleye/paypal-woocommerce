@@ -164,20 +164,44 @@ class PayPalFastlane {
 
                 // Initialize billingAddress and shippingAddress with default values
                 let billingAddress = this.getBillingAddress() || {
-                    addressLine1: '',
-                    adminArea1: '',
-                    adminArea2: '',
-                    postalCode: '',
-                    countryCode: ''
+                    name: {
+                        firstName: '',
+                        lastName: ''
+                    },
+                    address: {
+                        addressLine1: '',
+                        addressLine2: '',
+                        adminArea1: '',
+                        adminArea2: '',
+                        postalCode: '',
+                        countryCode: ''
+                    },
+                    phoneNumber: {
+                        countryCode: '',
+                        nationalNumber: ''
+                    },
+                    email: ''
                 };
 
                 let shippingAddress = this.getShippingAddress() || {
-                    addressLine1: '',
-                    adminArea1: '',
-                    adminArea2: '',
-                    postalCode: '',
-                    countryCode: ''
+                    name: {
+                        firstName: '',
+                        lastName: ''
+                    },
+                    address: {
+                        addressLine1: '',
+                        addressLine2: '',
+                        adminArea1: '',
+                        adminArea2: '',
+                        postalCode: '',
+                        countryCode: ''
+                    },
+                    phoneNumber: {
+                        countryCode: '',
+                        nationalNumber: ''
+                    }
                 };
+
 
                 if (!paymentToken) {
                     console.log('163', paymentToken);
@@ -236,7 +260,7 @@ class PayPalFastlane {
                     first_name: billingAddress?.name?.firstName || '',
                     last_name: billingAddress?.name?.lastName || '',
                     address_1: billingAddress?.addressLine1 || '',
-                    address_2: billingAddress?.addressLine2 || '',  // Fallback if addressLine2 is missing
+                    address_2: billingAddress?.addressLine2 || '', // Fallback if addressLine2 is missing
                     city: billingAddress?.adminArea2 || '',
                     state: billingAddress?.adminArea1 || '',
                     postcode: billingAddress?.postalCode || '',
@@ -246,13 +270,13 @@ class PayPalFastlane {
                     first_name: shippingAddress?.name?.firstName || '',
                     last_name: shippingAddress?.name?.lastName || '',
                     address_1: shippingAddress?.addressLine1 || '',
-                    address_2: shippingAddress?.addressLine2 || '',  // Fallback if addressLine2 is missing
+                    address_2: shippingAddress?.addressLine2 || '', // Fallback if addressLine2 is missing
                     city: shippingAddress?.adminArea2 || '',
                     state: shippingAddress?.adminArea1 || '',
                     postcode: shippingAddress?.postalCode || '',
                     country: shippingAddress?.countryCode || ''
                 };
-               let address = {
+                let address = {
                     'billing': billingDetails,
                     'shipping': shippingDetails
                 };
@@ -279,46 +303,92 @@ class PayPalFastlane {
 
     getBillingAddress() {
         let addressLine1 = jQuery('#billing_address_1').val();
+        let addressLine2 = jQuery('#billing_address_2').val();
         let adminArea1 = jQuery('#billing_state').val();
         let adminArea2 = jQuery('#billing_city').val();
         let postalCode = jQuery('#billing_postcode').val();
         let countryCode = jQuery('#billing_country').val();
+        let firstName = jQuery('#billing_first_name').val();
+        let lastName = jQuery('#billing_last_name').val();
+        let phoneNumber = jQuery('#billing_phone').val();
+        let email = jQuery('#billing_email').val();
 
+        // Fallback for different field selectors
         if (!addressLine1 && jQuery('#billing-address_1').length > 0) {
             addressLine1 = jQuery('#billing-address_1').val();
+            addressLine2 = jQuery('#billing-address_2').val();
             adminArea1 = jQuery('#billing-state').val();
             adminArea2 = jQuery('#billing-city').val();
             postalCode = jQuery('#billing-postcode').val();
             countryCode = jQuery('#billing-country').val();
+            firstName = jQuery('#billing-first_name').val();
+            lastName = jQuery('#billing-last_name').val();
+            phoneNumber = jQuery('#billing-phone').val();
+            email = jQuery('#billing-email').val();
         }
+
         return {
-            addressLine1: addressLine1,
-            adminArea1: adminArea1,
-            adminArea2: adminArea2,
-            postalCode: postalCode,
-            countryCode: countryCode
+            name: {
+                firstName: firstName,
+                lastName: lastName
+            },
+            address: {
+                addressLine1: addressLine1,
+                addressLine2: addressLine2,
+                adminArea1: adminArea1,
+                adminArea2: adminArea2,
+                postalCode: postalCode,
+                countryCode: countryCode
+            },
+            phoneNumber: {
+                countryCode: countryCode,
+                nationalNumber: phoneNumber
+            },
+            email: email
         };
     }
 
     getShippingAddress() {
         let addressLine1 = jQuery('#shipping_address_1').val();
+        let addressLine2 = jQuery('#shipping_address_2').val();
         let adminArea1 = jQuery('#shipping_state').val();
         let adminArea2 = jQuery('#shipping_city').val();
         let postalCode = jQuery('#shipping_postcode').val();
         let countryCode = jQuery('#shipping_country').val();
+        let firstName = jQuery('#shipping_first_name').val();
+        let lastName = jQuery('#shipping_last_name').val();
+        let phoneNumber = jQuery('#shipping_phone').val(); // If shipping phone is used
+
+        // Fallback for different field selectors
         if (!addressLine1 && jQuery('#shipping-address_1').length > 0) {
             addressLine1 = jQuery('#shipping-address_1').val();
+            addressLine2 = jQuery('#shipping-address_2').val();
             adminArea1 = jQuery('#shipping-state').val();
             adminArea2 = jQuery('#shipping-city').val();
             postalCode = jQuery('#shipping-postcode').val();
             countryCode = jQuery('#shipping-country').val();
+            firstName = jQuery('#shipping-first_name').val();
+            lastName = jQuery('#shipping-last_name').val();
+            phoneNumber = jQuery('#shipping-phone').val();
         }
+
         return {
-            addressLine1: addressLine1,
-            adminArea1: adminArea1,
-            adminArea2: adminArea2,
-            postalCode: postalCode,
-            countryCode: countryCode
+            name: {
+                firstName: firstName,
+                lastName: lastName
+            },
+            address: {
+                addressLine1: addressLine1,
+                addressLine2: addressLine2,
+                adminArea1: adminArea1,
+                adminArea2: adminArea2,
+                postalCode: postalCode,
+                countryCode: countryCode
+            },
+            phoneNumber: {
+                countryCode: countryCode,
+                nationalNumber: phoneNumber
+            }
         };
     }
 
@@ -336,6 +406,7 @@ class PayPalFastlane {
         updateField('#billing_first_name', profileData.name?.firstName);
         updateField('#billing_last_name', profileData.name?.lastName);
         updateField('#billing_address_1', billingAddress.addressLine1);
+        updateField('#billing_address_2', billingAddress.addressLine2);
         updateField('#billing_city', billingAddress.adminArea2);
         updateField('#billing_postcode', billingAddress.postalCode);
         updateField('#billing_country', billingAddress.countryCode);
@@ -345,6 +416,7 @@ class PayPalFastlane {
         updateField('#shipping_first_name', profileData.shippingAddress?.name?.firstName);
         updateField('#shipping_last_name', profileData.shippingAddress?.name?.lastName);
         updateField('#shipping_address_1', shippingAddress.addressLine1);
+        updateField('#shipping_address_2', shippingAddress.addressLine2);
         updateField('#shipping_city', shippingAddress.adminArea2);
         updateField('#shipping_postcode', shippingAddress.postalCode);
         updateField('#shipping_country', shippingAddress.countryCode);
