@@ -1143,7 +1143,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             return $gateways;
         }
         foreach ($gateways as $id => $gateway) {
-            if ('angelleye_ppcp' !== $id && 'angelleye_ppcp_apple_pay' !== $id && 'angelleye_ppcp_cc' !== $id && 'angelleye_ppcp_google_pay' !== $id) {
+            if ('angelleye_ppcp' !== $id && 'angelleye_ppcp_apple_pay' !== $id && 'angelleye_ppcp_cc' !== $id && 'angelleye_ppcp_google_pay' !== $id && 'angelleye_ppcp_fastlane' !== $id) {
                 unset($gateways[$id]);
             }
         }
@@ -1154,6 +1154,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 unset($gateways['angelleye_ppcp_apple_pay']);
                 unset($gateways['angelleye_ppcp_google_pay']);
                 unset($gateways['angelleye_ppcp_cc']);
+                unset($gateways['angelleye_ppcp_fastlane']);
             }
         }
         return $gateways;
@@ -1539,6 +1540,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (is_add_payment_method_page()) {
             unset($methods['angelleye_ppcp_google_pay']);
             unset($methods['angelleye_ppcp_apple_pay']);
+            unset($methods['angelleye_ppcp_fastlane']);
         }
         return $methods;
     }
