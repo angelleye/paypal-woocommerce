@@ -292,8 +292,8 @@ class PayPalFastlane {
             countryCode: countryCode || '',
             firstName: firstName || '',
             lastName: lastName || '',
-            email: email,
-            phoneNumber: phoneNumber
+            email: email || '',
+            phoneNumber: phoneNumber || ''
         };
     }
 
