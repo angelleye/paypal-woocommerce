@@ -199,8 +199,8 @@ class PayPalFastlane {
                     state: billingAddresswoo?.adminArea1 || '',
                     postcode: billingAddresswoo?.postalCode || '',
                     country: billingAddresswoo?.countryCode || '',
-                    email: billingAddresswoo.email || '',
-                    phone: billingAddresswoo.phoneNumber || ''
+                    email: billingAddresswoo?.email || '',
+                    phone: billingAddresswoo?.phoneNumber || ''
                 };
                 let shippingDetails = {
                     first_name: shippingAddresswoo?.firstName || '',
@@ -211,8 +211,8 @@ class PayPalFastlane {
                     state: shippingAddresswoo?.adminArea1 || '',
                     postcode: shippingAddresswoo?.postalCode || '',
                     country: shippingAddresswoo?.countryCode || '',
-                   email: shippingAddresswoo.email || '',
-                    phone: shippingAddresswoo.phoneNumber || ''
+                   email: shippingAddresswoo?.email || '',
+                    phone: shippingAddresswoo?.phoneNumber || ''
                 };
                 let address = {
                     'billing': billingDetails,
