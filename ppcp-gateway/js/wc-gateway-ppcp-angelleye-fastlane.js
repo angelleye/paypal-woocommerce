@@ -264,7 +264,7 @@ class PayPalFastlane {
         let lastName = jQuery(`#${prefix}_last_name`).val();
         let phoneNumber = jQuery(`#${prefix}_phone`).val();
         let email = jQuery(`#${prefix}_email`).val();
-        if (!addressLine1 && jQuery(`#${prefix}-address_1`).length > 0) {
+        if (!addressLine1) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
             console.log('customerData', customerData);
             const {billingAddress, shippingAddress} = customerData;
