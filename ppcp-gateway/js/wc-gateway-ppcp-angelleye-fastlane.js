@@ -366,6 +366,7 @@ class PayPalFastlane {
         // Fallback for different field selectors
         if (!addressLine1 && jQuery('#shipping-address_1').length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
+            console.log(customerData);
             addressLine1 = customerData.shipping.address_1;
             addressLine2 = customerData.shipping.address_2;
             adminArea1 = customerData.shipping.state;
