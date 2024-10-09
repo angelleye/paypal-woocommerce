@@ -296,7 +296,9 @@ class PayPalFastlane {
         // Fallback for different field selectors
         if (!addressLine1 && jQuery(`#${prefix}-address_1`).length > 0) {
             const customerData = wp.data.select('wc/store/cart').getCustomerData();
-            const addressData = customerData[prefix];
+            const {billingAddress, shippingAddress} = customerData;
+
+            const addressData = (prefix === 'billing') ? billingAddress : shippingAddress;
 
             console.log(`Fallback for ${prefix} address:`, addressData);
             addressLine1 = addressData.address_1;
