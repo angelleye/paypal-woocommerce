@@ -340,10 +340,10 @@ class PayPalFastlane {
 
         if (prefix === 'billing') {
             // If billing is valid, use billing; otherwise, use shipping
-            return isValidAddress(billingAddress) ? billingAddress : shippingAddress;
+            return this.isValidAddress(billingAddress) ? billingAddress : shippingAddress;
         } else if (prefix === 'shipping') {
             // If shipping is valid, use shipping; otherwise, use billing
-            return isValidAddress(shippingAddress) ? shippingAddress : billingAddress;
+            return this.isValidAddress(shippingAddress) ? shippingAddress : billingAddress;
         }
     }
 
