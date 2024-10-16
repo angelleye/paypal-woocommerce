@@ -1416,16 +1416,18 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
 
         public function load_funnelkit_pro_plugin_compatible_gateways() {
             try {
-                if (defined('WFFN_PRO_FILE')) {
+                // Check for Funnel Builder Pro Plugin Activation
+                if (defined('WFFN_PRO_FILE')) { 
                     require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp.php';
                     require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp-cc.php';
-                    if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
-                        require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-upstroke-subscriptions-angelleye-ppcp.php';
-                        require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-upstroke-subscriptions-angelleye-ppcp-cc.php';
-                    }
+                }
+                // Check for Upstroke Plugin Activation and the Upsell Functionality
+                if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
+                    require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-upstroke-subscriptions-angelleye-ppcp.php';
+                    require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-upstroke-subscriptions-angelleye-ppcp-cc.php';
                 }
             } catch (Exception $ex) {
-                
+                // Handle exception if any of the checks fail
             }
         }
 
