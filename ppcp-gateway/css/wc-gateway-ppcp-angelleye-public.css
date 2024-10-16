@@ -391,3 +391,22 @@ apple-pay-button {
 .w48 {
     height: 48px;
 }
+#wc-angelleye_ppcp_cc-cc-form, #wc-angelleye_ppcp_cc-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+#angelleye_ppcp_cc-card-number {
+    width: 100%;
+}
+#angelleye_ppcp_cc-card-expiry, 
+#angelleye_ppcp_cc-card-cvc {
+    width: calc(50% - 5px);
+}
+@media only screen and (max-width: 768px) {
+    #angelleye_ppcp_cc-card-number,
+    #angelleye_ppcp_cc-card-expiry,
+    #angelleye_ppcp_cc-card-cvc {
+        width: 100%;
+    }
+}
