@@ -8,6 +8,8 @@ namespace Braintree;
  */
 class GraphQLClient
 {
+    private $_service;
+
     public function __construct($config)
     {
         $this->_service = new GraphQL($config);
