@@ -85,7 +85,8 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 'PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE' => 'https://zpyql2kd39.execute-api.us-east-2.amazonaws.com/production/PayPalMerchantIntegration/',
                 'PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE' => 'https://ppcp.angelleye.com/production/PayPalMerchantIntegration/',
                 'AE_FEE' => 'ae_p_f',
-                'AE_PPCP_NAME' => 'PayPal Complete Payments'
+                'AE_PPCP_NAME' => 'PayPal Complete Payments',
+                'AE_PPCP_CC' => 'Credit or Debit Card',
             ];
 
             foreach ($constants as $key => $value) {

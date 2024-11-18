@@ -89,6 +89,7 @@ class AngellEYE_PayPal_PPCP_Payment {
             $this->partner_client_id = PAYPAL_PPCP_PARTNER_CLIENT_ID;
         }
         $this->title = $this->setting_obj->get('title', sprintf('%s - Built by Angelleye', AE_PPCP_NAME));
+        $this->titles = $this->setting_obj->get('titles', AE_PPCP_CC);
         $this->brand_name = $this->setting_obj->get('brand_name', get_bloginfo('name'));
         $this->paymentaction = $this->setting_obj->get('paymentaction', 'capture');
         $this->paymentstatus = $this->setting_obj->get('paymentstatus', 'wc-default');
@@ -1143,7 +1144,11 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order->set_payment_method_title($angelleye_ppcp_payment_method_title);
             $order->save();
         } else {
-            $angelleye_ppcp_payment_method_title = $this->title;
+            if (is_null($angelleye_ppcp_payment_method_title) && $payment_method_id == 'angelleye_ppcp_cc'){
+                $angelleye_ppcp_payment_method_title = $this->titles;
+            } else {
+                $angelleye_ppcp_payment_method_title = $this->title;
+            }
         }
         return $angelleye_ppcp_payment_method_title;
     }
