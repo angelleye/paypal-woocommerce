@@ -357,7 +357,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     if (isset($_POST['error']['msg']) && isset($_POST['error']['source']) && isset($_POST['error']['line'])) {
                         $errorLine = html_entity_decode($_POST['error']['msg'], ENT_QUOTES) . ', file: ' . $_POST['error']['source'] . ', line:' . $_POST['error']['line'];
                     } else {
-                        $errorLine = print_r($_POST['error'], true);
+                        $errorLine = !empty($_POST['error']) ? print_r($_POST['error'], true) : '';
                     }
                     if (isset($_POST['logTrace'])) {
                         $errorLine .= "\nLog Trace: " . print_r($_POST['logTrace'], true);
