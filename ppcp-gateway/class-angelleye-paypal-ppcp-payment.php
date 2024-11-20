@@ -32,6 +32,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public $merchant_id;
     public $partner_client_id;
     public $title;
+    public $titles;
     public $brand_name;
     public $paymentaction;
     public $paymentstatus;
