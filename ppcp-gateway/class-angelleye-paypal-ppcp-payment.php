@@ -1366,7 +1366,49 @@ class AngellEYE_PayPal_PPCP_Payment {
                     return false;
                 }
             } else {
-                $error_email_notification_param = array(
+	            /**
+	             * https://angelleye.atlassian.net/browse/PFW-1923
+	             *
+	             * This ensures that if PayPal returned an error and that error
+	             * is specifically UNPROCESSABLE_ENTITY with PAYER_ACTION_REQUIRED,
+	             * we return a custom array letting the caller know we have that
+	             * scenario. Otherwise, we fall back on the original “generic failure” logic.
+	             */
+	            if (
+		            isset($this->api_response['name']) &&
+		            'UNPROCESSABLE_ENTITY' === $this->api_response['name'] &&
+		            isset($this->api_response['details']) &&
+		            is_array($this->api_response['details'])
+	            ) {
+		            foreach ($this->api_response['details'] as $detail) {
+			            if (
+				            isset($detail['issue']) &&
+				            'PAYER_ACTION_REQUIRED' === $detail['issue']
+			            ) {
+				            // Grab the payer-action link from the response links array
+				            $payer_action_url = '';
+				            if (!empty($this->api_response['links'])) {
+					            foreach ($this->api_response['links'] as $link) {
+						            if (!empty($link['rel']) && 'payer-action' === $link['rel']) {
+							            $payer_action_url = $link['href'];
+							            break;
+						            }
+					            }
+				            }
+
+				            // Logs payer_action_required scenario and returns a special array
+				            // so that we know this scenario is NOT a hard fail.
+				            $this->api_log->log("\n\n========== PAYER_ACTION_REQUIRED scenario ==========\nReturning special array.\n\n", 'info');
+
+							return array(
+					            'payer_action_required' => true,
+					            'redirect_url' => $payer_action_url,
+				            );
+			            }
+		            }
+	            }
+
+	            $error_email_notification_param = array(
                     'request' => 'capture_order',
                     'order_id' => $woo_order_id
                 );
