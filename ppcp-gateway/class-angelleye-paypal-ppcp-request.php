@@ -163,6 +163,41 @@ class AngellEYE_PayPal_PPCP_Request {
     }
 
     public function request($url, $args, $action_name = 'default') {
+
+	    /**
+	     * PayPal Mocker (Negative Testing)
+	     * https://angelleye.atlassian.net/browse/PFW-1935
+	     */
+	    // Step 1: Load the mock manager
+	    if (!class_exists('AngellEYE_PayPal_PPCP_Mock')) {
+		    require_once dirname(__FILE__) . '/class-angelleye-paypal-ppcp-mocker.php';
+	    }
+
+	    $mock = new AngellEYE_PayPal_PPCP_Mock();
+
+	    // Step 2: Check if mocking is enabled and get a mock response if applicable
+	    if ($mock->is_enabled()) {
+		    $mock_response = $mock->get_mock_response($url, $action_name);
+		    if (!empty($mock_response)) {
+			    // Log it for visibility
+			    if (class_exists('WC_Logger')) {
+				    $logger = wc_get_logger();
+				    $logger->info(
+					    PHP_EOL . PHP_EOL .
+					    '========== MOCKED PAYPAL RESPONSE ==========' . PHP_EOL .
+					    'Endpoint: ' . $url . PHP_EOL .
+					    'Action: ' . $action_name . PHP_EOL .
+					    'Mock Scenario: ' . $mock->get_mock_scenario() . PHP_EOL .
+					    'Returned Mocked Data: ' . print_r($mock_response, true) .
+					    PHP_EOL . '==========================================' . PHP_EOL,
+					    array('source' => 'angelleye_ppcp')
+				    );
+			    }
+
+			    return $mock_response;
+		    }
+	    }
+
         try {
             $this->angelleye_get_settings();
             if (!str_contains($url, 'paypal.com')) {
