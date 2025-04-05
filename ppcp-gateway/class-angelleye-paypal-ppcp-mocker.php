@@ -15,11 +15,6 @@ class AngellEYE_PayPal_PPCP_Mock {
 
 		$this->enabled = isset($settings['enable_negative_testing']) && $settings['enable_negative_testing'] === 'yes';
 		$this->mock_scenario = isset($settings['negative_testing_mock_error']) ? $settings['negative_testing_mock_error'] : '';
-
-		if (class_exists('WC_Logger')) {
-			$logger = wc_get_logger();
-			$logger->info('Mocker constructed. Enabled: ' . var_export($this->enabled, true) . ' | Scenario: ' . $this->mock_scenario, array('source' => 'angelleye_ppcp'));
-		}
 	}
 
 	public function is_enabled() {
