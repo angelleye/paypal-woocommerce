@@ -444,7 +444,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('Check this box to enable test mode so that all transactions will hit PayPal’s sandbox server instead of the live server. This should only be used during development as no real transactions will occur when this is enabled.', 'paypal-for-woocommerce'),
                     'desc_tip' => true
                 ),
-	            array(
+	            'enable_negative_testing' => array(
 		            'title'    => __( 'Enable Negative Testing', 'paypal-for-woocommerce' ),
 		            'desc'     => __( 'Enable this to simulate PayPal error responses for testing purposes.', 'paypal-for-woocommerce' ),
 		            'id'       => 'angelleye_pfw_ppcp_enable_negative_testing',
@@ -452,7 +452,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 		            'type'     => 'checkbox',
 		            'class'    => 'enable_negative_testing_option',
 	            ),
-	            array(
+	            'negative_testing_mock_error' => array(
 		            'title'    => __( 'Select Error to Mock', 'paypal-for-woocommerce' ),
 		            'desc'     => __( 'Choose the PayPal error you wish to simulate.', 'paypal-for-woocommerce' ),
 		            'id'       => 'angelleye_pfw_ppcp_mock_error_code',
