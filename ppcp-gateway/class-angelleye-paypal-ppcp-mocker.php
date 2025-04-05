@@ -12,8 +12,8 @@ class AngellEYE_PayPal_PPCP_Mock {
 
 	public function __construct() {
 		// Load any stored config from options or session if desired
-		$this->enabled       = get_option( 'angelleye_ppcp_mock_enabled', false );
-		$this->mock_scenario = get_option( 'angelleye_ppcp_mock_scenario', '' );
+		$this->enabled = 'yes' === get_option('angelleye_pfw_ppcp_enable_negative_testing', 'no');
+		$this->mock_scenario = get_option('angelleye_pfw_ppcp_mock_error_code', '');
 	}
 
 	public function is_enabled() {
