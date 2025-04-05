@@ -450,6 +450,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 		            'id'       => 'angelleye_pfw_ppcp_enable_negative_testing',
 		            'default'  => 'no',
 		            'type'     => 'checkbox',
+		            'class'    => 'enable_negative_testing_option',
 	            ),
 	            array(
 		            'title'    => __( 'Select Error to Mock', 'paypal-for-woocommerce' ),
@@ -457,7 +458,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 		            'id'       => 'angelleye_pfw_ppcp_mock_error_code',
 		            'default'  => '',
 		            'type'     => 'select',
-		            'class'    => 'negative_testing_option',
+		            'class'    => 'negative_testing_selector_option',
 		            'options'  => array(
 			            ''                      => __( 'Select an error', 'paypal-for-woocommerce' ),
 			            'PAYER_ACTION_REQUIRED' => __( 'Payer Action Required', 'paypal-for-woocommerce' ),
