@@ -7,17 +7,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class AngellEYE_PayPal_PPCP_Mock {
 
-	protected $enabled = false;
-	protected $mock_scenario = '';
+	protected bool $enabled = false;
+	protected string $mock_scenario = '';
 
 	public function __construct() {
 		$settings = get_option('woocommerce_angelleye_ppcp_settings', array());
 
 		$this->enabled = isset($settings['enable_negative_testing']) && $settings['enable_negative_testing'] === 'yes';
-		$this->mock_scenario = isset($settings['negative_testing_mock_error']) ? $settings['negative_testing_mock_error'] : '';
+		$this->mock_scenario = $settings['negative_testing_mock_error'] ?? '';
 	}
 
-	public function is_enabled() {
+	public function is_enabled(): bool {
 		return (bool) $this->enabled;
 	}
 
@@ -30,7 +30,7 @@ class AngellEYE_PayPal_PPCP_Mock {
 			return null;
 		}
 
-		switch ( $this->mock_scenario ) {
+		switch ( strtolower( $this->mock_scenario ) ) {
 			case 'payer_action_required':
 				return [
 					'name'     => 'UNPROCESSABLE_ENTITY',
@@ -47,7 +47,6 @@ class AngellEYE_PayPal_PPCP_Mock {
 						]
 					]
 				];
-			// Add more mock scenarios here
 			default:
 				return null;
 		}
