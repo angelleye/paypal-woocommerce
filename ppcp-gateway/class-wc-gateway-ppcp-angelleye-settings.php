@@ -465,6 +465,22 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 			            // Add other error codes as needed
 		            ),
 	            ),
+                'mock_restriction' => array(
+	                'title'    => __( 'Mock Restriction', 'paypal-for-woocommerce' ),
+	                'desc'     => __( 'Choose which PayPal action this mock should apply to. Leave unset to apply to all.', 'paypal-for-woocommerce' ),
+	                'id'       => 'angelleye_pfw_ppcp_mock_restriction',
+	                'default'  => '',
+	                'type'     => 'select',
+	                'class'    => 'mock_restriction_selector_option',
+	                'options'  => array(
+		                ''                 => __( 'All Actions (no restriction)', 'paypal-for-woocommerce' ),
+		                'create_order'     => __( 'Create Order', 'paypal-for-woocommerce' ),
+		                'capture_order'    => __( 'Capture Order', 'paypal-for-woocommerce' ),
+		                'authorize_order'  => __( 'Authorize Order', 'paypal-for-woocommerce' ),
+		                'create_token'     => __( 'Create Payment Token', 'paypal-for-woocommerce' ),
+		                // Add more as needed
+	                ),
+                ),
                 'live_onboarding' => array(
                     'title' => __('Connect to PayPal', 'paypal-for-woocommerce'),
                     'type' => 'angelleye_ppcp_onboarding',
