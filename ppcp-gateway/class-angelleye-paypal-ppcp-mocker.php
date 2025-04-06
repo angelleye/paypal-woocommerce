@@ -15,9 +15,14 @@ class AngellEYE_PayPal_PPCP_Mock {
 	public function __construct() {
 		$settings = get_option('woocommerce_angelleye_ppcp_settings', array());
 
-		$this->enabled = isset($settings['enable_negative_testing']) && $settings['enable_negative_testing'] === 'yes';
-		$this->mock_scenario = $settings['negative_testing_mock_error'] ?? '';
+		$this->enabled           = isset($settings['enable_negative_testing']) && $settings['enable_negative_testing'] === 'yes';
+		$this->mock_scenario     = isset($settings['negative_testing_mock_error']) ? $settings['negative_testing_mock_error'] : '';
 		$this->restricted_action = isset($settings['mock_restriction']) ? strtolower($settings['mock_restriction']) : '';
+
+		$testmode_enabled = isset($settings['testmode']) && $settings['testmode'] === 'yes';
+		if ( ! $testmode_enabled ) {
+			$this->enabled = false;
+		}
 	}
 
 	public function is_enabled(): bool {
