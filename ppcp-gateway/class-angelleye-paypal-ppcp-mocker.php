@@ -18,14 +18,14 @@ class AngellEYE_PayPal_PPCP_Mock {
 	}
 
 	public function is_enabled(): bool {
-		return (bool) $this->enabled;
+		return $this->enabled;
 	}
 
 	public function get_mock_scenario() {
 		return $this->mock_scenario;
 	}
 
-	public function get_mock_response( $endpoint, $action ) {
+	public function get_mock_response( $endpoint, $action ): ?array {
 		if ( ! $this->is_enabled() ) {
 			return null;
 		}
