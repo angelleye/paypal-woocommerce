@@ -49,13 +49,21 @@ class AngellEYE_PayPal_PPCP_Mock {
 			'payer_action_required' => [
 				'name'     => 'UNPROCESSABLE_ENTITY',
 				'details'  => [
-					[ 'issue' => 'PAYER_ACTION_REQUIRED' ]
+					[
+						'issue' => 'PAYER_ACTION_REQUIRED',
+						'description' => 'Transaction cannot complete successfully, instruct the buyer to return to PayPal.'
+					]
 				],
 				'message'  => 'The requested action could not be performed, semantically incorrect, or failed business validation.',
 				'debug_id' => 'mock-debug-id-123456',
 				'links'    => [
 					[
-						'href'   => 'https://www.sandbox.paypal.com/checkoutnow?token=MOCK123',
+						'href'   => 'https://developer.paypal.com/api/orders/v2/#error-PAYER_ACTION_REQUIRED',
+						'rel'    => 'information_link',
+						'method' => 'GET'
+					],
+					[
+						'href'   => 'https://www.paypal.com/checkoutnow?token=MOCK5O190127TN364715T',
 						'rel'    => 'payer-action',
 						'method' => 'GET'
 					]
