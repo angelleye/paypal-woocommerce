@@ -84,6 +84,10 @@ jQuery(function ($) {
         var ppcp_sandbox_onboarding_connect_fields = $('#woocommerce_angelleye_ppcp_sandbox_onboarding').closest('tr');
         var ppcp_production_onboarding_disconnect_fields = $('#woocommerce_angelleye_ppcp_live_disconnect').closest('tr');
         var ppcp_sandbox_onboarding_disconnect_fields = $('#woocommerce_angelleye_ppcp_sandbox_disconnect').closest('tr');
+        var ppcp_sandbox_mock_test_checkbox = $('#woocommerce_angelleye_ppcp_enable_negative_testing').closest('tr');
+        var ppcp_sandbox_mock_error_dropdown = $('#woocommerce_angelleye_ppcp_negative_testing_mock_error').closest('tr');
+        var ppcp_sandbox_mock_restriction_dropdown = $('#woocommerce_angelleye_ppcp_mock_restriction').closest('tr');
+
         if ($(this).is(':checked')) {
             $('#woocommerce_angelleye_ppcp_live_merchant_id').closest('tr').hide();
             ppcp_production_fields.hide();
@@ -110,6 +114,12 @@ jQuery(function ($) {
                     ppcp_sandbox_onboarding_disconnect_fields.hide();
                 }
             }
+
+            // Show PayPal Mock options if testmode is enabled.
+            ppcp_sandbox_mock_test_checkbox.show();
+            ppcp_sandbox_mock_error_dropdown.show();
+            ppcp_sandbox_mock_restriction_dropdown.show();
+
         } else {
             ppcp_sandbox_fields.hide();
             $('#woocommerce_angelleye_ppcp_sandbox_merchant_id').closest('tr').hide();
@@ -136,6 +146,12 @@ jQuery(function ($) {
                     ppcp_production_onboarding_disconnect_fields.hide();
                 }
             }
+
+            // Hide PayPal Mocker options if testmode is disabled.
+            ppcp_sandbox_mock_test_checkbox.hide();
+            ppcp_sandbox_mock_error_dropdown.hide();
+            ppcp_sandbox_mock_restriction_dropdown.hide();
+
         }
     }).change();
     jQuery("#woocommerce_angelleye_ppcp_product_button_layout").change(function () {
