@@ -1406,54 +1406,11 @@ class AngellEYE_PayPal_PPCP_Payment {
                     return false;
                 }
             } else {
-	            /**
-	             * https://angelleye.atlassian.net/browse/PFW-1923
-	             *
-	             * This ensures that if PayPal returned an error and that error
-	             * is specifically UNPROCESSABLE_ENTITY with PAYER_ACTION_REQUIRED,
-	             * we return a custom array letting the caller know we have that
-	             * scenario. Otherwise, we fall back on the original “generic failure” logic.
-	             */
-	            if (
-		            isset($this->api_response['name']) &&
-		            'UNPROCESSABLE_ENTITY' === $this->api_response['name'] &&
-		            isset($this->api_response['details']) &&
-		            is_array($this->api_response['details'])
-	            ) {
-		            foreach ($this->api_response['details'] as $detail) {
-			            if (
-				            isset($detail['issue']) &&
-				            'PAYER_ACTION_REQUIRED' === $detail['issue']
-			            ) {
-				            // Grab the payer-action link from the response links array
-				            $payer_action_url = '';
-				            if (!empty($this->api_response['links'])) {
-					            foreach ($this->api_response['links'] as $link) {
-						            if (!empty($link['rel']) && 'payer-action' === $link['rel']) {
-							            $payer_action_url = $link['href'];
-							            break;
-						            }
-					            }
-				            }
 
-				            // Logs payer_action_required scenario and returns a special array
-				            // so that we know this scenario is NOT a hard fail.
-				            $this->api_log->log("\n\n========== PAYER_ACTION_REQUIRED scenario ==========\nReturning special array.\n\n", 'info');
-
-				            $paypal_order_id = AngellEYE_Session_Manager::get('paypal_order_id', false);
-				            if ( $paypal_order_id ) {
-					            $this->angelleye_ppcp_confirm_payment_source($paypal_order_id);
-				            }
-
-							// Flag the overcapture scenario so we can skip final review from here.
-				            AngellEYE_Session_Manager::set('overcapture_scenario', true);
-
-				            return array(
-					            'payer_action_required' => true,
-					            'redirect_url' => $payer_action_url,
-				            );
-			            }
-		            }
+				// Overcharge Handler - https://angelleye.atlassian.net/browse/PFW-1923
+	            $overcharge_result = $this->overcharge_handler($this->api_response);
+	            if ($overcharge_result) {
+		            return $overcharge_result;
 	            }
 
 	            $error_email_notification_param = array(
@@ -1471,7 +1428,58 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_update_order($order) {
+	/**
+	 * https://angelleye.atlassian.net/browse/PFW-1923
+	 *
+	 * This ensures that if PayPal returned an error and that error
+	 * is specifically UNPROCESSABLE_ENTITY with PAYER_ACTION_REQUIRED,
+	 * we return a custom array letting the caller know we have that
+	 * scenario. Otherwise, we fall back on the original “generic failure” logic.
+	 */
+	public function overcharge_handler($api_response) {
+		if (
+			isset($api_response['name']) &&
+			'UNPROCESSABLE_ENTITY' === $api_response['name'] &&
+			isset($api_response['details']) &&
+			is_array($api_response['details'])
+		) {
+			foreach ($api_response['details'] as $detail) {
+				if (
+					isset($detail['issue']) &&
+					'PAYER_ACTION_REQUIRED' === $detail['issue']
+				) {
+					$payer_action_url = '';
+					if (!empty($api_response['links'])) {
+						foreach ($api_response['links'] as $link) {
+							if (!empty($link['rel']) && 'payer-action' === $link['rel']) {
+								$payer_action_url = $link['href'];
+								break;
+							}
+						}
+					}
+
+					$this->api_log->log("\n\n========== PAYER_ACTION_REQUIRED scenario ==========\nReturning special array.\n\n", 'info');
+
+					$paypal_order_id = AngellEYE_Session_Manager::get('paypal_order_id', false);
+					if ( $paypal_order_id ) {
+						$this->angelleye_ppcp_confirm_payment_source($paypal_order_id);
+					}
+
+					AngellEYE_Session_Manager::set('overcapture_scenario', true);
+
+					return array(
+						'payer_action_required' => true,
+						'redirect_url'          => $payer_action_url,
+					);
+				}
+			}
+		}
+
+		return false;
+	}
+
+
+	public function angelleye_ppcp_update_order($order) {
         try {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $patch_request = array();
