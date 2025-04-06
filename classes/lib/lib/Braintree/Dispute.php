@@ -5,33 +5,7 @@ namespace Braintree;
 /**
  * Creates an instance of Dispute as returned from a transaction
  *
- *
- * @package    Braintree
- *
- * @property-read string $amount
- * @property-read \DateTime $createdAt
- * @property-read string $currencyIsoCode
- * @property-read string $disbursementDate
- * @property-read \Braintree\Dispute\EvidenceDetails $evidence
- * @property-read string $graphQLId
- * @property-read string $id
- * @property-read string $kind
- * @property-read string $merchantAccountId
- * @property-read string $originalDisputeId
- * @property-read string $processorComments
- * @property-read string $reason
- * @property-read string $reasonCode
- * @property-read string $reasonDescription
- * @property-read \DateTime $receivedDate
- * @property-read string $referenceNumber
- * @property-read \DateTime $replyByDate
- * @property-read string $status
- * @property-read string $chargebackProtectionLevel
- * @property-read \Braintree\Dispute\PayPalMessageDetails[] $paypalMessages
- * @property-read \Braintree\Dispute\StatusHistoryDetails[] $statusHistory
- * @property-read \Braintree\Dispute\TransactionDetails $transaction
- * @property-read \Braintree\Dispute\TransactionDetails $transactionDetails
- * @property-read \DateTime $updatedAt
+ * See our {@link https://developer.paypal.com/braintree/docs/reference/response/dispute developer docs} for information on attributes
  */
 class Dispute extends Base
 {
@@ -39,11 +13,13 @@ class Dispute extends Base
 
     /* Dispute Status */
     const ACCEPTED = 'accepted';
+    const AUTO_ACCEPTED = 'auto_accepted';
     const DISPUTED = 'disputed';
     const EXPIRED = 'expired';
-    const OPEN  = 'open';
-    const WON  = 'won';
     const LOST = 'lost';
+    const OPEN  = 'open';
+    const UNDER_REVIEW = 'under_review';
+    const WON  = 'won';
 
     /* Dispute Reason */
     const CANCELLED_RECURRING_TRANSACTION = "cancelled_recurring_transaction";
@@ -63,14 +39,30 @@ class Dispute extends Base
     const STANDARD        = 'standard';
     const NOT_PROTECTED   = 'not_protected';
 
+    /* Dispute ProtectionLevel */
+    const EFFORTLESS_CBP   = 'Effortless Chargeback Protection tool';
+    const STANDARD_CBP     = 'Chargeback Protection tool';
+    const NO_PROTECTION    = 'No Protection';
+
     /* Dispute Kind */
     const CHARGEBACK      = 'chargeback';
     const PRE_ARBITRATION = 'pre_arbitration';
     // RETRIEVAL for kind already defined under Dispute Reason
 
+    /* Dispute PreDisputeProgram */
+    const NONE = 'none';
+    const VISA_RDR = 'visa_rdr';
+
     protected function _initialize($disputeAttribs)
     {
         $this->_attributes = $disputeAttribs;
+
+        if (isset($disputeAttribs['chargebackProtectionLevel']) && in_array($disputeAttribs['chargebackProtectionLevel'], array(self::EFFORTLESS, self::STANDARD))) {
+            $protectionLevel = constant('self::' . strtoupper($disputeAttribs['chargebackProtectionLevel']) . '_CBP');
+            $this->_set('protectionLevel', $protectionLevel);
+        } else {
+            $this->_set('protectionLevel', self::NO_PROTECTION);
+        }
 
         if (isset($disputeAttribs['transaction'])) {
             $transactionDetails = new Dispute\TransactionDetails($disputeAttribs['transaction']);
@@ -98,15 +90,15 @@ class Dispute extends Base
             }, $disputeAttribs['statusHistory']);
             $this->_set('statusHistory', $statusHistoryArray);
         }
-
-        if (isset($disputeAttribs['transaction'])) {
-            $this->_set(
-                'transaction',
-                new Dispute\TransactionDetails($disputeAttribs['transaction'])
-            );
-        }
     }
 
+    /**
+     * Creates an instance of a Dispute from given attributes
+     *
+     * @param array $attributes response object attributes
+     *
+     * @return Dispute
+     */
     public static function factory($attributes)
     {
         $instance = new self();
@@ -114,6 +106,7 @@ class Dispute extends Base
         return $instance;
     }
 
+    // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function __toString()
     {
         $display = [
@@ -130,9 +123,13 @@ class Dispute extends Base
     }
 
     /**
-     * Accepts a dispute, given a dispute ID
+     * Static methods redirecting to gateway class
      *
-     * @param string $id
+     * @param string $id unique identifier
+     *
+     * @see DisputeGateway::accept()
+     *
+     * @return Result\Successful|Result\Error
      */
     public static function accept($id)
     {
@@ -140,10 +137,14 @@ class Dispute extends Base
     }
 
     /**
-     * Adds file evidence to a dispute, given a dispute ID and a document ID
+     * Static methods redirecting to gateway class
      *
-     * @param string $disputeId
-     * @param string $documentIdOrRequest
+     * @param string        $disputeId           unique identifier
+     * @param string|object $documentIdOrRequest either a unique identifier string or request object
+     *
+     * @see DisputeGateway::addFileEvidence()
+     *
+     * @return Result\Successful|Result\Error
      */
     public static function addFileEvidence($disputeId, $documentIdOrRequest)
     {
@@ -151,17 +152,19 @@ class Dispute extends Base
     }
 
     /**
-     * Adds text evidence to a dispute, given a dispute ID and content
+     * Static methods redirecting to gateway class
      *
-     * @param string $id
-     * // phpcs:ignore Generic.Files.LineLength
-     * @param string|mixed $contentOrRequest If a string, $contentOrRequest is the text-based content for the dispute evidence.
-     * Alternatively, the second argument can also be an array containing:
-     *  string $content The text-based content for the dispute evidence, and
-     *  string $category The category for this piece of evidence
-     *  Note: (optional) string $tag parameter is deprecated, use $category instead.
+     * @param string       $id               unique identifier
+     * @param string|mixed $contentOrRequest If a string, $contentOrRequest is the text-based content
+     *                                       for the dispute evidence.
+     *                                       Alternatively, the second argument can also be an array containing:
+     *                                       - string $content The text-based content for the dispute evidence, and
+     *                                       - string $category The category for this piece of evidence
+     *                                       Note: (optional) string $tag parameter is deprecated, use $category instead.
      *
-     *  Example: https://developers.braintreepayments.com/reference/request/dispute/add-text-evidence/php#submitting-categorized-evidence
+     * @see DisputeGateway::addTextEvidence()
+     *
+     * @return Result\Successful|Result\Error
      */
     public static function addTextEvidence($id, $contentOrRequest)
     {
@@ -169,9 +172,13 @@ class Dispute extends Base
     }
 
     /**
-     * Finalize a dispute, given a dispute ID
+     * Static methods redirecting to gateway class
      *
-     * @param string $id
+     * @param string $id unique identifier
+     *
+     * @see DisputeGateway::finalize()
+     *
+     * @return Result\Successful|Result\Error
      */
     public static function finalize($id)
     {
@@ -179,9 +186,13 @@ class Dispute extends Base
     }
 
     /**
-     * Find a dispute, given a dispute ID
+     * Static methods redirecting to gateway class
      *
-     * @param string $id
+     * @param string $id unique identifier
+     *
+     * @see DisputeGateway::find()
+     *
+     * @return Result\Successful|Result\Error
      */
     public static function find($id)
     {
@@ -189,33 +200,75 @@ class Dispute extends Base
     }
 
     /**
-     * Remove evidence from a dispute, given a dispute ID and evidence ID
+     * Static methods redirecting to gateway class
      *
-     * @param string $disputeId
-     * @param string $evidenceId
+     * @param string $disputeId  unique identifier
+     * @param string $evidenceId unique identifier
+     *
+     * @see DisputeGateway::removeEvidence()
+     *
+     * @return Result\Successful|Result\Error
      */
     public static function removeEvidence($disputeId, $evidenceId)
     {
         return Configuration::gateway()->dispute()->removeEvidence($disputeId, $evidenceId);
     }
 
-    /**
-     * Search for Disputes, given a DisputeSearch query
+    /*
+     * Static methods redirecting to gateway class
      *
      * @param DisputeSearch $query
+     *
+     * @see DisputeGateway::search()
+     *
+     * @return ResourceCollection|Result\Error
      */
     public static function search($query)
     {
         return Configuration::gateway()->dispute()->search($query);
     }
 
-    /** @return array */
+    // NEXT_MAJOR_VERSION Remove this function
+    /**
+     * Retrive all types of chargeback protection level types
+     *
+     * @deprecated Use allProtectionLevelTypes() instead
+     *
+     * @return array
+     */
     public static function allChargebackProtectionLevelTypes()
     {
         return [
             Dispute::EFFORTLESS,
             Dispute::STANDARD,
             Dispute::NOT_PROTECTED
+        ];
+    }
+
+   /*
+     * Retrieve all types of protection level types
+     *
+     * @return array
+     */
+    public static function allProtectionLevelTypes()
+    {
+        return [
+            Dispute::EFFORTLESS_CBP,
+            Dispute::STANDARD_CBP,
+            Dispute::NO_PROTECTION
+        ];
+    }
+
+   /*
+     * Retrieve all pre-dispute programs
+     *
+     * @return array
+     */
+    public static function allPreDisputePrograms()
+    {
+        return [
+            Dispute::NONE,
+            Dispute::VISA_RDR
         ];
     }
 }

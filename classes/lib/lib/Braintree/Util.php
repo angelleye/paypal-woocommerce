@@ -20,6 +20,7 @@ class Util
      *
      * @param array  $attribArray   attributes from a search response
      * @param string $attributeName indicates which element of the passed array to extract
+     *
      * @return array array of $attributeName objects, or a single element array
      */
     public static function extractAttributeAsArray(&$attribArray, $attributeName)
@@ -44,9 +45,12 @@ class Util
     }
     /**
      * throws an exception based on the type of error
-     * @param string $statusCode HTTP status code to throw exception from
-     * @param null|string $message
+     *
+     * @param string      $statusCode HTTP status code to throw exception from
+     * @param null|string $message    optional
+     *
      * @throws Exception multiple types depending on the error
+     *
      * @return void
      */
     public static function throwStatusCodeException($statusCode, $message = null)
@@ -56,6 +60,9 @@ class Util
                 throw new Exception\Authentication();
             break;
             case 403:
+                if (is_null($message)) {
+                    $message = "";
+                }
                 throw new Exception\Authorization($message);
             break;
             case 404:
@@ -84,18 +91,26 @@ class Util
 
     /**
      * throws an exception based on the type of error returned from graphql
+     *
      * @param array $response complete graphql response
+     *
      * @throws Exception multiple types depending on the error
+     *
      * @return void
      */
     public static function throwGraphQLResponseException($response)
     {
+        // phpcs:ignore
         if (!array_key_exists("errors", $response) || !($errors = $response["errors"])) {
             return;
         }
 
         foreach ($errors as $error) {
             $message = $error["message"];
+            // phpcs:ignore
+            if (!array_key_exists("extensions", $error)) {
+                return;
+            }
             if ($error["extensions"] == null) {
                 throw new Exception\Unexpected("Unexpected exception:" . $message);
             }
@@ -125,11 +140,14 @@ class Util
     }
 
     /**
+     * Returns a class object or throws an exception
      *
-     * @param string $className
-     * @param object $resultObj
-     * @return object returns the passed object if successful
+     * @param string $className to be used to determine if objects are present
+     * @param object $resultObj the object returned from an API response
+     *
      * @throws Exception\ValidationsFailed
+     *
+     * @return object returns the passed object if successful
      */
     public static function returnObjectOrThrowException($className, $resultObj)
     {
@@ -145,6 +163,7 @@ class Util
      * removes the  header from a classname
      *
      * @param string $name ClassName
+     *
      * @return camelCased classname minus  header
      */
     public static function cleanClassName($name)
@@ -188,8 +207,10 @@ class Util
     }
 
     /**
+     * Returns corresponding class name based on response keys
      *
      * @param string $name className
+     *
      * @return string ClassName
      */
     public static function buildClassName($name)
@@ -216,9 +237,9 @@ class Util
     /**
      * convert alpha-beta-gamma to alphaBetaGamma
      *
-     * @access public
-     * @param string $string
-     * @param null|string $delimiter
+     * @param string      $string    to be scrubbed for camelCase formatting
+     * @param null|string $delimiter to be replaced
+     *
      * @return string modified string
      */
     public static function delimiterToCamelCase($string, $delimiter = '[\-\_]')
@@ -236,8 +257,8 @@ class Util
     /**
      * convert alpha-beta-gamma to alpha_beta_gamma
      *
-     * @access public
-     * @param string $string
+     * @param string $string to be modified
+     *
      * @return string modified string
      */
     public static function delimiterToUnderscore($string)
@@ -249,9 +270,9 @@ class Util
     /**
      * find capitals and convert to delimiter + lowercase
      *
-     * @access public
-     * @param string $string
-     * @param null|string $delimiter
+     * @param string      $string    to be scrubbed
+     * @param null|string $delimiter to replace camelCase
+     *
      * @return string modified string
      */
     public static function camelCaseToDelimiter($string, $delimiter = '-')
@@ -259,6 +280,14 @@ class Util
         return strtolower(preg_replace('/([A-Z])/', "$delimiter\\1", $string));
     }
 
+    /**
+     * converts a-string-here to [aStringHere]
+     *
+     * @param array       $array     to be iterated over
+     * @param null|string $delimiter to be replaced with camelCase
+     *
+     * @return array modified array
+     */
     public static function delimiterToCamelCaseArray($array, $delimiter = '[\-\_]')
     {
         $converted = [];
@@ -281,6 +310,14 @@ class Util
         return $converted;
     }
 
+    /**
+     * find capitals and convert to delimiter + lowercase
+     *
+     * @param array       $array     to be iterated over
+     * @param null|string $delimiter to replace camelCase
+     *
+     * @return array modified array
+     */
     public static function camelCaseToDelimiterArray($array, $delimiter = '-')
     {
         $converted = [];
@@ -296,6 +333,13 @@ class Util
         return $converted;
     }
 
+    /**
+     * converts a-string-here to [a_string_here]
+     *
+     * @param array $array to be iterated over
+     *
+     * @return array modified array
+     */
     public static function delimiterToUnderscoreArray($array)
     {
         $converted = [];
@@ -307,13 +351,16 @@ class Util
     }
 
     /**
+     * Join arrays with string or return false
      *
-     * @param array $array associative array to implode
+     * @param array  $array     associative array to implode
      * @param string $separator (optional, defaults to =)
-     * @param string $glue (optional, defaults to ', ')
-     * @return bool
+     * @param string $glue      (optional, defaults to ', ')
+     * @param string $parens    parentheses to enclose nested arrays (optional, defaults to '[]')
+     *
+     * @return string|false
      */
-    public static function implodeAssociativeArray($array, $separator = '=', $glue = ', ')
+    public static function implodeAssociativeArray($array, $separator = '=', $glue = ', ', $parens = '[]')
     {
         // build a new array with joined keys and values
         $tmpArray = null;
@@ -321,18 +368,33 @@ class Util
             if ($value instanceof DateTime) {
                 $value = $value->format('r');
             }
-            $tmpArray[] = $key . $separator . $value;
+            if (is_array($value)) {
+                $nested_value = self::implodeAssociativeArray($value);
+                $tmpArray[] = $key . $separator . $parens[0] . $nested_value . $parens[1];
+            } else {
+                $tmpArray[] = $key . $separator . $value;
+            }
         }
         // implode and return the new array
         return (is_array($tmpArray)) ? implode($glue, $tmpArray) : false;
     }
 
-    public static function attributesToString($attributes)
+    /*
+     * Turn all attributes into a string
+     *
+     * @param array $attributes to be turned into a string
+     *
+     * @return string|false
+     */
+    public static function attributesToString($attributes, $preserveIndexedArray = false)
     {
+        if ($preserveIndexedArray && self::isIndexedArray($attributes)) {
+            return '[' . implode(',', $attributes) . ']';
+        }
         $printableAttribs = [];
         foreach ($attributes as $key => $value) {
             if (is_array($value)) {
-                $pAttrib = self::attributesToString($value);
+                $pAttrib = self::attributesToString($value, $preserveIndexedArray);
             } elseif ($value instanceof DateTime) {
                 $pAttrib = $value->format(DateTime::RFC850);
             } else {
@@ -343,14 +405,23 @@ class Util
         return self::implodeAssociativeArray($printableAttribs);
     }
 
+    private static function isIndexedArray($array)
+    {
+        return array_keys($array) == range(0, count($array) - 1);
+    }
+
     /**
      * verify user request structure
      *
      * compares the expected signature of a gateway request
      * against the actual structure sent by the user
      *
-     * @param array $signature
-     * @param array $attributes
+     * @param array $signature  expected signature
+     * @param array $attributes actual structure sent by user
+     *
+     * @throws InvalidArgumentException
+     *
+     * @return self
      */
     public static function verifyKeys($signature, $attributes)
     {
@@ -368,13 +439,16 @@ class Util
 
     /**
      * replaces the value of a key in an array
-     * @param $array
-     * @param string $oldKey
-     * @param string $newKey
+     *
+     * @param array  $array  to have key replaced
+     * @param string $oldKey to be replace
+     * @param string $newKey to replace
+     *
      * @return array
      */
     public static function replaceKey($array, $oldKey, $newKey)
     {
+        // phpcs:ignore
         if (array_key_exists($oldKey, $array)) {
             $array[$newKey] = $array[$oldKey];
             unset($array[$oldKey]);
@@ -384,8 +458,10 @@ class Util
 
     /**
      * flattens a numerically indexed nested array to a single level
-     * @param array $keys
+     *
+     * @param array  $keys
      * @param string $namespace
+     *
      * @return array
      */
     private static function _flattenArray($keys, $namespace = null)
@@ -432,8 +508,10 @@ class Util
 
     /**
      * removes wildcard entries from the invalid keys array
-     * @param array $validKeys
+     *
+     * @param array  $validKeys
      * @param <array $invalidKeys
+     *
      * @return array
      */
     private static function _removeWildcardKeys($validKeys, $invalidKeys)

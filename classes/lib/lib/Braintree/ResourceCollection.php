@@ -18,9 +18,6 @@ use Iterator;
  *   print_r($transaction->id);
  * }
  * </code>
- *
- * @package    Braintree
- * @subpackage Utility
  */
 class ResourceCollection implements Iterator
 {
@@ -31,14 +28,7 @@ class ResourceCollection implements Iterator
     private $_pageSize;
     private $_pager;
 
-    /**
-     * set up the resource collection
-     *
-     * expects an array of attributes with literal keys
-     *
-     * @param array $response
-     * @param array $pager
-     */
+    // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function __construct($response, $pager)
     {
         $this->_pageSize = $response["searchResults"]["pageSize"];
@@ -47,8 +37,11 @@ class ResourceCollection implements Iterator
     }
 
     /**
-     * returns the current item when iterating with foreach
+     * returns the current item when iterating with foreachi
+     *
+     * @return object
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->_items[$this->_index];
@@ -62,10 +55,21 @@ class ResourceCollection implements Iterator
     public function firstItem()
     {
         $ids = $this->_ids;
+
+        if (!isset($ids[0])) {
+            return null;
+        }
+
         $page = $this->_getPage([$ids[0]]);
         return $page[0];
     }
 
+    /*
+     * returns null
+     *
+     * @return null
+     */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return null;
@@ -73,7 +77,10 @@ class ResourceCollection implements Iterator
 
     /**
      * advances to the next item in the collection when iterating with foreach
+     *
+     * @return object
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->_index;
@@ -81,7 +88,10 @@ class ResourceCollection implements Iterator
 
     /**
      * rewinds the testIterateOverResults collection to the first item when iterating with foreach
+     *
+     * @return object
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->_batchIndex = 0;
@@ -90,7 +100,10 @@ class ResourceCollection implements Iterator
 
     /**
      * returns whether the current item is valid when iterating with foreach
+     *
+     * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         if ($this->_index == count($this->_items) && $this->_batchIndex < count($this->_ids)) {
@@ -104,6 +117,11 @@ class ResourceCollection implements Iterator
         }
     }
 
+    /*
+     * returns a maximum count
+     *
+     * @return int
+     */
     public function maximumCount()
     {
         return count($this->_ids);
@@ -120,11 +138,6 @@ class ResourceCollection implements Iterator
         }
     }
 
-    /**
-     * requests the next page of results for the collection
-     *
-     * @return void
-     */
     private function _getPage($ids)
     {
         $object = $this->_pager['object'];

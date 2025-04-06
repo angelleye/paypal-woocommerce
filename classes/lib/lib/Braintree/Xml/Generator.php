@@ -16,7 +16,9 @@ class Generator
     /**
      * arrays passed to this method should have a single root element
      * with an array as its value
+     *
      * @param array $aData the array of data
+     *
      * @return string XML string
      */
     public static function arrayToXml($aData)
@@ -49,10 +51,9 @@ class Generator
     /**
      * Construct XML elements with attributes from an associative array.
      *
-     * @access protected
-     * @static
      * @param object $writer XMLWriter object
-     * @param array $aData contains attributes and values
+     * @param array  $aData  contains attributes and values
+     *
      * @return void
      */
     private static function _createElementsFromArray(&$writer, $aData)
@@ -69,6 +70,7 @@ class Generator
             // handle child elements
             $writer->startElement($elementName);
             if (is_array($element)) {
+                // phpcs:ignore
                 if (array_key_exists(0, $element) || empty($element)) {
                     $writer->writeAttribute('type', 'array');
                     foreach ($element as $ignored => $itemInArray) {
@@ -86,7 +88,11 @@ class Generator
                     $writer->writeAttribute($attribute[0], $attribute[1]);
                     $element = $attribute[2];
                 }
-                $writer->text($element);
+                if (!is_null($element)) {
+                    $writer->text($element);
+                } else {
+                    $writer->text("");
+                }
             }
             $writer->endElement();
         }
@@ -95,8 +101,9 @@ class Generator
     /**
      * convert passed data into an array of attributeType, attributeName, and value
      * dates sent as DateTime objects will be converted to strings
-     * @access protected
+     *
      * @param mixed $value
+     *
      * @return array attributes and element value
      */
     private static function _generateXmlAttribute($value)
@@ -116,8 +123,9 @@ class Generator
     }
     /**
      * converts datetime back to xml schema format
-     * @access protected
+     *
      * @param object $dateTime
+     *
      * @return string XML schema formatted timestamp
      */
     private static function _convertDateTimeObjectToXmlTimestamp($dateTime)

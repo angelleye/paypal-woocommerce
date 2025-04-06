@@ -1,12 +1,11 @@
 <?php
 
+# NEXT_MAJOR_VERSION Remove this class
+# The old venmo SDK class has been deprecated
 namespace Braintree\Test;
 
 /**
  * VenmoSdk payment method codes used for testing purposes
- *
- * @package    Braintree
- * @subpackage Test
  */
 class VenmoSdk
 {
