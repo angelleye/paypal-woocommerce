@@ -1164,7 +1164,47 @@ class AngellEYE_PayPal_PPCP_Payment {
         return $order->get_payment_method_title();
     }
 
-    public function angelleye_ppcp_order_capture_request($woo_order_id, $need_to_update_order = true) {
+	/**
+	 * https://angelleye.atlassian.net/browse/PFW-1923
+	 *
+	 * Confirms the payment source for a given PayPal order ID.
+	 *
+	 * @param string $paypal_order_id The ID of the PayPal order to confirm the payment source for.
+	 *
+	 * @return array The response from the PayPal API after confirming the payment source.
+	 */
+	public function angelleye_ppcp_confirm_payment_source($paypal_order_id) {
+		$application_context = $this->angelleye_ppcp_application_context(true);
+
+		$body = array(
+			'payment_source' => array(
+				'paypal' => array(
+					'experience_context' => $application_context
+				)
+			)
+		);
+
+		$args = array(
+			'method'  => 'POST',
+			'headers' => array(
+				'Content-Type'            => 'application/json',
+				'Authorization'           => '',
+				'prefer'                  => 'return=representation',
+				'PayPal-Request-Id'       => $this->generate_request_id(),
+				'Paypal-Auth-Assertion'   => $this->angelleye_ppcp_paypalauthassertion()
+			),
+			'body'    => $body
+		);
+
+		return $this->api_request->request(
+			$this->paypal_order_api . $paypal_order_id . '/confirm-payment-source',
+			$args,
+			'confirm_payment_source'
+		);
+	}
+
+
+	public function angelleye_ppcp_order_capture_request($woo_order_id, $need_to_update_order = true) {
         try {
             $order = wc_get_order($woo_order_id);
             if ($need_to_update_order) {
@@ -1400,7 +1440,15 @@ class AngellEYE_PayPal_PPCP_Payment {
 				            // so that we know this scenario is NOT a hard fail.
 				            $this->api_log->log("\n\n========== PAYER_ACTION_REQUIRED scenario ==========\nReturning special array.\n\n", 'info');
 
-							return array(
+				            $paypal_order_id = AngellEYE_Session_Manager::get('paypal_order_id', false);
+				            if ( $paypal_order_id ) {
+					            $this->angelleye_ppcp_confirm_payment_source($paypal_order_id);
+				            }
+
+							// Flag the overcapture scenario so we can skip final review from here.
+				            AngellEYE_Session_Manager::set('overcapture_scenario', true);
+
+				            return array(
 					            'payer_action_required' => true,
 					            'redirect_url' => $payer_action_url,
 				            );
