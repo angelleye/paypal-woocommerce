@@ -452,19 +452,29 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 		            'type'     => 'checkbox',
 		            'class'    => 'enable_negative_testing_option',
 	            ),
-	            'negative_testing_mock_error' => array(
-		            'title'    => __( 'Select Error to Mock', 'paypal-for-woocommerce' ),
-		            'desc'     => __( 'Choose the PayPal error you wish to simulate.', 'paypal-for-woocommerce' ),
-		            'id'       => 'angelleye_pfw_ppcp_mock_error_code',
-		            'default'  => '',
-		            'type'     => 'select',
-		            'class'    => 'negative_testing_selector_option',
-		            'options'  => array(
-			            ''                      => __( 'Select an error', 'paypal-for-woocommerce' ),
-			            'PAYER_ACTION_REQUIRED' => __( 'Payer Action Required', 'paypal-for-woocommerce' ),
-			            // Add other error codes as needed
-		            ),
-	            ),
+                'negative_testing_mock_error' => array(
+	                'title'    => __( 'Select Error to Mock', 'paypal-for-woocommerce' ),
+	                'desc'     => __( 'Choose the PayPal error you wish to simulate.', 'paypal-for-woocommerce' ),
+	                'id'       => 'angelleye_pfw_ppcp_mock_error_code',
+	                'default'  => '',
+	                'type'     => 'select',
+	                'class'    => 'negative_testing_selector_option',
+	                'options'  => array(
+		                ''                              => __( 'Select an error', 'paypal-for-woocommerce' ),
+		                'PAYER_ACTION_REQUIRED'         => __( 'Payer Action Required', 'paypal-for-woocommerce' ),
+		                'INVALID_ARRAY_MIN_ITEMS'       => __( 'Invalid Array Min Items', 'paypal-for-woocommerce' ),
+		                'MISSING_SHIPPING_ADDRESS'      => __( 'Missing Shipping Address', 'paypal-for-woocommerce' ),
+		                'INVALID_PARAMETER_SYNTAX'      => __( 'Invalid Parameter Syntax', 'paypal-for-woocommerce' ),
+		                'MISSING_REQUIRED_PARAMETER'    => __( 'Missing Required Parameter', 'paypal-for-woocommerce' ),
+		                'NOT_AUTHORIZED'                => __( 'Not Authorized', 'paypal-for-woocommerce' ),
+		                'INTERNAL_SERVER_ERROR'         => __( 'Internal Server Error', 'paypal-for-woocommerce' ),
+		                'INELIGIBLE_FOR_DONATIONS'      => __( 'Ineligible for Donations', 'paypal-for-woocommerce' ),
+		                'PERMISSION_DENIED'             => __( 'Permission Denied', 'paypal-for-woocommerce' ),
+		                'RESOURCE_NOT_FOUND'            => __( 'Resource Not Found', 'paypal-for-woocommerce' ),
+		                'CAPTURE_STATUS_NOT_VALID'      => __( 'Capture Status Not Valid', 'paypal-for-woocommerce' ),
+		                // Add other error codes as needed
+	                ),
+                ),
                 'mock_restriction' => array(
 	                'title'    => __( 'Mock Restriction', 'paypal-for-woocommerce' ),
 	                'desc'     => __( 'Choose which PayPal action this mock should apply to. Leave unset to apply to all.', 'paypal-for-woocommerce' ),
@@ -475,6 +485,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
 	                'options'  => array(
 		                ''                 => __( 'All Actions (no restriction)', 'paypal-for-woocommerce' ),
 		                'create_order'     => __( 'Create Order', 'paypal-for-woocommerce' ),
+		                'get_order'        => __( 'Get Order', 'paypal-for-woocommerce' ),
 		                'capture_order'    => __( 'Capture Order', 'paypal-for-woocommerce' ),
 		                'authorize_order'  => __( 'Authorize Order', 'paypal-for-woocommerce' ),
 		                'create_token'     => __( 'Create Payment Token', 'paypal-for-woocommerce' ),
