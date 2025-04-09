@@ -428,6 +428,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order),
                     );
+                } elseif ( $redirect = $this->handle_overcharge_redirect( $is_success ) ) {
+	                return $redirect;
                 }
                 exit();
             } else {
@@ -456,28 +458,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 			                'result' => 'success',
 			                'redirect' => $this->get_return_url($order),
 		                );
-	                } elseif (is_array($is_success) && !empty($is_success['payer_action_required'])) {
-		                // Over-capture handling - https://angelleye.atlassian.net/browse/PFW-1923
-		                if (ob_get_length()) {
-			                ob_end_clean();
-		                }
-
-                        // Log the payer_action_required scenario.
-		                if (class_exists('WC_Logger')) {
-			                $logger = wc_get_logger();
-			                $logger->info(
-				                PHP_EOL . PHP_EOL .
-				                '========== PAYER_ACTION_REQUIRED ==========' . PHP_EOL .
-				                'Redirecting to PayPal payer-action URL: ' . $is_success['redirect_url'] . PHP_EOL .
-				                '==========================================' . PHP_EOL . PHP_EOL,
-				                array('source' => 'angelleye_ppcp')
-			                );
-		                }
-
-		                return array(
-			                'result' => 'success',
-			                'redirect' => $is_success['redirect_url'],
-		                );
+	                } elseif ( $redirect = $this->handle_overcharge_redirect( $is_success ) ) {
+		                return $redirect;
 	                } else {
 		                AngellEye_Session_Manager::clear();
 		                if (ob_get_length()) {
@@ -511,7 +493,34 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
-    public function get_title() {
+	protected function handle_overcharge_redirect( $is_success ) {
+		if ( ! is_array( $is_success ) || empty( $is_success['payer_action_required'] ) ) {
+			return false;
+		}
+
+		if ( ob_get_length() ) {
+			ob_end_clean();
+		}
+
+		if ( class_exists( 'WC_Logger' ) ) {
+			$logger = wc_get_logger();
+			$logger->info(
+				PHP_EOL . PHP_EOL .
+				'========== PAYER_ACTION_REQUIRED ==========' . PHP_EOL .
+				'Redirecting to PayPal payer-action URL: ' . $is_success['redirect_url'] . PHP_EOL .
+				'==========================================' . PHP_EOL . PHP_EOL,
+				array( 'source' => 'angelleye_ppcp' )
+			);
+		}
+
+		return array(
+			'result'   => 'success',
+			'redirect' => $is_success['redirect_url'],
+		);
+	}
+
+
+	public function get_title() {
         try {
             $payment_method_title = '';
             if (isset($_GET['post'])) {
