@@ -685,7 +685,11 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if (($this->is_live_first_party_used === 'yes' || $this->is_live_third_party_used === 'yes') || ($this->is_sandbox_first_party_used === 'yes' || $this->is_sandbox_third_party_used === 'yes')) {
             return false;
         }
-        $message = sprintf(__('%s is almost ready. To get started, <a href="%1$s">connect your account</a>.','paypal-for-woocommerce'),AE_PPCP_NAME,admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products'));
+	    $message = sprintf(
+		    __('%1$s is almost ready. To get started, <a href="%2$s">connect your account</a>.', 'paypal-for-woocommerce'),
+		    AE_PPCP_NAME,
+		    admin_url('options-general.php?page=paypal-for-woocommerce')
+	    );
         ?>
         <div class="notice notice-warning is-dismissible">
             <p><?php echo $message; ?></p>
