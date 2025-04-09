@@ -2005,6 +2005,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                     return false;
                 }
             } else {
+
+	            // Overcharge Handler - https://angelleye.atlassian.net/browse/PFW-1923
+	            $overcharge_result = $this->overcharge_handler($this->api_response);
+	            if ($overcharge_result) {
+		            return $overcharge_result;
+	            }
+
                 $error_email_notification_param = array(
                     'request' => 'authorize_order',
                     'order_id' => $woo_order_id
