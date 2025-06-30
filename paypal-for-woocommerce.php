@@ -47,6 +47,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
 
         public function __construct() {
             $this->define_constants();
+            $this->load_plugin_textdomain();
             $this->minified_version = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
             $this->pp_settings = get_option('woocommerce_paypal_express_settings', array());
             $this->initialize_actions();
