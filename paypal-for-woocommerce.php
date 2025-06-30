@@ -47,7 +47,6 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
 
         public function __construct() {
             $this->define_constants();
-            $this->load_plugin_textdomain();
             $this->minified_version = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
             $this->pp_settings = get_option('woocommerce_paypal_express_settings', array());
             $this->initialize_actions();
@@ -100,7 +99,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             $basename = plugin_basename(__FILE__);
             $prefix = is_network_admin() ? 'network_admin_' : '';
             add_filter("{$prefix}plugin_action_links_$basename", array($this, 'plugin_action_links'), 10, 4);
-            add_action('init', array($this, 'load_plugin_textdomain'));
+            add_action('plugins_loaded', array($this, 'load_plugin_textdomain'), 0);
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
             add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 32);
             add_action('plugins_loaded', array($this, 'init'), 103);
