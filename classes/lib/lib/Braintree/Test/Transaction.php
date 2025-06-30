@@ -15,9 +15,10 @@ class Transaction
     /**
      * settle a transaction by id in sandbox
      *
-     * @param string $id transaction id
+     * @param string        $id     transaction id
      * @param Configuration $config gateway config
-     * @return Transaction
+     *
+     * @return Transaction | Braintree\Result\Error
      */
     public static function settle($transactionId)
     {
@@ -27,9 +28,10 @@ class Transaction
     /**
      * settlement confirm a transaction by id in sandbox
      *
-     * @param string $id transaction id
+     * @param string        $id     transaction id
      * @param Configuration $config gateway config
-     * @return Transaction
+     *
+     * @return Transaction | Braintree\Result\Errorn
      */
     public static function settlementConfirm($transactionId)
     {
@@ -39,9 +41,10 @@ class Transaction
     /**
      * settlement decline a transaction by id in sandbox
      *
-     * @param string $id transaction id
+     * @param string        $id     transaction id
      * @param Configuration $config gateway config
-     * @return Transaction
+     *
+     * @return Transaction | Braintree\Result\Error
      */
     public static function settlementDecline($transactionId)
     {
@@ -51,9 +54,10 @@ class Transaction
     /**
      * settlement pending a transaction by id in sandbox
      *
-     * @param string $id transaction id
+     * @param string        $id     transaction id
      * @param Configuration $config gateway config
-     * @return Transaction
+     *
+     * @return Transaction | Braintree\Result\Error
      */
     public static function settlementPending($transactionId)
     {

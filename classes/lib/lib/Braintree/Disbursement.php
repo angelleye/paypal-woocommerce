@@ -2,9 +2,12 @@
 
 namespace Braintree;
 
+/**
+ * Disbursement class
+ * Module used in parsing Webhooks
+ */
 class Disbursement extends Base
 {
-
     const TYPE_CREDIT = "credit";
     const TYPE_DEBIT  = "debit";
 
@@ -23,6 +26,11 @@ class Disbursement extends Base
         }
     }
 
+    /*
+     * Retrieve the transactions associated with a disbursement
+     *
+     * @return ResourceCollection
+     */
     public function transactions()
     {
         $collection = Transaction::search([
@@ -32,6 +40,13 @@ class Disbursement extends Base
         return $collection;
     }
 
+    /**
+     * Creates an instance of a Disbursement from given attributes
+     *
+     * @param array $attributes response object attributes
+     *
+     * @return Disbursement
+     */
     public static function factory($attributes)
     {
         $instance = new self();
@@ -39,6 +54,7 @@ class Disbursement extends Base
         return $instance;
     }
 
+    // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function __toString()
     {
         $display = [
@@ -55,11 +71,21 @@ class Disbursement extends Base
                 Util::attributesToString($displayAttributes) . ']';
     }
 
+    /*
+     * Determines if a Disbursement is a debit
+     *
+     * @return bool
+     */
     public function isDebit()
     {
         return $this->disbursementType == Disbursement::TYPE_DEBIT;
     }
 
+    /*
+     * Determines if a Disbursement is a credit
+     *
+     * @return bool
+     */
     public function isCredit()
     {
         return $this->disbursementType == Disbursement::TYPE_CREDIT;

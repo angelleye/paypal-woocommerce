@@ -4,30 +4,19 @@ namespace Braintree;
 
 use InvalidArgumentException;
 
+/**
+ * Braintree ClientTokenGateway module
+ *
+ * Manages Braintree ClientTokens
+ * For more detailed information on ClientTokens, see {@link https://developer.paypal.com/braintree/docsreference/response/client-token/php our developer docs}. <br />
+ */
 class ClientTokenGateway
 {
-    /**
-     *
-     * @var Gateway
-     */
     private $_gateway;
-
-    /**
-     *
-     * @var Configuration
-     */
     private $_config;
-
-    /**
-     *
-     * @var Http
-     */
     private $_http;
 
-    /**
-     *
-     * @param Gateway $gateway
-     */
+    // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function __construct($gateway)
     {
         $this->_gateway = $gateway;
@@ -36,26 +25,27 @@ class ClientTokenGateway
         $this->_http = new Http($gateway->config);
     }
 
+    /**
+     * Generate a client token for client-side authorization
+     *
+     * @param Optional $params containing request parameters
+     *
+     * @return string client token
+     */
     public function generate($params = [])
     {
+        // phpcs:ignore
         if (!array_key_exists("version", $params)) {
             $params["version"] = ClientToken::DEFAULT_VERSION;
         }
 
-        $this->conditionallyVerifyKeys($params);
+        Util::verifyKeys(self::generateSignature(), $params);
         $generateParams = ["client_token" => $params];
 
         return $this->_doGenerate('/client_token', $generateParams);
     }
 
-    /**
-     * sends the generate request to the gateway
-     *
-     * @ignore
-     * @param var $url
-     * @param array $params
-     * @return string
-     */
+    // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function _doGenerate($subPath, $params)
     {
         $fullPath = $this->_config->merchantPath() . $subPath;
@@ -64,13 +54,19 @@ class ClientTokenGateway
         return $this->_verifyGatewayResponse($response);
     }
 
+    // NEXT_MAJOR_VERSION Remove this method
     /**
+     * Checks if customer id is provided prior to verifying keys provided in params
      *
-     * @param array $params
-     * @throws InvalidArgumentException
+     * @param array $params to be verified
+     *
+     * @deprecated
+     *
+     * @return array
      */
     public function conditionallyVerifyKeys($params)
     {
+        // phpcs:ignore
         if (array_key_exists("customerId", $params)) {
             Util::verifyKeys($this->generateWithCustomerIdSignature(), $params);
         } else {
@@ -79,20 +75,47 @@ class ClientTokenGateway
     }
 
     /**
+     * creates a full array signature of a valid generate request
      *
-     * @return mixed[]
+     * @return array gateway generate request format
+     */
+    public static function generateSignature()
+    {
+        return [
+            "customerId",
+            "merchantAccountId",
+            "proxyMerchantId",
+            "version",
+            ["domains" => ['_anyKey_']],
+            ["options" => ["failOnDuplicatePaymentMethod", "failOnDuplicatePaymentMethodForCustomer", "makeDefault", "verifyCard"]]
+        ];
+    }
+
+    // NEXT_MAJOR_VERSION Remove this method
+    // Replaced with generateSignature
+    /**
+     * returns an array of keys including customer id
+     *
+     * @deprecated
+     *
+     * @return array
      */
     public function generateWithCustomerIdSignature()
     {
         return [
             "version", "customerId", "proxyMerchantId",
-            ["options" => ["makeDefault", "verifyCard", "failOnDuplicatePaymentMethod"]],
+            ["options" => ["makeDefault", "verifyCard", "failOnDuplicatePaymentMethod", "failOnDuplicatePaymentMethodForCustomer"]],
             "merchantAccountId"];
     }
 
+    // NEXT_MAJOR_VERSION Remove this method
+    // Replaced with generateSignature
     /**
+     * returns an array of keys without customer id
      *
-     * @return string[]
+     * @deprecated
+     *
+     * @return array
      */
     public function generateWithoutCustomerIdSignature()
     {
@@ -106,10 +129,11 @@ class ClientTokenGateway
      * Otherwise, throws an InvalidArgumentException with the error
      * response from the Gateway or an HTTP status code exception.
      *
-     * @ignore
      * @param array $response gateway response values
-     * @return string client token
+     *
      * @throws InvalidArgumentException | HTTP status code exception
+     *
+     * @return string client token
      */
     private function _verifyGatewayResponse($response)
     {

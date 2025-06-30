@@ -8,30 +8,7 @@ namespace Braintree;
  *
  * <b>== More information ==</b>
  *
- * See {@link https://developers.braintreepayments.com/javascript+php}<br />
- *
- * @package    Braintree
- * @category   Resources
- *
- * @property-read string $bin
- * @property-read string $cardType
- * @property-read \DateTime $createdAt
- * @property-read string $customerId
- * @property-read boolean $default
- * @property-read string $expirationMonth
- * @property-read string $expirationYear
- * @property-read string $googleTransactionId
- * @property-read string $imageUrl
- * @property-read boolean $isNetworkTokenized
- * @property-read string $last4
- * @property-read string $sourceCardLast4
- * @property-read string $sourceCardType
- * @property-read string $sourceDescription
- * @property-read \Braintree\Subscription[] $subscriptions
- * @property-read string $token
- * @property-read \DateTime $updatedAt
- * @property-read string $virtualCardLast4
- * @property-read string $virtualCardType
+ * See our {@link https://developer.paypal.com/braintree/docs/reference/response/google-pay-card developer docs} for information on attributes
  */
 class GooglePayCard extends Base
 {
@@ -47,10 +24,10 @@ class GooglePayCard extends Base
     }
 
     /**
-     *  factory method: returns an instance of GooglePayCard
-     *  to the requesting method, with populated properties
+     * Creates an instance of a GooglePayCard from given attributes
      *
-     * @ignore
+     * @param array $attributes response object attributes
+     *
      * @return GooglePayCard
      */
     public static function factory($attributes)
@@ -70,8 +47,8 @@ class GooglePayCard extends Base
     /**
      * sets instance properties from an array of values
      *
-     * @access protected
      * @param array $googlePayCardAttribs array of Google Pay card properties
+     *
      * @return void
      */
     protected function _initialize($googlePayCardAttribs)

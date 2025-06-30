@@ -13,16 +13,7 @@ use Braintree\Base;
  * This object is returned as part of an Error Result; it provides
  * access to the credit card verification data from the gateway
  *
- *
- * @package    Braintree
- * @subpackage Result
- *
- * @property-read string $id
- * @property-read string $status
- * @property-read string $verificationMethod
- * @property-read \DateTime $verificationDeterminedAt
- * @property-read Braintree\UsBankAccount $usBankAccount
- *
+ * See our {@link https://developer.paypal.com/braintree/docs/guides/acv/server-side developer docs} for more information
  */
 class UsBankAccountVerification extends Base
 {
@@ -33,17 +24,19 @@ class UsBankAccountVerification extends Base
     const VERIFIED           = 'verified';
     const PENDING            = 'pending';
 
+    // Verification Method
     const TOKENIZED_CHECK   = 'tokenized_check';
     const NETWORK_CHECK     = 'network_check';
     const INDEPENDENT_CHECK = 'independent_check';
     const MICRO_TRANSFERS   = 'micro_transfers';
 
+    // Verification Add Ons
+    const CUSTOMER_VERIFICATION = 'customer_verification';
+
     private $_gatewayRejectionReason;
     private $_status;
 
-    /**
-     * @ignore
-     */
+    // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function __construct($attributes)
     {
         $this->_initializeFromArray($attributes);
@@ -56,9 +49,9 @@ class UsBankAccountVerification extends Base
 
     /**
      * initializes instance properties from the keys/values of an array
-     * @ignore
-     * @access protected
+     *
      * @param <type> $aAttribs array of properties to set - single level
+     *
      * @return void
      */
     private function _initializeFromArray($attributes)
@@ -70,25 +63,25 @@ class UsBankAccountVerification extends Base
         }
     }
 
-    /**
-     * @ignore
-     */
+    // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function __get($name)
     {
         $varName = "_$name";
         return isset($this->$varName) ? $this->$varName : null;
     }
 
-    /**
-     * returns a string representation of the customer
-     * @return string
-     */
+    // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function __toString()
     {
         return __CLASS__ . '[' .
                 Util::attributesToString($this->_attributes) . ']';
     }
 
+    /**
+     * returns an array of all possible US Bank Account Verification statuses
+     *
+     * @return array
+     */
     public static function allStatuses()
     {
         return [
@@ -100,6 +93,11 @@ class UsBankAccountVerification extends Base
         ];
     }
 
+    /**
+     * returns an array of all possible US Bank Account Verification methods
+     *
+     * @return array
+     */
     public static function allVerificationMethods()
     {
         return [
@@ -107,6 +105,18 @@ class UsBankAccountVerification extends Base
             UsBankAccountVerification::NETWORK_CHECK,
             UsBankAccountVerification::INDEPENDENT_CHECK,
             UsBankAccountVerification::MICRO_TRANSFERS,
+        ];
+    }
+
+    /**
+     * returns an array of all possible US Bank Account Verification Add Ons
+     *
+     * @return array
+     */
+    public static function allVerificationAddOns()
+    {
+        return [
+            UsBankAccountVerification::CUSTOMER_VERIFICATION,
         ];
     }
 }

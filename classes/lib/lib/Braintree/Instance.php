@@ -7,14 +7,11 @@ namespace Braintree;
  *
  * @abstract
  */
-abstract class Instance
+abstract class Instance extends \stdClass
 {
     protected $_attributes = [];
 
-    /**
-     *
-     * @param array $attributes
-     */
+    // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function __construct($attributes)
     {
         if (!empty($attributes)) {
@@ -24,12 +21,14 @@ abstract class Instance
 
     /**
      * returns private/nonexistent instance properties
-     * @access public
+     *
      * @param string $name property name
+     *
      * @return mixed contents of instance properties
      */
     public function __get($name)
     {
+        // phpcs:ignore
         if (array_key_exists($name, $this->_attributes)) {
             return $this->_attributes[$name];
         } else {
@@ -40,8 +39,9 @@ abstract class Instance
 
     /**
      * used by isset() and empty()
-     * @access public
+     *
      * @param string $name property name
+     *
      * @return boolean
      */
     public function __isset($name)
@@ -52,6 +52,7 @@ abstract class Instance
     /**
      * create a printable representation of the object as:
      * ClassName[property=value, property=value]
+     *
      * @return string
      */
     public function __toString()
@@ -61,9 +62,9 @@ abstract class Instance
     }
     /**
      * initializes instance properties from the keys/values of an array
-     * @ignore
-     * @access protected
+     *
      * @param <type> $aAttribs array of properties to set - single level
+     *
      * @return void
      */
     private function _initializeFromArray($attributes)
@@ -74,7 +75,6 @@ abstract class Instance
     /**
      * Implementation of JsonSerializable
      *
-     * @ignore
      * @return array
      */
     public function jsonSerialize()
@@ -85,14 +85,13 @@ abstract class Instance
     /**
      * Implementation of to an Array
      *
-     * @ignore
      * @return array
      */
     public function toArray()
     {
         return array_map(function ($value) {
             if (!is_array($value)) {
-                return method_exists($value, 'toArray') ? $value->toArray() : $value;
+                return is_object($value) && method_exists($value, 'toArray') ? $value->toArray() : $value;
             } else {
                 return $value;
             }

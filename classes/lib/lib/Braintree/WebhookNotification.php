@@ -2,6 +2,10 @@
 
 namespace Braintree;
 
+/**
+ * WebhookNotification class
+ * module for webhook objects
+ */
 class WebhookNotification extends Base
 {
     // phpcs:disable Generic.Files.LineLength
@@ -12,21 +16,28 @@ class WebhookNotification extends Base
     const DISBURSEMENT = 'disbursement';
     const DISBURSEMENT_EXCEPTION = 'disbursement_exception';
     const DISPUTE_ACCEPTED = 'dispute_accepted';
+    const DISPUTE_AUTO_ACCEPTED = 'dispute_auto_accepted';
     const DISPUTE_DISPUTED = 'dispute_disputed';
     const DISPUTE_EXPIRED = 'dispute_expired';
     const DISPUTE_LOST = 'dispute_lost';
     const DISPUTE_OPENED = 'dispute_opened';
+    const DISPUTE_UNDER_REVIEW = 'dispute_under_review';
     const DISPUTE_WON = 'dispute_won';
     const GRANTED_PAYMENT_METHOD_REVOKED = 'granted_payment_method_revoked';
     const GRANTOR_UPDATED_GRANTED_PAYMENT_METHOD = 'grantor_updated_granted_payment_method';
     const LOCAL_PAYMENT_COMPLETED = "local_payment_completed";
+    const LOCAL_PAYMENT_EXPIRED = "local_payment_expired";
+    const LOCAL_PAYMENT_FUNDED = "local_payment_funded";
     const LOCAL_PAYMENT_REVERSED = "local_payment_reversed";
     const OAUTH_ACCESS_REVOKED = 'oauth_access_revoked';
     const PARTNER_MERCHANT_CONNECTED = 'partner_merchant_connected';
     const PARTNER_MERCHANT_DECLINED = 'partner_merchant_declined';
     const PARTNER_MERCHANT_DISCONNECTED = 'partner_merchant_disconnected';
+    const PAYMENT_METHOD_CUSTOMER_DATA_UPDATED = 'payment_method_customer_data_updated';
     const PAYMENT_METHOD_REVOKED_BY_CUSTOMER = 'payment_method_revoked_by_customer';
     const RECIPIENT_UPDATED_GRANTED_PAYMENT_METHOD = 'recipient_updated_granted_payment_method';
+    const REFUND_FAILED = 'refund_failed';
+    const SUBSCRIPTION_BILLING_SKIPPED = 'subscription_billing_skipped';
     const SUBSCRIPTION_CANCELED = 'subscription_canceled';
     const SUBSCRIPTION_CHARGED_SUCCESSFULLY = 'subscription_charged_successfully';
     const SUBSCRIPTION_CHARGED_UNSUCCESSFULLY = 'subscription_charged_unsuccessfully';
@@ -37,20 +48,47 @@ class WebhookNotification extends Base
     const SUB_MERCHANT_ACCOUNT_APPROVED = 'sub_merchant_account_approved';
     const SUB_MERCHANT_ACCOUNT_DECLINED = 'sub_merchant_account_declined';
     const TRANSACTION_DISBURSED = 'transaction_disbursed';
+    const TRANSACTION_REVIEWED = 'transaction_reviewed';
     const TRANSACTION_SETTLED = 'transaction_settled';
     const TRANSACTION_SETTLEMENT_DECLINED = 'transaction_settlement_declined';
     // phpcs:enable Generic.Files.LineLength
 
+    /**
+     * Static methods redirecting to gateway class
+     *
+     * @param string $signature used to verify before parsing
+     * @param mixed  $payload   to be parsed
+     *
+     * @see WebHookNotificationGateway::parse()
+     *
+     * @return WebhookNotification object|Exception
+     */
     public static function parse($signature, $payload)
     {
         return Configuration::gateway()->webhookNotification()->parse($signature, $payload);
     }
 
+    /*
+     * Static methods redirecting to gateway class
+     *
+     * @param object $challenge to be verified
+     *
+     * @see WebHookNotificationGateway::verify()
+     *
+     * @return string|Exception
+     */
     public static function verify($challenge)
     {
         return Configuration::gateway()->webhookNotification()->verify($challenge);
     }
 
+    /**
+     * Creates an instance from given attributes
+     *
+     * @param array $attributes response object attributes
+     *
+     * @return WebhookNotification
+     */
     public static function factory($attributes)
     {
         $instance = new self();
@@ -83,6 +121,10 @@ class WebhookNotification extends Base
 
         if (isset($wrapperNode['transaction'])) {
             $this->_set('transaction', Transaction::factory($wrapperNode['transaction']));
+        }
+
+        if (isset($wrapperNode['transactionReview'])) {
+            $this->_set('transactionReview', TransactionReview::factory($wrapperNode['transactionReview']));
         }
 
         if (isset($wrapperNode['disbursement'])) {
@@ -125,8 +167,20 @@ class WebhookNotification extends Base
             $this->_set('localPaymentCompleted', LocalPaymentCompleted::factory($wrapperNode['localPayment']));
         }
 
+        if (isset($wrapperNode['localPaymentExpired'])) {
+            $this->_set('localPaymentExpired', LocalPaymentExpired::factory($wrapperNode['localPaymentExpired']));
+        }
+
+        if (isset($wrapperNode['localPaymentFunded'])) {
+            $this->_set('localPaymentFunded', LocalPaymentFunded::factory($wrapperNode['localPaymentFunded']));
+        }
+
         if (isset($wrapperNode['localPaymentReversed'])) {
             $this->_set('localPaymentReversed', LocalPaymentReversed::factory($wrapperNode['localPaymentReversed']));
+        }
+
+        if (isset($wrapperNode['paymentMethodCustomerDataUpdatedMetadata'])) {
+            $this->_set('paymentMethodCustomerDataUpdatedMetadata', PaymentMethodCustomerDataUpdatedMetadata::factory($wrapperNode['paymentMethodCustomerDataUpdatedMetadata']));
         }
 
         if (isset($wrapperNode['errors'])) {

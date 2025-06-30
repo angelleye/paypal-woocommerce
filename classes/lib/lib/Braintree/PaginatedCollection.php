@@ -8,7 +8,7 @@ use Iterator;
  * Braintree PaginatedCollection
  * PaginatedCollection is a container object for paginated data
  *
- * retrieves and pages through large collections of results
+ * Retrieves and pages through large collections of results
  *
  * example:
  * <code>
@@ -18,9 +18,6 @@ use Iterator;
  *   print_r($merchantAccount->status);
  * }
  * </code>
- *
- * @package    Braintree
- * @subpackage Utility
  */
 class PaginatedCollection implements Iterator
 {
@@ -31,13 +28,7 @@ class PaginatedCollection implements Iterator
     private $_totalItems;
     private $_items;
 
-    /**
-     * set up the paginated collection
-     *
-     * expects an array of an object and method to call on it
-     *
-     * @param array $pager
-     */
+    // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function __construct($pager)
     {
         $this->_pager = $pager;
@@ -48,29 +39,44 @@ class PaginatedCollection implements Iterator
     }
 
     /**
-     * returns the current item when iterating with foreach
+     * Returns the current item when iterating with foreach
+     *
+     * @return object of the current item
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->_items[($this->_index % $this->_pageSize)];
     }
 
+    /**
+     * Returns null
+     *
+     * @return null
+     */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return null;
     }
 
     /**
-     * advances to the next item in the collection when iterating with foreach
+     * Advances to the next item in the collection when iterating with foreach
+     *
+     * @return object of the next item in the collection
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->_index;
     }
 
     /**
-     * rewinds the collection to the first item when iterating with foreach
+     * Rewinds the collection to the first item when iterating with foreach
+     *
+     * @return mixed collection with index set to 0
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->_index = 0;
@@ -81,8 +87,11 @@ class PaginatedCollection implements Iterator
     }
 
     /**
-     * returns whether the current item is valid when iterating with foreach
+     * Returns whether the current item is valid when iterating with foreach
+     *
+     * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         if ($this->_currentPage == 0 || $this->_index % $this->_pageSize == 0 && $this->_index < $this->_totalItems) {
