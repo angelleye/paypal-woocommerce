@@ -1652,7 +1652,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function angelleye_ppcp_is_skip_final_review() {
-        if (is_checkout() || is_checkout_pay_page()) {
+
+	    // https://angelleye.atlassian.net/browse/PFW-1923
+	    if ( angelleye_get_session('overcapture_scenario') ) {
+		    return apply_filters('angelleye_ppcp_skip_final_review', true);
+	    }
+
+
+	    if (is_checkout() || is_checkout_pay_page()) {
             if (class_exists('WFFN_Core')) {
                 return apply_filters('angelleye_ppcp_skip_final_review', false);
             }

@@ -428,6 +428,8 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order),
                     );
+                } elseif ( $redirect = $this->handle_overcharge_redirect( $is_success ) ) {
+	                return $redirect;
                 }
                 exit();
             } else {
@@ -445,26 +447,33 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     $order->update_meta_data('_paymentaction', $this->paymentaction);
                     $order->update_meta_data('_enviorment', ($this->sandbox) ? 'sandbox' : 'live');
                     $order->save();
-                    if ($is_success) {
-                        WC()->cart->empty_cart();
-                        AngellEye_Session_Manager::clear();
-                        if (ob_get_length()) {
-                            ob_end_clean();
-                        }
-                        return array(
-                            'result' => 'success',
-                            'redirect' => $this->get_return_url($order),
-                        );
-                    } else {
-                        AngellEye_Session_Manager::clear();
-                        if (ob_get_length()) {
-                            ob_end_clean();
-                        }
-                        return array(
-                        'result' => 'success',
-                            'redirect' => wc_get_checkout_url()
-                        );
-                    }
+
+	                if ($is_success === true) {
+		                WC()->cart->empty_cart();
+		                AngellEye_Session_Manager::clear();
+		                if (ob_get_length()) {
+			                ob_end_clean();
+		                }
+		                return array(
+			                'result' => 'success',
+			                'redirect' => $this->get_return_url($order),
+		                );
+	                } elseif ( $redirect = $this->handle_overcharge_redirect( $is_success ) ) {
+		                return $redirect;
+	                } else {
+		                AngellEye_Session_Manager::clear();
+		                if (ob_get_length()) {
+			                ob_end_clean();
+		                }
+
+		                wc_add_notice(__('Unfortunately your payment could not be completed. Please try again.', 'paypal-for-woocommerce'), 'error');
+
+		                return array(
+			                'result' => 'success',
+			                'redirect' => wc_get_checkout_url(),
+		                );
+	                }
+
                 } elseif ($this->checkout_disable_smart_button === true) {
                     $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id);
                     if (ob_get_length()) {
@@ -484,7 +493,34 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         }
     }
 
-    public function get_title() {
+	protected function handle_overcharge_redirect( $is_success ) {
+		if ( ! is_array( $is_success ) || empty( $is_success['payer_action_required'] ) ) {
+			return false;
+		}
+
+		if ( ob_get_length() ) {
+			ob_end_clean();
+		}
+
+		if ( class_exists( 'WC_Logger' ) ) {
+			$logger = wc_get_logger();
+			$logger->info(
+				PHP_EOL . PHP_EOL .
+				'========== PAYER_ACTION_REQUIRED ==========' . PHP_EOL .
+				'Redirecting to PayPal payer-action URL: ' . $is_success['redirect_url'] . PHP_EOL .
+				'==========================================' . PHP_EOL . PHP_EOL,
+				array( 'source' => 'angelleye_ppcp' )
+			);
+		}
+
+		return array(
+			'result'   => 'success',
+			'redirect' => $is_success['redirect_url'],
+		);
+	}
+
+
+	public function get_title() {
         try {
             $payment_method_title = '';
             if (isset($_GET['post'])) {
@@ -649,7 +685,11 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if (($this->is_live_first_party_used === 'yes' || $this->is_live_third_party_used === 'yes') || ($this->is_sandbox_first_party_used === 'yes' || $this->is_sandbox_third_party_used === 'yes')) {
             return false;
         }
-        $message = sprintf(__('%s is almost ready. To get started, <a href="%1$s">connect your account</a>.','paypal-for-woocommerce'),AE_PPCP_NAME,admin_url('options-general.php?page=paypal-for-woocommerce&tab=general_settings&gateway=paypal_payment_gateway_products'));
+	    $message = sprintf(
+		    __('%1$s is almost ready. To get started, <a href="%2$s">connect your account</a>.', 'paypal-for-woocommerce'),
+		    AE_PPCP_NAME,
+		    admin_url('options-general.php?page=paypal-for-woocommerce')
+	    );
         ?>
         <div class="notice notice-warning is-dismissible">
             <p><?php echo $message; ?></p>

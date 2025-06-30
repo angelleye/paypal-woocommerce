@@ -1164,7 +1164,47 @@ class AngellEYE_PayPal_PPCP_Payment {
         return $order->get_payment_method_title();
     }
 
-    public function angelleye_ppcp_order_capture_request($woo_order_id, $need_to_update_order = true) {
+	/**
+	 * https://angelleye.atlassian.net/browse/PFW-1923
+	 *
+	 * Confirms the payment source for a given PayPal order ID.
+	 *
+	 * @param string $paypal_order_id The ID of the PayPal order to confirm the payment source for.
+	 *
+	 * @return array The response from the PayPal API after confirming the payment source.
+	 */
+	public function angelleye_ppcp_confirm_payment_source($paypal_order_id) {
+		$application_context = $this->angelleye_ppcp_application_context(true);
+
+		$body = array(
+			'payment_source' => array(
+				'paypal' => array(
+					'experience_context' => $application_context
+				)
+			)
+		);
+
+		$args = array(
+			'method'  => 'POST',
+			'headers' => array(
+				'Content-Type'            => 'application/json',
+				'Authorization'           => '',
+				'prefer'                  => 'return=representation',
+				'PayPal-Request-Id'       => $this->generate_request_id(),
+				'Paypal-Auth-Assertion'   => $this->angelleye_ppcp_paypalauthassertion()
+			),
+			'body'    => $body
+		);
+
+		return $this->api_request->request(
+			$this->paypal_order_api . $paypal_order_id . '/confirm-payment-source',
+			$args,
+			'confirm_payment_source'
+		);
+	}
+
+
+	public function angelleye_ppcp_order_capture_request($woo_order_id, $need_to_update_order = true) {
         try {
             $order = wc_get_order($woo_order_id);
             if ($need_to_update_order) {
@@ -1366,7 +1406,14 @@ class AngellEYE_PayPal_PPCP_Payment {
                     return false;
                 }
             } else {
-                $error_email_notification_param = array(
+
+				// Overcharge Handler - https://angelleye.atlassian.net/browse/PFW-1923
+	            $overcharge_result = $this->overcharge_handler($this->api_response);
+	            if ($overcharge_result) {
+		            return $overcharge_result;
+	            }
+
+	            $error_email_notification_param = array(
                     'request' => 'capture_order',
                     'order_id' => $woo_order_id
                 );
@@ -1381,7 +1428,58 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_update_order($order) {
+	/**
+	 * https://angelleye.atlassian.net/browse/PFW-1923
+	 *
+	 * This ensures that if PayPal returned an error and that error
+	 * is specifically UNPROCESSABLE_ENTITY with PAYER_ACTION_REQUIRED,
+	 * we return a custom array letting the caller know we have that
+	 * scenario. Otherwise, we fall back on the original “generic failure” logic.
+	 */
+	public function overcharge_handler($api_response) {
+		if (
+			isset($api_response['name']) &&
+			'UNPROCESSABLE_ENTITY' === $api_response['name'] &&
+			isset($api_response['details']) &&
+			is_array($api_response['details'])
+		) {
+			foreach ($api_response['details'] as $detail) {
+				if (
+					isset($detail['issue']) &&
+					'PAYER_ACTION_REQUIRED' === $detail['issue']
+				) {
+					$payer_action_url = '';
+					if (!empty($api_response['links'])) {
+						foreach ($api_response['links'] as $link) {
+							if (!empty($link['rel']) && 'payer-action' === $link['rel']) {
+								$payer_action_url = $link['href'];
+								break;
+							}
+						}
+					}
+
+					$this->api_log->log("\n\n========== PAYER_ACTION_REQUIRED scenario ==========\nReturning special array.\n\n", 'info');
+
+					$paypal_order_id = AngellEYE_Session_Manager::get('paypal_order_id', false);
+					if ( $paypal_order_id ) {
+						$this->angelleye_ppcp_confirm_payment_source($paypal_order_id);
+					}
+
+					AngellEYE_Session_Manager::set('overcapture_scenario', true);
+
+					return array(
+						'payer_action_required' => true,
+						'redirect_url'          => $payer_action_url,
+					);
+				}
+			}
+		}
+
+		return false;
+	}
+
+
+	public function angelleye_ppcp_update_order($order) {
         try {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             $patch_request = array();
@@ -1907,6 +2005,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                     return false;
                 }
             } else {
+
+	            // Overcharge Handler - https://angelleye.atlassian.net/browse/PFW-1923
+	            $overcharge_result = $this->overcharge_handler($this->api_response);
+	            if ($overcharge_result) {
+		            return $overcharge_result;
+	            }
+
                 $error_email_notification_param = array(
                     'request' => 'authorize_order',
                     'order_id' => $woo_order_id
@@ -3415,6 +3520,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                     return false;
                 }
             } else {
+
+	            // Overcharge Handler - https://angelleye.atlassian.net/browse/PFW-1923
+	            $overcharge_result = $this->overcharge_handler($this->api_response);
+	            if ($overcharge_result) {
+		            return $overcharge_result;
+	            }
+
                 $error_email_notification_param = array(
                     'request' => 'capture_order',
                     'order_id' => $order_id
