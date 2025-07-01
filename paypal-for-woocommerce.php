@@ -102,7 +102,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_action('init', array($this, 'load_plugin_textdomain'));
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
             add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 32);
-            add_action('plugins_loaded', array($this, 'init'), 103);
+            add_action('init', array($this, 'init'), 103);
             add_action('plugins_loaded', array($this, 'load_funnelkit_pro_plugin_compatible_gateways'), 5);
             add_action('admin_notices', array($this, 'admin_notices'));
             add_action('admin_init', array($this, 'set_ignore_tag'));
@@ -1305,7 +1305,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                     }
                 }
             } catch (Exception $ex) {
-                
+
             }
             return $list;
         }
@@ -1401,7 +1401,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 $seller_onboard = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
                 $seller_onboard->angelleye_ppcp_multi_account_generate_signup_link($post_id);
             } catch (Exception $ex) {
-                
+
             }
         }
 
@@ -1418,7 +1418,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
         public function load_funnelkit_pro_plugin_compatible_gateways() {
             try {
                 // Check for Funnel Builder Pro Plugin Activation
-                if (defined('WFFN_PRO_FILE')) { 
+                if (defined('WFFN_PRO_FILE')) {
                     require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp.php';
                     require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp-cc.php';
                 }
@@ -1461,13 +1461,13 @@ add_action('woocommerce_blocks_loaded', function () {
         require_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/checkout-block/angelleye-ppcp-checkout-block.php');
         require_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/checkout-block/angelleye-ppcp-cc-block.php');
         add_action(
-                'woocommerce_blocks_payment_method_type_registration',
-                function (Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry) {
-                    $payment_method_registry->register(new AngellEYE_PPCP_Checkout_Block);
-                    $payment_method_registry->register(new AngellEYE_PPCP_CC_Block);
-                }
+            'woocommerce_blocks_payment_method_type_registration',
+            function (Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry) {
+                $payment_method_registry->register(new AngellEYE_PPCP_Checkout_Block);
+                $payment_method_registry->register(new AngellEYE_PPCP_CC_Block);
+            }
         );
     } catch (Exception $ex) {
-        
+
     }
 });
