@@ -48,7 +48,7 @@ class AngellEYE_PayPal_PPCP_Request {
     public $api_password;
     public $api_signature;
     public $Force_tls_one_point_two;
-    private bool $ignore_ssl_in_request;
+    private bool $ignore_ssl_in_request = false;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
