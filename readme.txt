@@ -131,7 +131,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Feature - Braintree SDK Upgrade (PFW-1922)
 * Feature - Overcharge Handling (PFW-1923)
 * Feature - PayPal Sandbox Error Mocking (PFW-1935, PFW-1937)
-* Fix - Resolves a broken link in onboarding notice. (PFW-1921)
+* Fix - Resolves a broken link in on-boarding notice. (PFW-1921)
+* Fix - Resolves on-boarding fatal error. ([PFW-1939](https://github.com/angelleye/paypal-woocommerce/pull/2107))
+* Tweak - Resolves translation loading order to remove the warning. ([PFW-1940](https://github.com/angelleye/paypal-woocommerce/pull/2108))
 
 = 4.5.21 - 11.25.2024
 * Fix - Payment method specifies Credit Card or PayPal. ([PFW-1912](https://github.com/angelleye/paypal-woocommerce/pull/2094))
@@ -157,11 +159,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Updated PayPal billing agreement ID for renewal orders. ([PFW-1854](https://github.com/angelleye/paypal-woocommerce/pull/2082))
 
 = 4.5.15 - 09.10.2024
-* Fix - Resolved float value issue. ([PFW-1853](https://github.com/angelleye/paypal-woocommerce/pull/2081))  
+* Fix - Resolved float value issue. ([PFW-1853](https://github.com/angelleye/paypal-woocommerce/pull/2081))
 * Fix - Bug fix found during WPML testing. ([PFW-1869](https://github.com/angelleye/paypal-woocommerce/pull/2079))
 
 = 4.5.14 - 09.05.2024
-* Fix - PayPal buttons occasionally fail to load. ([PFW-1866](https://github.com/angelleye/paypal-woocommerce/pull/2078)) 
+* Fix - PayPal buttons occasionally fail to load. ([PFW-1866](https://github.com/angelleye/paypal-woocommerce/pull/2078))
 * Fix - Resolved the PayPal fee issue. ([PFW-1846](https://github.com/angelleye/paypal-woocommerce/pull/2073))
 * Fix - Load JS and CSS only when needed. ([PFW-1845](https://github.com/angelleye/paypal-woocommerce/pull/2074))
 * Fix - Disabled the instant order confirmation. ([PFW-1842](https://github.com/angelleye/paypal-woocommerce/pull/2075))
@@ -169,13 +171,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Conducted an admin notice audit. ([PFW-1800](https://github.com/angelleye/paypal-woocommerce/pull/2077))
 
 = 4.5.13 - 08.29.2024
-* Fix - Resolved global save conflict issue. ([PFW-1863](https://github.com/angelleye/paypal-woocommerce/pull/2071)) 
+* Fix - Resolved global save conflict issue. ([PFW-1863](https://github.com/angelleye/paypal-woocommerce/pull/2071))
 
 = 4.5.12 - 08.23.2024
-* Fix - Fixed the email template override issue. ([PFWMA-3141](https://github.com/angelleye/paypal-woocommerce/pull/2070)) 
+* Fix - Fixed the email template override issue. ([PFWMA-3141](https://github.com/angelleye/paypal-woocommerce/pull/2070))
 
 = 4.5.11 - 08.09.2024
-* Fix - Resolved "headers already sent" messages. ([PFW-1841](https://github.com/angelleye/paypal-woocommerce/pull/2069)) 
+* Fix - Resolved "headers already sent" messages. ([PFW-1841](https://github.com/angelleye/paypal-woocommerce/pull/2069))
 
 = 4.5.10 - 08.09.2024
 * Fix - Implemented logic for creating or updating an existing order during checkout. ([PFW-1840](https://github.com/angelleye/paypal-woocommerce/pull/2068))
@@ -272,11 +274,11 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 = 4.4.20 - 02.27.2024 =
 * Tweak - Enhanced compatibility with WPML translation for Gateway settings page. ([PFW-1667](https://github.com/angelleye/paypal-woocommerce/pull/1979))
-* Tweak - Enhancements required for Migration Wizard batches. ([PFW-1766](https://github.com/angelleye/paypal-woocommerce/pull/2011))   
-* Tweak - Rename it back to 'Complete Payments'. ([PFW-1763](https://github.com/angelleye/paypal-woocommerce/pull/2013))   
-* Tweak - Modify the logic to verify if the vault is enabled. ([PFW-1759](https://github.com/angelleye/paypal-woocommerce/pull/2014))   
-* Fix - Compatibility of the Express Checkout section with CheckoutWC. ([PFW-1755](https://github.com/angelleye/paypal-woocommerce/pull/2015))   
- 
+* Tweak - Enhancements required for Migration Wizard batches. ([PFW-1766](https://github.com/angelleye/paypal-woocommerce/pull/2011))
+* Tweak - Rename it back to 'Complete Payments'. ([PFW-1763](https://github.com/angelleye/paypal-woocommerce/pull/2013))
+* Tweak - Modify the logic to verify if the vault is enabled. ([PFW-1759](https://github.com/angelleye/paypal-woocommerce/pull/2014))
+* Fix - Compatibility of the Express Checkout section with CheckoutWC. ([PFW-1755](https://github.com/angelleye/paypal-woocommerce/pull/2015))
+
 = 4.4.19 - 02.23.2024 =
 * Tweak - Resolved wc_get_log_file_path() deprecation warnings. ([PFW-1767](https://github.com/angelleye/paypal-woocommerce/pull/2012))
 
