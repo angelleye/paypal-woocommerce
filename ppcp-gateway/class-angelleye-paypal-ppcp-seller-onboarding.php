@@ -153,11 +153,11 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 'testmode' => $testmode,
                 'return_url' => add_query_arg(array('testmode' => $testmode, 'post_id' => $post_id), WC()->api_request_url('AngellEYE_PayPal_PPCP_Seller_Onboarding')),
                 'return_url_description' => __(
-                        'Return to your shop.', 'paypal-for-woocommerce'
+                    'Return to your shop.', 'paypal-for-woocommerce'
                 ),
                 'products' => array(
                     $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
-            ));
+                ));
             $host_url = $this->ppcp_host . 'generate-signup-link';
             $args = array(
                 'method' => 'POST',
@@ -220,14 +220,14 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         $default_data = array(
             'testmode' => $testmode,
             'return_url' => admin_url(
-                    'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
+                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
             ),
             'return_url_description' => __(
-                    'Return to your shop.', 'paypal-for-woocommerce'
+                'Return to your shop.', 'paypal-for-woocommerce'
             ),
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT'
-        ));
+            ));
         $country = $this->dcc_applies->country();
         if (!empty($country)) {
             if (in_array($this->dcc_applies->country(), $this->dcc_applies->apple_google_vault_supported_country)) {
@@ -249,10 +249,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return array(
             'testmode' => $testmode,
             'return_url' => admin_url(
-                    'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=applepay&testmode=' . $testmode
+                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=applepay&testmode=' . $testmode
             ),
             'return_url_description' => __(
-                    'Return to your shop.', 'paypal-for-woocommerce'
+                'Return to your shop.', 'paypal-for-woocommerce'
             ),
             'capabilities' => array(
                 'APPLE_PAY'
@@ -261,7 +261,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
                 'PAYMENT_METHODS'
-        ));
+            ));
     }
 
     public function ppcp_google_pay_data() {
@@ -269,10 +269,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return array(
             'testmode' => $testmode,
             'return_url' => admin_url(
-                    'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=googlepay&testmode=' . $testmode
+                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&feature_activated=googlepay&testmode=' . $testmode
             ),
             'return_url_description' => __(
-                    'Return to your shop.', 'paypal-for-woocommerce'
+                'Return to your shop.', 'paypal-for-woocommerce'
             ),
             'capabilities' => array(
                 'GOOGLE_PAY'
@@ -281,7 +281,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
                 'PAYMENT_METHODS'
-        ));
+            ));
     }
 
     public function ppcp_vault_data() {
@@ -289,10 +289,10 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         return array(
             'testmode' => $testmode,
             'return_url' => admin_url(
-                    'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
+                'admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp&testmode=' . $testmode
             ),
             'return_url_description' => __(
-                    'Return to your shop.', 'paypal-for-woocommerce'
+                'Return to your shop.', 'paypal-for-woocommerce'
             ),
             'capabilities' => array(
                 'PAYPAL_WALLET_VAULTING_ADVANCED'
@@ -301,7 +301,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             'products' => array(
                 $this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
                 'ADVANCED_VAULTING'
-        ));
+            ));
     }
 
     public function angelleye_ppcp_login_seller() {
@@ -590,6 +590,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             );
             $host_url = $this->ppcp_host . 'get-tracking-status';
             $seller_onboarding_status = $this->api_request->request($host_url, $args, 'get_tracking_status');
+            if (!is_array($seller_onboarding_status)) {
+                throw new Exception('Unable to retrieve the account status, please refresh to try again.');
+            }
             if (!isset($seller_onboarding_status['merchant_id'])) {
                 $seller_onboarding_status['merchant_id'] = sanitize_text_field(wp_unslash($_GET['merchantIdInPayPal']));
             }
@@ -667,8 +670,8 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
             try {
                 $this->api_request = new AngellEYE_PayPal_PPCP_Request();
                 $url = trailingslashit($this->host) .
-                        'v1/customer/partners/' . $partner_merchant_id .
-                        '/merchant-integrations/' . $merchant_id;
+                    'v1/customer/partners/' . $partner_merchant_id .
+                    '/merchant-integrations/' . $merchant_id;
                 $args = array(
                     'method' => 'GET',
                     'headers' => array(
@@ -760,22 +763,22 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
         }
         $url = 'https://sendy.angelleye.com/subscribe';
         $response = wp_remote_post($url, array(
-            'method' => 'POST',
-            'timeout' => 45,
-            'redirection' => 5,
-            'httpversion' => '1.0',
-            'blocking' => true,
-            'headers' => array(),
-            'body' => array('list' => 'oV0I12rDwJdMDL2jYzvwPQ',
-                'boolean' => 'true',
-                'email' => $_POST['email'],
-                'gdpr' => 'true',
-                'silent' => 'true',
-                'api_key' => 'qFcoVlU2uG3AMYabNTrC',
-                'referrer' => $current_url
-            ),
-            'cookies' => array()
-                )
+                'method' => 'POST',
+                'timeout' => 45,
+                'redirection' => 5,
+                'httpversion' => '1.0',
+                'blocking' => true,
+                'headers' => array(),
+                'body' => array('list' => 'oV0I12rDwJdMDL2jYzvwPQ',
+                    'boolean' => 'true',
+                    'email' => $_POST['email'],
+                    'gdpr' => 'true',
+                    'silent' => 'true',
+                    'api_key' => 'qFcoVlU2uG3AMYabNTrC',
+                    'referrer' => $current_url
+                ),
+                'cookies' => array()
+            )
         );
         if (is_wp_error($response)) {
             wp_send_json(wp_remote_retrieve_body($response));
