@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.6.1 - 06.30.2025
+= 4.6.1 - 07.09.2025
 * Fix - Resolved Onboarding issue with SSL connections ([PFW-1943](https://github.com/angelleye/paypal-woocommerce/pull/2109))
 
 = 4.6.0 - 06.30.2025
