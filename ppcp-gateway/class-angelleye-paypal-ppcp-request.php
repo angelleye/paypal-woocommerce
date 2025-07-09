@@ -130,6 +130,12 @@ class AngellEYE_PayPal_PPCP_Request {
     }
 
     function is_ssl_error($message) {
+        if (is_object($message) && is_a($message, 'WP_Error')) {
+            $message = $message->get_error_message();
+        }
+        if (!is_string($message)) {
+            return false;
+        }
         $ssl_errors = [
             'ssl', 'SSL', 'SSL routines', 'sslv3', 'tlsv1', 'tls', 'cURL error 60',
             'certificate', 'handshake failure', 'unable to get local issuer certificate',
