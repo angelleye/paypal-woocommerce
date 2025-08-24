@@ -99,6 +99,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     public function handle_wc_api() {
         global $wp;
+        $nonce = $_REQUEST['_wpnonce'] ?? '';
+        $nonceVerificationFailed = false;
+        if ( ! wp_verify_nonce( $nonce, 'angelleye_ppcp_nonce' ) ) {
+            $nonceVerificationFailed = true;
+        }
         if (!empty($_GET['angelleye_ppcp_action'])) {
             switch ($_GET['angelleye_ppcp_action']) {
                 case "cancel_order":
@@ -106,6 +111,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     wp_redirect(wc_get_cart_url());
                     exit();
                 case "create_order":
+                    if ($nonceVerificationFailed) {
+                        wp_send_json_error(['messages' => [__('Security check failed. Please refresh the page and try again.', 'paypal-for-woocommerce')]]);
+                    }
                     // clear any notices in woocommerce session so that next request can fulfil the updated request
                     // basically this is an edge case when first request fails due to any issue with error in session
                     // and a user tries to click place order button again.
@@ -271,6 +279,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     }
                     break;
                 case 'shipping_address_update':
+                    if ($nonceVerificationFailed) {
+                        wp_send_json(['status' => false, 'messages' => [__('Security check failed. Please refresh the page and try again.', 'paypal-for-woocommerce')]]);
+                    }
                     global $woocommerce;
                     $paymentMethod = $_REQUEST['angelleye_ppcp_payment_method_title'] ?? null;
                     $woo_order_id = $_POST['woo_order_id'] ?? null;
@@ -365,6 +376,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     wc_get_logger()->error($errorLine, array('source' => 'angelleye_ppcp_js_errors'));
                     break;
                 case "cc_capture":
+                    if ($nonceVerificationFailed) {
+                        wp_send_json_error(['messages' => [__('Security check failed. Please refresh the page and try again.', 'paypal-for-woocommerce')]]);
+                    }
                     wc_clear_notices();
                     // Required for order pay form, as there will be no data in session
                     AngellEye_Session_Manager::set('paypal_order_id', wc_clean($_GET['paypal_order_id']));
@@ -392,6 +406,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     }
                     break;
                 case "direct_capture":
+                    if ($nonceVerificationFailed) {
+                        wp_send_json_error(['messages' => [__('Security check failed. Please refresh the page and try again.', 'paypal-for-woocommerce')]]);
+                    }
                     AngellEye_Session_Manager::set('paypal_order_id', wc_clean($_GET['paypal_order_id']));
                     AngellEye_Session_Manager::set('paypal_payer_id', wc_clean($_GET['paypal_payer_id']));
                     $this->angelleye_ppcp_direct_capture();
