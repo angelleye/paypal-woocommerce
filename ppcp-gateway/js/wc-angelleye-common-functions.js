@@ -128,7 +128,7 @@ const angelleyeOrder = {
     },
     createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback}) => {
         if (typeof apiUrl == 'undefined') {
-            apiUrl = angelleye_ppcp_manager.create_order_url;
+            apiUrl = angelleye_ppcp_manager.ajax_url;
         }
         angelleyeOrder.lastApiResponse = null;
         let formSelector = angelleyeOrder.getWooFormSelector();
@@ -187,6 +187,12 @@ const angelleyeOrder = {
                 }
             }
         }
+        formData = (formData ? formData + '&' : '') +
+            'action=' + angelleye_ppcp_manager.create_order_action +
+            '&security=' + angelleye_ppcp_manager.security +
+            '&cart_hash=' + angelleye_ppcp_manager.cart_hash +
+            '&from=' + angelleye_ppcp_manager.page;
+
         angelleyeJsErrorLogger.addToLog(errorLogId, {
             context: 'api_request',
             url: apiUrl,
@@ -254,7 +260,20 @@ const angelleyeOrder = {
             angelleyeOrder.checkoutFormCapture({payPalOrderId: orderID, errorLogId})
         } else {
             if (angelleye_ppcp_manager.is_skip_final_review === 'yes') {
-                window.location.href = angelleye_ppcp_manager.direct_capture + '&paypal_order_id=' + orderID + '&paypal_payer_id=' + payerID + '&from=' + angelleye_ppcp_manager.page;
+                let body = 'action=' + angelleye_ppcp_manager.capture_order_action +
+                    '&security=' + angelleye_ppcp_manager.security +
+                    '&cart_hash=' + angelleye_ppcp_manager.cart_hash +
+                    '&capture_type=direct_capture&paypal_order_id=' + orderID +
+                    '&paypal_payer_id=' + payerID + '&from=' + angelleye_ppcp_manager.page;
+                fetch(angelleye_ppcp_manager.ajax_url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: body
+                }).then(res => res.json()).then(data => {
+                    window.location.href = data.data.redirect;
+                });
             } else {
                 window.location.href = angelleye_ppcp_manager.checkout_url + '&paypal_order_id=' + orderID + (payerID ? '&paypal_payer_id=' + payerID : '') + '&from=' + angelleye_ppcp_manager.page;
             }
@@ -480,10 +499,17 @@ const angelleyeOrder = {
         if (typeof checkoutSelector === 'undefined') {
             checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
         }
-        let captureUrl = angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payPalOrderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page;
-        let data;
+        let body = 'action=' + angelleye_ppcp_manager.capture_order_action +
+            '&security=' + angelleye_ppcp_manager.security +
+            '&cart_hash=' + angelleye_ppcp_manager.cart_hash +
+            '&capture_type=cc_capture&paypal_order_id=' + payPalOrderId +
+            '&woocommerce-process-checkout-nonce=' + angelleye_ppcp_manager.woocommerce_process_checkout +
+            '&is_pay_page=' + angelleye_ppcp_manager.is_pay_page;
         if (angelleyeOrder.isCheckoutPage()) {
-            data = jQuery(checkoutSelector).serialize();
+            let serialized = jQuery(checkoutSelector).serialize();
+            if (serialized) {
+                body += '&' + serialized;
+            }
         }
         // Fluid-Checkout compatibility to stop showing the Leave popup on beforeunload event
         if (typeof window.can_update_checkout !== 'undefined') {
@@ -492,12 +518,12 @@ const angelleyeOrder = {
             });
             jQuery(checkoutSelector).submit();
         }
-        fetch(captureUrl, {
+        fetch(angelleye_ppcp_manager.ajax_url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: data
+            body: body
         }).then(function (res) {
             return res.json();
         }).then(function (data) {
