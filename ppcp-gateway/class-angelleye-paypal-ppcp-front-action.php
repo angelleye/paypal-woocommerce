@@ -48,6 +48,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
 
+        add_action('wp_ajax_angelleye_ppcp_create_order', array($this, 'ajax_create_order'));
+        add_action('wp_ajax_nopriv_angelleye_ppcp_create_order', array($this, 'ajax_create_order'));
+        add_action('wp_ajax_angelleye_ppcp_capture_order', array($this, 'ajax_capture_order'));
+        add_action('wp_ajax_nopriv_angelleye_ppcp_capture_order', array($this, 'ajax_capture_order'));
+
         add_filter('woocommerce_currency', array($this, 'angelleye_get_scm_current_woocommerce_currency'), 99, 1);
 
         add_action("woocommerce_checkout_create_order", array($this, "angelleye_convert_order_prices_to_active_currency"), 9999, 2);
@@ -95,6 +100,52 @@ class AngellEYE_PayPal_PPCP_Front_Action {
      */
     function handle_logged_in_cookie_nonce_on_checkout($logged_in_cookie, $expire, $expiration, $user_id, $scheme, $token) {
         $_COOKIE[LOGGED_IN_COOKIE] = $logged_in_cookie;
+    }
+
+    public function ajax_create_order() {
+        check_ajax_referer('angelleye_ppcp', 'security');
+        if ('POST' !== $_SERVER['REQUEST_METHOD']) {
+            wp_send_json_error(__('Invalid request method.', 'paypal-for-woocommerce'));
+        }
+        if (!WC()->session || !WC()->cart || WC()->cart->is_empty()) {
+            wp_send_json_error(__('Session expired.', 'paypal-for-woocommerce'));
+        }
+        $cart_hash = isset($_POST['cart_hash']) ? sanitize_text_field(wp_unslash($_POST['cart_hash'])) : '';
+        if ($cart_hash !== WC()->cart->get_cart_hash()) {
+            wp_send_json_error(__('Cart mismatch.', 'paypal-for-woocommerce'));
+        }
+        $_GET['angelleye_ppcp_action'] = 'create_order';
+        if (isset($_POST['from'])) {
+            $_GET['from'] = sanitize_text_field(wp_unslash($_POST['from']));
+        }
+        $this->handle_wc_api();
+        wp_die();
+    }
+
+    public function ajax_capture_order() {
+        check_ajax_referer('angelleye_ppcp', 'security');
+        if ('POST' !== $_SERVER['REQUEST_METHOD']) {
+            wp_send_json_error(__('Invalid request method.', 'paypal-for-woocommerce'));
+        }
+        if (!WC()->session || !WC()->cart) {
+            wp_send_json_error(__('Session expired.', 'paypal-for-woocommerce'));
+        }
+        $cart_hash = isset($_POST['cart_hash']) ? sanitize_text_field(wp_unslash($_POST['cart_hash'])) : '';
+        if ($cart_hash !== WC()->cart->get_cart_hash()) {
+            wp_send_json_error(__('Cart mismatch.', 'paypal-for-woocommerce'));
+        }
+        $capture_type = isset($_POST['capture_type']) ? sanitize_text_field(wp_unslash($_POST['capture_type'])) : '';
+        if (empty($capture_type)) {
+            wp_send_json_error(__('Missing capture type.', 'paypal-for-woocommerce'));
+        }
+        $_GET['angelleye_ppcp_action'] = $capture_type;
+        foreach (array('paypal_order_id', 'paypal_payer_id', 'is_pay_page', 'from') as $field) {
+            if (isset($_POST[$field])) {
+                $_GET[$field] = sanitize_text_field(wp_unslash($_POST[$field]));
+            }
+        }
+        $this->handle_wc_api();
+        wp_die();
     }
 
     public function handle_wc_api() {
