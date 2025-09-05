@@ -1275,8 +1275,8 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             global $wp, $woocommerce;
             try {
                 $gateways = $woocommerce->payment_gateways->payment_gateways();
-                $gateways['braintree']->angelleye_braintree_lib();
-                if (!empty($gateways['braintree'])) {
+                if (!empty($gateways['braintree']) && is_object($gateways['braintree']) && method_exists($gateways['braintree'], 'angelleye_braintree_lib') ) {
+                    $gateways['braintree']->angelleye_braintree_lib();
                     if ($gateways['braintree']->enable_tokenized_payments == 'yes') {
                         $payment_tokens = WC_Payment_Tokens::get_customer_tokens($customer_id, 'braintree');
                         foreach ($payment_tokens as $payment_token) {
