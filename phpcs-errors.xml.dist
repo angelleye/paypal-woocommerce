@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress-Plugin-PHP-Errors">
+    <description>Check only for PHP syntax errors and PHP compatibility issues (ignore style, docs, JS, and CSS).</description>
+
+    <!-- Show progress and colors -->
+    <arg value="ps"/>
+    <arg name="colors"/>
+    <!-- Only check PHP files -->
+    <arg name="extensions" value="php"/>
+
+    <!-- Target PHP version (adjust to your min supported) -->
+    <config name="testVersion" value="8.4-"/>
+
+    <!-- Force report type -->
+    <arg name="report" value="full"/>
+    <arg name="report-file" value="php-compatibility-errors-report.txt"/>
+
+    <!-- Scan plugin code -->
+    <file>./</file>
+
+    <!-- Exclude vendor and node_modules -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+
+    <!-- Exclude silence index.php files -->
+    <exclude-pattern>*/index.php</exclude-pattern>
+
+    <!-- Basic PHP syntax errors -->
+    <rule ref="Generic.PHP.Syntax"/>
+
+    <!-- PHPCompatibility for WordPress -->
+    <rule ref="PHPCompatibility"/>
+    <rule ref="PHPCompatibilityWP"/>
+</ruleset>

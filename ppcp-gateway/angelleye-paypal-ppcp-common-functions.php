@@ -138,14 +138,7 @@ if (!function_exists('angelleye_ppcp_get_raw_data')) {
 
     function angelleye_ppcp_get_raw_data() {
         try {
-            if (function_exists('phpversion') && version_compare(phpversion(), '5.6', '>=')) {
-                return file_get_contents('php://input');
-            }
-            global $HTTP_RAW_POST_DATA;
-            if (!isset($HTTP_RAW_POST_DATA)) {
-                $HTTP_RAW_POST_DATA = file_get_contents('php://input');
-            }
-            return $HTTP_RAW_POST_DATA;
+            return file_get_contents('php://input');
         } catch (Exception $ex) {
 
         }
