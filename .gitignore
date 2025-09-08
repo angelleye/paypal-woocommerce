@@ -18,3 +18,5 @@ temp/
 
 /vendor/
 /paypal-seller-onboarding
+
+composer.lock
