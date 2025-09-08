@@ -15,6 +15,9 @@ final class AngellEYE_PPCP_Checkout_Block extends AbstractPaymentMethodType {
     }
 
     public function is_active() {
+        if (!class_exists('WC_Gateway_PPCP_AngellEYE')) {
+            include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php';
+        }
         $this->gateway = new WC_Gateway_PPCP_AngellEYE();
         return $this->gateway->is_available();
     }
