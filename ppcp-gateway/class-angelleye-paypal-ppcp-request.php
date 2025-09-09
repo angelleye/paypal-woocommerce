@@ -240,7 +240,7 @@ class AngellEYE_PayPal_PPCP_Request {
                 $this->result = wp_remote_get($url, $args);
             } else if ($this->is_first_party_used === 'yes') {
                 unset($args['headers']['Paypal-Auth-Assertion']);
-                $args['headers']['Authorization'] = "Basic " . $this->basicAuth;
+                $args['headers']['Authorization'] = ($action_name && $action_name === 'get_client_token') ? "Bearer " . $this->basicAuth : "Basic " . $this->basicAuth;
                 if (isset($args['body']) && is_array($args['body'])) {
                     $args['body'] = wp_json_encode($args['body']);
                 }
