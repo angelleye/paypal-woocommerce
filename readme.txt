@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.8.2
-Stable tag: 4.6.2
+Stable tag: 4.6.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -127,7 +127,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.6.3 -
+= 4.6.3 - 09.11.2025
 * Fix - Resolves "invalid IP address" on some client token requests. ([PFW-1949](https://github.com/angelleye/paypal-woocommerce/pull/2121))
 * Fix - Resolves a PHP conflict in Braintree. ([PFW-1946](https://github.com/angelleye/paypal-woocommerce/pull/2119))
 * Fix - Resolves a loading order issue with payment gateways causing random errors in extension functionality. ([PFW-1950](https://github.com/angelleye/paypal-woocommerce/pull/2122))
