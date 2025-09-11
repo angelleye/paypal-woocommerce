@@ -102,7 +102,6 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_action('init', array($this, 'load_plugin_textdomain'));
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
             add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 32);
-            add_action('init', array($this, 'init'), 103);
             add_action('plugins_loaded', array($this, 'load_funnelkit_pro_plugin_compatible_gateways'), 5);
             add_action('admin_notices', array($this, 'admin_notices'));
             add_action('admin_init', array($this, 'set_ignore_tag'));
@@ -127,6 +126,12 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_action('wp', array(__CLASS__, 'angelleye_delete_payment_method_action'), 10);
             add_action('init', array($this, 'angelleye_register_post_status'), 99);
             add_action('current_screen', array($this, 'angelleye_redirect_to_onboard'), 9);
+            add_action('plugins_loaded', [$this, 'include_gateway_in_list'], 1000);
+        }
+
+        public function include_gateway_in_list() {
+            $this->init();
+            add_filter('woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'), 1000);
         }
 
         private function include_files_and_classes() {
@@ -315,10 +320,8 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             AngellEYE_PayPal_PPCP_Pay_Later::instance();
             AngellEYE_PayPal_PPCP_Admin_Action::instance();
             AngellEYE_PayPal_PPCP_Front_Action::instance();
-            add_filter('woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'), 1000);
             AngellEye_PayPal_PPCP_Apple_Domain_Validation::instance();
             AngellEye_Session_Manager::instance();
-            add_filter('woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'), 3);
         }
 
         public function admin_scripts() {
