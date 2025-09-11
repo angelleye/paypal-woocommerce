@@ -313,6 +313,47 @@ const angelleyeOrder = {
         }
 
     },
+    extractPayPalError: (rawError) => {
+        try {
+            const str = String(rawError);
+            const start = str.indexOf("{");
+            const end = str.lastIndexOf("}");
+
+            if (start === -1 || end === -1 || end <= start) {
+                return null;
+            }
+
+            const jsonString = str.slice(start, end + 1).trim();
+            return JSON.parse(jsonString);
+        } catch (e) {
+            return null;
+        }
+    },
+    isPayPalError: (err) => {
+        return err && typeof err === "object" &&
+         "name" in err &&
+         "message" in err &&
+         "debug_id" in err;
+    },
+    parsePayPalError: (error) => {
+        let userMessage = "Something went wrong while processing your request. Please try again.";
+
+        if (error && typeof error === "object") {
+            if (error.message) {
+                userMessage = error.message;
+            }
+            if (error.details && error.details.length > 0) {
+                const detail = error.details[0];
+                if (detail.description && detail.description !== detail.issue) {
+                    userMessage = detail.description;
+                } else if (detail.issue) {
+                    userMessage = "Issue: " + detail.issue;
+                }
+            }
+        }
+
+        return userMessage;
+    },
     handleCreateOrderError: (error, errorLogId) => {
         console.log('create_order_error', error, angelleyeOrder.lastApiResponse);
         angelleyeOrder.hideProcessingSpinner();
@@ -544,7 +585,15 @@ const angelleyeOrder = {
                 }
             },
             onError: function (err) {
-                console.log('Error occurred:', err);
+                let errMessage = err.message ? err.message : err;
+                angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
+                let extractPayPalError = angelleyeOrder.extractPayPalError(err);
+                // console.log('Advanced Card Fields Error:', {isErr: angelleyeOrder.isPayPalError(extractPayPalError), errMessage});
+                if (angelleyeOrder.isPayPalError(extractPayPalError)) {
+                    errMessage = angelleyeOrder.parsePayPalError(extractPayPalError);
+                }
+                angelleyeOrder.showError(errMessage);
+                console.log('Error occurred:', err, errMessage);
                 if (typeof err === 'object' && err !== null) {
                     console.log('Error message:', err.message || 'No error message available');
                     if (err.stack) {

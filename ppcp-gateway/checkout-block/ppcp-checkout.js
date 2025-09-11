@@ -236,28 +236,30 @@ var {addAction} = wp.hooks;
             },
 ]);
 
-document.addEventListener("DOMContentLoaded", function () {
-    setTimeout(function () {
-        jQuery(document.body).trigger("ppcp_block_ready");
-    }, 2000);
-});
-
-const ppcp_uniqueEvents = new Set([
-    "experimental__woocommerce_blocks-checkout-set-shipping-address",
-    "experimental__woocommerce_blocks-checkout-set-billing-address",
-    "experimental__woocommerce_blocks-checkout-set-email-address",
-    "experimental__woocommerce_blocks-checkout-render-checkout-form",
-    "experimental__woocommerce_blocks-checkout-set-active-payment-method",
-]);
-
-ppcp_uniqueEvents.forEach(function (action) {
-    addAction(action, "c", function () {
-        jQuery("#angelleye_ppcp_checkout").block({
-            message: null,
-            overlayCSS: {background: "#fff", opacity: 0.6},
-        });
+jQuery(document).ready(function () {
+   document.addEventListener("DOMContentLoaded", function () {
         setTimeout(function () {
-            jQuery(document.body).trigger("ppcp_checkout_updated");
+            jQuery(document.body).trigger("ppcp_block_ready");
         }, 2000);
     });
+
+    const ppcp_uniqueEvents = new Set([
+        "experimental__woocommerce_blocks-checkout-set-shipping-address",
+        "experimental__woocommerce_blocks-checkout-set-billing-address",
+        "experimental__woocommerce_blocks-checkout-set-email-address",
+        "experimental__woocommerce_blocks-checkout-render-checkout-form",
+        "experimental__woocommerce_blocks-checkout-set-active-payment-method",
+    ]);
+
+    ppcp_uniqueEvents.forEach(function (action) {
+        addAction(action, "c", function () {
+            jQuery("#angelleye_ppcp_checkout").block({
+                message: null,
+                overlayCSS: {background: "#fff", opacity: 0.6},
+            });
+            setTimeout(function () {
+                jQuery(document.body).trigger("ppcp_checkout_updated");
+            }, 2000);
+        });
+    }); 
 });
