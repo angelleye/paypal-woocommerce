@@ -127,7 +127,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-=4.6.2 - 09.08.2025
+= 4.6.3 -
+* Fix - Resolves "invalid IP address" on some client token requests. ([PFW-1949](https://github.com/angelleye/paypal-woocommerce/pull/2121))
+
+= 4.6.2 - 09.08.2025
 * Fix - Resolves a PHP version conflict with the PayPal mocker feature added in 4.6.1.
 
 = 4.6.1 - 07.09.2025
