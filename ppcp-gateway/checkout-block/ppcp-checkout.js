@@ -252,10 +252,12 @@ const ppcp_uniqueEvents = new Set([
 
 ppcp_uniqueEvents.forEach(function (action) {
     addAction(action, "c", function () {
-        jQuery("#angelleye_ppcp_checkout").block({
-            message: null,
-            overlayCSS: {background: "#fff", opacity: 0.6},
-        });
+        if (typeof jQuery.fn.block === "function") {
+            jQuery("#angelleye_ppcp_checkout").block({
+                message: null,
+                overlayCSS: {background: "#fff", opacity: 0.6},
+            });
+        }
         setTimeout(function () {
             jQuery(document.body).trigger("ppcp_checkout_updated");
         }, 2000);
