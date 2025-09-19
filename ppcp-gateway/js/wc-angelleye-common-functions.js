@@ -222,6 +222,9 @@ const angelleyeOrder = {
                 return res.json();
             }
         }).then(function (data) {
+            if (data?.result === 'success' && data?.redirect) {
+                window.location.href = data.redirect;
+            }
             if (typeof callback === 'function') {
                 callback(data);
                 return;
