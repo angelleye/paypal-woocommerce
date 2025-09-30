@@ -122,7 +122,9 @@ const angelleyeOrder = {
         jQuery("#woocommerce-process-checkout-nonce").val(nonce);
     },
     createSmartButtonOrder: ({angelleye_ppcp_button_selector, errorLogId}) => {
+        window.next_action_token = null;
         return angelleyeOrder.createOrder({angelleye_ppcp_button_selector, errorLogId}).then((data) => {
+            window.next_action_token = data.next_action_token;
             return data.orderID;
         });
     },
@@ -138,6 +140,13 @@ const angelleyeOrder = {
         let is_from_product = angelleyeOrder.isProductPage();
         let billingField = null;
         let shippingField = null;
+        let secureField = jQuery('<input>', {
+                type: 'hidden',
+                name: 'pfw_action_token',
+                value: angelleye_ppcp_manager.verification
+            });
+        jQuery(formSelector).find('input[name=pfw_action_token]').remove();
+        secureField.appendTo(formSelector);
         if (billingDetails) {
             billingField = jQuery('<input>', {
                 type: 'hidden',
@@ -480,7 +489,9 @@ const angelleyeOrder = {
         if (typeof checkoutSelector === 'undefined') {
             checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
         }
-        let captureUrl = angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payPalOrderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page;
+        let captureUrl = angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payPalOrderId
+        + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout
+        + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page + "&pfw_action_token=" + window.next_action_token;
         let data;
         if (angelleyeOrder.isCheckoutPage()) {
             data = jQuery(checkoutSelector).serialize();
@@ -530,7 +541,9 @@ const angelleyeOrder = {
                     errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
+                    window.next_action_token = null;
                     return angelleyeOrder.createOrder({errorLogId}).then(function (data) {
+                        window.next_action_token = data.next_action_token;
                         return data.orderID;
                     }).catch((error) => {
                         angelleyeOrder.showError(error);
@@ -545,6 +558,7 @@ const angelleyeOrder = {
             },
             onError: function (err) {
                 console.log('Error occurred:', err);
+                // angelleyeOrder.showError(error);
                 if (typeof err === 'object' && err !== null) {
                     console.log('Error message:', err.message || 'No error message available');
                     if (err.stack) {

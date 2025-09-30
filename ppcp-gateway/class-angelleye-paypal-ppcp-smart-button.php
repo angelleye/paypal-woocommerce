@@ -773,6 +773,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
         $uniqueNonce = wp_create_nonce( 'angelleye_ppcp_nonce' );
 
+        // TODO We will move this to be loaded via javascript so that bots can not parse it
+        $create_token = PFW_Security::issue_action_token( 'create_order' );
         wp_localize_script($ae_script_loader_handle, 'angelleye_ppcp_manager', array(
             'sandbox_mode' => (bool) $this->is_sandbox,
             'paypal_sdk_url' => $js_url,
@@ -810,6 +812,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'disable_cards' => $this->disable_cards,
             'first_name' => $first_name,
             'last_name' => $last_name,
+            'verification' => $create_token,
             'button_selector' => $button_selector,
             'apple_pay_btn_selector' => $apple_pay_btn_selector ?? [],
             'google_pay_btn_selector' => $google_pay_btn_selector ?? [],

@@ -861,7 +861,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                     'button_size' => $this->button_size,
                     'mini_cart_button_size' => $this->mini_cart_button_size,
                     'wsc_cart_button_size' => $this->wsc_cart_button_size,
-                        )
+                    )
                 );
             }
             if ($this->enable_in_context_checkout_flow === 'yes' && $this->enabled == 'yes') {
