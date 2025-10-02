@@ -9,9 +9,13 @@ class PFW_Security {
     const TRANSIENT_PREFIX  = 'pfw_atk_';         // replay/jti cache
     const DEFAULT_TTL       = 600;                // 10 minutes
     const REPLAY_TTL        = 900;                // 15 minutes jti memory
+    public static $secretToken = null;  // for ooptimization, so we don't hit DB repeatedly
 
     /** Ensure we have a persistent secret */
     public static function get_secret(): string {
+        if ( self::$secretToken !== null ) {
+            return self::$secretToken;
+        }
         $secret = get_option( self::OPTION_SECRET );
         if ( empty( $secret ) ) {
             $secret = bin2hex( random_bytes( 32 ) );  // 64 hex chars
@@ -104,6 +108,7 @@ class PFW_Security {
         }
 
         $claims = json_decode( $payload, true );
+        // var_dump($claims);die;
         if ( ! is_array( $claims ) ) {
             throw new Exception( 'bad_payload' );
         }
