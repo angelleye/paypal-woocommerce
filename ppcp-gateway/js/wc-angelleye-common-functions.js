@@ -313,6 +313,36 @@ const angelleyeOrder = {
         }
 
     },
+    unspinProceedToPaypal: () => {
+        // Blocks Checkout “Place order” button
+        const $btn = jQuery('button.wc-block-components-checkout-place-order-button');
+
+        if ($btn.length) {
+            // Clear busy/disabled states that make the spinner visible
+            $btn.removeClass('is-busy is-loading');
+            $btn.prop('disabled', false)
+                .attr('aria-busy', 'false')
+                .attr('aria-disabled', 'false');
+
+            // Some builds toggle via hidden/display — make sure it's hidden either way
+            $btn.find('.wc-block-components-spinner').attr('hidden', true).hide();
+
+            // Parent containers sometimes carry busy flags too
+            $btn.closest('.wc-block-components-button')
+                .removeClass('is-busy is-loading');
+
+            jQuery('.wc-block-components-checkout, .wc-block-components-payment-methods, .wc-block-components-form')
+            .removeClass('is-busy is-loading is-processing')
+            .attr('aria-busy', 'false');
+        }
+
+        // Classic (shortcode) checkout fallback
+        jQuery('#place_order')
+            .prop('disabled', false)
+            .removeClass('loading')
+            .attr('aria-busy', 'false');
+        jQuery('form.checkout, #order_review').removeClass('processing');
+    },
     handleCreateOrderError: (error, errorLogId) => {
         console.log('create_order_error', error, angelleyeOrder.lastApiResponse);
         angelleyeOrder.hideProcessingSpinner();
@@ -609,6 +639,7 @@ const angelleyeOrder = {
                 const msg = angelleyeOrder.mapErrorToHumanMessage(ppErr, localizedMessages);
 
                 angelleyeOrder.showError(msg);
+                angelleyeOrder.unspinProceedToPaypal();
 
                 console.error('PayPal CardFields error:', err);
                 if (ppErr.debug_id) {
