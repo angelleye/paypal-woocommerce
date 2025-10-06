@@ -414,22 +414,22 @@ jQuery(document).ready(function ($) {
     display_angelleye_smart_button();
 
     function display_angelleye_smart_button() {
-        if ($('#woocommerce_paypal_express_testmode').length) {
-            if (jQuery('#woocommerce_paypal_express_testmode').is(':checked')) {
-                var api_username = ($('#woocommerce_paypal_express_sandbox_api_username').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_username').val() : $('#woocommerce_paypal_express_sandbox_api_username').text();
-                var api_password = ($('#woocommerce_paypal_express_sandbox_api_password').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_password').val() : $('#woocommerce_paypal_express_sandbox_api_password').text();
-                var api_signature = ($('#woocommerce_paypal_express_sandbox_api_signature').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_signature').val() : $('#woocommerce_paypal_express_sandbox_api_signature').text();
-            } else {
-                var api_username = ($('#woocommerce_paypal_express_api_username').val().length > 0) ? $('#woocommerce_paypal_express_api_username').val() : $('#woocommerce_paypal_express_api_username').text();
-                var api_password = ($('#woocommerce_paypal_express_api_password').val().length > 0) ? $('#woocommerce_paypal_express_api_password').val() : $('#woocommerce_paypal_express_api_password').text();
-                var api_signature = ($('#woocommerce_paypal_express_api_signature').val().length > 0) ? $('#woocommerce_paypal_express_api_signature').val() : $('#woocommerce_paypal_express_api_signature').text();
-            }
-        } else {
-            return false;
-        }
-        if (api_username.length === 0 || api_password.length === 0 || api_signature.length === 0) {
-            return false;
-        }
+        // if ($('#woocommerce_paypal_express_testmode').length) {
+        //     if (jQuery('#woocommerce_paypal_express_testmode').is(':checked')) {
+        //         var api_username = ($('#woocommerce_paypal_express_sandbox_api_username').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_username').val() : $('#woocommerce_paypal_express_sandbox_api_username').text();
+        //         var api_password = ($('#woocommerce_paypal_express_sandbox_api_password').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_password').val() : $('#woocommerce_paypal_express_sandbox_api_password').text();
+        //         var api_signature = ($('#woocommerce_paypal_express_sandbox_api_signature').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_signature').val() : $('#woocommerce_paypal_express_sandbox_api_signature').text();
+        //     } else {
+        //         var api_username = ($('#woocommerce_paypal_express_api_username').val().length > 0) ? $('#woocommerce_paypal_express_api_username').val() : $('#woocommerce_paypal_express_api_username').text();
+        //         var api_password = ($('#woocommerce_paypal_express_api_password').val().length > 0) ? $('#woocommerce_paypal_express_api_password').val() : $('#woocommerce_paypal_express_api_password').text();
+        //         var api_signature = ($('#woocommerce_paypal_express_api_signature').val().length > 0) ? $('#woocommerce_paypal_express_api_signature').val() : $('#woocommerce_paypal_express_api_signature').text();
+        //     }
+        // } else {
+        //     return false;
+        // }
+        // if (api_username.length === 0 || api_password.length === 0 || api_signature.length === 0) {
+        //     return false;
+        // }
 
         jQuery(".display_smart_button_previews").html('');
         var angelleye_height = jQuery("#woocommerce_paypal_express_button_height").val();
@@ -456,10 +456,20 @@ jQuery(document).ready(function ($) {
         $(".display_smart_button_previews").removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
         $('.display_smart_button_previews').addClass('angelleye_' + angelleye_layout + '_' + button_size);
 
+        // if (typeof paypal !== 'undefined') {
+        //     paypal.Buttons({
+        //         style: style_object
+        //     }).render('.display_smart_button_previews');
+        // }
+
         if (typeof paypal !== 'undefined') {
-            paypal.Buttons({
-                style: style_object
-            }).render('.display_smart_button_previews');
+            const config = window.paypal_sdk_config; // localized from PHP
+
+            paypal.Core(config).then((core) => {
+                core.Buttons({
+                    style: style_object
+                }).render('.display_smart_button_previews');
+            });
         }
     }
 

@@ -820,7 +820,8 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 wp_register_script('angelleye-paypal-checkout-sdk', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-script-loader'. $this->minified_version .'.js', array('jquery', 'angelleye_ppcp-common-functions'), $script_versions, true);
                 wp_register_script('angelleye-in-context-checkout-js-frontend', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'assets/js/angelleye-in-context-checkout'.($this->minified_version ? '.min-v2.js' : '_v2.js'), array('angelleye-paypal-checkout-sdk'), $script_versions, true);
                 wp_localize_script('angelleye-in-context-checkout-js-frontend', 'angelleye_in_content_param', array(
-                    'paypal_sdk_url' => add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js'),
+                    'paypal_sdk_url' => 'https://www.paypal.com/web-sdk/v6/core',
+                    'paypal_sdk_config' => $smart_js_arg,
                     'environment' => ( $this->testmode == true) ? 'sandbox' : 'production',
                     'locale' => ($this->use_wp_locale_code === 'yes' && AngellEYE_Utility::get_button_locale_code() != '') ? AngellEYE_Utility::get_button_locale_code() : '',
                     'start_flow' => esc_url(add_query_arg(array('startcheckout' => 'true'), wc_get_cart_url())),

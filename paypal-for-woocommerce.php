@@ -358,25 +358,48 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 } else {
                     $smart_js_arg = array();
                     $smart_js_arg['components'] = "buttons,messages";
-                    $smart_js_arg['currency'] = get_woocommerce_currency();
-                    $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
-                    $disallowed_funding_methods = !empty($this->pp_settings['disallowed_funding_methods']) ? (array) $this->pp_settings['disallowed_funding_methods'] : array();
+                    $smart_js_arg['currency']   = get_woocommerce_currency();
+                    $smart_js_arg['locale']     = AngellEYE_Utility::get_button_locale_code();
+
+                    $disallowed_funding_methods = !empty($this->pp_settings['disallowed_funding_methods'])
+                        ? (array) $this->pp_settings['disallowed_funding_methods']
+                        : array();
+
                     if ($disallowed_funding_methods !== false && count($disallowed_funding_methods) > 0) {
-                        $smart_js_arg['disable-funding'] = implode(',', $disallowed_funding_methods);
+                        $smart_js_arg['disableFunding'] = implode(',', $disallowed_funding_methods); // v6 uses camelCase
                     }
+
+                    // Sandbox vs Live
                     if (isset($this->pp_settings['testmode']) && $this->pp_settings['testmode'] == 'yes') {
-                        $smart_js_arg['buyer-country'] = WC()->countries->get_base_country();
-                        $smart_js_arg['client-id'] = 'sb';
+                        $client_id   = 'sb'; // sandbox
+                        $buyerCountry = WC()->countries->get_base_country();
                     } else {
                         $merchant_id_array = get_option('angelleye_express_checkout_default_pal');
-                        if (!empty($merchant_id_array) && !empty($merchant_id_array['PAL'])) {
-                            $smart_js_arg['merchant-id'] = $merchant_id_array['PAL'];
-                        }
-                        $smart_js_arg['client-id'] = 'AUESd5dCP7FmcZnzB7v32UIo-gGgnJupvdfLle9TBJwOC4neACQhDVONBv3hc1W-pXlXS6G-KA5y4Kzv';
+                        $merchant_id = !empty($merchant_id_array['PAL']) ? $merchant_id_array['PAL'] : null;
+                        $client_id   = 'AUESd5dCP7FmcZnzB7v32UIo-gGgnJupvdfLle9TBJwOC4neACQhDVONBv3hc1W-pXlXS6G-KA5y4Kzv';
                     }
-                    $admin_paypal_sdk_js = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
-                    $translation_array['paypal_sdk_url'] = $admin_paypal_sdk_js;
-                    wp_enqueue_script('admin-checkout-js', $admin_paypal_sdk_js, array(), null, true);
+
+                    // enqueue v6 SDK
+                    wp_enqueue_script(
+                        'paypal-web-sdk',
+                        'https://www.sandbox.paypal.com/web-sdk/v6/core',
+                        array(),
+                        null,
+                        true
+                    );
+
+                    // Pass config object to JS
+                    $translation_array['paypal_sdk_config'] = array(
+                        'clientId'      => $client_id,
+                        'merchantId'    => isset($merchant_id) ? $merchant_id : null,
+                        'currency'      => $smart_js_arg['currency'],
+                        'locale'        => $smart_js_arg['locale'],
+                        'components'    => $smart_js_arg['components'],
+                        'disableFunding'=> isset($smart_js_arg['disableFunding']) ? $smart_js_arg['disableFunding'] : null,
+                        'buyerCountry'  => isset($buyerCountry) ? $buyerCountry : null,
+                    );
+
+                    wp_localize_script('paypal-web-sdk', 'paypal_sdk_config', $translation_array['paypal_sdk_config']);
                 }
             }
             wp_enqueue_script('angelleye_admin');
