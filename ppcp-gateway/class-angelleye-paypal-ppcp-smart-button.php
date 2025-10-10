@@ -773,7 +773,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
         wp_localize_script($ae_script_loader_handle, 'angelleye_ppcp_manager', array(
             'sandbox_mode' => (bool) $this->is_sandbox,
-            'paypal_sdk_url' => $js_url,
+            //'paypal_sdk_url' => $js_url,
             'paypal_sdk_url' => 'https://www.paypal.com/web-sdk/v6/core',
             'paypal_sdk_config' => $smart_js_arg,
             'paypal_sdk_attributes' => $this->get_paypal_sdk_attributes(),

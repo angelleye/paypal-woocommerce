@@ -127,11 +127,72 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_action('init', array($this, 'angelleye_register_post_status'), 99);
             add_action('current_screen', array($this, 'angelleye_redirect_to_onboard'), 9);
             add_action('plugins_loaded', [$this, 'include_gateway_in_list'], 1000);
+            add_action('wp_ajax_get_paypal_client_token', [$this, 'get_paypal_client_token']);
+            add_action('wp_ajax_nopriv_get_paypal_client_token', [$this, 'get_paypal_client_token']);
         }
 
         public function include_gateway_in_list() {
             $this->init();
             add_filter('woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'), 1000);
+        }
+
+        public function get_paypal_client_token() {
+            // Get settings
+            $settings = get_option('woocommerce_paypal_express_settings', array());
+            $is_sandbox = isset($settings['testmode']) && $settings['testmode'] === 'yes';
+            
+            // API endpoints
+            $api_url = $is_sandbox 
+                ? 'https://api-m.sandbox.paypal.com/v1/oauth2/token'
+                : 'https://api-m.paypal.com/v1/oauth2/token';
+                
+            // Client credentials
+            $client_id = $is_sandbox ? 'AXV6H-n0_yrjf2eWGTkR8hSU_FXkaMm6fLwiMi9mW1t7Rfo_a5yU0gX8RWvPaPPgx9KC4NbgukTQ7XnR' : 'AUESd5dCP7FmcZnzB7v32UIo-gGgnJupvdfLle9TBJwOC4neACQhDVONBv3hc1W-pXlXS6G-KA5y4Kzv';
+            $secret = $is_sandbox ? 'ED56elK0-yjGnUgwVAqb2iFdTl90lCaK84HW4kGqT-8OELSWuKgh6o6mBCj1jTdfqPagknzAfNP-IRZ1' : 'live_secret';
+
+            // Get access token
+            $response = wp_remote_post($api_url, array(
+                'headers' => array(
+                    'Authorization' => 'Basic ' . base64_encode($client_id . ':' . $secret)
+                ),
+                'body' => 'grant_type=client_credentials'
+            ));
+
+            if (is_wp_error($response)) {
+                wp_send_json_error(['message' => $response->get_error_message()]);
+            }
+
+            $body = json_decode(wp_remote_retrieve_body($response), true);
+            $accessToken = isset($body['access_token']) ? $body['access_token'] : '';
+
+            if (!$accessToken) {
+                wp_send_json_error(['message' => 'Failed to get PayPal access token']);
+            }
+
+            $clientTokenUrl = $is_sandbox
+                ? 'https://api-m.sandbox.paypal.com/v1/identity/generate-token'
+                : 'https://api-m.paypal.com/v1/identity/generate-token';
+
+            $clientTokenResponse = wp_remote_post($clientTokenUrl, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $accessToken,
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => '{}',
+            ]);
+
+            if (is_wp_error($clientTokenResponse)) {
+                wp_send_json_error(['message' => 'Failed to generate client token']);
+            }
+
+            $clientTokenBody = json_decode(wp_remote_retrieve_body($clientTokenResponse), true);
+            $clientToken = isset($clientTokenBody['client_token']) ? $clientTokenBody['client_token'] : '';
+
+            if (!$clientToken) {
+                wp_send_json_error(['message' => 'Client token not returned']);
+            }
+
+            wp_send_json_success($clientToken);
         }
 
         private function include_files_and_classes() {
@@ -391,6 +452,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                     // Pass config object to JS
                     $translation_array['paypal_sdk_config'] = array(
                         'clientId'      => $client_id,
+                        'ajax_url'      => admin_url('admin-ajax.php'),
                         'merchantId'    => isset($merchant_id) ? $merchant_id : null,
                         'currency'      => $smart_js_arg['currency'],
                         'locale'        => $smart_js_arg['locale'],
