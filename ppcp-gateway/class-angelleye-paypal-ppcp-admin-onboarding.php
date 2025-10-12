@@ -138,15 +138,19 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if (defined('PPCP_PAYPAL_COUNTRY')) {
                     $this->ppcp_paypal_country = PPCP_PAYPAL_COUNTRY;
                 }
-                if (!empty($this->result['primary_email'])) {
-                    own_angelleye_sendy_list($this->result['primary_email']);
-                    $this->email_confirm_text_1 = __('We see that your PayPal email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>';
+                $primaryEmail = null;
+                if (is_array($this->result) && !empty($this->result['primary_email'])) {
+                    $primaryEmail = $this->result['primary_email'];
+                }
+                if (!empty($primaryEmail)) {
+                    own_angelleye_sendy_list($primaryEmail);
+                    $this->email_confirm_text_1 = __('We see that your PayPal email address is', 'paypal-for-woocommerce') . ' <b>' . $primaryEmail . '</b>';
                 }
                 $admin_email = get_option("admin_email");
-                if (isset($this->result['primary_email']) && $this->result['primary_email'] != $admin_email) {
+                if ($primaryEmail != $admin_email) {
                     $this->email_confirm_text_2 = __('We see that your site admin email address is', 'paypal-for-woocommerce') . ' <b>' . $admin_email . '</b>';
                 } else {
-                    $this->email_confirm_text_1 = __('We see that your email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
+                    $this->email_confirm_text_1 = __('We see that your email address is', 'paypal-for-woocommerce') . ' <b>' . $primaryEmail . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
                 }
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
@@ -174,15 +178,19 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                 if (isset($this->result['country'])) {
                     $this->ppcp_paypal_country = $this->result['country'];
                 }
-                if (!empty($this->result['primary_email'])) {
-                    own_angelleye_sendy_list($this->result['primary_email']);
-                    $this->email_confirm_text_1 = __('We see that your PayPal email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>';
+                $primaryEmail = null;
+                if (is_array($this->result) && !empty($this->result['primary_email'])) {
+                    $primaryEmail = $this->result['primary_email'];
+                }
+                if (!empty($primaryEmail)) {
+                    own_angelleye_sendy_list($primaryEmail);
+                    $this->email_confirm_text_1 = __('We see that your PayPal email address is', 'paypal-for-woocommerce') . ' <b>' . $primaryEmail . '</b>';
                 }
                 $admin_email = get_option("admin_email");
-                if ($this->result['primary_email'] != $admin_email) {
+                if ($primaryEmail != $admin_email) {
                     $this->email_confirm_text_2 = __('We see that your site admin email address is', 'paypal-for-woocommerce') . ' <b>' . $admin_email . '</b>';
                 } else {
-                    $this->email_confirm_text_1 = __('We see that your email address is', 'paypal-for-woocommerce') . ' <b>' . $this->result['primary_email'] . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
+                    $this->email_confirm_text_1 = __('We see that your email address is', 'paypal-for-woocommerce') . ' <b>' . $primaryEmail . '</b>' . ' If there is a better email to keep you informed about PayPal and payment news please let us know.';
                 }
                 if ($this->dcc_applies->for_country_currency($this->ppcp_paypal_country) === false) {
                     $this->on_board_status = 'FULLY_CONNECTED';
@@ -678,7 +686,7 @@ class AngellEYE_PayPal_PPCP_Admin_Onboarding {
                             <?php } ?>
                             <br>
                             <div class="ppcp_sendy_confirm_parent">
-                                <input type="text" class="ppcp_sendy_confirm" id="angelleye_ppcp_sendy_email" placeholder="Your Email Address" value="<?php echo!empty($this->result['primary_email']) ? $this->result['primary_email'] : '' ?>">
+                                <input type="text" class="ppcp_sendy_confirm" id="angelleye_ppcp_sendy_email" placeholder="Your Email Address" value="<?php echo is_array($this->result) && !empty($this->result['primary_email']) ? $this->result['primary_email'] : '' ?>">
                                 <button id="angelleye_ppcp_email_confirm" type="button" class="button button-primary button-primary-own"><?php echo __('Submit', 'paypal-for-woocommerce'); ?></button>
                             </div>
                             <div id="angelleye_ppcp_sendy_msg"></div>
