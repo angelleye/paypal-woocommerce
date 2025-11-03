@@ -416,6 +416,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $return_response['currencyCode'] = $this->api_response['purchase_units'][0]['amount']['currency_code'];
                 $return_response['totalAmount'] = $this->api_response['purchase_units'][0]['amount']['value'];
                 $return_response['orderID'] = $this->api_response['id'];
+
+                // issue the next-step token for cc_capture, bound to this PayPal order id
+                $return_response['next_action_token'] = PFW_Security::issue_action_token( 'cc_capture', 600, [ 'poid' => (string) $$return_response['orderID'] ] );
+
                 if (!empty($order)) {
                     $order->update_meta_data('_paypal_order_id', $this->api_response['id']);
                     $order->save_meta_data();

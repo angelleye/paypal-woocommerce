@@ -122,7 +122,9 @@ const angelleyeOrder = {
         jQuery("#woocommerce-process-checkout-nonce").val(nonce);
     },
     createSmartButtonOrder: ({angelleye_ppcp_button_selector, errorLogId}) => {
+        window.next_action_token = null;
         return angelleyeOrder.createOrder({angelleye_ppcp_button_selector, errorLogId}).then((data) => {
+            window.next_action_token = data.next_action_token;
             return data.orderID;
         });
     },
@@ -138,6 +140,13 @@ const angelleyeOrder = {
         let is_from_product = angelleyeOrder.isProductPage();
         let billingField = null;
         let shippingField = null;
+        let secureField = jQuery('<input>', {
+                type: 'hidden',
+                name: 'pfw_action_token',
+                value: angelleye_ppcp_manager.verification
+            });
+        jQuery(formSelector).find('input[name=pfw_action_token]').remove();
+        secureField.appendTo(formSelector);
         if (billingDetails) {
             billingField = jQuery('<input>', {
                 type: 'hidden',
@@ -480,7 +489,9 @@ const angelleyeOrder = {
         if (typeof checkoutSelector === 'undefined') {
             checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
         }
-        let captureUrl = angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payPalOrderId + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page;
+        let captureUrl = angelleye_ppcp_manager.cc_capture + "&paypal_order_id=" + payPalOrderId
+        + "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout
+        + "&is_pay_page=" + angelleye_ppcp_manager.is_pay_page + "&pfw_action_token=" + window.next_action_token;
         let data;
         if (angelleyeOrder.isCheckoutPage()) {
             data = jQuery(checkoutSelector).serialize();
@@ -509,6 +520,63 @@ const angelleyeOrder = {
             angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
         });
     },
+    extractPayPalError (err) {
+        let payload =
+            err?.cause?.response?.data ||
+            err?.cause?.data ||
+            err?.data ||
+            null;
+
+        if (!payload && typeof err?.message === 'string') {
+            // Grab the last {...} block from the message
+            const jsonMatch = err.message.match(/{[\s\S]*}$/);
+            if (jsonMatch) {
+                try { payload = JSON.parse(jsonMatch[0]); } catch (_) {}
+            }
+        }
+
+        let corrId = null;
+        if (typeof err?.message === 'string') {
+            const corrMatch = err.message.match(/\b(?:Corr ID|Correlation ID)\s*:\s*([a-zA-Z0-9_-]+)/i);
+            if (corrMatch) corrId = corrMatch[1];
+        }
+
+        const name     = payload?.name || err?.name || 'UNKNOWN_ERROR';
+        const message  = payload?.message || err?.message || 'Something went wrong.';
+        const details  = payload?.details || payload?.errors || err?.details || [];
+        const debug_id = payload?.debug_id || corrId || null;
+
+        return { name, message, details, debug_id, raw: payload || err };
+    },
+    mapErrorToHumanMessage (paypalErr, localized = {}) {
+        console.log('mapErrorToHumanMessage PayPal error', paypalErr);
+        const { name, details } = paypalErr;
+        const issue = (details && details[0] && (details[0].issue || details[0].description || '')).toUpperCase();
+        const t = Object.assign({
+            generic: 'We couldn’t process this card. Please check your details or try another card.',
+            card_declined: 'Your card was declined. Please try a different card or contact your bank.',
+            invalid_number: 'The card number seems invalid. Please check and try again.',
+            invalid_cvv: 'The security code (CVV) is invalid.',
+            expired_card: 'This card is expired. Use a different card.',
+            invalid_expiry: 'The expiry date is invalid.',
+            funds: 'Insufficient funds. Try another card.',
+            "3ds_required": 'Additional verification is required. Please complete the verification challenge.',
+            unprocessable: 'We couldn’t process this card. Please verify the information and try again.'
+        }, localized);
+
+        const code = (name || issue || '').toUpperCase();
+
+        if (code.includes('INSTRUMENT_DECLINED') || code.includes('PAYER_CANNOT_PAY')) return t.card_declined;
+        if (code.includes('PAYER_ACTION_REQUIRED') || code.includes('THREE_D_SECURE')) return t["3ds_required"];
+        if (code.includes('INVALID_SECURITY_CODE') || code.includes('SECURITY_CODE_INVALID') || issue.includes('CVV')) return t.invalid_cvv;
+        if (code.includes('INVALID_CARD_NUMBER') || issue.includes('CARD_NUMBER_INVALID')) return t.invalid_number;
+        if (code.includes('EXPIRED_CARD') || issue.includes('EXPIRED')) return t.expired_card;
+        if (code.includes('INVALID_EXPIRY') || issue.includes('EXPIRY') || issue.includes('EXPIRATION')) return t.invalid_expiry;
+        if (code.includes('INSUFFICIENT_FUNDS') || issue.includes('FUND')) return t.funds;
+        if (code.includes('UNPROCESSABLE_ENTITY')) return t.unprocessable;
+
+        return t.generic;
+    },
     renderHostedButtons: () => {
         if (typeof angelleye_paypal_sdk === 'undefined') {
             return;
@@ -530,7 +598,9 @@ const angelleyeOrder = {
                     errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
+                    window.next_action_token = null;
                     return angelleyeOrder.createOrder({errorLogId}).then(function (data) {
+                        window.next_action_token = data.next_action_token;
                         return data.orderID;
                     }).catch((error) => {
                         angelleyeOrder.showError(error);
@@ -544,14 +614,19 @@ const angelleyeOrder = {
                 }
             },
             onError: function (err) {
-                console.log('Error occurred:', err);
-                if (typeof err === 'object' && err !== null) {
-                    console.log('Error message:', err.message || 'No error message available');
-                    if (err.stack) {
-                        console.log('Stack trace:', err.stack);
-                    }
-                } else {
-                    console.log('Unexpected error format:', err);
+                angelleyeOrder.hideProcessingSpinner(checkoutSelector);
+                if (jQuery.fn.unblock) { jQuery(checkoutSelector).unblock(); }
+                jQuery(checkoutSelector).removeClass('createOrder');
+
+                const ppErr = angelleyeOrder.extractPayPalError(err);
+                const msg = angelleyeOrder.mapErrorToHumanMessage(ppErr, localizedMessages);
+
+                angelleyeOrder.showError(msg);
+
+                console.error('PayPal CardFields error:', err);
+                if (ppErr.debug_id) {
+                    angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal debug_id: ' + ppErr.debug_id);
+                    console.warn('PayPal debug_id:', ppErr.debug_id);
                 }
             },
             style: {
