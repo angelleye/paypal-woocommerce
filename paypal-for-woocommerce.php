@@ -129,6 +129,10 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_action('plugins_loaded', [$this, 'include_gateway_in_list'], 1000);
             add_action('wp_ajax_get_paypal_client_token', [$this, 'get_paypal_client_token']);
             add_action('wp_ajax_nopriv_get_paypal_client_token', [$this, 'get_paypal_client_token']);
+            add_action('wp_ajax_create_paypal_order', [$this, 'create_paypal_order']);
+            add_action('wp_ajax_nopriv_create_paypal_order', [$this, 'create_paypal_order']);
+            add_action('wp_ajax_get_paypal_created_order', [$this, 'get_paypal_created_order']);
+            add_action('wp_ajax_nopriv_get_paypal_created_order', [$this, 'get_paypal_created_order']);
         }
 
         public function include_gateway_in_list() {
@@ -136,63 +140,178 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_filter('woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'), 1000);
         }
 
-        public function get_paypal_client_token() {
-            // Get settings
-            $settings = get_option('woocommerce_paypal_express_settings', array());
-            $is_sandbox = isset($settings['testmode']) && $settings['testmode'] === 'yes';
-            
-            // API endpoints
-            $api_url = $is_sandbox 
+        /**
+         * Generate PayPal API Access Token
+         *
+         * @return string|WP_Error  Returns access token or WP_Error on failure
+         */
+        public function generate_paypal_access_token($include_response_type = false) {
+            // Get WooCommerce PayPal Express Checkout settings
+            $settings   = get_option('woocommerce_paypal_express_settings', array());
+            $isSandbox  = isset($settings['testmode']) && $settings['testmode'] === 'yes';
+
+            // Choose API URL
+            $apiUrl = $isSandbox
                 ? 'https://api-m.sandbox.paypal.com/v1/oauth2/token'
                 : 'https://api-m.paypal.com/v1/oauth2/token';
-                
-            // Client credentials
-            $client_id = $is_sandbox ? 'AXV6H-n0_yrjf2eWGTkR8hSU_FXkaMm6fLwiMi9mW1t7Rfo_a5yU0gX8RWvPaPPgx9KC4NbgukTQ7XnR' : 'AUESd5dCP7FmcZnzB7v32UIo-gGgnJupvdfLle9TBJwOC4neACQhDVONBv3hc1W-pXlXS6G-KA5y4Kzv';
-            $secret = $is_sandbox ? 'ED56elK0-yjGnUgwVAqb2iFdTl90lCaK84HW4kGqT-8OELSWuKgh6o6mBCj1jTdfqPagknzAfNP-IRZ1' : 'live_secret';
 
-            // Get access token
-            $response = wp_remote_post($api_url, array(
+            // Credentials
+            $clientId = $isSandbox
+                ? 'AXV6H-n0_yrjf2eWGTkR8hSU_FXkaMm6fLwiMi9mW1t7Rfo_a5yU0gX8RWvPaPPgx9KC4NbgukTQ7XnR'
+                : 'AUESd5dCP7FmcZnzB7v32UIo-gGgnJupvdfLle9TBJwOC4neACQhDVONBv3hc1W-pXlXS6G-KA5y4Kzv';
+
+            $secret = $isSandbox
+                ? 'ED56elK0-yjGnUgwVAqb2iFdTl90lCaK84HW4kGqT-8OELSWuKgh6o6mBCj1jTdfqPagknzAfNP-IRZ1'
+                : 'live_secret';
+
+            $body = array(
+                'grant_type' => 'client_credentials'
+            );
+
+            if ( $include_response_type ) {
+                $body['response_type'] = 'client_token';
+            }
+
+            // Make API request
+            $response = wp_remote_post($apiUrl, array(
                 'headers' => array(
-                    'Authorization' => 'Basic ' . base64_encode($client_id . ':' . $secret)
+                    'Authorization' => 'Basic ' . base64_encode($clientId . ':' . $secret),
+                    'Content-Type'  => 'application/x-www-form-urlencoded',
                 ),
-                'body' => 'grant_type=client_credentials'
+                'body' => $body,
             ));
 
             if (is_wp_error($response)) {
-                wp_send_json_error(['message' => $response->get_error_message()]);
+                return new WP_Error('paypal_error', $response->get_error_message());
             }
 
-            $body = json_decode(wp_remote_retrieve_body($response), true);
-            $accessToken = isset($body['access_token']) ? $body['access_token'] : '';
+            $data = json_decode(wp_remote_retrieve_body($response), true);
 
-            if (!$accessToken) {
-                wp_send_json_error(['message' => 'Failed to get PayPal access token']);
+            if (!isset($data['access_token'])) {
+                return new WP_Error('paypal_error', 'Failed to retrieve access token.');
             }
 
-            $clientTokenUrl = $is_sandbox
-                ? 'https://api-m.sandbox.paypal.com/v1/identity/generate-token'
-                : 'https://api-m.paypal.com/v1/identity/generate-token';
+            return $data['access_token'];
+        }
 
-            $clientTokenResponse = wp_remote_post($clientTokenUrl, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $accessToken,
-                    'Content-Type' => 'application/json',
-                ],
-                'body' => '{}',
+        public function get_paypal_client_token() {
+            $accessToken = $this->generate_paypal_access_token(true);
+
+            if (is_wp_error($accessToken)) {
+                wp_send_json_error(['message' => $accessToken->get_error_message()]);
+            }
+
+            wp_send_json_success($accessToken);
+        }
+
+        public function create_paypal_order() {
+            // Order Payload
+            $order_payload = array(
+                "intent" => "CAPTURE",
+                "payment_source" => array(
+                    "paypal" => array(
+                        "experience_context" => array(
+                            "shipping_preference" => "NO_SHIPPING",
+                            "user_action" => "CONTINUE",
+                            "return_url" => home_url('/'),
+                            "cancel_url" => home_url('/'),
+                        )
+                    )
+                ),
+                "purchase_units" => array(
+                    array(
+                        "amount" => array(
+                            "currency_code" => "USD",
+                            "value" => "10.00",
+                            "breakdown" => array(
+                                "item_total" => array(
+                                    "currency_code" => "USD",
+                                    "value" => "10.00"
+                                )
+                            )
+                        ),
+                        "items" => array(
+                            array(
+                                "name" => "Sample Product",
+                                "quantity" => "1",
+                                "unit_amount" => array(
+                                    "currency_code" => "USD",
+                                    "value" => "10.00"
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+
+            $accessToken = $this->generate_paypal_access_token();
+
+            if (is_wp_error($accessToken)) {
+                wp_send_json_error(['message' => $accessToken->get_error_message()]);
+            }
+
+            // Get WooCommerce PayPal Express Checkout settings
+            $settings   = get_option('woocommerce_paypal_express_settings', array());
+            $isSandbox  = isset($settings['testmode']) && $settings['testmode'] === 'yes';
+
+            $environment   = $isSandbox ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+            $create_request = wp_remote_post($environment . '/v2/checkout/orders', array(
+                'headers'     => array(
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => "Bearer $accessToken",
+                ),
+                'body' => wp_json_encode($order_payload)
+            ));
+
+            if (is_wp_error($create_request)) {
+                wp_send_json_error(['message' => 'Order creation failed']);
+            }
+
+            $create_body = json_decode(wp_remote_retrieve_body($create_request), true);
+
+            wp_send_json_success([
+                'id' => $create_body['id']
             ]);
+        }
 
-            if (is_wp_error($clientTokenResponse)) {
-                wp_send_json_error(['message' => 'Failed to generate client token']);
+        public function get_paypal_created_order() {
+            // Read order payload
+            $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : '';
+
+            if (empty($order_id)) {
+                wp_send_json_error([
+                    'message' => 'Missing order id'
+                ], 400);
             }
 
-            $clientTokenBody = json_decode(wp_remote_retrieve_body($clientTokenResponse), true);
-            $clientToken = isset($clientTokenBody['client_token']) ? $clientTokenBody['client_token'] : '';
+            $accessToken = $this->generate_paypal_access_token();
 
-            if (!$clientToken) {
-                wp_send_json_error(['message' => 'Client token not returned']);
+            if (is_wp_error($accessToken)) {
+                wp_send_json_error(['message' => $accessToken->get_error_message()]);
             }
 
-            wp_send_json_success($clientToken);
+            // Get WooCommerce PayPal Express Checkout settings
+            $settings   = get_option('woocommerce_paypal_express_settings', array());
+            $isSandbox  = isset($settings['testmode']) && $settings['testmode'] === 'yes';
+
+            $environment   = $isSandbox ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+            $response = wp_remote_get($environment . '/v2/checkout/orders/' . $order_id, array(
+                'headers'     => array(
+                    'Authorization' => "Bearer $accessToken",
+                    'Content-Type'  => 'application/json',
+                ),
+            ));
+
+            if (is_wp_error($response)) {
+                wp_send_json_error([
+                    'message' => $response->get_error_message()
+                ], 500);
+            }
+
+            $body = wp_remote_retrieve_body($response);
+            $data = json_decode($body, true);
+
+            wp_send_json_success($data);
         }
 
         private function include_files_and_classes() {

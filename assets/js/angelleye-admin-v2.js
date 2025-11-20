@@ -517,24 +517,22 @@ window.addEventListener('load', function() {
 async function onPayPalLoaded() {
     const clientToken = await getBrowserSafeClientToken();
 
-    console.log('Retrieved client token:', clientToken);
-
-    const sdk = await window.paypal.createInstance({
+    const sdkInstance = await window.paypal.createInstance({
         clientToken,
         components: ["paypal-payments"],
         pageType: "checkout"
     });
 
-    const methods = await sdk.findEligibleMethods({ currencyCode: "USD" });
+    const methods = await sdkInstance.findEligibleMethods({ currencyCode: "USD" });
     if (!methods.isEligible("paypal")) {
         console.warn("PayPal method not eligible.");
         return;
     }
 
-    display_angelleye_smart_button();
+    display_angelleye_smart_button(sdkInstance);
 
     jQuery('.admin_smart_button_preview').on('change', function () {
-        display_angelleye_smart_button();
+        display_angelleye_smart_button(sdkInstance);
     });
 }
 
@@ -546,11 +544,9 @@ async function getBrowserSafeClientToken() {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-        action: 'get_paypal_client_token',
+        action: "get_paypal_client_token",
       }),
     });
-
-    console.log('Client token response status:', response);
 
     const data = await response.json();
     if (data.success && data.data) {
@@ -563,7 +559,7 @@ async function getBrowserSafeClientToken() {
   }
 }
 
-function display_angelleye_smart_button() {
+function display_angelleye_smart_button(sdkInstance) {
     // if ($('#woocommerce_paypal_express_testmode').length) {
     //     if (jQuery('#woocommerce_paypal_express_testmode').is(':checked')) {
     //         var api_username = ($('#woocommerce_paypal_express_sandbox_api_username').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_username').val() : $('#woocommerce_paypal_express_sandbox_api_username').text();
@@ -581,16 +577,16 @@ function display_angelleye_smart_button() {
     //     return false;
     // }
 
-    const container = $(".display_smart_button_previews");
+    const container = jQuery(".display_smart_button_previews");
     container.html('<div class="loader">Loading PayPal button...</div>');
 
-    const angelleye_height = $("#woocommerce_paypal_express_button_height").val();
-    const angelleye_color = $("#woocommerce_paypal_express_button_color").val();
-    const angelleye_shape = $("#woocommerce_paypal_express_button_shape").val();
-    const angelleye_label = $("#woocommerce_paypal_express_button_label").val();
-    const angelleye_layout = $("#woocommerce_paypal_express_button_layout").val();
-    const angelleye_tagline = $("#woocommerce_paypal_express_button_tagline").val();
-    const button_size = $('#woocommerce_paypal_express_button_size').val();
+    const angelleye_height = jQuery("#woocommerce_paypal_express_button_height").val();
+    const angelleye_color = jQuery("#woocommerce_paypal_express_button_color").val();
+    const angelleye_shape = jQuery("#woocommerce_paypal_express_button_shape").val();
+    const angelleye_label = jQuery("#woocommerce_paypal_express_button_label").val();
+    const angelleye_layout = jQuery("#woocommerce_paypal_express_button_layout").val();
+    const angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
+    const button_size = jQuery('#woocommerce_paypal_express_button_size').val();
 
     const tagline_value = angelleye_layout === 'vertical' ? '' : angelleye_tagline;
 
@@ -624,7 +620,7 @@ function display_angelleye_smart_button() {
     });
 
     // Create actual PayPal button element
-    const paypalBtn = $('<button id="paypal-btn" class="paypal-button">Pay with PayPal</button>');
+    const paypalBtn = jQuery('<button id="paypal-btn" class="paypal-button">Pay with PayPal</button>');
     container.append(paypalBtn);
 
     paypalBtn.on("click", async () => {
@@ -642,55 +638,33 @@ function display_angelleye_smart_button() {
 }
 
 async function createOrder() {
-  const orderPayload = {
-    intent: "CAPTURE",
-    paymentSource: {
-      paypal: {
-        experienceContext: {
-          shippingPreference: "NO_SHIPPING",
-          userAction: "CONTINUE",
-          returnUrl: window.location.href,
-          cancelUrl: window.location.href,
+    const response = await fetch(angelleye_admin.paypal_sdk_config.ajax_url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
         },
-      },
-    },
-    purchaseUnits: [
-      {
-        amount: {
-          currencyCode: "USD",
-          value: "10.00",
-          breakdown: {
-            itemTotal: {
-              currencyCode: "USD",
-              value: "00.10",
-            },
-          },
-        },
-      },
-    ],
-  };
+        body: new URLSearchParams({
+            action: "create_paypal_order",
+        }),
+    });
 
-  const response = await fetch("/paypal-api/checkout/orders/create", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(orderPayload),
-  });
-  const { id } = await response.json();
-  return { orderId: id };
+    const data = await response.json();
+
+    return { orderId: data.data.id };
 }
 
 async function captureOrder({ orderId }) {
-  const response = await fetch(
-    `/paypal-api/checkout/orders/${orderId}/capture`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
-  const data = await response.json();
-  return data;
+    const response = await fetch(angelleye_admin.paypal_sdk_config.ajax_url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            action: "get_paypal_created_order",
+            order_id: orderId,
+        }),
+    });
+
+    const data = await response.json();
+    return data;
 }
