@@ -603,7 +603,7 @@ function display_angelleye_smart_button(sdkInstance) {
     }
 
     container
-        .removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large")
+        .removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_horizontal_responsive angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large angelleye_vertical_responsive")
         .addClass('angelleye_' + angelleye_layout + '_' + button_size);
 
     // Clear loader before rendering
@@ -620,21 +620,15 @@ function display_angelleye_smart_button(sdkInstance) {
     });
 
     // Create actual PayPal button element
-    const paypalBtn = jQuery('<paypal-button id="paypal-btn" class="paypal-button" type="pay"></paypal-button>');
+    const paypalBtn = jQuery(`<paypal-button id="paypal-btn" class="paypal-button" type="${angelleye_label}"></paypal-button>`);
+    if (angelleye_height) {
+        paypalBtn.css('height', parseInt(angelleye_height) + 'px');
+    }
     container.append(paypalBtn);
 
     paypalBtn.on("click", async () => {
         await paypalSession.start({ presentationMode: "auto" }, createOrder());
     });
-
-    // const container = document.querySelector('.display_smart_button_previews');
-    // if (!container) return;
-
-    // const el = document.createElement('paypal-button');
-    // Object.keys(style_object).forEach(key => {
-    //     el.setAttribute(key, style_object[key]);
-    // });
-    // container.appendChild(el);
 }
 
 async function createOrder() {

@@ -205,6 +205,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
         }
 
         public function create_paypal_order() {
+            $currency = get_woocommerce_currency();
             // Order Payload
             $order_payload = array(
                 "intent" => "CAPTURE",
@@ -221,12 +222,12 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 "purchase_units" => array(
                     array(
                         "amount" => array(
-                            "currency_code" => "USD",
-                            "value" => "1.00",
+                            "currency_code" => $currency,
+                            "value" => "0.01",
                             "breakdown" => array(
                                 "item_total" => array(
-                                    "currency_code" => "USD",
-                                    "value" => "1.00"
+                                    "currency_code" => $currency,
+                                    "value" => "0.01"
                                 )
                             )
                         ),
@@ -235,8 +236,8 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                                 "name" => "Sample Product",
                                 "quantity" => "1",
                                 "unit_amount" => array(
-                                    "currency_code" => "USD",
-                                    "value" => "1.00"
+                                    "currency_code" => $currency,
+                                    "value" => "0.01"
                                 )
                             )
                         )
