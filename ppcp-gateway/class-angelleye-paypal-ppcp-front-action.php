@@ -270,6 +270,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         exit();
                     }
                     break;
+                // Get Clietn Token for Advanced Credit Card Payments New
+                case 'get_client_token': 
+                    $this->payment_request->angelleye_ppcp_get_browser_safe_client_token();
+                    exit();
+                    break;
                 case 'shipping_address_update':
                     global $woocommerce;
                     $paymentMethod = $_REQUEST['angelleye_ppcp_payment_method_title'] ?? null;

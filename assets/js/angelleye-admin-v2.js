@@ -620,7 +620,7 @@ function display_angelleye_smart_button(sdkInstance) {
     });
 
     // Create actual PayPal button element
-    const paypalBtn = jQuery('<button id="paypal-btn" class="paypal-button">Pay with PayPal</button>');
+    const paypalBtn = jQuery('<paypal-button id="paypal-btn" class="paypal-button" type="pay"></paypal-button>');
     container.append(paypalBtn);
 
     paypalBtn.on("click", async () => {

@@ -771,11 +771,21 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         //$js_url = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
 
+        // enqueue v6 SDK
+        wp_enqueue_script(
+            'paypal-web-sdk',
+            'https://www.sandbox.paypal.com/web-sdk/v6/core',
+            array(),
+            null,
+            true
+        );
+
         wp_localize_script($ae_script_loader_handle, 'angelleye_ppcp_manager', array(
             'sandbox_mode' => (bool) $this->is_sandbox,
             //'paypal_sdk_url' => $js_url,
             'paypal_sdk_url' => 'https://www.paypal.com/web-sdk/v6/core',
             'paypal_sdk_config' => $smart_js_arg,
+            'ajax_url' => admin_url('admin-ajax.php'),
             'paypal_sdk_attributes' => $this->get_paypal_sdk_attributes(),
             'apple_sdk_url' => $this->enable_apple_pay ? 'https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js' : '',
             'apple_pay_recurring_params' => $this->getApplePayRecurringParams(),
@@ -799,6 +809,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'cc_capture' => add_query_arg(array('angelleye_ppcp_action' => 'cc_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'create_order_url' => add_query_arg(array('angelleye_ppcp_action' => 'create_order', 'utm_nooverride' => '1', 'from' => is_checkout_pay_page() ? 'pay_page' : $page), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'shipping_update_url' => add_query_arg(array('angelleye_ppcp_action' => 'shipping_address_update', 'utm_nooverride' => '1', 'from' => is_checkout_pay_page() ? 'pay_page' : $page), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
+            'safe_client_token_url' => add_query_arg(array('angelleye_ppcp_action' => 'get_client_token', 'utm_nooverride' => '1', 'from' => is_checkout_pay_page() ? 'pay_page' : $page), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'cart_total' => WC()->cart->total,
             'paymentaction' => $this->paymentaction,
             'advanced_card_payments' => ($this->advanced_card_payments === true) ? 'yes' : 'no',

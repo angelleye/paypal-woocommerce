@@ -222,11 +222,11 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                     array(
                         "amount" => array(
                             "currency_code" => "USD",
-                            "value" => "10.00",
+                            "value" => "1.00",
                             "breakdown" => array(
                                 "item_total" => array(
                                     "currency_code" => "USD",
-                                    "value" => "10.00"
+                                    "value" => "1.00"
                                 )
                             )
                         ),
@@ -236,7 +236,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                                 "quantity" => "1",
                                 "unit_amount" => array(
                                     "currency_code" => "USD",
-                                    "value" => "10.00"
+                                    "value" => "1.00"
                                 )
                             )
                         )

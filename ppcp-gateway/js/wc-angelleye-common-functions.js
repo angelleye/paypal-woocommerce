@@ -417,62 +417,122 @@ const angelleyeOrder = {
             appendToSelector: payment_method_element_selector
         });
     },
-    renderSmartButton: () => {
+    renderSmartButton: async () => {
         console.log('render smart buttons');
+
+        if (!window.paypal || !window.paypal.createInstance) return;
+
+        const clientToken = await angelleyeOrder.getBrowserSafeClientToken();
+        if (!clientToken) {
+            console.error("Unable to load PayPal client token.");
+            return;
+        }
+
+        // Create SDK instance (v6)
+        const angelleye_paypal_sdk = await window.paypal.createInstance({
+            clientToken,
+            components: ["paypal-payments"],
+            pageType: angelleye_ppcp_manager.page
+        });
+
+        const methods = await angelleye_paypal_sdk.findEligibleMethods({ currencyCode: "USD" });
+        if (!methods.isEligible("paypal")) {
+            console.warn("PayPal method not eligible.");
+            return;
+        }
+
         jQuery.each(angelleye_ppcp_manager.button_selector, function (key, angelleye_ppcp_button_selector) {
-            console.log(angelleye_ppcp_button_selector);
-            if (!jQuery(angelleye_ppcp_button_selector).length || jQuery(angelleye_ppcp_button_selector).children().length) {
+
+            if (!jQuery(angelleye_ppcp_button_selector).length ||
+                jQuery(angelleye_ppcp_button_selector).children().length) {
                 return;
             }
-            if (typeof angelleye_paypal_sdk === 'undefined') {
-                return;
-            }
+
             let angelleye_ppcp_style = {
                 layout: angelleye_ppcp_manager.style_layout,
                 color: angelleye_ppcp_manager.style_color,
                 shape: angelleye_ppcp_manager.style_shape,
                 label: angelleye_ppcp_manager.style_label
             };
+
             if (angelleye_ppcp_manager.style_height !== '') {
-                angelleye_ppcp_style['height'] = parseInt(angelleye_ppcp_manager.style_height);
+                angelleye_ppcp_style.height = parseInt(angelleye_ppcp_manager.style_height);
             }
+
             if (angelleye_ppcp_manager.style_layout !== 'vertical') {
-                angelleye_ppcp_style['tagline'] = (angelleye_ppcp_manager.style_tagline === 'yes') ? true : false;
+                angelleye_ppcp_style.tagline = (angelleye_ppcp_manager.style_tagline === 'yes');
             }
+
             let errorLogId = null;
-            angelleye_paypal_sdk.Buttons({
-                style: angelleye_ppcp_style,
-                createOrder: function (data, actions) {
-                    errorLogId = angelleyeJsErrorLogger.generateErrorId();
-                    angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal Smart Button Payment Started');
-                    return angelleyeOrder.createSmartButtonOrder({
-                        angelleye_ppcp_button_selector, errorLogId
-                    })
-                },
-                onApprove: function (data, actions) {
+
+            // 🔥 NEW v6 BUTTONS
+            const paypalBtn = jQuery('<paypal-button id="paypal-btn" type="pay"></paypal-button>');
+            jQuery(angelleye_ppcp_button_selector).append(paypalBtn);
+
+            const paypalSession = angelleye_paypal_sdk.createPayPalOneTimePaymentSession({
+                onApprove: (data) => {
                     angelleyeOrder.showProcessingSpinner();
-                    angelleyeOrder.approveOrder({...data, errorLogId});
+                    angelleyeOrder.approveOrder({ ...data, errorLogId });
                 },
-                onCancel: function (data, actions) {
+                onCancel: () => {
                     angelleyeOrder.hideProcessingSpinner();
                     angelleyeOrder.onCancel();
                 },
-                onClick: function (data, actions) {
-                    angelleyeOrder.setPaymentMethodSelector(data.fundingSource);
-                },
-                onError: function (err) {
+                onError: (err) => {
                     angelleyeOrder.handleCreateOrderError(err, errorLogId);
                 }
-            }).render(angelleye_ppcp_button_selector);
+            });
+
+            document.getElementById("paypal-btn").addEventListener("click", async () => {
+                await paypalSession.start({ presentationMode: "auto" }, angelleyeOrder.createSmartButtonOrder({
+                    angelleye_ppcp_button_selector,
+                    errorLogId
+                }));
+            });
+
+            // window.paypal.PayPalButtons({
+            //     style: angelleye_ppcp_style,
+            //     createOrder: (data, actions) => {
+            //         errorLogId = angelleyeJsErrorLogger.generateErrorId();
+            //         angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal Smart Button Payment Started');
+            //         return angelleyeOrder.createSmartButtonOrder({
+            //             angelleye_ppcp_button_selector,
+            //             errorLogId
+            //         });
+            //     },
+
+            //     onApprove: (data) => {
+            //         angelleyeOrder.showProcessingSpinner();
+            //         angelleyeOrder.approveOrder({ ...data, errorLogId });
+            //     },
+
+            //     onCancel: () => {
+            //         angelleyeOrder.hideProcessingSpinner();
+            //         angelleyeOrder.onCancel();
+            //     },
+
+            //     onClick: (data) => {
+            //         angelleyeOrder.setPaymentMethodSelector(data.fundingSource);
+            //     },
+
+            //     onError: (err) => {
+            //         angelleyeOrder.handleCreateOrderError(err, errorLogId);
+            //     }
+
+            // }).render(angelleye_ppcp_button_selector);
+
         });
+
+        // Keep your Apple Pay / Google Pay logic unchanged
         if (angelleyeOrder.isApplePayEnabled()) {
-            jQuery.each(angelleye_ppcp_manager.apple_pay_btn_selector, function (key, angelleye_ppcp_apple_button_selector) {
-                (new ApplePayCheckoutButton()).render(angelleye_ppcp_apple_button_selector);
+            jQuery.each(angelleye_ppcp_manager.apple_pay_btn_selector, function (key, selector) {
+                (new ApplePayCheckoutButton()).render(selector);
             });
         }
+
         if (angelleyeOrder.isGooglePayEnabled()) {
-            jQuery.each(angelleye_ppcp_manager.google_pay_btn_selector, function (key, angelleye_ppcp_google_button_selector) {
-                (new GooglePayCheckoutButton()).render(angelleye_ppcp_google_button_selector);
+            jQuery.each(angelleye_ppcp_manager.google_pay_btn_selector, function (key, selector) {
+                (new GooglePayCheckoutButton()).render(selector);
             });
         }
     },
@@ -507,6 +567,32 @@ const angelleyeOrder = {
             jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting CardFields createOrder');
             angelleyeOrder.handleCreateOrderError(error, errorLogId);
             angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
+        });
+    },
+    getBrowserSafeClientToken: () => {
+        return fetch(angelleye_ppcp_manager.safe_client_token_url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(async function (res) {
+            if (res.redirected) {
+                window.location.href = res.url;
+                return; // stop the chain
+            }
+
+            return res.json();
+        })
+        .then(function (data) {
+            if (data && data.success && data.data) {
+                return data.data;   // 🔥 return EXACTLY what earlier code returned
+            } else {
+                throw new Error('Failed to retrieve client token');
+            }
+        })
+        .catch(function (err) {
+            console.error('Error fetching client token:', err);
         });
     },
     renderHostedButtons: () => {
