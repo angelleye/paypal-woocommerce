@@ -465,14 +465,19 @@ const angelleyeOrder = {
 
             let errorLogId = null;
 
-            // 🔥 NEW v6 BUTTONS
+            // NEW v6 BUTTONS
             const paypalBtn = jQuery('<paypal-button id="paypal-btn" type="pay"></paypal-button>');
             jQuery(angelleye_ppcp_button_selector).append(paypalBtn);
 
             const paypalSession = angelleye_paypal_sdk.createPayPalOneTimePaymentSession({
-                onApprove: (data) => {
+                // onApprove: (data) => {
+                //     console.log('PayPal One-Time Payment Approved', data);
+                //     angelleyeOrder.approveOrder({ ...data, errorLogId });
+                // },
+                onApprove: async ({ orderId }) => {
+                    console.log("Approved order:", orderId);
                     angelleyeOrder.showProcessingSpinner();
-                    angelleyeOrder.approveOrder({ ...data, errorLogId });
+                    await angelleyeOrder.approveOrder(orderId, null, errorLogId);
                 },
                 onCancel: () => {
                     angelleyeOrder.hideProcessingSpinner();
