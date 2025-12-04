@@ -465,7 +465,7 @@ const angelleyeOrder = {
             let errorLogId = null;
 
             // NEW v6 BUTTONS
-            const paypalBtn = jQuery('<paypal-button id="paypal-btn" type="checkout"></paypal-button>');
+            const paypalBtn = jQuery('<paypal-button id="paypal-btn" type="pay"></paypal-button>');
             jQuery(angelleye_ppcp_button_selector).append(paypalBtn);
 
             const paypalSession = angelleye_paypal_sdk.createPayPalOneTimePaymentSession({
