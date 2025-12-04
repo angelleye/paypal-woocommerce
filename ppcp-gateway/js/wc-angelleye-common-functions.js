@@ -442,7 +442,6 @@ const angelleyeOrder = {
         }
 
         jQuery.each(angelleye_ppcp_manager.button_selector, function (key, angelleye_ppcp_button_selector) {
-
             if (!jQuery(angelleye_ppcp_button_selector).length ||
                 jQuery(angelleye_ppcp_button_selector).children().length) {
                 return;
@@ -472,6 +471,7 @@ const angelleyeOrder = {
             const paypalSession = angelleye_paypal_sdk.createPayPalOneTimePaymentSession({
                 onApprove: (data) => {
                     console.log('PayPal One-Time Payment Approved', data);
+                    angelleyeOrder.showProcessingSpinner();
                     angelleyeOrder.approveOrder({ ...data, errorLogId });
                 },
                 onCancel: () => {
@@ -484,6 +484,9 @@ const angelleyeOrder = {
             });
 
             paypalBtn.on("click", async () => {
+                errorLogId = angelleyeJsErrorLogger.generateErrorId();
+                angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal Smart Button Payment Started');
+
                 await paypalSession.start({ presentationMode: "auto" }, angelleyeOrder.createSmartButtonOrder({
                     angelleye_ppcp_button_selector,
                     errorLogId
