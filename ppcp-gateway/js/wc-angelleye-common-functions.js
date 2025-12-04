@@ -123,10 +123,10 @@ const angelleyeOrder = {
     },
     createSmartButtonOrder: ({angelleye_ppcp_button_selector, errorLogId}) => {
         return angelleyeOrder.createOrder({angelleye_ppcp_button_selector, errorLogId}).then((data) => {
-            return data.orderID;
+            return { orderId: data?.orderID };
         });
     },
-    createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback}) => {
+    createOrder: async ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback}) => {
         if (typeof apiUrl == 'undefined') {
             apiUrl = angelleye_ppcp_manager.create_order_url;
         }
@@ -249,14 +249,14 @@ const angelleyeOrder = {
             return data;
         });
     },
-    approveOrder: ({orderID, payerID, errorLogId}) => {
+    approveOrder: ({orderId, payerId, errorLogId}) => {
         if (angelleyeOrder.isCheckoutPage()) {
-            angelleyeOrder.checkoutFormCapture({payPalOrderId: orderID, errorLogId})
+            angelleyeOrder.checkoutFormCapture({payPalOrderId: orderId, errorLogId})
         } else {
             if (angelleye_ppcp_manager.is_skip_final_review === 'yes') {
-                window.location.href = angelleye_ppcp_manager.direct_capture + '&paypal_order_id=' + orderID + '&paypal_payer_id=' + payerID + '&from=' + angelleye_ppcp_manager.page;
+                window.location.href = angelleye_ppcp_manager.direct_capture + '&paypal_order_id=' + orderId + '&paypal_payer_id=' + payerId + '&from=' + angelleye_ppcp_manager.page;
             } else {
-                window.location.href = angelleye_ppcp_manager.checkout_url + '&paypal_order_id=' + orderID + (payerID ? '&paypal_payer_id=' + payerID : '') + '&from=' + angelleye_ppcp_manager.page;
+                window.location.href = angelleye_ppcp_manager.checkout_url + '&paypal_order_id=' + orderId + (payerId ? '&paypal_payer_id=' + payerId : '') + '&from=' + angelleye_ppcp_manager.page;
             }
     }
     },
@@ -466,18 +466,13 @@ const angelleyeOrder = {
             let errorLogId = null;
 
             // NEW v6 BUTTONS
-            const paypalBtn = jQuery('<paypal-button id="paypal-btn" type="pay"></paypal-button>');
+            const paypalBtn = jQuery('<paypal-button id="paypal-btn" type="checkout"></paypal-button>');
             jQuery(angelleye_ppcp_button_selector).append(paypalBtn);
 
             const paypalSession = angelleye_paypal_sdk.createPayPalOneTimePaymentSession({
-                // onApprove: (data) => {
-                //     console.log('PayPal One-Time Payment Approved', data);
-                //     angelleyeOrder.approveOrder({ ...data, errorLogId });
-                // },
-                onApprove: async ({ orderId }) => {
-                    console.log("Approved order:", orderId);
-                    angelleyeOrder.showProcessingSpinner();
-                    await angelleyeOrder.approveOrder(orderId, null, errorLogId);
+                onApprove: (data) => {
+                    console.log('PayPal One-Time Payment Approved', data);
+                    angelleyeOrder.approveOrder({ ...data, errorLogId });
                 },
                 onCancel: () => {
                     angelleyeOrder.hideProcessingSpinner();
@@ -488,44 +483,12 @@ const angelleyeOrder = {
                 }
             });
 
-            document.getElementById("paypal-btn").addEventListener("click", async () => {
+            paypalBtn.on("click", async () => {
                 await paypalSession.start({ presentationMode: "auto" }, angelleyeOrder.createSmartButtonOrder({
                     angelleye_ppcp_button_selector,
                     errorLogId
                 }));
             });
-
-            // window.paypal.PayPalButtons({
-            //     style: angelleye_ppcp_style,
-            //     createOrder: (data, actions) => {
-            //         errorLogId = angelleyeJsErrorLogger.generateErrorId();
-            //         angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal Smart Button Payment Started');
-            //         return angelleyeOrder.createSmartButtonOrder({
-            //             angelleye_ppcp_button_selector,
-            //             errorLogId
-            //         });
-            //     },
-
-            //     onApprove: (data) => {
-            //         angelleyeOrder.showProcessingSpinner();
-            //         angelleyeOrder.approveOrder({ ...data, errorLogId });
-            //     },
-
-            //     onCancel: () => {
-            //         angelleyeOrder.hideProcessingSpinner();
-            //         angelleyeOrder.onCancel();
-            //     },
-
-            //     onClick: (data) => {
-            //         angelleyeOrder.setPaymentMethodSelector(data.fundingSource);
-            //     },
-
-            //     onError: (err) => {
-            //         angelleyeOrder.handleCreateOrderError(err, errorLogId);
-            //     }
-
-            // }).render(angelleye_ppcp_button_selector);
-
         });
 
         // Keep your Apple Pay / Google Pay logic unchanged
