@@ -465,7 +465,10 @@ const angelleyeOrder = {
             let errorLogId = null;
 
             // NEW v6 BUTTONS
-            const paypalBtn = jQuery('<paypal-button id="paypal-btn" type="pay"></paypal-button>');
+            const paypalBtn = jQuery(`<paypal-button id="paypal-btn" type="${angelleye_ppcp_manager.style_label}"></paypal-button>`);
+            if (angelleye_ppcp_style.height) {
+                paypalBtn.css('height', parseInt(angelleye_ppcp_style.height) + 'px');
+            }
             jQuery(angelleye_ppcp_button_selector).append(paypalBtn);
 
             const paypalSession = angelleye_paypal_sdk.createPayPalOneTimePaymentSession({

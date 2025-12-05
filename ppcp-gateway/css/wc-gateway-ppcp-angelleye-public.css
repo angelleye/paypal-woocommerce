@@ -276,9 +276,6 @@
     margin-bottom: 7px;
     margin-top: 7px;
 }
-.angelleye_ppcp-button-container #angelleye_ppcp_product #paypal-btn {
-    width: 100% !important;
-}
 .angelleye_ppcp-button-container #angelleye_ppcp_product_apple_pay, .angelleye_ppcp-button-container #angelleye_ppcp_product_google_pay,
 .angelleye_ppcp-button-container #angelleye_ppcp_cart_apple_pay, .angelleye_ppcp-button-container #angelleye_ppcp_cart_google_pay{
     margin-top: 7px;
@@ -286,6 +283,9 @@
 }
 .payment_methods .payment_method_angelleye_ppcp_cc img{
     max-width: 45px;
+}
+paypal-button {
+    width: 100% !important;
 }
 apple-pay-button {
     --apple-pay-button-width: 100%;
