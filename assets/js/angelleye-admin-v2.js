@@ -497,13 +497,13 @@ async function getBrowserSafeClientToken() {
 function display_angelleye_smart_button(sdkInstance) {
     if (jQuery('#woocommerce_paypal_express_testmode').length) {
         if (jQuery('#woocommerce_paypal_express_testmode').is(':checked')) {
-            var api_username = ($('#woocommerce_paypal_express_sandbox_api_username').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_username').val() : $('#woocommerce_paypal_express_sandbox_api_username').text();
-            var api_password = ($('#woocommerce_paypal_express_sandbox_api_password').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_password').val() : $('#woocommerce_paypal_express_sandbox_api_password').text();
-            var api_signature = ($('#woocommerce_paypal_express_sandbox_api_signature').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_signature').val() : $('#woocommerce_paypal_express_sandbox_api_signature').text();
+            var api_username = (jQuery('#woocommerce_paypal_express_sandbox_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_sandbox_api_username').val() : jQuery('#woocommerce_paypal_express_sandbox_api_username').text();
+            var api_password = (jQuery('#woocommerce_paypal_express_sandbox_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_sandbox_api_password').val() : jQuery('#woocommerce_paypal_express_sandbox_api_password').text();
+            var api_signature = (jQuery('#woocommerce_paypal_express_sandbox_api_signature').val().length > 0) ? jQuery('#woocommerce_paypal_express_sandbox_api_signature').val() : jQuery('#woocommerce_paypal_express_sandbox_api_signature').text();
         } else {
-            var api_username = ($('#woocommerce_paypal_express_api_username').val().length > 0) ? $('#woocommerce_paypal_express_api_username').val() : $('#woocommerce_paypal_express_api_username').text();
-            var api_password = ($('#woocommerce_paypal_express_api_password').val().length > 0) ? $('#woocommerce_paypal_express_api_password').val() : $('#woocommerce_paypal_express_api_password').text();
-            var api_signature = ($('#woocommerce_paypal_express_api_signature').val().length > 0) ? $('#woocommerce_paypal_express_api_signature').val() : $('#woocommerce_paypal_express_api_signature').text();
+            var api_username = (jQuery('#woocommerce_paypal_express_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_username').val() : jQuery('#woocommerce_paypal_express_api_username').text();
+            var api_password = (jQuery('#woocommerce_paypal_express_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_password').val() : jQuery('#woocommerce_paypal_express_api_password').text();
+            var api_signature = (jQuery('#woocommerce_paypal_express_api_signature').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_signature').val() : jQuery('#woocommerce_paypal_express_api_signature').text();
         }
     } else {
         return false;
