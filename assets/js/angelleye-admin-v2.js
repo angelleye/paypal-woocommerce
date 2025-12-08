@@ -495,7 +495,7 @@ async function getBrowserSafeClientToken() {
 }
 
 function display_angelleye_smart_button(sdkInstance) {
-    if ($('#woocommerce_paypal_express_testmode').length) {
+    if (jQuery('#woocommerce_paypal_express_testmode').length) {
         if (jQuery('#woocommerce_paypal_express_testmode').is(':checked')) {
             var api_username = ($('#woocommerce_paypal_express_sandbox_api_username').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_username').val() : $('#woocommerce_paypal_express_sandbox_api_username').text();
             var api_password = ($('#woocommerce_paypal_express_sandbox_api_password').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_password').val() : $('#woocommerce_paypal_express_sandbox_api_password').text();
