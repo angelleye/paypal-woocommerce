@@ -1411,7 +1411,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $request_data['orderId'] = $order->get_order_number();
             $request_data['options'] = $this->get_braintree_options();
-            $request_data['channel'] = PAYPAL_PARTNER_ATTRIBUTION_ID;
+            if (defined('PAYPAL_PARTNER_ATTRIBUTION_ID') && !empty(PAYPAL_PARTNER_ATTRIBUTION_ID)) {
+                $request_data['channel'] = PAYPAL_PARTNER_ATTRIBUTION_ID;
+            }
             if (!empty($this->softdescriptor)) {
                 $request_data['descriptor'] = array('name' => $this->softdescriptor);
             }
@@ -2413,7 +2415,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $request_data['orderId'] = $order->get_order_number();
         $request_data['options'] = $this->get_braintree_options();
-        $request_data['channel'] = PAYPAL_PARTNER_ATTRIBUTION_ID;
+        if (defined('PAYPAL_PARTNER_ATTRIBUTION_ID') && !empty(PAYPAL_PARTNER_ATTRIBUTION_ID)) {
+            $request_data['channel'] = PAYPAL_PARTNER_ATTRIBUTION_ID;
+        }
         if ($this->debug) {
             $this->add_log('Begin Transaction::sale() request');
             $this->add_log('Order: ' . print_r($order->get_order_number(), true));
