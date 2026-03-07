@@ -203,6 +203,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'TRXTYPE' => 'I'
         );
 
+        if (defined('PAYPAL_PARTNER_ATTRIBUTION_ID') && !empty(PAYPAL_PARTNER_ATTRIBUTION_ID)) {
+            $paypal_args['BUTTONSOURCE'] = PAYPAL_PARTNER_ATTRIBUTION_ID;
+        }
         $postData = ''; //stores the post data string
         foreach ($paypal_args as $key => $val) {
             $postData .= '&' . $key . '=' . $val;
@@ -510,6 +513,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'LABELTEXTCOLOR' => ltrim($this->settings['label_textcolor'], '#'),
             'MERCHDESCR' => $this->softdescriptor
         );
+        if (defined('PAYPAL_PARTNER_ATTRIBUTION_ID') && !empty(PAYPAL_PARTNER_ATTRIBUTION_ID)) {
+            $paypal_args['BUTTONSOURCE'] = PAYPAL_PARTNER_ATTRIBUTION_ID;
+        }
         if (empty($shipping_state)) {
             $paypal_args['SHIPTOSTATE[' . strlen($shipping_city) . ']'] = $shipping_city;
         } else {
@@ -1200,6 +1206,9 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'SHIPTOCOUNTRY[' . strlen($shipping_country) . ']' => $shipping_country,
             'MERCHDESCR' => $this->softdescriptor
         );
+        if (defined('PAYPAL_PARTNER_ATTRIBUTION_ID') && !empty(PAYPAL_PARTNER_ATTRIBUTION_ID)) {
+            $paypal_args['BUTTONSOURCE'] = PAYPAL_PARTNER_ATTRIBUTION_ID;
+        }
         if ($this->is_subscription($order_id)) {
             $paypal_args['origid'] = $order->get_meta( '_payment_tokens_id', true);
         }

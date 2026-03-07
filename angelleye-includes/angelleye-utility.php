@@ -1431,6 +1431,13 @@ class AngellEYE_Utility {
             }
             $this->add_ec_angelleye_paypal_php_library();
 
+            // Avoid fatal errors when gateway context could not be resolved and
+            // PayPal client was not initialized.
+            if (!is_object($this->paypal)) {
+                $this->ec_add_log('GetTransactionDetails skipped: PayPal client not initialized.', 'error');
+                return false;
+            }
+
             if ($this->payment_method != 'paypal_pro_payflow') {
                 $GTDFields = array(
                     'transactionid' => $transaction_id
@@ -1584,14 +1591,54 @@ class AngellEYE_Utility {
 
         public function angelleye_set_payment_method_using_transaction_id($transaction) {
             if (empty($this->payment_method) || $this->payment_method == false) {
+                // Primary path: resolve paypal_transaction post by transaction ID.
+                $transaction_post_id = $this->get_post_by_title($transaction);
+                if (!empty($transaction_post_id)) {
+                    $transaction_post = get_post($transaction_post_id);
+                    if (!empty($transaction_post) && !empty($transaction_post->post_parent)) {
+                        $order = wc_get_order($transaction_post->post_parent);
+                        if (!empty($order)) {
+                            $this->payment_method = $order->get_payment_method();
+                            $this->order_id = $order->get_id();
+                            return;
+                        }
+                    }
+
+                    $order_id = get_post_meta($transaction_post_id, 'order_id', true);
+                    if (!empty($order_id)) {
+                        $order = wc_get_order($order_id);
+                        if (!empty($order)) {
+                            $this->payment_method = $order->get_payment_method();
+                            $this->order_id = $order->get_id();
+                            return;
+                        }
+                    }
+                }
+
+                // Fallback for legacy/meta-only mappings.
                 global $wpdb;
                 $results = $wpdb->get_results($wpdb->prepare("SELECT post_id FROM {$wpdb->prefix}postmeta WHERE meta_value = %s ORDER BY meta_id", $transaction));
                 if (!empty($results[0]->post_id)) {
-                    $order = wc_get_order($results[0]->post_id);
-                    if (empty($order)) {
-                        return false;
+                    $candidate_post_id = (int) $results[0]->post_id;
+                    $candidate_post = get_post($candidate_post_id);
+                    $order_id = 0;
+
+                    if (!empty($candidate_post) && 'paypal_transaction' === $candidate_post->post_type) {
+                        $order_id = (int) $candidate_post->post_parent;
+                        if (empty($order_id)) {
+                            $order_id = (int) get_post_meta($candidate_post_id, 'order_id', true);
+                        }
+                    } else {
+                        $order_id = $candidate_post_id;
                     }
-                    $this->payment_method = $order->get_payment_method();
+
+                    if (!empty($order_id)) {
+                        $order = wc_get_order($order_id);
+                        if (!empty($order)) {
+                            $this->payment_method = $order->get_payment_method();
+                            $this->order_id = $order->get_id();
+                        }
+                    }
                 }
             }
         }
@@ -2107,6 +2154,7 @@ class AngellEYE_Utility {
         $request_data['paymentMethodToken'] = $transaction_id;
         $request_data['amount'] = $AMT;
         $request_data['options'] = array('submitForSettlement' => true);
+        $request_data['channel'] = PAYPAL_PARTNER_ATTRIBUTION_ID;
         $result = $gateway_obj->pfw_braintree_do_capture($order, $request_data);
         if ($result != false) {
             $maybe_settled_later = array(

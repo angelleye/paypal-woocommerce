@@ -1411,6 +1411,9 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             }
             $request_data['orderId'] = $order->get_order_number();
             $request_data['options'] = $this->get_braintree_options();
+            if (defined('PAYPAL_PARTNER_ATTRIBUTION_ID') && !empty(PAYPAL_PARTNER_ATTRIBUTION_ID)) {
+                $request_data['channel'] = PAYPAL_PARTNER_ATTRIBUTION_ID;
+            }
             if (!empty($this->softdescriptor)) {
                 $request_data['descriptor'] = array('name' => $this->softdescriptor);
             }
@@ -1427,7 +1430,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     $log['paymentMethodNonce'] = '*********************';
                 }
-                $this->add_log('Transaction::sale() Reuest Data ' . print_r($log, true));
+                $this->add_log('Transaction::sale() Reuest Data ' . print_r($this->mask_sensitive_data($log), true));
             }
             try {
                 $this->response = $this->braintree_gateway->transaction()->sale(apply_filters('angelleye_woocommerce_braintree_sale_request_args', $request_data));
@@ -2337,6 +2340,22 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
     }
 
+    private function mask_sensitive_data($log_request_data) {
+        $sensitive_keys   = array(
+            'paymentMethodToken',
+            'paymentMethodNonce',
+            'cvv',
+            'cardNumber',
+            'creditCard'
+        );
+        foreach ($sensitive_keys as $sensitive_key) {
+            if (isset($log_request_data[$sensitive_key])) {
+                $log_request_data[$sensitive_key] = '******';
+            }
+        }
+        return $log_request_data;
+    }
+
     public function process_subscription_payment($order, $amount, $payment_token = null) {
         $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
         $order_id = $order->get_id();
@@ -2396,9 +2415,13 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         }
         $request_data['orderId'] = $order->get_order_number();
         $request_data['options'] = $this->get_braintree_options();
+        if (defined('PAYPAL_PARTNER_ATTRIBUTION_ID') && !empty(PAYPAL_PARTNER_ATTRIBUTION_ID)) {
+            $request_data['channel'] = PAYPAL_PARTNER_ATTRIBUTION_ID;
+        }
         if ($this->debug) {
             $this->add_log('Begin Transaction::sale() request');
             $this->add_log('Order: ' . print_r($order->get_order_number(), true));
+            $this->add_log('Request Data 2: ' . print_r($this->mask_sensitive_data($request_data), true));
         }
         try {
             $this->response = $this->braintree_gateway->transaction()->sale($request_data);
@@ -3014,6 +3037,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->debug) {
             $this->add_log('Begin Transaction::sale() request');
             $this->add_log('Order: ' . print_r($order->get_order_number(), true));
+            $this->add_log('Request Data 3: ' . print_r($request_data, true));
         }
         try {
             $this->response = $this->braintree_gateway->transaction()->sale($request_data);
