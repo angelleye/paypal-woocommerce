@@ -1418,7 +1418,6 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if ($this->debug) {
                 $this->add_log('Begin Transaction::sale() request');
                 $this->add_log('Order: ' . print_r($order->get_order_number(), true));
-                $this->add_log('Request Data 1: ' . print_r($this->mask_sensitive_data($request_data), true));
                 $log = $request_data;
                 if ($this->enable_braintree_drop_in == false) {
                     $log['creditCard'] = array(
@@ -1429,7 +1428,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                 } else {
                     $log['paymentMethodNonce'] = '*********************';
                 }
-                $this->add_log('Transaction::sale() Reuest Data ' . print_r($log, true));
+                $this->add_log('Transaction::sale() Reuest Data ' . print_r($this->mask_sensitive_data($log), true));
             }
             try {
                 $this->response = $this->braintree_gateway->transaction()->sale(apply_filters('angelleye_woocommerce_braintree_sale_request_args', $request_data));
@@ -2345,6 +2344,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             'paymentMethodNonce',
             'cvv',
             'cardNumber',
+            'creditCard'
         );
         foreach ($sensitive_keys as $sensitive_key) {
             if (isset($log_request_data[$sensitive_key])) {
