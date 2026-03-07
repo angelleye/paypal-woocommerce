@@ -367,7 +367,7 @@ class PayPal_Rest_API_Utility {
     public function getAuth() {
         $this->mode = $this->testmode == true ? 'SANDBOX' : 'LIVE';
         $auth = new ApiContext(new OAuthTokenCredential($this->rest_client_id, $this->rest_secret_id));
-        $auth->setConfig(array('mode' => $this->mode, 'log.LogEnabled' => $this->debug, 'log.LogLevel' => ($this->mode == 'SANDBOX') ? 'DEBUG' : 'INFO', 'log.FileName' => angelleye_get_log_path('paypal_credit_card_rest')));
+        $auth->setConfig(array('mode' => $this->mode, 'http.headers.PayPal-Partner-Attribution-Id' => PAYPAL_PARTNER_ATTRIBUTION_ID, 'log.LogEnabled' => $this->debug, 'log.LogLevel' => ($this->mode == 'SANDBOX') ? 'DEBUG' : 'INFO', 'log.FileName' => angelleye_get_log_path('paypal_credit_card_rest')));
         return $auth;
     }
 

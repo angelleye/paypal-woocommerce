@@ -200,7 +200,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'PWD[' . strlen($this->password) . ']' => $this->password,
             'ORIGID' => wc_clean($_POST['PNREF']),
             'TENDER' => 'C',
-            'TRXTYPE' => 'I'
+            'TRXTYPE' => 'I',
+            'BUTTONSOURCE' => PAYPAL_PARTNER_ATTRIBUTION_ID
         );
 
         $postData = ''; //stores the post data string
@@ -508,7 +509,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'PAGEBUTTONBGCOLOR' => ltrim($this->page_button_bgcolor, '#'),
             'PAGEBUTTONTEXTCOLOR' => ltrim($this->page_button_textcolor, '#'),
             'LABELTEXTCOLOR' => ltrim($this->settings['label_textcolor'], '#'),
-            'MERCHDESCR' => $this->softdescriptor
+            'MERCHDESCR' => $this->softdescriptor,
+            'BUTTONSOURCE' => PAYPAL_PARTNER_ATTRIBUTION_ID
         );
         if (empty($shipping_state)) {
             $paypal_args['SHIPTOSTATE[' . strlen($shipping_city) . ']'] = $shipping_city;
@@ -1198,7 +1200,8 @@ class WC_Gateway_PayPal_Advanced_AngellEYE extends WC_Payment_Gateway {
             'SHIPTOCITY[' . strlen($shipping_city) . ']' => $shipping_city,
             'SHIPTOZIP' => $shipping_postcode,
             'SHIPTOCOUNTRY[' . strlen($shipping_country) . ']' => $shipping_country,
-            'MERCHDESCR' => $this->softdescriptor
+            'MERCHDESCR' => $this->softdescriptor,
+            'BUTTONSOURCE' => PAYPAL_PARTNER_ATTRIBUTION_ID
         );
         if ($this->is_subscription($order_id)) {
             $paypal_args['origid'] = $order->get_meta( '_payment_tokens_id', true);
