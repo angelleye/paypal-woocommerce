@@ -28,9 +28,9 @@
 if (!defined('ABSPATH')) {
     exit();
 }
-
-define('PAYPAL_PARTNER_ATTRIBUTION_ID', 'AngellEYELLC_SP_AwesomeMotive');
-
+if (!defined('PAYPAL_PARTNER_ATTRIBUTION_ID')) {
+    define('PAYPAL_PARTNER_ATTRIBUTION_ID', 'AngellEYELLC_SP_AwesomeMotive');
+}
 require_once('angelleye-includes/angelleye-functions.php');
 require_once('angelleye-includes/angelleye-session-functions.php');
 require_once('angelleye-includes/angelleye-conditional-functions.php');

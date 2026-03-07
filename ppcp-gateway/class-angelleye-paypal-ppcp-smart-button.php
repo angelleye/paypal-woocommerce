@@ -1112,7 +1112,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
      * @return mixed
      */
     public function maybe_disable_other_gateways($gateways) {
-        var_dump($gateways); die;
         // remove apple_pay method from Add Payment methods page
         if (is_add_payment_method_page()) {
             unset($gateways['angelleye_ppcp_apple_pay']);

@@ -1418,7 +1418,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             if ($this->debug) {
                 $this->add_log('Begin Transaction::sale() request');
                 $this->add_log('Order: ' . print_r($order->get_order_number(), true));
-                $this->add_log('Request Data 1: ' . print_r($request_data, true));
+                $this->add_log('Request Data 1: ' . print_r($this->mask_sensitive_data($request_data), true));
                 $log = $request_data;
                 if ($this->enable_braintree_drop_in == false) {
                     $log['creditCard'] = array(
@@ -2339,6 +2339,21 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         return ( function_exists('wcs_order_contains_subscription') && ( wcs_order_contains_subscription($order_id) || wcs_is_subscription($order_id) || wcs_order_contains_renewal($order_id) ) );
     }
 
+    private function mask_sensitive_data($log_request_data) {
+        $sensitive_keys   = array(
+            'paymentMethodToken',
+            'paymentMethodNonce',
+            'cvv',
+            'cardNumber',
+        );
+        foreach ($sensitive_keys as $sensitive_key) {
+            if (isset($log_request_data[$sensitive_key])) {
+                $log_request_data[$sensitive_key] = '******';
+            }
+        }
+        return $log_request_data;
+    }
+
     public function process_subscription_payment($order, $amount, $payment_token = null) {
         $this->angelleye_reload_gateway_credentials_for_woo_subscription_renewal_order($order);
         $order_id = $order->get_id();
@@ -2402,7 +2417,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->debug) {
             $this->add_log('Begin Transaction::sale() request');
             $this->add_log('Order: ' . print_r($order->get_order_number(), true));
-            $this->add_log('Request Data 2: ' . print_r($request_data, true));
+            $this->add_log('Request Data 2: ' . print_r($this->mask_sensitive_data($request_data), true));
         }
         try {
             $this->response = $this->braintree_gateway->transaction()->sale($request_data);
