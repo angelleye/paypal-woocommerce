@@ -313,6 +313,36 @@ const angelleyeOrder = {
         }
 
     },
+    unspinProceedToPaypal: () => {
+        // Blocks Checkout “Place order” button
+        const $btn = jQuery('button.wc-block-components-checkout-place-order-button');
+
+        if ($btn.length) {
+            // Clear busy/disabled states that make the spinner visible
+            $btn.removeClass('is-busy is-loading');
+            $btn.prop('disabled', false)
+                .attr('aria-busy', 'false')
+                .attr('aria-disabled', 'false');
+
+            // Some builds toggle via hidden/display — make sure it's hidden either way
+            $btn.find('.wc-block-components-spinner').attr('hidden', true).hide();
+
+            // Parent containers sometimes carry busy flags too
+            $btn.closest('.wc-block-components-button')
+                .removeClass('is-busy is-loading');
+
+            jQuery('.wc-block-components-checkout, .wc-block-components-payment-methods, .wc-block-components-form')
+            .removeClass('is-busy is-loading is-processing')
+            .attr('aria-busy', 'false');
+        }
+
+        // Classic (shortcode) checkout fallback
+        jQuery('#place_order')
+            .prop('disabled', false)
+            .removeClass('loading')
+            .attr('aria-busy', 'false');
+        jQuery('form.checkout, #order_review').removeClass('processing');
+    },
     handleCreateOrderError: (error, errorLogId) => {
         console.log('create_order_error', error, angelleyeOrder.lastApiResponse);
         angelleyeOrder.hideProcessingSpinner();
@@ -509,6 +539,63 @@ const angelleyeOrder = {
             angelleyeOrder.hideProcessingSpinner('#customer_details, .woocommerce-checkout-review-order');
         });
     },
+    extractPayPalError (err) {
+        let payload =
+            err?.cause?.response?.data ||
+            err?.cause?.data ||
+            err?.data ||
+            null;
+
+        if (!payload && typeof err?.message === 'string') {
+            // Grab the last {...} block from the message
+            const jsonMatch = err.message.match(/{[\s\S]*}$/);
+            if (jsonMatch) {
+                try { payload = JSON.parse(jsonMatch[0]); } catch (_) {}
+            }
+        }
+
+        let corrId = null;
+        if (typeof err?.message === 'string') {
+            const corrMatch = err.message.match(/\b(?:Corr ID|Correlation ID)\s*:\s*([a-zA-Z0-9_-]+)/i);
+            if (corrMatch) corrId = corrMatch[1];
+        }
+
+        const name     = payload?.name || err?.name || 'UNKNOWN_ERROR';
+        const message  = payload?.message || err?.message || 'Something went wrong.';
+        const details  = payload?.details || payload?.errors || err?.details || [];
+        const debug_id = payload?.debug_id || corrId || null;
+
+        return { name, message, details, debug_id, raw: payload || err };
+    },
+    mapErrorToHumanMessage (paypalErr, localized = {}) {
+        console.log('mapErrorToHumanMessage PayPal error', paypalErr);
+        const { name, details } = paypalErr;
+        const issue = (details && details[0] && (details[0].issue || details[0].description || '')).toUpperCase();
+        const t = Object.assign({
+            generic: 'We couldn’t process this card. Please check your details or try another card.',
+            card_declined: 'Your card was declined. Please try a different card or contact your bank.',
+            invalid_number: 'The card number seems invalid. Please check and try again.',
+            invalid_cvv: 'The security code (CVV) is invalid.',
+            expired_card: 'This card is expired. Use a different card.',
+            invalid_expiry: 'The expiry date is invalid.',
+            funds: 'Insufficient funds. Try another card.',
+            "3ds_required": 'Additional verification is required. Please complete the verification challenge.',
+            unprocessable: 'We couldn’t process this card. Please verify the information and try again.'
+        }, localized);
+
+        const code = (name || issue || '').toUpperCase();
+
+        if (code.includes('INSTRUMENT_DECLINED') || code.includes('PAYER_CANNOT_PAY')) return t.card_declined;
+        if (code.includes('PAYER_ACTION_REQUIRED') || code.includes('THREE_D_SECURE')) return t["3ds_required"];
+        if (code.includes('INVALID_SECURITY_CODE') || code.includes('SECURITY_CODE_INVALID') || issue.includes('CVV')) return t.invalid_cvv;
+        if (code.includes('INVALID_CARD_NUMBER') || issue.includes('CARD_NUMBER_INVALID')) return t.invalid_number;
+        if (code.includes('EXPIRED_CARD') || issue.includes('EXPIRED')) return t.expired_card;
+        if (code.includes('INVALID_EXPIRY') || issue.includes('EXPIRY') || issue.includes('EXPIRATION')) return t.invalid_expiry;
+        if (code.includes('INSUFFICIENT_FUNDS') || issue.includes('FUND')) return t.funds;
+        if (code.includes('UNPROCESSABLE_ENTITY')) return t.unprocessable;
+
+        return t.generic;
+    },
     renderHostedButtons: () => {
         if (typeof angelleye_paypal_sdk === 'undefined') {
             return;
@@ -544,14 +631,20 @@ const angelleyeOrder = {
                 }
             },
             onError: function (err) {
-                console.log('Error occurred:', err);
-                if (typeof err === 'object' && err !== null) {
-                    console.log('Error message:', err.message || 'No error message available');
-                    if (err.stack) {
-                        console.log('Stack trace:', err.stack);
-                    }
-                } else {
-                    console.log('Unexpected error format:', err);
+                angelleyeOrder.hideProcessingSpinner(checkoutSelector);
+                if (jQuery.fn.unblock) { jQuery(checkoutSelector).unblock(); }
+                jQuery(checkoutSelector).removeClass('createOrder');
+
+                const ppErr = angelleyeOrder.extractPayPalError(err);
+                const msg = angelleyeOrder.mapErrorToHumanMessage(ppErr, localizedMessages);
+
+                angelleyeOrder.showError(msg);
+                angelleyeOrder.unspinProceedToPaypal();
+
+                console.error('PayPal CardFields error:', err);
+                if (ppErr.debug_id) {
+                    angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal debug_id: ' + ppErr.debug_id);
+                    console.warn('PayPal debug_id:', ppErr.debug_id);
                 }
             },
             style: {
