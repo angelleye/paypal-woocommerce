@@ -129,11 +129,192 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_action('init', array($this, 'angelleye_register_post_status'), 99);
             add_action('current_screen', array($this, 'angelleye_redirect_to_onboard'), 9);
             add_action('plugins_loaded', [$this, 'include_gateway_in_list'], 1000);
+            add_action('wp_ajax_get_paypal_client_token', [$this, 'get_paypal_client_token']);
+            add_action('wp_ajax_nopriv_get_paypal_client_token', [$this, 'get_paypal_client_token']);
+            add_action('wp_ajax_create_paypal_order', [$this, 'create_paypal_order']);
+            add_action('wp_ajax_nopriv_create_paypal_order', [$this, 'create_paypal_order']);
+            add_action('wp_ajax_get_paypal_created_order', [$this, 'get_paypal_created_order']);
+            add_action('wp_ajax_nopriv_get_paypal_created_order', [$this, 'get_paypal_created_order']);
         }
 
         public function include_gateway_in_list() {
             $this->init();
             add_filter('woocommerce_payment_gateways', array($this, 'angelleye_add_paypal_pro_gateway'), 1000);
+        }
+
+        /**
+         * Generate PayPal API Access Token
+         *
+         * @return string|WP_Error  Returns access token or WP_Error on failure
+         */
+        public function generate_paypal_access_token($include_response_type = false) {
+            // Get WooCommerce PayPal Express Checkout settings
+            $settings   = get_option('woocommerce_paypal_express_settings', array());
+            $isSandbox  = isset($settings['testmode']) && $settings['testmode'] === 'yes';
+
+            // Choose API URL
+            $apiUrl = $isSandbox
+                ? 'https://api-m.sandbox.paypal.com/v1/oauth2/token'
+                : 'https://api-m.paypal.com/v1/oauth2/token';
+
+            // Credentials
+            $clientId = $isSandbox
+                ? 'AXV6H-n0_yrjf2eWGTkR8hSU_FXkaMm6fLwiMi9mW1t7Rfo_a5yU0gX8RWvPaPPgx9KC4NbgukTQ7XnR'
+                : 'AUESd5dCP7FmcZnzB7v32UIo-gGgnJupvdfLle9TBJwOC4neACQhDVONBv3hc1W-pXlXS6G-KA5y4Kzv';
+
+            $secret = $isSandbox
+                ? 'ED56elK0-yjGnUgwVAqb2iFdTl90lCaK84HW4kGqT-8OELSWuKgh6o6mBCj1jTdfqPagknzAfNP-IRZ1'
+                : 'live_secret';
+
+            $body = array(
+                'grant_type' => 'client_credentials'
+            );
+
+            if ( $include_response_type ) {
+                $body['response_type'] = 'client_token';
+            }
+
+            // Make API request
+            $response = wp_remote_post($apiUrl, array(
+                'headers' => array(
+                    'Authorization' => 'Basic ' . base64_encode($clientId . ':' . $secret),
+                    'Content-Type'  => 'application/x-www-form-urlencoded',
+                ),
+                'body' => $body,
+            ));
+
+            if (is_wp_error($response)) {
+                return new WP_Error('paypal_error', $response->get_error_message());
+            }
+
+            $data = json_decode(wp_remote_retrieve_body($response), true);
+
+            if (!isset($data['access_token'])) {
+                return new WP_Error('paypal_error', 'Failed to retrieve access token.');
+            }
+
+            return $data['access_token'];
+        }
+
+        public function get_paypal_client_token() {
+            $accessToken = $this->generate_paypal_access_token(true);
+
+            if (is_wp_error($accessToken)) {
+                wp_send_json_error(['message' => $accessToken->get_error_message()]);
+            }
+
+            wp_send_json_success($accessToken);
+        }
+
+        public function create_paypal_order() {
+            $currency = get_woocommerce_currency();
+            // Order Payload
+            $order_payload = array(
+                "intent" => "CAPTURE",
+                "payment_source" => array(
+                    "paypal" => array(
+                        "experience_context" => array(
+                            "shipping_preference" => "NO_SHIPPING",
+                            "user_action" => "CONTINUE",
+                            "return_url" => home_url('/'),
+                            "cancel_url" => home_url('/'),
+                        )
+                    )
+                ),
+                "purchase_units" => array(
+                    array(
+                        "amount" => array(
+                            "currency_code" => $currency,
+                            "value" => "0.01",
+                            "breakdown" => array(
+                                "item_total" => array(
+                                    "currency_code" => $currency,
+                                    "value" => "0.01"
+                                )
+                            )
+                        ),
+                        "items" => array(
+                            array(
+                                "name" => "Sample Product",
+                                "quantity" => "1",
+                                "unit_amount" => array(
+                                    "currency_code" => $currency,
+                                    "value" => "0.01"
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+
+            $accessToken = $this->generate_paypal_access_token();
+
+            if (is_wp_error($accessToken)) {
+                wp_send_json_error(['message' => $accessToken->get_error_message()]);
+            }
+
+            // Get WooCommerce PayPal Express Checkout settings
+            $settings   = get_option('woocommerce_paypal_express_settings', array());
+            $isSandbox  = isset($settings['testmode']) && $settings['testmode'] === 'yes';
+
+            $environment   = $isSandbox ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+            $create_request = wp_remote_post($environment . '/v2/checkout/orders', array(
+                'headers'     => array(
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => "Bearer $accessToken",
+                ),
+                'body' => wp_json_encode($order_payload)
+            ));
+
+            if (is_wp_error($create_request)) {
+                wp_send_json_error(['message' => 'Order creation failed']);
+            }
+
+            $create_body = json_decode(wp_remote_retrieve_body($create_request), true);
+
+            wp_send_json_success([
+                'id' => $create_body['id']
+            ]);
+        }
+
+        public function get_paypal_created_order() {
+            // Read order payload
+            $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : '';
+
+            if (empty($order_id)) {
+                wp_send_json_error([
+                    'message' => 'Missing order id'
+                ], 400);
+            }
+
+            $accessToken = $this->generate_paypal_access_token();
+
+            if (is_wp_error($accessToken)) {
+                wp_send_json_error(['message' => $accessToken->get_error_message()]);
+            }
+
+            // Get WooCommerce PayPal Express Checkout settings
+            $settings   = get_option('woocommerce_paypal_express_settings', array());
+            $isSandbox  = isset($settings['testmode']) && $settings['testmode'] === 'yes';
+
+            $environment   = $isSandbox ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+            $response = wp_remote_get($environment . '/v2/checkout/orders/' . $order_id, array(
+                'headers'     => array(
+                    'Authorization' => "Bearer $accessToken",
+                    'Content-Type'  => 'application/json',
+                ),
+            ));
+
+            if (is_wp_error($response)) {
+                wp_send_json_error([
+                    'message' => $response->get_error_message()
+                ], 500);
+            }
+
+            $body = wp_remote_retrieve_body($response);
+            $data = json_decode($body, true);
+
+            wp_send_json_success($data);
         }
 
         private function include_files_and_classes() {
@@ -360,25 +541,49 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 } else {
                     $smart_js_arg = array();
                     $smart_js_arg['components'] = "buttons,messages";
-                    $smart_js_arg['currency'] = get_woocommerce_currency();
-                    $smart_js_arg['locale'] = AngellEYE_Utility::get_button_locale_code();
-                    $disallowed_funding_methods = !empty($this->pp_settings['disallowed_funding_methods']) ? (array) $this->pp_settings['disallowed_funding_methods'] : array();
+                    $smart_js_arg['currency']   = get_woocommerce_currency();
+                    $smart_js_arg['locale']     = AngellEYE_Utility::get_button_locale_code();
+
+                    $disallowed_funding_methods = !empty($this->pp_settings['disallowed_funding_methods'])
+                        ? (array) $this->pp_settings['disallowed_funding_methods']
+                        : array();
+
                     if ($disallowed_funding_methods !== false && count($disallowed_funding_methods) > 0) {
-                        $smart_js_arg['disable-funding'] = implode(',', $disallowed_funding_methods);
+                        $smart_js_arg['disableFunding'] = implode(',', $disallowed_funding_methods); // v6 uses camelCase
                     }
+
+                    // Sandbox vs Live
                     if (isset($this->pp_settings['testmode']) && $this->pp_settings['testmode'] == 'yes') {
-                        $smart_js_arg['buyer-country'] = WC()->countries->get_base_country();
-                        $smart_js_arg['client-id'] = 'sb';
+                        $client_id   = 'sb'; // sandbox
+                        $buyerCountry = WC()->countries->get_base_country();
                     } else {
                         $merchant_id_array = get_option('angelleye_express_checkout_default_pal');
-                        if (!empty($merchant_id_array) && !empty($merchant_id_array['PAL'])) {
-                            $smart_js_arg['merchant-id'] = $merchant_id_array['PAL'];
-                        }
-                        $smart_js_arg['client-id'] = 'AUESd5dCP7FmcZnzB7v32UIo-gGgnJupvdfLle9TBJwOC4neACQhDVONBv3hc1W-pXlXS6G-KA5y4Kzv';
+                        $merchant_id = !empty($merchant_id_array['PAL']) ? $merchant_id_array['PAL'] : null;
+                        $client_id   = 'AUESd5dCP7FmcZnzB7v32UIo-gGgnJupvdfLle9TBJwOC4neACQhDVONBv3hc1W-pXlXS6G-KA5y4Kzv';
                     }
-                    $admin_paypal_sdk_js = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
-                    $translation_array['paypal_sdk_url'] = $admin_paypal_sdk_js;
-                    wp_enqueue_script('admin-checkout-js', $admin_paypal_sdk_js, array(), null, true);
+
+                    // enqueue v6 SDK
+                    wp_enqueue_script(
+                        'paypal-web-sdk',
+                        'https://www.sandbox.paypal.com/web-sdk/v6/core',
+                        array(),
+                        null,
+                        true
+                    );
+
+                    // Pass config object to JS
+                    $translation_array['paypal_sdk_config'] = array(
+                        'clientId'      => $client_id,
+                        'ajax_url'      => admin_url('admin-ajax.php'),
+                        'merchantId'    => isset($merchant_id) ? $merchant_id : null,
+                        'currency'      => $smart_js_arg['currency'],
+                        'locale'        => $smart_js_arg['locale'],
+                        'components'    => $smart_js_arg['components'],
+                        'disableFunding'=> isset($smart_js_arg['disableFunding']) ? $smart_js_arg['disableFunding'] : null,
+                        'buyerCountry'  => isset($buyerCountry) ? $buyerCountry : null,
+                    );
+
+                    wp_localize_script('paypal-web-sdk', 'paypal_sdk_config', $translation_array['paypal_sdk_config']);
                 }
             }
             wp_enqueue_script('angelleye_admin');

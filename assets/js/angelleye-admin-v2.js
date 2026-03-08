@@ -407,62 +407,6 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    jQuery('.admin_smart_button_preview').change(function () {
-        display_angelleye_smart_button();
-    });
-
-    display_angelleye_smart_button();
-
-    function display_angelleye_smart_button() {
-        if ($('#woocommerce_paypal_express_testmode').length) {
-            if (jQuery('#woocommerce_paypal_express_testmode').is(':checked')) {
-                var api_username = ($('#woocommerce_paypal_express_sandbox_api_username').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_username').val() : $('#woocommerce_paypal_express_sandbox_api_username').text();
-                var api_password = ($('#woocommerce_paypal_express_sandbox_api_password').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_password').val() : $('#woocommerce_paypal_express_sandbox_api_password').text();
-                var api_signature = ($('#woocommerce_paypal_express_sandbox_api_signature').val().length > 0) ? $('#woocommerce_paypal_express_sandbox_api_signature').val() : $('#woocommerce_paypal_express_sandbox_api_signature').text();
-            } else {
-                var api_username = ($('#woocommerce_paypal_express_api_username').val().length > 0) ? $('#woocommerce_paypal_express_api_username').val() : $('#woocommerce_paypal_express_api_username').text();
-                var api_password = ($('#woocommerce_paypal_express_api_password').val().length > 0) ? $('#woocommerce_paypal_express_api_password').val() : $('#woocommerce_paypal_express_api_password').text();
-                var api_signature = ($('#woocommerce_paypal_express_api_signature').val().length > 0) ? $('#woocommerce_paypal_express_api_signature').val() : $('#woocommerce_paypal_express_api_signature').text();
-            }
-        } else {
-            return false;
-        }
-        if (api_username.length === 0 || api_password.length === 0 || api_signature.length === 0) {
-            return false;
-        }
-
-        jQuery(".display_smart_button_previews").html('');
-        var angelleye_height = jQuery("#woocommerce_paypal_express_button_height").val();
-        var angelleye_color = jQuery("#woocommerce_paypal_express_button_color").val();
-        var angelleye_shape = jQuery("#woocommerce_paypal_express_button_shape").val();
-        var angelleye_label = jQuery("#woocommerce_paypal_express_button_label").val();
-        var angelleye_layout = jQuery("#woocommerce_paypal_express_button_layout").val();
-        var angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
-        var button_size = $('#woocommerce_paypal_express_button_size').val();
-        if (angelleye_layout === 'vertical') {
-            angelleye_tagline = '';
-        }
-        var style_object = {
-            color: angelleye_color,
-            shape: angelleye_shape,
-            label: angelleye_label,
-            layout: angelleye_layout,
-            tagline: (angelleye_tagline === "true") ? true : false
-        };
-        if (angelleye_height !== '') {
-            style_object['height'] = parseInt(angelleye_height);
-        }
-
-        $(".display_smart_button_previews").removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large");
-        $('.display_smart_button_previews').addClass('angelleye_' + angelleye_layout + '_' + button_size);
-
-        if (typeof paypal !== 'undefined') {
-            paypal.Buttons({
-                style: style_object
-            }).render('.display_smart_button_previews');
-        }
-    }
-
     jQuery('.show-on-product-page').change(function () {
         var express_default_enable = jQuery('.enable-newly-products-bydefault').closest('tr');
         if (jQuery(this).is(':checked')) {
@@ -491,3 +435,165 @@ jQuery(document).ready(function ($) {
         });
     });
 });
+
+window.addEventListener('load', function() {
+    if (window.paypal !== undefined) {
+        onPayPalLoaded();
+    } else {
+        const interval = setInterval(() => {
+            if (window.paypal !== undefined) {
+                clearInterval(interval);
+                onPayPalLoaded();
+            }
+        }, 200);
+    }
+});
+
+async function onPayPalLoaded() {
+    const clientToken = await getBrowserSafeClientToken();
+
+    const sdkInstance = await window.paypal.createInstance({
+        clientToken,
+        components: ["paypal-payments"],
+        pageType: "checkout"
+    });
+
+    const methods = await sdkInstance.findEligibleMethods({ currencyCode: "USD" });
+    if (!methods.isEligible("paypal")) {
+        console.warn("PayPal method not eligible.");
+        return;
+    }
+
+    display_angelleye_smart_button(sdkInstance);
+
+    jQuery('.admin_smart_button_preview').on('change', function () {
+        display_angelleye_smart_button(sdkInstance);
+    });
+}
+
+async function getBrowserSafeClientToken() {
+  try {
+    const response = await fetch(angelleye_admin.paypal_sdk_config.ajax_url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        action: "get_paypal_client_token",
+      }),
+    });
+
+    const data = await response.json();
+    if (data.success && data.data) {
+      return data.data;
+    } else {
+      throw new Error('Failed to retrieve client token');
+    }
+  } catch (err) {
+    console.error('Error fetching client token:', err);
+  }
+}
+
+function display_angelleye_smart_button(sdkInstance) {
+    if (jQuery('#woocommerce_paypal_express_testmode').length) {
+        if (jQuery('#woocommerce_paypal_express_testmode').is(':checked')) {
+            var api_username = (jQuery('#woocommerce_paypal_express_sandbox_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_sandbox_api_username').val() : jQuery('#woocommerce_paypal_express_sandbox_api_username').text();
+            var api_password = (jQuery('#woocommerce_paypal_express_sandbox_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_sandbox_api_password').val() : jQuery('#woocommerce_paypal_express_sandbox_api_password').text();
+            var api_signature = (jQuery('#woocommerce_paypal_express_sandbox_api_signature').val().length > 0) ? jQuery('#woocommerce_paypal_express_sandbox_api_signature').val() : jQuery('#woocommerce_paypal_express_sandbox_api_signature').text();
+        } else {
+            var api_username = (jQuery('#woocommerce_paypal_express_api_username').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_username').val() : jQuery('#woocommerce_paypal_express_api_username').text();
+            var api_password = (jQuery('#woocommerce_paypal_express_api_password').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_password').val() : jQuery('#woocommerce_paypal_express_api_password').text();
+            var api_signature = (jQuery('#woocommerce_paypal_express_api_signature').val().length > 0) ? jQuery('#woocommerce_paypal_express_api_signature').val() : jQuery('#woocommerce_paypal_express_api_signature').text();
+        }
+    } else {
+        return false;
+    }
+    if (api_username.length === 0 || api_password.length === 0 || api_signature.length === 0) {
+        return false;
+    }
+
+    const container = jQuery(".display_smart_button_previews");
+    container.html('<div class="loader">Loading PayPal button...</div>');
+
+    const angelleye_height = jQuery("#woocommerce_paypal_express_button_height").val();
+    const angelleye_color = jQuery("#woocommerce_paypal_express_button_color").val();
+    const angelleye_shape = jQuery("#woocommerce_paypal_express_button_shape").val();
+    const angelleye_label = jQuery("#woocommerce_paypal_express_button_label").val();
+    const angelleye_layout = jQuery("#woocommerce_paypal_express_button_layout").val();
+    const angelleye_tagline = jQuery("#woocommerce_paypal_express_button_tagline").val();
+    const button_size = jQuery('#woocommerce_paypal_express_button_size').val();
+
+    const tagline_value = angelleye_layout === 'vertical' ? '' : angelleye_tagline;
+
+    const style_object = {
+        color: angelleye_color,
+        shape: angelleye_shape,
+        label: angelleye_label,
+        layout: angelleye_layout,
+        tagline: tagline_value === "true"
+    };
+
+    if (angelleye_height) {
+        style_object.height = parseInt(angelleye_height);
+    }
+
+    container
+        .removeClass("angelleye_horizontal_small angelleye_horizontal_medium angelleye_horizontal_large angelleye_horizontal_responsive angelleye_vertical_small angelleye_vertical_medium angelleye_vertical_large angelleye_vertical_responsive")
+        .addClass('angelleye_' + angelleye_layout + '_' + button_size);
+
+    // Clear loader before rendering
+    container.html('');
+
+    // Create PayPal payment session
+    const paypalSession = sdkInstance.createPayPalOneTimePaymentSession({
+        onApprove: async ({ orderId }) => {
+            console.log("Approved order:", orderId);
+            await captureOrder(orderId);
+        },
+        onCancel: () => console.log("Cancelled"),
+        onError: (e) => console.error("PayPal Error:", e)
+    });
+
+    // Create actual PayPal button element
+    const paypalBtn = jQuery(`<paypal-button id="paypal-btn" class="paypal-button" type="${angelleye_label}"></paypal-button>`);
+    if (angelleye_height) {
+        paypalBtn.css('height', parseInt(angelleye_height) + 'px');
+    }
+    container.append(paypalBtn);
+
+    paypalBtn.on("click", async () => {
+        await paypalSession.start({ presentationMode: "auto" }, createOrder());
+    });
+}
+
+async function createOrder() {
+    const response = await fetch(angelleye_admin.paypal_sdk_config.ajax_url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            action: "create_paypal_order",
+        }),
+    });
+
+    const data = await response.json();
+
+    return { orderId: data.data.id };
+}
+
+async function captureOrder({ orderId }) {
+    const response = await fetch(angelleye_admin.paypal_sdk_config.ajax_url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            action: "get_paypal_created_order",
+            order_id: orderId,
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+}

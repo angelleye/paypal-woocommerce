@@ -448,6 +448,70 @@ class AngellEYE_PayPal_PPCP_Payment {
     }
 
     /**
+     * Generate PayPal API Access Token
+     *
+     * @return string|WP_Error  Returns access token or WP_Error on failure
+     */
+    public function generate_paypal_access_token($include_response_type = false) {
+        // Get WooCommerce PayPal Express Checkout settings
+        $settings   = get_option('woocommerce_paypal_express_settings', array());
+        $isSandbox  = isset($settings['testmode']) && $settings['testmode'] === 'yes';
+
+        // Choose API URL
+        $apiUrl = $isSandbox
+            ? 'https://api-m.sandbox.paypal.com/v1/oauth2/token'
+            : 'https://api-m.paypal.com/v1/oauth2/token';
+
+        // Credentials
+        $clientId = $isSandbox
+            ? 'AXV6H-n0_yrjf2eWGTkR8hSU_FXkaMm6fLwiMi9mW1t7Rfo_a5yU0gX8RWvPaPPgx9KC4NbgukTQ7XnR'
+            : 'AUESd5dCP7FmcZnzB7v32UIo-gGgnJupvdfLle9TBJwOC4neACQhDVONBv3hc1W-pXlXS6G-KA5y4Kzv';
+
+        $secret = $isSandbox
+            ? 'ED56elK0-yjGnUgwVAqb2iFdTl90lCaK84HW4kGqT-8OELSWuKgh6o6mBCj1jTdfqPagknzAfNP-IRZ1'
+            : 'live_secret';
+
+        $body = array(
+            'grant_type' => 'client_credentials'
+        );
+
+        if ( $include_response_type ) {
+            $body['response_type'] = 'client_token';
+        }
+
+        // Make API request
+        $response = wp_remote_post($apiUrl, array(
+            'headers' => array(
+                'Authorization' => 'Basic ' . base64_encode($clientId . ':' . $secret),
+                'Content-Type'  => 'application/x-www-form-urlencoded',
+            ),
+            'body' => $body,
+        ));
+
+        if (is_wp_error($response)) {
+            return new WP_Error('paypal_error', $response->get_error_message());
+        }
+
+        $data = json_decode(wp_remote_retrieve_body($response), true);
+
+        if (!isset($data['access_token'])) {
+            return new WP_Error('paypal_error', 'Failed to retrieve access token.');
+        }
+
+        return $data['access_token'];
+    }
+
+    public function angelleye_ppcp_get_browser_safe_client_token() {
+        $accessToken = $this->generate_paypal_access_token(true);
+
+        if (is_wp_error($accessToken)) {
+            wp_send_json_error(['message' => $accessToken->get_error_message()]);
+        }
+
+        wp_send_json_success($accessToken);
+    }
+ 
+    /**
      * @param null $order
      * @return array
      */
