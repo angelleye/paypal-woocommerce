@@ -14,10 +14,17 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
     public $token = false;
     public $is_sandbox;
     public $api_request;
+    public $api_log;
+    public $payment_request;
     public $paymentaction;
     public $setting_obj;
     public $payal_order_id;
     public $paypal_order_id = null;
+    public $merchant_id;
+    public $invoice_prefix;
+    public $landing_page;
+    public $payee_preferred;
+    public $set_billing_address;
     public $enable_tokenized_payments;
     protected static $ins = null;
 
