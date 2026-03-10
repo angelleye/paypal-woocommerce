@@ -30,6 +30,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public $fraud_tool;
     public $payment_action;
     public $enable_google_pay;
+    public $merchant_id_google_pay;
     public $enable_apple_pay;
     public $enable_braintree_ach;
     public $ach_tokenization_key;

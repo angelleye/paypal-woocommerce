@@ -128,7 +128,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_action('wp', array(__CLASS__, 'angelleye_delete_payment_method_action'), 10);
             add_action('init', array($this, 'angelleye_register_post_status'), 99);
             add_action('current_screen', array($this, 'angelleye_redirect_to_onboard'), 9);
-            add_action('plugins_loaded', [$this, 'include_gateway_in_list'], 1000);
+            add_action('init', [$this, 'include_gateway_in_list'], 1000);
         }
 
         public function include_gateway_in_list() {

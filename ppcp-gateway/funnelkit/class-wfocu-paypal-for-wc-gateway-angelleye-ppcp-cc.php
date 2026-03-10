@@ -14,6 +14,8 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
     public $is_sandbox;
     public $setting_obj;
     public $api_request;
+    public $api_log;
+    public $payment_request;
     public $token = false;
     public $paymentaction;
     protected static $ins = null;
@@ -21,6 +23,10 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
     public $payal_order_id;
     public $paypal_order_id = null;
     public $enable_tokenized_payments;
+    public $merchant_id;
+    public $invoice_prefix;
+    public $landing_page;
+    public $payee_preferred;
 
     public function __construct() {
         parent::__construct();
@@ -133,7 +139,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
                 $data = WFOCU_Core()->process_offer->_handle_upsell_charge(false);
                 WFOCU_Core()->log->log('Order #' . WFOCU_WC_Compatibility::get_order_id($get_order) . ': Unable to capture paypal Order refer error below' . print_r($resp_body, true));
             } else {
-                $resp_body = json_decode($resp_body($resp_body), FALSE);
+                $resp_body = json_decode(json_encode($resp_body), FALSE);
                 if (isset($resp_body->status) && 'COMPLETED' === $resp_body->status) {
                     if (isset($resp_body->payment_source->paypal->attributes->vault->id) && isset($resp_body->payment_source->paypal->attributes->vault->status) && 'CREATED' === $resp_body->payment_source->paypal->attributes->vault->status) {
                         $txn_id = $resp_body->payment_source->paypal->attributes->vault->id;
