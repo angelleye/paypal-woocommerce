@@ -607,9 +607,9 @@ const angelleyeOrder = {
             onError: function (err) {
                 // Ensure retry remains possible after any SDK/createOrder level error.
                 jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting createOrder');
+                angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
                 if (!isItApiError) {
                     const errorMessage = angelleyeOrder.parsePayPalSdkError(err);
-                    angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
                     angelleyeOrder.showError(errorMessage);
                     angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
                 }
