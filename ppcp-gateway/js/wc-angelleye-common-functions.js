@@ -335,6 +335,62 @@ const angelleyeOrder = {
             //  window.location.href = window.location.href;
         }
     },
+    parsePayPalSdkError: (error) => {
+        let message = '';
+        let debugId = '';
+        let issueCode = '';
+
+        if (typeof error === 'string') {
+            message = error;
+        } else if (error && typeof error === 'object') {
+            if (Array.isArray(error.details) && error.details.length > 0) {
+                issueCode = error.details[0].issue || '';
+                message = error.details[0].description || error.details[0].issue || '';
+            }
+            message = message || error.message || error.name || '';
+            debugId = error.debug_id || error.debugId || error.paypalDebugId || '';
+        }
+
+        // Sometimes PayPal SDK sends JSON payload as part of error.message text.
+        if (!debugId && typeof message === 'string' && message.indexOf('{') > -1) {
+            try {
+                const payload = JSON.parse(message.substring(message.indexOf('{')));
+                if (!debugId) {
+                    debugId = payload.debug_id || '';
+                }
+                if (!issueCode && Array.isArray(payload.details) && payload.details.length > 0) {
+                    issueCode = payload.details[0].issue || '';
+                }
+                if (!message || message === error.message) {
+                    message = payload.message || message;
+                }
+                if (Array.isArray(payload.details) && payload.details.length > 0 && payload.details[0].description) {
+                    message = payload.details[0].description;
+                }
+            } catch (e) {
+                // keep original message
+            }
+        }
+
+        const normalizedMessage = (message || '').toLowerCase();
+        const normalizedIssueCode = (issueCode || '').toLowerCase();
+        const genericIssueCodes = ['unprocessable_entity', 'instrument_declined'];
+        const hasGenericMessage = normalizedMessage === 'unprocessable_entity' || normalizedMessage === 'instrument_declined' || normalizedMessage.indexOf('returned status 422') > -1;
+        const hasGenericIssueCode = genericIssueCodes.indexOf(normalizedIssueCode) > -1;
+
+        if (hasGenericMessage || hasGenericIssueCode) {
+            message = __('We could not process this card. Please check card details or try another payment method.', 'paypal-for-woocommerce');
+        }
+
+        if (!message) {
+            message = localizedMessages.general_error_message;
+        }
+        if (debugId) {
+            message += ' [PayPal Debug ID: ' + debugId + ']';
+        }
+
+        return '<li>' + message + '</li>';
+    },
     isCardFieldEligible: () => {
         if (angelleyeOrder.isCheckoutPage()) {
             if (angelleye_ppcp_manager.advanced_card_payments === 'yes') {
@@ -523,8 +579,10 @@ const angelleyeOrder = {
         let spinnerSelectors = checkoutSelector;
         jQuery(checkoutSelector).addClass('CardFields');
         let errorLogId = null;
+        let isItApiError = false;
         const cardFields = angelleye_paypal_sdk.CardFields({
             createOrder: function (data, actions) {
+                isItApiError = false;
                 jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
                 if (!jQuery(checkoutSelector).hasClass('createOrder')) {
                     errorLogId = angelleyeJsErrorLogger.generateErrorId();
@@ -533,6 +591,9 @@ const angelleyeOrder = {
                     return angelleyeOrder.createOrder({errorLogId}).then(function (data) {
                         return data.orderID;
                     }).catch((error) => {
+                        isItApiError = true;
+                        // Reset hosted-card submit state so user can retry createOrder on next click.
+                        jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting createOrder');
                         angelleyeOrder.showError(error);
                         return '';
                     });
@@ -544,6 +605,14 @@ const angelleyeOrder = {
                 }
             },
             onError: function (err) {
+                // Ensure retry remains possible after any SDK/createOrder level error.
+                jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting createOrder');
+                if (!isItApiError) {
+                    const errorMessage = angelleyeOrder.parsePayPalSdkError(err);
+                    angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
+                    angelleyeOrder.showError(errorMessage);
+                    angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
+                }
                 console.log('Error occurred:', err);
                 if (typeof err === 'object' && err !== null) {
                     console.log('Error message:', err.message || 'No error message available');
