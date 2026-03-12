@@ -2,6 +2,8 @@ const angelleyeOrder = {
     productAddToCart: true,
     lastApiResponse: null,
     ppcp_address: [],
+    ppcpCcSubmitHookReady: false,
+    ppcpCcSubmitRecoveryTimer: null,
     isCheckoutPage: () => {
         return 'checkout' === angelleye_ppcp_manager.page;
     },
@@ -73,6 +75,33 @@ const angelleyeOrder = {
     },
     getConstantValue: (constantName, defaultValue) => {
         return angelleye_ppcp_manager.constants && angelleye_ppcp_manager.constants[constantName] ? angelleye_ppcp_manager.constants[constantName] : defaultValue;
+    },
+    isPpcpCcSubmitHookReady: () => {
+        return angelleyeOrder.ppcpCcSubmitHookReady === true;
+    },
+    setPpcpCcSubmitHookReady: (isReady) => {
+        angelleyeOrder.ppcpCcSubmitHookReady = isReady === true;
+    },
+    stopPpcpCcSubmitWatchdog: () => {
+        if (angelleyeOrder.ppcpCcSubmitRecoveryTimer) {
+            clearTimeout(angelleyeOrder.ppcpCcSubmitRecoveryTimer);
+            angelleyeOrder.ppcpCcSubmitRecoveryTimer = null;
+        }
+    },
+    clearPpcpCcSubmittingState: (checkoutSelector) => {
+        angelleyeOrder.stopPpcpCcSubmitWatchdog();
+        if (checkoutSelector && jQuery(checkoutSelector).length) {
+            jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting');
+        }
+        angelleyeOrder.hideProcessingSpinner();
+    },
+    startPpcpCcSubmitWatchdog: (checkoutSelector) => {
+        angelleyeOrder.stopPpcpCcSubmitWatchdog();
+        angelleyeOrder.ppcpCcSubmitRecoveryTimer = setTimeout(() => {
+            if (checkoutSelector && jQuery(checkoutSelector).length && jQuery(checkoutSelector).hasClass('paypal_cc_submiting') && !jQuery(checkoutSelector).hasClass('createOrder')) {
+                angelleyeOrder.clearPpcpCcSubmittingState(checkoutSelector);
+            }
+        }, 8000);
     },
     getCheckoutSelectorCss: () => {
         let checkoutSelector = '.woocommerce';
@@ -601,6 +630,7 @@ const angelleyeOrder = {
     },
     renderHostedButtons: () => {
         if (typeof angelleye_paypal_sdk === 'undefined') {
+            angelleyeOrder.setPpcpCcSubmitHookReady(false);
             return;
         }
         let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
@@ -608,6 +638,7 @@ const angelleyeOrder = {
             return false;
         }
         if (angelleyeOrder.isCCPaymentMethodSelected() === false) {
+            angelleyeOrder.setPpcpCcSubmitHookReady(false);
             return false;
         }
         let spinnerSelectors = checkoutSelector;
@@ -623,8 +654,11 @@ const angelleyeOrder = {
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
                     return angelleyeOrder.createOrder({errorLogId}).then(function (data) {
+                        angelleyeOrder.stopPpcpCcSubmitWatchdog();
                         return data.orderID;
                     }).catch((error) => {
+                        angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
+                        angelleyeOrder.stopPpcpCcSubmitWatchdog();
                         isItApiError = true;
                         // Reset hosted-card submit state so user can retry createOrder on next click.
                         jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting createOrder');
@@ -641,6 +675,7 @@ const angelleyeOrder = {
             onError: function (err) {
                 // Ensure retry remains possible after any SDK/createOrder level error.
                 jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting createOrder');
+                angelleyeOrder.stopPpcpCcSubmitWatchdog();
                 angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
                 if (!isItApiError) {
                     const errorMessage = angelleyeOrder.parsePayPalSdkError(err);
@@ -691,17 +726,21 @@ const angelleyeOrder = {
         } else {
             jQuery('.payment_method_angelleye_ppcp_cc').hide();
         }
-        jQuery(document.body).on('submit_paypal_cc_form', (event) => {
+        jQuery(document.body).off('submit_paypal_cc_form.angelleyePpcpCc').on('submit_paypal_cc_form.angelleyePpcpCc', (event) => {
             event.preventDefault();
             cardFields.getState().then((data) => {
                 if (data.isFormValid) {
                     angelleyeOrder.showProcessingSpinner(spinnerSelectors);
                     cardFields.submit().then(() => {
                     }).catch((error) => {
+                        angelleyeOrder.stopPpcpCcSubmitWatchdog();
                         console.log(error);
                     });
                 } else if (!data.isFormValid) {
+                    angelleyeOrder.stopPpcpCcSubmitWatchdog();
+                    angelleyeOrder.hideProcessingSpinner();
                     jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting CardFields createOrder');
+                    angelleyeOrder.removeError();
                     angelleyeOrder.showError(localizedMessages.fields_not_valid);
                     return;
                 } else if (data.errors) {
@@ -712,6 +751,7 @@ const angelleyeOrder = {
                 }
             });
         });
+        angelleyeOrder.setPpcpCcSubmitHookReady(true);
     },
     applePayDataInit: async () => {
         // This function is deprecated as we don't use it because its already loaded in environment
