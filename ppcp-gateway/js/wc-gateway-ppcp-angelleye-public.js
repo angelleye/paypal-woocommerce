@@ -27,6 +27,7 @@ function initSmartButtons() {
                 if ($(checkoutSelector).is('.paypal_cc_submiting')) {
                     return false;
                 } else {
+                    angelleyeOrder.showProcessingSpinner();
                     $(checkoutSelector).addClass('paypal_cc_submiting');
                     $(document.body).trigger('submit_paypal_cc_form');
                 }
@@ -47,6 +48,7 @@ function initSmartButtons() {
             if ($(checkoutSelector).is('.paypal_cc_submiting')) {
                 return false;
             } else {
+                angelleyeOrder.showProcessingSpinner();
                 $(checkoutSelector).addClass('paypal_cc_submiting');
                 $(document.body).trigger('submit_paypal_cc_form');
             }
