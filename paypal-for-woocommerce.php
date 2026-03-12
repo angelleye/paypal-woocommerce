@@ -129,6 +129,63 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_action('init', array($this, 'angelleye_register_post_status'), 99);
             add_action('current_screen', array($this, 'angelleye_redirect_to_onboard'), 9);
             add_action('init', [$this, 'include_gateway_in_list'], 1000);
+            add_filter('rest_request_after_callbacks', array($this, 'angelleye_filter_wcadmin_payments_providers_response'), 10, 3);
+        }
+
+        /**
+         * Hide PPCP Advanced Credit Card, Apple Pay and Google Pay providers from WC Admin payments listing response.
+         *
+         * @param mixed           $response
+         * @param array           $handler
+         * @param WP_REST_Request $request
+         *
+         * @return mixed
+         */
+        public function angelleye_filter_wcadmin_payments_providers_response($response, $handler, $request) {
+            if (!($request instanceof WP_REST_Request)) {
+                return $response;
+            }
+
+            $route = $request->get_route();
+            if ('/wc-admin/settings/payments/providers' !== $route) {
+                return $response;
+            }
+
+            if (!($response instanceof WP_REST_Response)) {
+                return $response;
+            }
+
+            $provider_ids_to_hide = array('angelleye_ppcp_apple_pay', 'angelleye_ppcp_google_pay', 'angelleye_ppcp_cc');
+            $data = $response->get_data();
+
+            $filter_by_id = function ($items) use ($provider_ids_to_hide) {
+                if (!is_array($items)) {
+                    return $items;
+                }
+
+                return array_values(array_filter($items, function ($item) use ($provider_ids_to_hide) {
+                    if (!is_array($item)) {
+                        return true;
+                    }
+
+                    $id = $item['id'] ?? $item['payment_gateway_id'] ?? '';
+                    return !in_array($id, $provider_ids_to_hide, true);
+                }));
+            };
+
+            // Common wc-admin payload shapes.
+            if (is_array($data)) {
+                if (isset($data['providers']) && is_array($data['providers'])) {
+                    $data['providers'] = $filter_by_id($data['providers']);
+                } elseif (isset($data['payment_providers']) && is_array($data['payment_providers'])) {
+                    $data['payment_providers'] = $filter_by_id($data['payment_providers']);
+                } elseif (array_keys($data) === range(0, count($data) - 1)) {
+                    $data = $filter_by_id($data);
+                }
+            }
+
+            $response->set_data($data);
+            return $response;
         }
 
         public function include_gateway_in_list() {
@@ -414,6 +471,12 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
                 $this->subscription_support_enabled = true;
             }
+
+            $current_tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : '';
+            $is_payments_listing_tab = in_array($current_tab, array('checkout', 'payment-gateways'), true);
+            $has_gateway_section = isset($_GET['section']) && '' !== sanitize_text_field(wp_unslash($_GET['section']));
+            $is_payments_listing_page = $is_payments_listing_tab && !$has_gateway_section;
+
             foreach ($methods as $key => $method) {
                 if (in_array($method, array('WC_Gateway_PayPal_Pro', 'WC_Gateway_PayPal_Pro_Payflow', 'WC_Gateway_PayPal_Express'))) {
                     unset($methods[$key]);
@@ -422,7 +485,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             }
             if (is_admin()) {
                 if ($this->subscription_support_enabled) {
-                    if ((isset($_GET['tab']) && 'checkout' === $_GET['tab']) && !isset($_GET['section'])) {
+                    if ($is_payments_listing_page) {
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
@@ -455,7 +518,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                         $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_Braintree_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_Subscriptions_AngellEYE';
-                        if (!isset($_GET['tab']) || $_GET['tab'] !== 'checkout') {
+                        if (!$is_payments_listing_page) {
                             $methods[] = 'WC_Gateway_PPCP_AngellEYE_Apple_Pay_Subscriptions';
                             $methods[] = 'WC_Gateway_PPCP_AngellEYE_Google_Pay_Subscriptions';
                             $methods[] = 'WC_Gateway_CC_AngellEYE_Subscriptions';
@@ -463,7 +526,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                         $methods[] = 'WC_Gateway_PPCP_AngellEYE_Subscriptions';
                     }
                 } else {
-                    if ((isset($_GET['tab']) && 'checkout' === $_GET['tab']) && !isset($_GET['section'])) {
+                    if ($is_payments_listing_page) {
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
@@ -487,7 +550,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                         $methods[] = 'WC_Gateway_Braintree_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Credit_Card_Rest_AngellEYE';
                         $methods[] = 'WC_Gateway_PPCP_AngellEYE';
-                        if (!isset($_GET['tab']) || $_GET['tab'] !== 'checkout') {
+                        if (!$is_payments_listing_page) {
                             $methods[] = 'WC_Gateway_Apple_Pay_AngellEYE';
                             $methods[] = 'WC_Gateway_Google_Pay_AngellEYE';
                             $methods[] = 'WC_Gateway_CC_AngellEYE';
