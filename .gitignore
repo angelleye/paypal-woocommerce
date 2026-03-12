@@ -20,3 +20,5 @@ temp/
 /paypal-seller-onboarding
 
 composer.lock
+
+/node_modules/
