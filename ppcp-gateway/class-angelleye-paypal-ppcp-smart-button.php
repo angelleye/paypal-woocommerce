@@ -560,11 +560,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 array_push($enable_funding, 'ideal');
             }
 
-            if ($this->is_sandbox){
-                if (WC()->customer && WC()->customer->get_billing_country() && 2 === strlen(WC()->customer->get_billing_country())) {
-                    $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
-                }
+            if ($this->is_sandbox && WC()->customer && WC()->customer->get_billing_country() && 2 === strlen(WC()->customer->get_billing_country())) {
+                $smart_js_arg['buyer-country'] = WC()->customer->get_billing_country();
             }
+            
             $product_cart_amounts = $this->payment_request->ae_get_updated_checkout_payment_data();
 
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
