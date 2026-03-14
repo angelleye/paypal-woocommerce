@@ -133,7 +133,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
         }
 
         /**
-         * Hide PPCP Advanced Credit Card, Apple Pay and Google Pay providers from WC Admin payments listing response.
+         * Enforce a stable provider order for target gateways in WC Admin payments listings.
          *
          * @param mixed           $response
          * @param array           $handler
@@ -155,37 +155,116 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 return $response;
             }
 
-            $provider_ids_to_hide = array('angelleye_ppcp_apple_pay', 'angelleye_ppcp_google_pay', 'angelleye_ppcp_cc');
             $data = $response->get_data();
-
-            $filter_by_id = function ($items) use ($provider_ids_to_hide) {
-                if (!is_array($items)) {
-                    return $items;
-                }
-
-                return array_values(array_filter($items, function ($item) use ($provider_ids_to_hide) {
-                    if (!is_array($item)) {
-                        return true;
-                    }
-
-                    $id = $item['id'] ?? $item['payment_gateway_id'] ?? '';
-                    return !in_array($id, $provider_ids_to_hide, true);
-                }));
-            };
 
             // Common wc-admin payload shapes.
             if (is_array($data)) {
                 if (isset($data['providers']) && is_array($data['providers'])) {
-                    $data['providers'] = $filter_by_id($data['providers']);
+                    $data['providers'] = $this->angelleye_sort_wcadmin_provider_items($data['providers']);
                 } elseif (isset($data['payment_providers']) && is_array($data['payment_providers'])) {
-                    $data['payment_providers'] = $filter_by_id($data['payment_providers']);
+                    $data['payment_providers'] = $this->angelleye_sort_wcadmin_provider_items($data['payment_providers']);
                 } elseif (array_keys($data) === range(0, count($data) - 1)) {
-                    $data = $filter_by_id($data);
+                    $data = $this->angelleye_sort_wcadmin_provider_items($data);
                 }
             }
 
             $response->set_data($data);
             return $response;
+        }
+
+        /**
+         * Sort target provider IDs to the top while keeping all other items in original order.
+         *
+         * @param array $items
+         *
+         * @return array
+         */
+        private function angelleye_sort_wcadmin_provider_items($items) {
+            if (!is_array($items)) {
+                return $items;
+            }
+
+            $ordered_ids = $this->angelleye_admin_gateway_priority_by_id();
+            $prioritized_items = array();
+            $other_items = array();
+
+            foreach ($items as $item) {
+                if (!is_array($item)) {
+                    $other_items[] = $item;
+                    continue;
+                }
+
+                $provider_id = isset($item['id']) ? $item['id'] : (isset($item['payment_gateway_id']) ? $item['payment_gateway_id'] : '');
+                if (isset($ordered_ids[$provider_id])) {
+                    $prioritized_items[$ordered_ids[$provider_id]][] = $item;
+                } else {
+                    $other_items[] = $item;
+                }
+            }
+
+            ksort($prioritized_items, SORT_NUMERIC);
+            $result = array();
+            foreach ($prioritized_items as $priority_group) {
+                $result = array_merge($result, $priority_group);
+            }
+
+            return array_merge($result, $other_items);
+        }
+
+        /**
+         * Reorder target gateway classes to the top of admin payments listing and avoid duplicates by target ID.
+         *
+         * @param array $methods
+         *
+         * @return array
+         */
+        private function angelleye_reorder_gateway_methods_for_admin_listing($methods) {
+            if (!is_array($methods)) {
+                return $methods;
+            }
+
+            $ordered_methods = $this->angelleye_admin_gateway_priority_by_method();
+            $prioritized_methods = array();
+            $other_methods = array();
+
+            foreach ($methods as $method) {
+                if (isset($ordered_methods[$method])) {
+                    $priority = $ordered_methods[$method];
+                    if (!isset($prioritized_methods[$priority])) {
+                        $prioritized_methods[$priority] = $method;
+                    }
+                } else {
+                    $other_methods[] = $method;
+                }
+            }
+
+            ksort($prioritized_methods, SORT_NUMERIC);
+            return array_merge(array_values($prioritized_methods), $other_methods);
+        }
+
+        private function angelleye_admin_gateway_priority_by_id() {
+            return array(
+                'angelleye_ppcp' => 10,
+                'angelleye_ppcp_cc' => 20,
+                'angelleye_ppcp_apple_pay' => 30,
+                'angelleye_ppcp_google_pay' => 40,
+                'braintree' => 50,
+            );
+        }
+
+        private function angelleye_admin_gateway_priority_by_method() {
+            return array(
+                'WC_Gateway_PPCP_AngellEYE' => 10,
+                'WC_Gateway_PPCP_AngellEYE_Subscriptions' => 10,
+                'WC_Gateway_CC_AngellEYE' => 20,
+                'WC_Gateway_CC_AngellEYE_Subscriptions' => 20,
+                'WC_Gateway_Apple_Pay_AngellEYE' => 30,
+                'WC_Gateway_PPCP_AngellEYE_Apple_Pay_Subscriptions' => 30,
+                'WC_Gateway_Google_Pay_AngellEYE' => 40,
+                'WC_Gateway_PPCP_AngellEYE_Google_Pay_Subscriptions' => 40,
+                'WC_Gateway_Braintree_AngellEYE' => 50,
+                'WC_Gateway_Braintree_Subscriptions_AngellEYE' => 50,
+            );
         }
 
         public function include_gateway_in_list() {
@@ -489,17 +568,26 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
+                        include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-apple-pay-angelleye.php');
+                        include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-google-pay-angelleye.php');
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-braintree-subscriptions-angelleye.php');
+                        include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/wc-gateway-ppcp-angelleye-subscriptions-base.php');
+                        include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-subscriptions.php');
+                        include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-apple-pay-subscriptions.php');
+                        include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-ppcp-angelleye-google-pay-subscriptions.php');
+                        include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/subscriptions/class-wc-gateway-cc-angelleye-subscriptions.php');
                         if (is_angelleye_multi_account_active()) {
                             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v1.php');
                         } else {
                             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v2.php');
                         }
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-express-subscriptions-angelleye.php');
+                        $methods[] = 'WC_Gateway_PPCP_AngellEYE_Subscriptions';
+                        $methods[] = 'WC_Gateway_CC_AngellEYE_Subscriptions';
+                        $methods[] = 'WC_Gateway_PPCP_AngellEYE_Apple_Pay_Subscriptions';
+                        $methods[] = 'WC_Gateway_PPCP_AngellEYE_Google_Pay_Subscriptions';
                         $methods[] = 'WC_Gateway_Braintree_Subscriptions_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Express_Subscriptions_AngellEYE';
-                        $methods[] = 'WC_Gateway_PPCP_AngellEYE_Subscriptions';
-                        $methods[] = 'WC_Gateway_PPCP_AngellEYE';
                     } else {
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-pro-payflow-subscriptions-angelleye.php');
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/subscriptions/wc-gateway-paypal-advanced-subscriptions-angelleye.php');
@@ -530,13 +618,18 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
+                        include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-apple-pay-angelleye.php');
+                        include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-google-pay-angelleye.php');
                         if (is_angelleye_multi_account_active()) {
                             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v1.php');
                         } else {
                             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v2.php');
                         }
-                        $methods[] = 'WC_Gateway_Braintree_AngellEYE';
                         $methods[] = 'WC_Gateway_PPCP_AngellEYE';
+                        $methods[] = 'WC_Gateway_CC_AngellEYE';
+                        $methods[] = 'WC_Gateway_Apple_Pay_AngellEYE';
+                        $methods[] = 'WC_Gateway_Google_Pay_AngellEYE';
+                        $methods[] = 'WC_Gateway_Braintree_AngellEYE';
                         $methods[] = 'WC_Gateway_PayPal_Express_AngellEYE';
                     } else {
                         include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
@@ -597,6 +690,11 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                     $methods[] = 'WC_Gateway_CC_AngellEYE';
                 }
             }
+
+            if (is_admin() && $is_payments_listing_page) {
+                $methods = $this->angelleye_reorder_gateway_methods_for_admin_listing($methods);
+            }
+
             return $methods;
         }
 
