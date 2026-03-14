@@ -128,15 +128,15 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 == Changelog ==
 
 = 4.6.6 - 03.14.2026
-* Added automated **JavaScript and CSS minification** to improve frontend performance. ([2145](https://github.com/angelleye/paypal-woocommerce/pull/2145))
-* Added a **processing spinner for Advanced Credit Card Payments** on the checkout page to provide better visual feedback during payment processing. ([2148](https://github.com/angelleye/paypal-woocommerce/pull/2148))
-* Refactored **Braintree payment handling** to improve error messaging and event management for more reliable checkout behavior. ([2144](https://github.com/angelleye/paypal-woocommerce/pull/2144))
-* Adjusted the **gateway listing order** on the admin payment settings page for improved organization.  
-* Renamed **gateway names** to match the updated naming convention and Fixed **gateway links on the admin payment listing page** to ensure correct navigation. ([2149](https://github.com/angelleye/paypal-woocommerce/pull/2149))
-* Fixed **text domain loading notice** and **dynamic property declaration warnings** for better compatibility with newer PHP versions. ([2136](https://github.com/angelleye/paypal-woocommerce/pull/2136))
-* Fixed a **country warning issue on the FunnelKit review order page** during checkout. ([2138](https://github.com/angelleye/paypal-woocommerce/pull/2138))
-* Fixed an issue where the **Place Order button would not respond** if a customer attempted payment again with a valid card after an initial failure. ([2140](https://github.com/angelleye/paypal-woocommerce/pull/2140))
-* Fixed an issue where **PPCP Hosted Fields did not release the BlockUI overlay** when WooCommerce validation errors occurred. ([2142](https://github.com/angelleye/paypal-woocommerce/pull/2142))
+* Added automated JavaScript and CSS minification to improve frontend performance. ([2145](https://github.com/angelleye/paypal-woocommerce/pull/2145))
+* Added a processing spinner for Advanced Credit Card Payments on the checkout page to provide better visual feedback during payment processing. ([2148](https://github.com/angelleye/paypal-woocommerce/pull/2148))
+* Refactored Braintree payment handling to improve error messaging and event management for more reliable checkout behavior. ([2144](https://github.com/angelleye/paypal-woocommerce/pull/2144))
+* Adjusted the gateway listing order on the admin payment settings page for improved organization.  
+* Renamed gateway names to match the updated naming convention and Fixed gateway links on the admin payment listing page to ensure correct navigation. ([2149](https://github.com/angelleye/paypal-woocommerce/pull/2149))
+* Fixed text domain loading notice and dynamic property declaration warnings for better compatibility with newer PHP versions. ([2136](https://github.com/angelleye/paypal-woocommerce/pull/2136))
+* Fixed a country warning issue on the FunnelKit review order page during checkout. ([2138](https://github.com/angelleye/paypal-woocommerce/pull/2138))
+* Fixed an issue where the Place Order button would not respond if a customer attempted payment again with a valid card after an initial failure. ([2140](https://github.com/angelleye/paypal-woocommerce/pull/2140))
+* Fixed an issue where PPCP Hosted Fields did not release the BlockUI overlay when WooCommerce validation errors occurred. ([2142](https://github.com/angelleye/paypal-woocommerce/pull/2142))
 * Venmo button issue fix for US users. ([2151]https://github.com/angelleye/paypal-woocommerce/pull/2151)
 
 = 4.6.5 - 03.08.2026
