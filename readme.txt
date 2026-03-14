@@ -137,6 +137,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fixed a **country warning issue on the FunnelKit review order page** during checkout. ([2138](https://github.com/angelleye/paypal-woocommerce/pull/2138))
 * Fixed an issue where the **Place Order button would not respond** if a customer attempted payment again with a valid card after an initial failure. ([2140](https://github.com/angelleye/paypal-woocommerce/pull/2140))
 * Fixed an issue where **PPCP Hosted Fields did not release the BlockUI overlay** when WooCommerce validation errors occurred. ([2142](https://github.com/angelleye/paypal-woocommerce/pull/2142))
+* Venmo button issue fix for US users. ([2151]https://github.com/angelleye/paypal-woocommerce/pull/2151)
 
 = 4.6.5 - 03.08.2026
 * Tested and verified compatibility with the latest versions of WordPress and WooCommerce.
