@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.9.1
-Stable tag: 4.6.5
+Stable tag: 4.6.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,17 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.6.6 - 03.14.2026
+* Added automated **JavaScript and CSS minification** to improve frontend performance. ([2145](https://github.com/angelleye/paypal-woocommerce/pull/2145))
+* Added a **processing spinner for Advanced Credit Card Payments** on the checkout page to provide better visual feedback during payment processing. ([2148](https://github.com/angelleye/paypal-woocommerce/pull/2148))
+* Refactored **Braintree payment handling** to improve error messaging and event management for more reliable checkout behavior. ([2144](https://github.com/angelleye/paypal-woocommerce/pull/2144))
+* Adjusted the **gateway listing order** on the admin payment settings page for improved organization.  
+* Renamed **gateway names** to match the updated naming convention and Fixed **gateway links on the admin payment listing page** to ensure correct navigation. ([2149](https://github.com/angelleye/paypal-woocommerce/pull/2149))
+* Fixed **text domain loading notice** and **dynamic property declaration warnings** for better compatibility with newer PHP versions. ([2136](https://github.com/angelleye/paypal-woocommerce/pull/2136))
+* Fixed a **country warning issue on the FunnelKit review order page** during checkout. ([2138](https://github.com/angelleye/paypal-woocommerce/pull/2138))
+* Fixed an issue where the **Place Order button would not respond** if a customer attempted payment again with a valid card after an initial failure. ([2140](https://github.com/angelleye/paypal-woocommerce/pull/2140))
+* Fixed an issue where **PPCP Hosted Fields did not release the BlockUI overlay** when WooCommerce validation errors occurred. ([2142](https://github.com/angelleye/paypal-woocommerce/pull/2142))
 
 = 4.6.5 - 03.08.2026
 * Tested and verified compatibility with the latest versions of WordPress and WooCommerce.
