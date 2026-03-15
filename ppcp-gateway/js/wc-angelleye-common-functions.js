@@ -566,7 +566,9 @@ const angelleyeOrder = {
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal Smart Button Payment Started');
                     return angelleyeOrder.createSmartButtonOrder({
                         angelleye_ppcp_button_selector, errorLogId
-                    })
+                    }).finally(() => {
+                        angelleyeOrder.hideProcessingSpinner();
+                    });
                 },
                 onApprove: function (data, actions) {
                     angelleyeOrder.showProcessingSpinner();
