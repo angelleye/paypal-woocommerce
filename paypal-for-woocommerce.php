@@ -228,6 +228,10 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             $other_methods = array();
 
             foreach ($methods as $method) {
+                if (!is_string($method) && !is_int($method)) {
+                    $other_methods[] = $method;
+                    continue;
+                }
                 if (isset($ordered_methods[$method])) {
                     $priority = $ordered_methods[$method];
                     if (!isset($prioritized_methods[$priority])) {
