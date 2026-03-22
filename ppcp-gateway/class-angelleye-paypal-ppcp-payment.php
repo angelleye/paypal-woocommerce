@@ -188,7 +188,6 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (!empty($payment_method_id)) {
                 AngellEye_Session_Manager::set('payment_method_id', $payment_method_id);
             }
-            // var_dump('create order request', $woo_order_id, $_POST, $payment_method, $payment_method_id);die;
             if (!empty($payment_method)) {
                 $payment_method_title = angelleye_ppcp_get_payment_method_title($payment_method);
                 AngellEye_Session_Manager::set('payment_method_title', $payment_method_title);
@@ -1244,25 +1243,23 @@ class AngellEYE_PayPal_PPCP_Payment {
                 if ($this->api_response['status'] == 'COMPLETED') {
                     if (isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'APPROVED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
                         $setup_token = $this->api_response['payment_source']['card']['attributes']['vault']['setup_token'];
-                        if (!empty($setup_token)) {
-                            $body_request = array();
-                            $body_request['payment_source']['token'] = array(
-                                'id' => wc_clean($setup_token),
-                                'type' => 'SETUP_TOKEN'
-                            );
-                            $args = array(
-                                'method' => 'POST',
-                                'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
-                                'body' => $body_request
-                            );
-                            $api_response = $this->api_request->request($this->payment_tokens_url, $args, 'create_payment_token');
-                            if (!empty($api_response['id'])) {
-                                $customer_id = $api_response['customer']['id'] ?? '';
-                                if (isset($customer_id) && !empty($customer_id)) {
-                                    $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
-                                }
-                                $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $api_response);
+                        $body_request = array();
+                        $body_request['payment_source']['token'] = array(
+                            'id' => wc_clean($setup_token),
+                            'type' => 'SETUP_TOKEN'
+                        );
+                        $args = array(
+                            'method' => 'POST',
+                            'headers' => array('Content-Type' => 'application/json', 'Authorization' => '', "prefer" => "return=representation", 'PayPal-Request-Id' => $this->generate_request_id(), 'Paypal-Auth-Assertion' => $this->angelleye_ppcp_paypalauthassertion()),
+                            'body' => $body_request
+                        );
+                        $api_response = $this->api_request->request($this->payment_tokens_url, $args, 'create_payment_token');
+                        if (!empty($api_response['id'])) {
+                            $customer_id = $api_response['customer']['id'] ?? '';
+                            if (isset($customer_id) && !empty($customer_id)) {
+                                $this->ppcp_payment_token->angelleye_ppcp_add_paypal_generated_customer_id($customer_id, $this->is_sandbox);
                             }
+                            $this->subscriptions_helper->angelleye_ppcp_wc_save_payment_token($woo_order_id, $api_response);
                         }
                     } elseif (isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'VAULTED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
                         $customer_id = $this->api_response['payment_source']['card']['attributes']['vault']['customer']['id'] ?? '';
