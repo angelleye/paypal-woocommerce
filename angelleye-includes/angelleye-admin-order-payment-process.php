@@ -447,26 +447,33 @@ class AngellEYE_Admin_Order_Payment_Process {
     }
 
     public function angelleye_get_transaction_id_by_payment_method($order, $payment_method) {
-        global $wpdb;
         $tokens_array = array();
         $user_id = $order->get_user_id();
-        $ids = $wpdb->get_results("SELECT id
-		FROM $wpdb->posts AS posts
-		LEFT JOIN {$wpdb->postmeta} AS meta on posts.ID = meta.post_id
-                LEFT JOIN {$wpdb->postmeta} AS meta1 on posts.ID = meta1.post_id
-                WHERE
-		meta.meta_key = '_customer_user' AND   meta.meta_value = {$user_id} AND
-                meta1.meta_key = '_payment_method' AND   meta1.meta_value = '{$payment_method}'
-		AND   posts.post_type = 'shop_order'
-		ORDER BY posts.ID DESC
-	", ARRAY_A);
-        if (!empty($ids)) {
-            foreach ($ids as $key => $value) {
-                $first_transaction_id = get_post_meta($value['id'], '_first_transaction_id', true);
+        if (empty($user_id) || empty($payment_method)) {
+            return $tokens_array;
+        }
+
+        $orders = wc_get_orders(array(
+            'customer_id' => $user_id,
+            'payment_method' => $payment_method,
+            'orderby' => 'ID',
+            'order' => 'DESC',
+            'limit' => -1,
+            'return' => 'objects',
+        ));
+
+        if (!empty($orders)) {
+            foreach ($orders as $customer_order) {
+                if (!is_a($customer_order, 'WC_Order')) {
+                    continue;
+                }
+
+                $first_transaction_id = $customer_order->get_meta('_first_transaction_id', true);
                 if (!empty($first_transaction_id)) {
                     $tokens_array[] = $first_transaction_id;
                 }
-                $transaction_id = $order->get_transaction_id();
+
+                $transaction_id = $customer_order->get_transaction_id();
                 if (!empty($transaction_id)) {
                     $tokens_array[] = $transaction_id;
                 }

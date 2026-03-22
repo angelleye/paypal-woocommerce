@@ -182,8 +182,12 @@ const angelleyeOrder = {
             });
         }
         let topCheckoutSelectors = ['#angelleye_ppcp_checkout_top', '#angelleye_ppcp_checkout_top_google_pay', '#angelleye_ppcp_checkout_top_apple_pay'];
+        let checkoutSource = null;
+        if (is_from_checkout) {
+            checkoutSource = topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1 ? 'checkout_top' : 'checkout_regular';
+        }
         if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
-            formData = '';
+            formData = 'angelleye_ppcp_checkout_source=' + encodeURIComponent(checkoutSource);
         } else {
             if (is_from_product) {
                 jQuery(formSelector).find('input[name=angelleye_ppcp-add-to-cart]').remove();
@@ -214,6 +218,9 @@ const angelleyeOrder = {
                 if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {
                     formData += "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&address=" + JSON.stringify(angelleyeOrder.ppcp_address);
                 }
+            }
+            if (checkoutSource !== null) {
+                formData += '&angelleye_ppcp_checkout_source=' + encodeURIComponent(checkoutSource);
             }
         }
         angelleyeJsErrorLogger.addToLog(errorLogId, {
