@@ -3097,7 +3097,12 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_add_payment_source_parameter($request) {
         try {
             $payment_method_name = '';
+            $payment_method_id = AngellEye_Session_Manager::get('payment_method_id', '');
             $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method', 'paypal');
+            // This is to fix the tokenization issue for card payments as the payment method id is same for both paypal and card payments in PPCP plugin, so we need to check the used payment method to set the correct payment source parameter for card payments
+            if ($payment_method_id == 'angelleye_ppcp_cc') {
+                $angelleye_ppcp_used_payment_method = 'card'; 
+            }
             if (!empty($angelleye_ppcp_used_payment_method)) {
                 $payment_method_name = '';
                 $billing_address = array();

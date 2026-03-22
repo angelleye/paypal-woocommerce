@@ -664,6 +664,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 if (!class_exists('AngellEYE_PayPal_PPCP_Checkout')) {
                     include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php';
                 }
+                /**
+                 * @var AngellEYE_PayPal_PPCP_Checkout $ppcp_checkout
+                 */
                 $ppcp_checkout = AngellEYE_PayPal_PPCP_Checkout::instance();
                 $order_id = $ppcp_checkout->angelleye_ppcp_create_order();
                 $this->payment_request->angelleye_ppcp_create_order_request($order_id > 0 ? $order_id : null);
