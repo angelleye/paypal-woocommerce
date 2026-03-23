@@ -386,12 +386,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 }
             }
 
-            if (false === ($response = get_transient('angelleye_push_notification_result'))) {
-                $response = AngellEYE_Utility::angelleye_get_push_notifications();
-                if (is_object($response)) {
-                    set_transient('angelleye_push_notification_result', $response, 12 * HOUR_IN_SECONDS);
-                }
-            }
+            $response = AngellEYE_Utility::angelleye_get_push_notifications('paypal-for-woocommerce');
             if (is_object($response)) {
                 foreach ($response->data as $key => $response_data) {
                     $display = false;
