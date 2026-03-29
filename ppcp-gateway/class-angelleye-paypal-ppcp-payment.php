@@ -2,6 +2,16 @@
 
 defined('ABSPATH') || exit;
 
+if (!trait_exists('WC_PPCP_Pre_Orders_Trait')) {
+    if (function_exists('angelleye_pfw_bootstrap_ppcp_runtime')) {
+        angelleye_pfw_bootstrap_ppcp_runtime();
+    }
+
+    if (!trait_exists('WC_PPCP_Pre_Orders_Trait') && defined('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR')) {
+        include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/pre-order/trait-wc-ppcp-pre-orders.php';
+    }
+}
+
 class AngellEYE_PayPal_PPCP_Payment {
 
     use WC_PPCP_Pre_Orders_Trait;

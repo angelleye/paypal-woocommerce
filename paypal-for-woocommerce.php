@@ -42,6 +42,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
         protected $plugin_screen_hook_suffix = null;
         protected $plugin_slug = 'paypal-for-woocommerce';
         private $subscription_support_enabled = false;
+        private $ppcp_runtime_bootstrapped = false;
         public $minified_version;
         public $use_wp_locale_code;
         public $customer_id = '';
@@ -85,6 +86,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                 'PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID' => 'AaYsUf4lXeKOnLmKhDWbak0YYWNk5SW0Lt1lk22gFvsgu74h1Vawg1y6rcmt60f8JIx-x81J5bMA-q7O',
                 'PAYPAL_PPCP_PARTNER_CLIENT_ID' => 'ATgw55qRjaDSlPur2FAkdAiB-QQuG5jlLsees-8dcxLiLla_nwbBSvSnCbUaGlmzxq9t2b8R9JGGSz1e',
                 'PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE' => 'https://zpyql2kd39.execute-api.us-east-2.amazonaws.com/production/PayPalMerchantIntegration/',
+                // 'PAYPAL_FOR_WOOCOMMERCE_PPCP_AWS_WEB_SERVICE' => 'https://3yjtbtgz0m.execute-api.us-east-2.amazonaws.com/default/PayPalMerchantIntegrationTest/',
                 'PAYPAL_FOR_WOOCOMMERCE_PPCP_ANGELLEYE_WEB_SERVICE' => 'https://ppcp.angelleye.com/production/PayPalMerchantIntegration/',
                 'AE_FEE' => 'ae_p_f',
                 'AE_PPCP_NAME' => 'PayPal Complete Payments',
@@ -424,6 +426,35 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             } else {
                 include_once plugin_dir_path(__FILE__) . 'angelleye-includes/express-checkout/class-wc-gateway-paypal-express-helper-angelleye-v2.php';
             }
+            $this->bootstrap_ppcp_runtime();
+            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-payflow-angelleye.php');
+            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-advanced-angelleye.php');
+            if (is_angelleye_multi_account_active()) {
+                include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v1.php');
+            } else {
+                include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v2.php');
+            }
+            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-angelleye.php');
+            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
+            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
+            AngellEYE_PayPal_PPCP_Smart_Button::instance();
+            Angelleye_PayPal_Express_Checkout_Helper::instance();
+            AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
+            AngellEYE_PayPal_PPCP_Pay_Later::instance();
+            AngellEYE_PayPal_PPCP_Admin_Action::instance();
+            AngellEYE_PayPal_PPCP_Front_Action::instance();
+            AngellEye_PayPal_PPCP_Apple_Domain_Validation::instance();
+            AngellEye_Session_Manager::instance();
+        }
+
+        /**
+         * Load PPCP runtime dependencies once and expose a shared readiness hook for dependent plugins.
+         */
+        public function bootstrap_ppcp_runtime() {
+            if ($this->ppcp_runtime_bootstrapped) {
+                return;
+            }
+
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/includes/ae-ppcp-constants.php');
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/includes/trait-angelleye-ppcp-core.php');
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/pre-order/trait-wc-ppcp-pre-orders.php');
@@ -435,30 +466,24 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-pay-later-messaging.php');
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-admin-action.php');
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-front-action.php');
-            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-payflow-angelleye.php');
-            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-advanced-angelleye.php');
-            if (is_angelleye_multi_account_active()) {
-                include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v1.php');
-            } else {
-                include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v2.php');
-            }
-            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-angelleye.php');
-            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
-            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye.php');
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-cc-angelleye.php');
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-apple-pay-angelleye.php');
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-google-pay-angelleye.php');
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/lib/class-angelleye-wordpress-custom-routes-handler.php');
             include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/includes/class-angelleye-paypal-ppcp-apple-domain-validation.php');
-            AngellEYE_PayPal_PPCP_Smart_Button::instance();
-            Angelleye_PayPal_Express_Checkout_Helper::instance();
-            AngellEYE_PayPal_PPCP_Seller_Onboarding::instance();
-            AngellEYE_PayPal_PPCP_Pay_Later::instance();
-            AngellEYE_PayPal_PPCP_Admin_Action::instance();
-            AngellEYE_PayPal_PPCP_Front_Action::instance();
-            AngellEye_PayPal_PPCP_Apple_Domain_Validation::instance();
-            AngellEye_Session_Manager::instance();
+
+            $this->ppcp_runtime_bootstrapped = true;
+            do_action('angelleye_pfw_ppcp_runtime_ready');
+        }
+
+        /**
+         * Check whether PPCP runtime dependencies are already loaded in the current request.
+         *
+         * @return bool
+         */
+        public function is_ppcp_runtime_ready() {
+            return $this->ppcp_runtime_bootstrapped;
         }
 
         public function admin_scripts() {
@@ -1609,7 +1634,27 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
 
 }
 
-new AngellEYE_Gateway_Paypal();
+global $angelleye_gateway_paypal_instance;
+$angelleye_gateway_paypal_instance = new AngellEYE_Gateway_Paypal();
+
+if (!function_exists('angelleye_pfw_bootstrap_ppcp_runtime')) {
+    function angelleye_pfw_bootstrap_ppcp_runtime() {
+        global $angelleye_gateway_paypal_instance;
+        if ($angelleye_gateway_paypal_instance instanceof AngellEYE_Gateway_Paypal) {
+            $angelleye_gateway_paypal_instance->bootstrap_ppcp_runtime();
+        }
+    }
+}
+
+if (!function_exists('angelleye_pfw_is_ppcp_runtime_ready')) {
+    function angelleye_pfw_is_ppcp_runtime_ready() {
+        global $angelleye_gateway_paypal_instance;
+        if ($angelleye_gateway_paypal_instance instanceof AngellEYE_Gateway_Paypal) {
+            return $angelleye_gateway_paypal_instance->is_ppcp_runtime_ready();
+        }
+        return false;
+    }
+}
 
 add_action('before_woocommerce_init', function () {
     if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
