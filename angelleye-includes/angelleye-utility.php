@@ -2242,7 +2242,7 @@ class AngellEYE_Utility {
         $api_url .= '&action=angelleye_get_plugin_notification';
         $request = wp_remote_post($api_url, array(
             'method' => 'POST',
-            'timeout' => 10,
+            'timeout' => 4,
             'redirection' => 5,
             'httpversion' => '1.0',
             'blocking' => true,
