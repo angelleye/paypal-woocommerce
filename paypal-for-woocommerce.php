@@ -1609,6 +1609,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             try {
                 // Check for Funnel Builder Pro Plugin Activation
                 if (defined('WFFN_PRO_FILE')) {
+                    require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp-helper.php';
                     require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp.php';
                     require_once plugin_dir_path(__FILE__) . 'ppcp-gateway/funnelkit/class-wfocu-paypal-for-wc-gateway-angelleye-ppcp-cc.php';
                 }

@@ -414,8 +414,10 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
                         $is_successful = false;
                         WFOCU_Core()->log->log('Order #' . WFOCU_WC_Compatibility::get_order_id($get_order) . ': Unable to create paypal Order refer error below' . print_r($ppcp_resp, true));
                     } else {
-                        $order->update_meta_data('_paypal_order_id', $ppcp_resp['id']);
-                        $order->save();
+                        if (WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_Helper::is_wfocu_batching_mode() === false) {
+                            $order->update_meta_data('_paypal_order_id', $ppcp_resp['id']);
+                            $order->save();
+                        }
                         $this->payal_order_id = $ppcp_resp['id'];
                         if ('COMPLETED' == $ppcp_resp['status']) {
                             $get_order->update_meta_data('wfocu_ppcp_order_current', $ppcp_resp['id']);
@@ -423,6 +425,9 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
                             WFOCU_Core()->log->log('Order #' . WFOCU_WC_Compatibility::get_order_id($get_order) . ': PayPal Order successfully created');
                             $transaction_id = $ppcp_resp['purchase_units'][0]['payments']['captures'][0]['id'];
                             WFOCU_Core()->data->set('_transaction_id', $transaction_id);
+                            if (WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_Helper::is_wfocu_batching_mode()) {
+                                WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_Helper::store_wfocu_batching_upsell_payment($get_order, $ppcp_resp, $transaction_id, $get_current_offer, 'angelleye_ppcp_cc');
+                            }
                             $is_successful = true;
                         } else {
                             $is_successful = false;
