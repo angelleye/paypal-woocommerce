@@ -2222,15 +2222,27 @@ class AngellEYE_Utility {
         }
     }
 
-    public static function angelleye_get_push_notifications() {
+    public static function angelleye_get_push_notifications($plugin_name = 'paypal-for-woocommerce') {
+        $success_transient_key = self::angelleye_get_push_notification_success_transient_key($plugin_name);
+        $failure_transient_key = self::angelleye_get_push_notification_failure_transient_key($plugin_name);
+
+        $cached_response = get_transient($success_transient_key);
+        if (false !== $cached_response) {
+            return $cached_response;
+        }
+
+        if (false !== get_transient($failure_transient_key)) {
+            return false;
+        }
+
         $args = array(
-            'plugin_name' => 'paypal-for-woocommerce',
+            'plugin_name' => $plugin_name,
         );
         $api_url = PAYPAL_FOR_WOOCOMMERCE_PUSH_NOTIFICATION_WEB_URL . '?Wordpress_Plugin_Notification_Sender';
         $api_url .= '&action=angelleye_get_plugin_notification';
         $request = wp_remote_post($api_url, array(
             'method' => 'POST',
-            'timeout' => 45,
+            'timeout' => 4,
             'redirection' => 5,
             'httpversion' => '1.0',
             'blocking' => true,
@@ -2240,6 +2252,7 @@ class AngellEYE_Utility {
             'sslverify' => false
         ));
         if (is_wp_error($request) or wp_remote_retrieve_response_code($request) != 200) {
+            set_transient($failure_transient_key, time(), 4 * HOUR_IN_SECONDS);
             return false;
         }
         if ($request != '') {
@@ -2247,7 +2260,21 @@ class AngellEYE_Utility {
         } else {
             $response = false;
         }
+        if ($response) {
+            set_transient($success_transient_key, $response, 12 * HOUR_IN_SECONDS);
+            delete_transient($failure_transient_key);
+        } else {
+            set_transient($failure_transient_key, time(), 4 * HOUR_IN_SECONDS);
+        }
         return $response;
+    }
+
+    private static function angelleye_get_push_notification_success_transient_key($plugin_name) {
+        return 'angelleye_push_notification_success_' . md5($plugin_name);
+    }
+
+    private static function angelleye_get_push_notification_failure_transient_key($plugin_name) {
+        return 'angelleye_push_notification_failure_' . md5($plugin_name);
     }
 
     public static function angelleye_display_push_notification($response_data) {
