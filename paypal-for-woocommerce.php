@@ -1660,6 +1660,51 @@ if (!function_exists('angelleye_pfw_is_ppcp_runtime_ready')) {
     }
 }
 
+if (!function_exists('angelleye_pfw_get_ppcp_settings')) {
+    /**
+     * Read PPCP settings directly from options without bootstrapping PPCP classes.
+     *
+     * @param string|null $key     Optional settings key.
+     * @param mixed       $default Default value when key is missing.
+     * @return mixed
+     */
+    function angelleye_pfw_get_ppcp_settings($key = null, $default = null) {
+        $settings = get_option('woocommerce_angelleye_ppcp_settings', array());
+        if (!is_array($settings)) {
+            $settings = array();
+        }
+        if ($key === null) {
+            return $settings;
+        }
+        return array_key_exists($key, $settings) ? $settings[$key] : $default;
+    }
+}
+
+if (!function_exists('angelleye_pfw_get_ppcp_mode')) {
+    /**
+     * Return normalized PPCP mode flags based on stored options only.
+     *
+     * @return array
+     */
+    function angelleye_pfw_get_ppcp_mode() {
+        $sandbox = 'yes' === angelleye_pfw_get_ppcp_settings('testmode', 'no');
+        $sandbox_client_id = (string) angelleye_pfw_get_ppcp_settings('sandbox_client_id', '');
+        $sandbox_secret_id = (string) angelleye_pfw_get_ppcp_settings('sandbox_api_secret', '');
+        $sandbox_merchant_id = (string) angelleye_pfw_get_ppcp_settings('sandbox_merchant_id', '');
+        $live_client_id = (string) angelleye_pfw_get_ppcp_settings('api_client_id', '');
+        $live_secret_id = (string) angelleye_pfw_get_ppcp_settings('api_secret', '');
+        $live_merchant_id = (string) angelleye_pfw_get_ppcp_settings('live_merchant_id', '');
+
+        return array(
+            'sandbox' => $sandbox,
+            'sandbox_first_party' => (!empty($sandbox_client_id) && !empty($sandbox_secret_id)),
+            'sandbox_third_party' => (empty($sandbox_client_id) || empty($sandbox_secret_id)) && !empty($sandbox_merchant_id),
+            'live_first_party' => (!empty($live_client_id) && !empty($live_secret_id)),
+            'live_third_party' => (empty($live_client_id) || empty($live_secret_id)) && !empty($live_merchant_id),
+        );
+    }
+}
+
 add_action('before_woocommerce_init', function () {
     if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
         \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
