@@ -571,6 +571,9 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
         }
 
         public function angelleye_add_paypal_pro_gateway($methods) {
+            // Ensure PPCP traits/classes are loaded before any direct gateway class includes.
+            $this->bootstrap_ppcp_runtime();
+
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
                 $this->subscription_support_enabled = true;
             }
