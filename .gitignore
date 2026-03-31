@@ -22,3 +22,5 @@ temp/
 composer.lock
 
 /node_modules/
+/paypal-for-woocommerce.zip
+CONTEXT.md
