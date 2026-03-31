@@ -448,7 +448,7 @@ const angelleyeOrder = {
         const hasGenericIssueCode = genericIssueCodes.indexOf(normalizedIssueCode) > -1;
 
         if (hasGenericMessage || hasGenericIssueCode) {
-            message = __('We could not process this card. Please check card details or try another payment method.', 'paypal-for-woocommerce');
+            message = wp.i18n.__('We could not process this card. Please check card details or try another payment method.', 'paypal-for-woocommerce');
         }
 
         if (!message) {
@@ -960,24 +960,26 @@ const angelleyeOrder = {
     }
 }
 
-__ = wp.i18n.__;
-const localizedMessages = {
-    card_not_supported: __('Unfortunately, we do not support this credit card type. Please try another card type.', 'paypal-for-woocommerce'),
-    fields_not_valid: __('Unfortunately, your credit card details are not valid. Please review the card details and try again.', 'paypal-for-woocommerce'),
-    error_message_checkout_validation: __('Unable to create the order due to the following errors.', 'paypal-for-woocommerce'),
-    expiry_date_placeholder: __('MM / YY', 'paypal-for-woocommerce'),
-    cvc_placeholder: __('CVC', 'paypal-for-woocommerce', 'paypal-for-woocommerce'),
-    empty_cart_message: __('Your shopping cart seems to be empty.', 'paypal-for-woocommerce'),
-    total_amount_placeholder: __('Total Amount', 'paypal-for-woocommerce'),
-    apple_pay_pay_error: __('An error occurred while initiating the ApplePay payment.', 'paypal-for-woocommerce'),
-    error_validating_merchant: __('This merchant is not enabled to process requested payment method. please contact website owner.', 'paypal-for-woocommerce'),
-    general_error_message: __('We are unable to process your request at the moment, please contact website owner.', 'paypal-for-woocommerce'),
-    shipping_amount_update_error: __('Unable to update the shipping amount.', 'paypal-for-woocommerce'),
-    shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce'),
-    currency_change_js_load_error: __('We encountered an issue loading the updated currency. Please refresh the page or contact support for assistance.', 'paypal-for-woocommerce'),
-    create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce'),
-    create_order_error_with_content: __('Unable to create the order, please contact the support with following error message.', 'paypal-for-woocommerce')
-};
+const localizedMessages = ( function() {
+    const { __ } = wp.i18n;
+    return {
+        card_not_supported: __('Unfortunately, we do not support this credit card type. Please try another card type.', 'paypal-for-woocommerce'),
+        fields_not_valid: __('Unfortunately, your credit card details are not valid. Please review the card details and try again.', 'paypal-for-woocommerce'),
+        error_message_checkout_validation: __('Unable to create the order due to the following errors.', 'paypal-for-woocommerce'),
+        expiry_date_placeholder: __('MM / YY', 'paypal-for-woocommerce'),
+        cvc_placeholder: __('CVC', 'paypal-for-woocommerce', 'paypal-for-woocommerce'),
+        empty_cart_message: __('Your shopping cart seems to be empty.', 'paypal-for-woocommerce'),
+        total_amount_placeholder: __('Total Amount', 'paypal-for-woocommerce'),
+        apple_pay_pay_error: __('An error occurred while initiating the ApplePay payment.', 'paypal-for-woocommerce'),
+        error_validating_merchant: __('This merchant is not enabled to process requested payment method. please contact website owner.', 'paypal-for-woocommerce'),
+        general_error_message: __('We are unable to process your request at the moment, please contact website owner.', 'paypal-for-woocommerce'),
+        shipping_amount_update_error: __('Unable to update the shipping amount.', 'paypal-for-woocommerce'),
+        shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce'),
+        currency_change_js_load_error: __('We encountered an issue loading the updated currency. Please refresh the page or contact support for assistance.', 'paypal-for-woocommerce'),
+        create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce'),
+        create_order_error_with_content: __('Unable to create the order, please contact the support with following error message.', 'paypal-for-woocommerce')
+    };
+} )();
 
 const pfwUrlHelper = {
     getUrlObject: (url) => {
