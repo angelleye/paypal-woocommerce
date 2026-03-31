@@ -406,7 +406,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
     public function process_charge($order) {
         try {
             if ($this->enable_tokenized_payments) {
-                WFOCU_Core()->log->log('process charge paypal advanced credit card');
+                WFOCU_Core()->log->log('process charge paypal PPCP');
                 $is_successful = false;
                 $get_current_offer = WFOCU_Core()->data->get('current_offer');
                 $get_current_offer_meta = WFOCU_Core()->offers->get_offer_meta($get_current_offer);
@@ -537,7 +537,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                 $get_order->save();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 

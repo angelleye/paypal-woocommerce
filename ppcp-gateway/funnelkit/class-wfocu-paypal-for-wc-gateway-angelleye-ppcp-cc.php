@@ -468,7 +468,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_CC extends WFOCU_Gateway {
                 $get_order->save();
             }
         } catch (Exception $ex) {
-            
+
         }
     }
 
