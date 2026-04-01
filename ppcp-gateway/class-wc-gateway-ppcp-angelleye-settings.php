@@ -2175,6 +2175,18 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'disabled' => __('Disabled', 'paypal-for-woocommerce')
                     ),
                     'default' => 'everything'
+                ),
+                'log_format' => array(
+                    'title' => __('Log Format', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'description' => __('Choose the format for logging request and response data. JSON is compact and single-line, Detailed is multi-line and human-readable.', 'paypal-for-woocommerce'),
+                    'options' => array(
+                        'json' => __('JSON', 'paypal-for-woocommerce'),
+                        'detailed' => __('Detailed', 'paypal-for-woocommerce'),
+                    ),
+                    'default' => 'detailed',
+                    'desc_tip' => true
                 )
             );
             if(class_exists('WC_Pre_Orders') === false) {
