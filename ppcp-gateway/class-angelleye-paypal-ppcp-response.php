@@ -9,6 +9,7 @@ class AngellEYE_PayPal_PPCP_Response {
     public $generate_signup_link_default_request_param;
     protected static $_instance = null;
     public $is_sandbox;
+    public $log_format;
 
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -89,6 +90,13 @@ class AngellEYE_PayPal_PPCP_Response {
         }
     }
 
+    public function angelleye_ppcp_format_data($data) {
+        if ($this->log_format === 'json') {
+            return wp_json_encode($data);
+        }
+        return wc_print_r($data, true);
+    }
+
     public function angelleye_ppcp_write_log($url, $request, $response, $action_name = 'Exception') {
         global $wp_version;
         if(in_array($action_name, array('list_all_payment_tokens', 'get_order', 'get_capture'))) {
@@ -99,28 +107,36 @@ class AngellEYE_PayPal_PPCP_Response {
         $this->api_log->log('WordPress Version: ' . $wp_version);
         $this->api_log->log('WooCommerce Version: ' . WC()->version);
         $this->api_log->log('PFW Version: ' . VERSION_PFW);
-        $this->api_log->log('Action: ' . ucwords(str_replace('_', ' ', $action_name)));
+        $this->api_log->log('PPCP Action: ' . ucwords(str_replace('_', ' ', $action_name)));
         $this->api_log->log('Request URL: ' . $url);
         $response_body = isset($response['body']) ? json_decode($response['body'], true) : $response;
         if ($action_name === 'generate_signup_link') {
             $this->angelleye_ppcp_signup_link_write_log($request);
         } elseif (!empty($request['body']) && is_array($request['body'])) {
-            $this->api_log->log('Request Body: ' . wc_print_r($request['body'], true));
+            $this->api_log->log('Request Body: ' . $this->angelleye_ppcp_format_data($request['body']));
         } elseif (isset($request['body']) && !empty($request['body']) && is_string($request['body'])) {
-            $this->api_log->log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
+            if ($this->log_format === 'detailed') {
+                $this->api_log->log('Request Body: ' . wc_print_r(json_decode($request['body'], true), true));
+            } else {
+                $this->api_log->log('Request Body: ' . $request['body']);
+            }
         }
         if (!empty($response_body['requestId'])) {
             $this->api_log->log('Request ID: ' . wc_print_r($response_body['requestId'], true));
         }
         if (!empty($response_body['headers'])) {
-            $this->api_log->log('Response Headers: ' . wc_print_r($response_body['headers'], true));
+            $this->api_log->log('Response Headers: ' . $this->angelleye_ppcp_format_data($response_body['headers']));
         }
         if (!empty($response_body['body']) && is_array($response_body['body'])) {
-            $this->api_log->log('Response Body: ' . wc_print_r($response_body['body'], true));
+            $this->api_log->log('Response Body: ' . $this->angelleye_ppcp_format_data($response_body['body']));
         } elseif (is_array($response_body)) {
-            $this->api_log->log('Response Body: ' . wc_print_r($response_body, true));
+            $this->api_log->log('Response Body: ' . $this->angelleye_ppcp_format_data($response_body));
         } else {
-            $this->api_log->log('Response Body: ' . wc_print_r(json_decode(wp_remote_retrieve_body($response_body), true), true));
+            if ($this->log_format === 'detailed') {
+                $this->api_log->log('Response Body: ' . wc_print_r(json_decode(wp_remote_retrieve_body($response_body), true), true));
+            } else {
+                $this->api_log->log('Response Body: ' . wp_remote_retrieve_body($response_body));
+            }
         }
     }
 
@@ -134,6 +150,7 @@ class AngellEYE_PayPal_PPCP_Response {
             }
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
+            $this->log_format = $this->setting_obj->get('log_format', 'detailed');
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' .$ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -239,7 +256,7 @@ class AngellEYE_PayPal_PPCP_Response {
             if (isset($data['third_party_features']) && !empty($data['third_party_features'])) {
                 $this->generate_signup_link_default_request_param['operations'][0]['api_integration_preference']['rest_api_integration']['third_party_details']['features'] = array_merge($this->generate_signup_link_default_request_param['operations'][0]['api_integration_preference']['rest_api_integration']['third_party_details']['features'], $data['third_party_features']);
             }
-            $this->api_log->log('Request Body: ' . wc_print_r($this->generate_signup_link_default_request_param, true));
+            $this->api_log->log('Request Body: ' . $this->angelleye_ppcp_format_data($this->generate_signup_link_default_request_param));
         }
     }
 
