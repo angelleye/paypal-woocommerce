@@ -824,6 +824,15 @@ if (!function_exists('angelleye_ppcp_is_save_payment_method')) {
                 break;
             }
         }
+        // When tokenization is enabled and request originates from product/cart page
+        // (or checkout_top), the save-payment-method checkbox is not in the serialized
+        // form data. Force vault so the token is stored with the order.
+        if ( ! $is_enable && $enable_tokenized_payments === true ) {
+            $request_from = isset( $_GET['from'] ) ? sanitize_text_field( $_GET['from'] ) : '';
+            if ( ! in_array( $request_from, array( 'checkout', 'pay_page' ), true ) ) {
+                $is_enable = true;
+            }
+        }
 
         return apply_filters('angelleye_ppcp_is_save_payment_method', $is_enable);
     }
