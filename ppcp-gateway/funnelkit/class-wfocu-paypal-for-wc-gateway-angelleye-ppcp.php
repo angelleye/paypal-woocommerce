@@ -254,7 +254,7 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                 WFOCU_Core()->data->save();
                 $ppcp_data = $this->get_ppcp_meta();
                 $data = array(
-                    'intent' => 'CAPTURE',
+                    'intent' => $ppcp_data['intent'],
                     'application_context' => array(
                         'user_action' => 'PAY_NOW',
                         'landing_page' => $this->landing_page,
