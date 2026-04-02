@@ -34,6 +34,8 @@ if (!class_exists('WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_Helper')) {
                     'paypal_order_id' => isset($ppcp_resp['id']) ? $ppcp_resp['id'] : '',
                     'capture_id' => $transaction_id,
                     'transaction_id' => $transaction_id,
+                    'amount' => $ppcp_resp['purchase_units'][0]['amount']['value'] ?? '',
+                    'currency' => $ppcp_resp['purchase_units'][0]['amount']['currency_code'] ?? '',
                     'status' => isset($ppcp_resp['status']) ? $ppcp_resp['status'] : '',
                     'created_at' => time(),
                     'order_item_ids' => array(),
@@ -43,11 +45,12 @@ if (!class_exists('WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_Helper')) {
                 $parent_order->save();
 
                 // Hook into wfocu_offer_accepted_and_processed (fires in both batching and non-batching modes)
-                // to capture the WC order item IDs added for this upsell and store them against the capture.
+                // to capture the WC order item IDs added for this upsell and store them against the payment entry.
+                // Match by paypal_order_id since capture_id/transaction_id can be NULL for authorize flow.
                 $parent_order_id = $parent_order->get_id();
-                $stored_transaction_id = $transaction_id;
-                add_action('wfocu_offer_accepted_and_processed', function($offer_id, $package, $porder, $new_order, $txn_id, $items_added) use ($parent_order_id, $stored_transaction_id) {
-                    if ($txn_id !== $stored_transaction_id) {
+                $stored_paypal_order_id = isset($ppcp_resp['id']) ? $ppcp_resp['id'] : '';
+                add_action('wfocu_offer_accepted_and_processed', function($offer_id, $package, $porder, $new_order, $txn_id, $items_added) use ($parent_order_id, $stored_paypal_order_id) {
+                    if (empty($stored_paypal_order_id)) {
                         return;
                     }
                     $parent_order = wc_get_order($parent_order_id);
@@ -59,7 +62,7 @@ if (!class_exists('WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP_Helper')) {
                         return;
                     }
                     foreach ($existing as &$entry) {
-                        if (isset($entry['capture_id']) && $entry['capture_id'] === $stored_transaction_id) {
+                        if (isset($entry['paypal_order_id']) && $entry['paypal_order_id'] === $stored_paypal_order_id) {
                             $entry['order_item_ids'] = is_array($items_added) ? $items_added : array();
                             break;
                         }
