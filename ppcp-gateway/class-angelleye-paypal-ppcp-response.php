@@ -58,7 +58,7 @@ class AngellEYE_PayPal_PPCP_Response {
             ),
         );
         $this->is_sandbox = 'yes' === $this->setting_obj->get('testmode', 'no');
-        add_action('angelleye_ppcp_request_respose_data', array($this, 'angelleye_ppcp_tpv_tracking'), 10, 3);
+        add_action('angelleye_ppcp_request_respose_data', array($this, 'angelleye_ppcp_tpv_tracking'), 10, 4);
     }
 
     public function parse_response($paypal_api_response, $url, $request, $action_name) {
@@ -80,7 +80,8 @@ class AngellEYE_PayPal_PPCP_Response {
                 $response = isset($response['body']) ? $response['body'] : $response;
                 $this->angelleye_ppcp_write_log($url, $request, $paypal_api_response, $action_name);
                 if (strpos($url, 'paypal.com') !== false) {
-                    do_action('angelleye_ppcp_request_respose_data', $request, $response, $action_name);
+                    $debug_id = wp_remote_retrieve_header($paypal_api_response, 'Paypal-Debug-Id');
+                    do_action('angelleye_ppcp_request_respose_data', $request, $response, $action_name, $debug_id);
                 }
                 return $response;
             }
@@ -157,7 +158,7 @@ class AngellEYE_PayPal_PPCP_Response {
         }
     }
 
-    public function angelleye_ppcp_tpv_tracking($request, $response, $action_name) {
+    public function angelleye_ppcp_tpv_tracking($request, $response, $action_name, $debug_id = '') {
         try {
             $allow_payment_event = array('capture_order', 'refund_order', 'authorize_order', 'void_authorized', 'capture_authorized');
             if (in_array($action_name, $allow_payment_event)) {
@@ -176,6 +177,25 @@ class AngellEYE_PayPal_PPCP_Response {
                     } elseif (isset($response['id'])) {
                         $transaction_id = $response['id'];
                     }
+                    // capture_order: breakdown inside purchase_units[0].payments.captures[0]
+                    // capture_authorized: flat capture object with breakdown at top level
+                    // refund_order: flat refund object with seller_payable_breakdown at top level
+                    $capture = $response['purchase_units']['0']['payments']['captures'][0] ?? [];
+                    $breakdown = $capture['seller_receivable_breakdown']
+                        ?? $response['seller_receivable_breakdown']
+                        ?? $response['seller_payable_breakdown']
+                        ?? [];
+                    $currency = $response['purchase_units']['0']['amount']['currency_code']
+                        ?? $response['amount']['currency_code']
+                        ?? '';
+                    $custom_id = $capture['custom_id']
+                        ?? $response['purchase_units']['0']['custom_id']
+                        ?? $response['custom_id']
+                        ?? '';
+                    $invoice_id = $capture['invoice_id']
+                        ?? $response['purchase_units']['0']['invoice_id']
+                        ?? $response['invoice_id']
+                        ?? '';
                     $payment_logger = AngellEYE_PFW_Payment_Logger::instance();
                     $request_param['type'] = 'ppcp_' . $action_name;
                     $request_param['amount'] = $amount;
@@ -186,6 +206,14 @@ class AngellEYE_PayPal_PPCP_Response {
                     $request_param['correlation_id'] = '';
                     $request_param['transaction_id'] = $transaction_id;
                     $request_param['product_id'] = '1';
+                    $request_param['net_amount'] = $breakdown['net_amount']['value'] ?? '';
+                    $request_param['paypal_fee'] = $breakdown['paypal_fee']['value'] ?? '';
+                    $request_param['platform_fee'] = $breakdown['platform_fees'][0]['amount']['value'] ?? '';
+                    $request_param['currency'] = $currency;
+                    $request_param['custom_id'] = $custom_id;
+                    $request_param['invoice_id'] = $invoice_id;
+                    $request_param['debug_id'] = $debug_id;
+                    $request_param['plugin_version'] = defined('VERSION_PFW') ? VERSION_PFW : '';
                     $payment_logger->angelleye_tpv_request($request_param);
                 }
             }
