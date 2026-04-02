@@ -213,7 +213,12 @@ class AngellEYE_PayPal_PPCP_Response {
                     $request_param['custom_id'] = $custom_id;
                     $request_param['invoice_id'] = $invoice_id;
                     $request_param['debug_id'] = $debug_id;
-                    $request_param['plugin_version'] = defined('VERSION_PFW') ? VERSION_PFW : '';
+                    $request_param['meta'] = [
+                        'php_version' => phpversion(),
+                        'pfw_version' => defined('VERSION_PFW') ? VERSION_PFW : '',
+                        'woocommerce_version' => defined('WC_VERSION') ? WC_VERSION : '',
+                        'wp_version' => get_bloginfo('version'),
+                    ];
                     $payment_logger->angelleye_tpv_request($request_param);
                 }
             }

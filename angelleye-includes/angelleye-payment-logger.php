@@ -173,7 +173,7 @@ class AngellEYE_PFW_Payment_Logger {
                 "custom_id" => $request_param['custom_id'] ?? '',
                 "invoice_id" => $request_param['invoice_id'] ?? '',
                 "debug_id" => $request_param['debug_id'] ?? '',
-                "plugin_version" => $request_param['plugin_version'] ?? '',
+                "meta" => $request_param['meta'] ?? [],
             ];
             $params = apply_filters('angelleye_log_params', $params);
             // Temporary log for TPV tracker payload verification — remove after testing
