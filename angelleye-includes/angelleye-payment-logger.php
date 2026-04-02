@@ -165,9 +165,19 @@ class AngellEYE_PFW_Payment_Logger {
                 "mode" => $payment_mode,
                 "merchant_id" => $merchant_id,
                 "correlation_id" => $correlation_id,
-                "transaction_id" => $transaction_id
+                "transaction_id" => $transaction_id,
+                "net_amount" => $request_param['net_amount'] ?? '',
+                "paypal_fee" => $request_param['paypal_fee'] ?? '',
+                "platform_fee" => $request_param['platform_fee'] ?? '',
+                "currency" => $request_param['currency'] ?? '',
+                "custom_id" => $request_param['custom_id'] ?? '',
+                "invoice_id" => $request_param['invoice_id'] ?? '',
+                "debug_id" => $request_param['debug_id'] ?? '',
+                "meta" => $request_param['meta'] ?? [],
             ];
             $params = apply_filters('angelleye_log_params', $params);
+            // Temporary log for TPV tracker payload verification — remove after testing
+            // error_log('TPV_TRACKER_PAYLOAD: ' . json_encode($params, JSON_PRETTY_PRINT), 3, __DIR__ . '/tpv_tracker_payload.log');
             $post_args = array(
                 'headers' => array(
                     'Content-Type' => 'application/json; charset=utf-8',
