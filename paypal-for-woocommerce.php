@@ -16,7 +16,7 @@
  * Tested up to: 6.9.4
  * Requires Plugins: woocommerce
  * WC requires at least: 3.0.0
- * WC tested up to: 10.6.1
+ * WC tested up to: 10.6.2
  *
  * ************
  * Attribution
