@@ -127,6 +127,10 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 4.6.9.1 - 04.03.2026 =
+* Fix - PFWMA Seller onboarding invitation email issue. ([2157](https://github.com/angelleye/paypal-woocommerce/pull/2173))
+
+
 = 4.6.9 - 04.03.2026 =
 * Fix - Resolved a fatal error on the admin payment gateway listing page caused by incorrect type checking for payment methods. ([2157](https://github.com/angelleye/paypal-woocommerce/pull/2157))
 * Fix - Replaced implicit checkout source detection with an explicit parameter to prevent misidentification when third-party plugins modify POST data. ([2158](https://github.com/angelleye/paypal-woocommerce/pull/2158))
