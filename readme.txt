@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.8.2
-Stable tag: 4.6.3
+Tested up to: 6.9.4
+Stable tag: 4.6.9
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,45 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.6.9 - 04.03.2026 =
+* Fix - Resolved a fatal error on the admin payment gateway listing page caused by incorrect type checking for payment methods. ([2157](https://github.com/angelleye/paypal-woocommerce/pull/2157))
+* Fix - Replaced implicit checkout source detection with an explicit parameter to prevent misidentification when third-party plugins modify POST data. ([2158](https://github.com/angelleye/paypal-woocommerce/pull/2158))
+* Fix - Fixed advanced credit card checkout upsell processing with FunnelKit. ([2159](https://github.com/angelleye/paypal-woocommerce/pull/2159))
+* Fix - Resolved a 20-second admin dashboard delay by implementing transient caching for push notification API responses. ([2162](https://github.com/angelleye/paypal-woocommerce/pull/2162))
+* Fix - Resolved class load order issues and preserved parent PayPal Order ID during FunnelKit upsell batching for both PPCP and PPCP-CC gateways. ([2165](https://github.com/angelleye/paypal-woocommerce/pull/2165))
+* Fix - Resolved JavaScript errors on checkout caused by i18n variable scope conflicts when JS optimization plugins concatenate scripts. ([2167](https://github.com/angelleye/paypal-woocommerce/pull/2167))
+* Fix - Added shipment tracking compatibility for FunnelKit upsell items by storing WooCommerce order item IDs in upsell payment metadata. ([2168](https://github.com/angelleye/paypal-woocommerce/pull/2168))
+* Enhancement - Added a Log Format setting with JSON (compact) and Detailed (multi-line) options for debug logging. ([2169](https://github.com/angelleye/paypal-woocommerce/pull/2169))
+* Fix - Added tokenization support when checkout is initiated from product or cart pages with tokenized payments enabled. ([2170](https://github.com/angelleye/paypal-woocommerce/pull/2170))
+* Fix - Resolved MAX_CAPTURE_AMOUNT_EXCEEDED error when capturing authorized orders with FunnelKit upsells in batching mode. ([2172](https://github.com/angelleye/paypal-woocommerce/pull/2172))
+
+= 4.6.8 - 03.15.2026
+* Fix ACDC - Credit & Debit Card spinner not hiding on cart & checkout. ([2154](https://github.com/angelleye/paypal-woocommerce/pull/2154))
+
+= 4.6.7 - 03.14.2026
+* Adjust buyer country param for sandbox only. ([2152](https://github.com/angelleye/paypal-woocommerce/pull/2152))
+
+= 4.6.6 - 03.14.2026
+* Added automated JavaScript and CSS minification to improve frontend performance. ([2145](https://github.com/angelleye/paypal-woocommerce/pull/2145))
+* Added a processing spinner for Advanced Credit Card Payments on the checkout page to provide better visual feedback during payment processing. ([2148](https://github.com/angelleye/paypal-woocommerce/pull/2148))
+* Refactored Braintree payment handling to improve error messaging and event management for more reliable checkout behavior. ([2144](https://github.com/angelleye/paypal-woocommerce/pull/2144))
+* Adjusted the gateway listing order on the admin payment settings page for improved organization.  
+* Renamed gateway names to match the updated naming convention and Fixed gateway links on the admin payment listing page to ensure correct navigation. ([2149](https://github.com/angelleye/paypal-woocommerce/pull/2149))
+* Fixed text domain loading notice and dynamic property declaration warnings for better compatibility with newer PHP versions. ([2136](https://github.com/angelleye/paypal-woocommerce/pull/2136))
+* Fixed a country warning issue on the FunnelKit review order page during checkout. ([2138](https://github.com/angelleye/paypal-woocommerce/pull/2138))
+* Fixed an issue where the Place Order button would not respond if a customer attempted payment again with a valid card after an initial failure. ([2140](https://github.com/angelleye/paypal-woocommerce/pull/2140))
+* Fixed an issue where PPCP Hosted Fields did not release the BlockUI overlay when WooCommerce validation errors occurred. ([2142](https://github.com/angelleye/paypal-woocommerce/pull/2142))
+* Venmo button issue fix for US users. ([2151]https://github.com/angelleye/paypal-woocommerce/pull/2151)
+
+= 4.6.5 - 03.08.2026
+* Tested and verified compatibility with the latest versions of WordPress and WooCommerce.
+* Ensured smooth performance and stability with the most recent platform updates.
+
+= 4.6.4 - 03.08.2026
+* Fix - Prevents a fatal error during PPCP onboarding when the API response result is not returned as an array. ([PFW-1959](https://github.com/angelleye/paypal-woocommerce/pull/2128))
+* Fix - Handles a console error occurring in certain scenarios to prevent unnecessary browser warnings. ([PFW-1952](https://github.com/angelleye/paypal-woocommerce/pull/2123))
+* Enhancement - Adds BN code support and resolves the authorization flow for the PayPal Pro payment gateway. ([PFW-1960](https://github.com/angelleye/paypal-woocommerce/pull/2132))
 
 = 4.6.3 - 09.11.2025
 * Fix - Resolves "invalid IP address" on some client token requests. ([PFW-1949](https://github.com/angelleye/paypal-woocommerce/pull/2121))

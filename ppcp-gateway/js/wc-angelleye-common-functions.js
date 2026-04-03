@@ -2,6 +2,8 @@ const angelleyeOrder = {
     productAddToCart: true,
     lastApiResponse: null,
     ppcp_address: [],
+    ppcpCcSubmitHookReady: false,
+    ppcpCcSubmitRecoveryTimer: null,
     isCheckoutPage: () => {
         return 'checkout' === angelleye_ppcp_manager.page;
     },
@@ -73,6 +75,33 @@ const angelleyeOrder = {
     },
     getConstantValue: (constantName, defaultValue) => {
         return angelleye_ppcp_manager.constants && angelleye_ppcp_manager.constants[constantName] ? angelleye_ppcp_manager.constants[constantName] : defaultValue;
+    },
+    isPpcpCcSubmitHookReady: () => {
+        return angelleyeOrder.ppcpCcSubmitHookReady === true;
+    },
+    setPpcpCcSubmitHookReady: (isReady) => {
+        angelleyeOrder.ppcpCcSubmitHookReady = isReady === true;
+    },
+    stopPpcpCcSubmitWatchdog: () => {
+        if (angelleyeOrder.ppcpCcSubmitRecoveryTimer) {
+            clearTimeout(angelleyeOrder.ppcpCcSubmitRecoveryTimer);
+            angelleyeOrder.ppcpCcSubmitRecoveryTimer = null;
+        }
+    },
+    clearPpcpCcSubmittingState: (checkoutSelector) => {
+        angelleyeOrder.stopPpcpCcSubmitWatchdog();
+        if (checkoutSelector && jQuery(checkoutSelector).length) {
+            jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting');
+        }
+        angelleyeOrder.hideProcessingSpinner();
+    },
+    startPpcpCcSubmitWatchdog: (checkoutSelector) => {
+        angelleyeOrder.stopPpcpCcSubmitWatchdog();
+        angelleyeOrder.ppcpCcSubmitRecoveryTimer = setTimeout(() => {
+            if (checkoutSelector && jQuery(checkoutSelector).length && jQuery(checkoutSelector).hasClass('paypal_cc_submiting') && !jQuery(checkoutSelector).hasClass('createOrder')) {
+                angelleyeOrder.clearPpcpCcSubmittingState(checkoutSelector);
+            }
+        }, 8000);
     },
     getCheckoutSelectorCss: () => {
         let checkoutSelector = '.woocommerce';
@@ -153,8 +182,12 @@ const angelleyeOrder = {
             });
         }
         let topCheckoutSelectors = ['#angelleye_ppcp_checkout_top', '#angelleye_ppcp_checkout_top_google_pay', '#angelleye_ppcp_checkout_top_apple_pay'];
+        let checkoutSource = null;
+        if (is_from_checkout) {
+            checkoutSource = topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1 ? 'checkout_top' : 'checkout_regular';
+        }
         if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
-            formData = '';
+            formData = 'angelleye_ppcp_checkout_source=' + encodeURIComponent(checkoutSource);
         } else {
             if (is_from_product) {
                 jQuery(formSelector).find('input[name=angelleye_ppcp-add-to-cart]').remove();
@@ -185,6 +218,9 @@ const angelleyeOrder = {
                 if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {
                     formData += "&woocommerce-process-checkout-nonce=" + angelleye_ppcp_manager.woocommerce_process_checkout + "&address=" + JSON.stringify(angelleyeOrder.ppcp_address);
                 }
+            }
+            if (checkoutSource !== null) {
+                formData += '&angelleye_ppcp_checkout_source=' + encodeURIComponent(checkoutSource);
             }
         }
         angelleyeJsErrorLogger.addToLog(errorLogId, {
@@ -291,25 +327,58 @@ const angelleyeOrder = {
         jQuery(errorMessageLocation).find('.input-text, select, input:checkbox').trigger('validate').trigger('blur');
         angelleyeOrder.scrollToWooCommerceNoticesSection();
     },
-    showProcessingSpinner: (containerSelector) => {
-        if (typeof containerSelector === 'undefined') {
+    resolveProcessingContainerSelector: (containerSelector) => {
+        if (typeof containerSelector === 'undefined' || !containerSelector) {
             containerSelector = '.woocommerce';
         }
+
+        if (jQuery(containerSelector).length && jQuery(containerSelector).is(':visible')) {
+            return containerSelector;
+        }
+
+        const fallbackSelectors = [
+            '.woocommerce-checkout',
+            '.woocommerce',
+            '#customer_details, .woocommerce-checkout-review-order',
+            'form.checkout'
+        ];
+
+        for (let i = 0; i < fallbackSelectors.length; i++) {
+            if (jQuery(fallbackSelectors[i]).length) {
+                return fallbackSelectors[i];
+            }
+        }
+
+        return containerSelector;
+    },
+    showProcessingSpinner: (containerSelector) => {
         if (jQuery('.wp-block-woocommerce-checkout-fields-block').length) {
             jQuery('.wp-block-woocommerce-checkout-fields-block #contact-fields, .wp-block-woocommerce-checkout-fields-block #billing-fields, .wp-block-woocommerce-checkout-fields-block #payment-method').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
-        } else if (jQuery(containerSelector).length) {
-            jQuery(containerSelector).block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
+        } else {
+            const blockTarget = angelleyeOrder.resolveProcessingContainerSelector(containerSelector);
+            if (jQuery(blockTarget).length) {
+                jQuery(blockTarget).block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
+            }
         }
 
     },
     hideProcessingSpinner: (containerSelector) => {
-        if (typeof containerSelector === 'undefined') {
-            containerSelector = '.woocommerce';
-        }
         if (jQuery('.wp-block-woocommerce-checkout-fields-block').length) {
             jQuery('.wc-block-components-checkout-place-order-button, .wp-block-woocommerce-checkout-fields-block #contact-fields, .wp-block-woocommerce-checkout-fields-block #billing-fields, .wp-block-woocommerce-checkout-fields-block #payment-method').unblock();
-        } else if (jQuery(containerSelector).length) {
-            jQuery(containerSelector).unblock();
+        } else {
+            const unblockTargets = [
+                angelleyeOrder.resolveProcessingContainerSelector(containerSelector),
+                '.woocommerce',
+                '.woocommerce-checkout',
+                '#customer_details, .woocommerce-checkout-review-order',
+                'form.checkout'
+            ];
+
+            unblockTargets.forEach((selector) => {
+                if (selector && jQuery(selector).length) {
+                    jQuery(selector).unblock();
+                }
+            });
         }
 
     },
@@ -334,6 +403,62 @@ const angelleyeOrder = {
         if (angelleyeOrder.isCheckoutPage() === false) {
             //  window.location.href = window.location.href;
         }
+    },
+    parsePayPalSdkError: (error) => {
+        let message = '';
+        let debugId = '';
+        let issueCode = '';
+
+        if (typeof error === 'string') {
+            message = error;
+        } else if (error && typeof error === 'object') {
+            if (Array.isArray(error.details) && error.details.length > 0) {
+                issueCode = error.details[0].issue || '';
+                message = error.details[0].description || error.details[0].issue || '';
+            }
+            message = message || error.message || error.name || '';
+            debugId = error.debug_id || error.debugId || error.paypalDebugId || '';
+        }
+
+        // Sometimes PayPal SDK sends JSON payload as part of error.message text.
+        if (!debugId && typeof message === 'string' && message.indexOf('{') > -1) {
+            try {
+                const payload = JSON.parse(message.substring(message.indexOf('{')));
+                if (!debugId) {
+                    debugId = payload.debug_id || '';
+                }
+                if (!issueCode && Array.isArray(payload.details) && payload.details.length > 0) {
+                    issueCode = payload.details[0].issue || '';
+                }
+                if (!message || message === error.message) {
+                    message = payload.message || message;
+                }
+                if (Array.isArray(payload.details) && payload.details.length > 0 && payload.details[0].description) {
+                    message = payload.details[0].description;
+                }
+            } catch (e) {
+                // keep original message
+            }
+        }
+
+        const normalizedMessage = (message || '').toLowerCase();
+        const normalizedIssueCode = (issueCode || '').toLowerCase();
+        const genericIssueCodes = ['unprocessable_entity', 'instrument_declined'];
+        const hasGenericMessage = normalizedMessage === 'unprocessable_entity' || normalizedMessage === 'instrument_declined' || normalizedMessage.indexOf('returned status 422') > -1;
+        const hasGenericIssueCode = genericIssueCodes.indexOf(normalizedIssueCode) > -1;
+
+        if (hasGenericMessage || hasGenericIssueCode) {
+            message = wp.i18n.__('We could not process this card. Please check card details or try another payment method.', 'paypal-for-woocommerce');
+        }
+
+        if (!message) {
+            message = localizedMessages.general_error_message;
+        }
+        if (debugId) {
+            message += ' [PayPal Debug ID: ' + debugId + ']';
+        }
+
+        return '<li>' + message + '</li>';
     },
     isCardFieldEligible: () => {
         if (angelleyeOrder.isCheckoutPage()) {
@@ -444,10 +569,13 @@ const angelleyeOrder = {
                 style: angelleye_ppcp_style,
                 createOrder: function (data, actions) {
                     errorLogId = angelleyeJsErrorLogger.generateErrorId();
+                    angelleyeOrder.showProcessingSpinner();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'PayPal Smart Button Payment Started');
                     return angelleyeOrder.createSmartButtonOrder({
                         angelleye_ppcp_button_selector, errorLogId
-                    })
+                    }).finally(() => {
+                        angelleyeOrder.hideProcessingSpinner();
+                    });
                 },
                 onApprove: function (data, actions) {
                     angelleyeOrder.showProcessingSpinner();
@@ -511,6 +639,7 @@ const angelleyeOrder = {
     },
     renderHostedButtons: () => {
         if (typeof angelleye_paypal_sdk === 'undefined') {
+            angelleyeOrder.setPpcpCcSubmitHookReady(false);
             return;
         }
         let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
@@ -518,21 +647,30 @@ const angelleyeOrder = {
             return false;
         }
         if (angelleyeOrder.isCCPaymentMethodSelected() === false) {
+            angelleyeOrder.setPpcpCcSubmitHookReady(false);
             return false;
         }
         let spinnerSelectors = checkoutSelector;
         jQuery(checkoutSelector).addClass('CardFields');
         let errorLogId = null;
+        let isItApiError = false;
         const cardFields = angelleye_paypal_sdk.CardFields({
             createOrder: function (data, actions) {
+                isItApiError = false;
                 jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove();
                 if (!jQuery(checkoutSelector).hasClass('createOrder')) {
                     errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeJsErrorLogger.addToLog(errorLogId, 'Advanced CC Payment Started');
                     jQuery(checkoutSelector).addClass('createOrder');
                     return angelleyeOrder.createOrder({errorLogId}).then(function (data) {
+                        angelleyeOrder.stopPpcpCcSubmitWatchdog();
                         return data.orderID;
                     }).catch((error) => {
+                        angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
+                        angelleyeOrder.stopPpcpCcSubmitWatchdog();
+                        isItApiError = true;
+                        // Reset hosted-card submit state so user can retry createOrder on next click.
+                        jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting createOrder');
                         angelleyeOrder.showError(error);
                         return '';
                     });
@@ -544,6 +682,15 @@ const angelleyeOrder = {
                 }
             },
             onError: function (err) {
+                // Ensure retry remains possible after any SDK/createOrder level error.
+                jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting createOrder');
+                angelleyeOrder.stopPpcpCcSubmitWatchdog();
+                angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
+                if (!isItApiError) {
+                    const errorMessage = angelleyeOrder.parsePayPalSdkError(err);
+                    angelleyeOrder.showError(errorMessage);
+                    angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
+                }
                 console.log('Error occurred:', err);
                 if (typeof err === 'object' && err !== null) {
                     console.log('Error message:', err.message || 'No error message available');
@@ -588,17 +735,21 @@ const angelleyeOrder = {
         } else {
             jQuery('.payment_method_angelleye_ppcp_cc').hide();
         }
-        jQuery(document.body).on('submit_paypal_cc_form', (event) => {
+        jQuery(document.body).off('submit_paypal_cc_form.angelleyePpcpCc').on('submit_paypal_cc_form.angelleyePpcpCc', (event) => {
             event.preventDefault();
             cardFields.getState().then((data) => {
                 if (data.isFormValid) {
                     angelleyeOrder.showProcessingSpinner(spinnerSelectors);
                     cardFields.submit().then(() => {
                     }).catch((error) => {
+                        angelleyeOrder.stopPpcpCcSubmitWatchdog();
                         console.log(error);
                     });
                 } else if (!data.isFormValid) {
+                    angelleyeOrder.stopPpcpCcSubmitWatchdog();
+                    angelleyeOrder.hideProcessingSpinner();
                     jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting CardFields createOrder');
+                    angelleyeOrder.removeError();
                     angelleyeOrder.showError(localizedMessages.fields_not_valid);
                     return;
                 } else if (data.errors) {
@@ -609,6 +760,7 @@ const angelleyeOrder = {
                 }
             });
         });
+        angelleyeOrder.setPpcpCcSubmitHookReady(true);
     },
     applePayDataInit: async () => {
         // This function is deprecated as we don't use it because its already loaded in environment
@@ -808,24 +960,26 @@ const angelleyeOrder = {
     }
 }
 
-__ = wp.i18n.__;
-const localizedMessages = {
-    card_not_supported: __('Unfortunately, we do not support this credit card type. Please try another card type.', 'paypal-for-woocommerce'),
-    fields_not_valid: __('Unfortunately, your credit card details are not valid. Please review the card details and try again.', 'paypal-for-woocommerce'),
-    error_message_checkout_validation: __('Unable to create the order due to the following errors.', 'paypal-for-woocommerce'),
-    expiry_date_placeholder: __('MM / YY', 'paypal-for-woocommerce'),
-    cvc_placeholder: __('CVC', 'paypal-for-woocommerce', 'paypal-for-woocommerce'),
-    empty_cart_message: __('Your shopping cart seems to be empty.', 'paypal-for-woocommerce'),
-    total_amount_placeholder: __('Total Amount', 'paypal-for-woocommerce'),
-    apple_pay_pay_error: __('An error occurred while initiating the ApplePay payment.', 'paypal-for-woocommerce'),
-    error_validating_merchant: __('This merchant is not enabled to process requested payment method. please contact website owner.', 'paypal-for-woocommerce'),
-    general_error_message: __('We are unable to process your request at the moment, please contact website owner.', 'paypal-for-woocommerce'),
-    shipping_amount_update_error: __('Unable to update the shipping amount.', 'paypal-for-woocommerce'),
-    shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce'),
-    currency_change_js_load_error: __('We encountered an issue loading the updated currency. Please refresh the page or contact support for assistance.', 'paypal-for-woocommerce'),
-    create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce'),
-    create_order_error_with_content: __('Unable to create the order, please contact the support with following error message.', 'paypal-for-woocommerce')
-};
+const localizedMessages = ( function() {
+    const { __ } = wp.i18n;
+    return {
+        card_not_supported: __('Unfortunately, we do not support this credit card type. Please try another card type.', 'paypal-for-woocommerce'),
+        fields_not_valid: __('Unfortunately, your credit card details are not valid. Please review the card details and try again.', 'paypal-for-woocommerce'),
+        error_message_checkout_validation: __('Unable to create the order due to the following errors.', 'paypal-for-woocommerce'),
+        expiry_date_placeholder: __('MM / YY', 'paypal-for-woocommerce'),
+        cvc_placeholder: __('CVC', 'paypal-for-woocommerce', 'paypal-for-woocommerce'),
+        empty_cart_message: __('Your shopping cart seems to be empty.', 'paypal-for-woocommerce'),
+        total_amount_placeholder: __('Total Amount', 'paypal-for-woocommerce'),
+        apple_pay_pay_error: __('An error occurred while initiating the ApplePay payment.', 'paypal-for-woocommerce'),
+        error_validating_merchant: __('This merchant is not enabled to process requested payment method. please contact website owner.', 'paypal-for-woocommerce'),
+        general_error_message: __('We are unable to process your request at the moment, please contact website owner.', 'paypal-for-woocommerce'),
+        shipping_amount_update_error: __('Unable to update the shipping amount.', 'paypal-for-woocommerce'),
+        shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce'),
+        currency_change_js_load_error: __('We encountered an issue loading the updated currency. Please refresh the page or contact support for assistance.', 'paypal-for-woocommerce'),
+        create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce'),
+        create_order_error_with_content: __('Unable to create the order, please contact the support with following error message.', 'paypal-for-woocommerce')
+    };
+} )();
 
 const pfwUrlHelper = {
     getUrlObject: (url) => {

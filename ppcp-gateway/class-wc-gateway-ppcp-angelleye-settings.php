@@ -2046,6 +2046,12 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'description' => __('Include all line item details in the payment request to PayPal so that they can be seen from the PayPal transaction details page.', 'paypal-for-woocommerce'),
                     'default' => 'yes'
                 ),
+                'cc_settings' => array(
+                    'title' => __('Advanced Credit Card Settings', 'paypal-for-woocommerce'),
+                    'type' => 'title',
+                    'description' => '',
+                    'class' => 'ppcp_separator_heading',
+                ),
                 'enable_advanced_card_payments' => array(
                     'title' => __('Advanced Credit Cards', 'paypal-for-woocommerce'),
                     'type' => 'checkbox',
@@ -2169,6 +2175,18 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                         'disabled' => __('Disabled', 'paypal-for-woocommerce')
                     ),
                     'default' => 'everything'
+                ),
+                'log_format' => array(
+                    'title' => __('Log Format', 'paypal-for-woocommerce'),
+                    'type' => 'select',
+                    'class' => 'wc-enhanced-select',
+                    'description' => __('Choose the format for logging request and response data. JSON is compact and single-line, Detailed is multi-line and human-readable.', 'paypal-for-woocommerce'),
+                    'options' => array(
+                        'json' => __('JSON', 'paypal-for-woocommerce'),
+                        'detailed' => __('Detailed', 'paypal-for-woocommerce'),
+                    ),
+                    'default' => 'detailed',
+                    'desc_tip' => true
                 )
             );
             if(class_exists('WC_Pre_Orders') === false) {

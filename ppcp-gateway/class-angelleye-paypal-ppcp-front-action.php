@@ -173,7 +173,16 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         }
                         exit();
                     } elseif ('checkout' === $request_from_page) {
-                        if (isset($_POST) && !empty($_POST)) {
+                        $checkout_source = isset($_REQUEST['angelleye_ppcp_checkout_source']) ? wc_clean(wp_unslash($_REQUEST['angelleye_ppcp_checkout_source'])) : '';
+                        $is_checkout_top = 'checkout_top' === $checkout_source;
+                        $is_checkout_regular = 'checkout_regular' === $checkout_source;
+
+                        if (!$is_checkout_top && !$is_checkout_regular) {
+                            $is_checkout_top = empty($_POST);
+                            $is_checkout_regular = !$is_checkout_top;
+                        }
+
+                        if ($is_checkout_regular) {
                             self::$is_user_logged_in_before_checkout = is_user_logged_in();
                             $address = array();
                             if (isset($_POST['address']) && strlen($_POST['address']) > 2) {
@@ -226,6 +235,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         } else {
                             $_GET['from'] = 'checkout_top';
                             AngellEye_Session_Manager::set('from', 'checkout_top');
+                            self::$checkout_started_from = 'checkout_top';
                             $this->payment_request->angelleye_ppcp_create_order_request();
                         }
                         exit();
@@ -654,6 +664,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 if (!class_exists('AngellEYE_PayPal_PPCP_Checkout')) {
                     include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-checkout.php';
                 }
+                /**
+                 * @var AngellEYE_PayPal_PPCP_Checkout $ppcp_checkout
+                 */
                 $ppcp_checkout = AngellEYE_PayPal_PPCP_Checkout::instance();
                 $order_id = $ppcp_checkout->angelleye_ppcp_create_order();
                 $this->payment_request->angelleye_ppcp_create_order_request($order_id > 0 ? $order_id : null);

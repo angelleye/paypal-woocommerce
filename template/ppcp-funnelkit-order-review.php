@@ -32,6 +32,41 @@ $permalink = get_the_permalink();
     $payment_needed = false;
     $instance = wfacp_template();
     $checkout = WC()->checkout();
+    // NOTE:
+    // WooCommerce's WC_Countries::get_formatted_address() trims all received values.
+    // In PHP 8.1+, trim(null) emits a deprecation warning.
+    // FunnelKit/PayPal details arrays can contain nullable or extra non-address fields,
+    // so we pass a strict address-only payload and normalize null/non-scalar values to ''.
+    $normalize_address_details = static function ($details) {
+        $source = is_array($details) ? $details : [];
+        $keys = [
+            'first_name',
+            'last_name',
+            'company',
+            'address_1',
+            'address_2',
+            'city',
+            'state',
+            'postcode',
+            'country',
+        ];
+        $details = [];
+
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $source) || is_null($source[$key])) {
+                $details[$key] = '';
+            } elseif (is_scalar($source[$key])) {
+                $details[$key] = (string) $source[$key];
+            } else {
+                $details[$key] = '';
+            }
+        }
+
+        return $details;
+    };
+
+    $normalized_billing_details = $normalize_address_details(WFACP_Core()->public->billing_details);
+    $normalized_shipping_details = $normalize_address_details(WFACP_Core()->public->shipping_details);
     $fieldsets = $instance->get_fieldsets();
     if (!is_array($fieldsets)) {
         return;
@@ -154,7 +189,7 @@ $permalink = get_the_permalink();
                             <strong><?php _e('Address', 'paypal-for-woocommerce'); ?></strong>
                             <address>
                                 <?php
-                                $formatted_address = WC()->countries->get_formatted_address(WFACP_Core()->public->billing_details);
+                                $formatted_address = WC()->countries->get_formatted_address($normalized_billing_details);
                                 $formatted_address = str_replace('<br/>-<br/>', '<br/>', $formatted_address);
                                 echo $formatted_address;
                                 $formatted_address = '';
@@ -184,7 +219,7 @@ $permalink = get_the_permalink();
                         <strong><?php _e('Address', 'paypal-for-woocommerce'); ?></strong>
                         <address>
                             <?php
-                            $formatted_address = WC()->countries->get_formatted_address(WFACP_Core()->public->shipping_details);
+                            $formatted_address = WC()->countries->get_formatted_address($normalized_shipping_details);
                             $formatted_address = str_replace('<br/>-<br/>', '<br/>', $formatted_address);
                             echo $formatted_address;
                             $formatted_address = '';

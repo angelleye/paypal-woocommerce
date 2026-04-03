@@ -2,6 +2,16 @@
 
 defined('ABSPATH') || exit;
 
+if (!trait_exists('WC_PPCP_Pre_Orders_Trait')) {
+    if (function_exists('angelleye_pfw_bootstrap_ppcp_runtime')) {
+        angelleye_pfw_bootstrap_ppcp_runtime();
+    }
+
+    if (!trait_exists('WC_PPCP_Pre_Orders_Trait') && defined('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR')) {
+        include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/pre-order/trait-wc-ppcp-pre-orders.php';
+    }
+}
+
 class AngellEYE_PayPal_PPCP_Payment {
 
     use WC_PPCP_Pre_Orders_Trait;
@@ -2914,6 +2924,47 @@ class AngellEYE_PayPal_PPCP_Payment {
             $body_request = angelleye_ppcp_remove_empty_key($capture_arg);
             $body_request['final_capture'] = $final_capture;
             $authorization_id = angelleye_ppcp_get_post_meta($order, '_auth_transaction_id');
+            // FunnelKit upsells are always captured immediately (separate PayPal order with CAPTURE intent).
+            // Exclude upsell items/amounts from the parent authorization capture to avoid MAX_CAPTURE_AMOUNT_EXCEEDED.
+            $upsell_payments = $order->get_meta('_angelleye_wfocu_ppcp_upsell_payments', true);
+            $upsell_captured_total = 0;
+            if (!empty($upsell_payments) && is_array($upsell_payments)) {
+                foreach ($upsell_payments as $upsell) {
+                    $upsell_item_ids = $upsell['order_item_ids'] ?? [];
+                    $upsell_amount = floatval($upsell['amount'] ?? 0);
+                    // Remove upsell items from parent capture line items
+                    if (!empty($upsell_item_ids)) {
+                        foreach ($upsell_item_ids as $item_id) {
+                            unset($order_data['refund_line_total'][$item_id]);
+                        }
+                    } elseif ($upsell_amount > 0) {
+                        // Fallback: order_item_ids empty — track amount to subtract from parent
+                        $upsell_captured_total += $upsell_amount;
+                    }
+                }
+                // Recalculate parent capture amount from remaining items
+                $remaining_amount = 0;
+                foreach ($order_data['refund_line_total'] as $item_amount) {
+                    if (!empty($item_amount)) {
+                        $remaining_amount += floatval($item_amount);
+                    }
+                }
+                // If order_item_ids were empty, subtract upsell amounts from remaining
+                if ($upsell_captured_total > 0 && $remaining_amount > 0) {
+                    $remaining_amount -= $upsell_captured_total;
+                    if ($remaining_amount < 0) {
+                        $remaining_amount = 0;
+                    }
+                }
+                if ($remaining_amount <= 0) {
+                    // All items were upsell items — no parent capture needed
+                    $order->add_order_note(__('All items are FunnelKit upsells already captured. No parent authorization capture needed.', 'paypal-for-woocommerce'));
+                    return;
+                }
+                // Update parent capture amount to only cover remaining (non-upsell) items
+                $amount_value = wc_format_decimal($remaining_amount, wc_get_price_decimals());
+                $body_request['amount']['value'] = $amount_value;
+            }
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -3097,7 +3148,12 @@ class AngellEYE_PayPal_PPCP_Payment {
     public function angelleye_ppcp_add_payment_source_parameter($request) {
         try {
             $payment_method_name = '';
+            $payment_method_id = AngellEye_Session_Manager::get('payment_method_id', '');
             $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method', 'paypal');
+            // This is to fix the tokenization issue for card payments as the payment method id is same for both paypal and card payments in PPCP plugin, so we need to check the used payment method to set the correct payment source parameter for card payments
+            if ($payment_method_id == 'angelleye_ppcp_cc') {
+                $angelleye_ppcp_used_payment_method = 'card'; 
+            }
             if (!empty($angelleye_ppcp_used_payment_method)) {
                 $payment_method_name = '';
                 $billing_address = array();

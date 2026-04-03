@@ -47,13 +47,17 @@ class WC_Gateway_Google_Pay_AngellEYE extends WC_Gateway_PPCP_AngellEYE {
             );
 
             $this->ppcp_enabled = 'yes' === $this->setting_obj->get('enabled', 'no');
-            $this->method_title = apply_filters('angelleye_ppcp_gateway_method_title', $this->setting_obj->get('google_pay_payments_title', 'Google Pay'));
+            $this->method_title = 'PayPal Google Pay - by Angelleye';
             $this->title = $this->setting_obj->get('google_pay_payments_title', 'Google Pay');
             $this->enable_google_pay = 'yes' === $this->setting_obj->get('enable_google_pay', 'no');
             $this->google_pay_payments_description = $this->setting_obj->get('google_pay_payments_description', 'Complete your purchase by selecting your saved payment methods or using Google Pay.');
         } catch (Exception $ex) {
 
         }
+    }
+
+    public function get_settings_url() {
+        return admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp#woocommerce_angelleye_ppcp_google_pay_authorizations');
     }
 
     public function isSubscriptionsSupported(): bool

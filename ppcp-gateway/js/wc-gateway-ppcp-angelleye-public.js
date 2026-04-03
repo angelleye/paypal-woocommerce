@@ -6,6 +6,22 @@ function initSmartButtons() {
     }
     
     let checkoutSelector = angelleyeOrder.getCheckoutSelectorCss();
+    const triggerPpcpCcSubmit = () => {
+        if (!angelleyeOrder.isPpcpCcSubmitHookReady()) {
+            angelleyeOrder.renderHostedButtons();
+        }
+
+        if (!angelleyeOrder.isPpcpCcSubmitHookReady()) {
+            angelleyeOrder.clearPpcpCcSubmittingState(checkoutSelector);
+            return false;
+        }
+
+        angelleyeOrder.showProcessingSpinner();
+        $(checkoutSelector).addClass('paypal_cc_submiting');
+        angelleyeOrder.startPpcpCcSubmitWatchdog(checkoutSelector);
+        $(document.body).trigger('submit_paypal_cc_form');
+        return false;
+    };
     if ($('.variations_form').length) {
             let div_to_hide_show = '#angelleye_ppcp_product, #angelleye_ppcp_product_google_pay, #angelleye_ppcp_product_apple_pay';
             $('.variations_form').on('show_variation', function () {
@@ -27,8 +43,7 @@ function initSmartButtons() {
                 if ($(checkoutSelector).is('.paypal_cc_submiting')) {
                     return false;
                 } else {
-                    $(checkoutSelector).addClass('paypal_cc_submiting');
-                    $(document.body).trigger('submit_paypal_cc_form');
+                    return triggerPpcpCcSubmit();
                 }
                 return false;
             }
@@ -47,8 +62,7 @@ function initSmartButtons() {
             if ($(checkoutSelector).is('.paypal_cc_submiting')) {
                 return false;
             } else {
-                $(checkoutSelector).addClass('paypal_cc_submiting');
-                $(document.body).trigger('submit_paypal_cc_form');
+                return triggerPpcpCcSubmit();
             }
             return false;
         }

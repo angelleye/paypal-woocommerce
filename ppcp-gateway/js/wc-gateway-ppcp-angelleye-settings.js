@@ -917,18 +917,77 @@ jQuery(function ($) {
         }
 
     }).change();
+    const getPpcpAdminScrollOffset = function () {
+        let offset = 0;
+        const wpAdminBar = $('#wpadminbar:visible');
+        if (wpAdminBar.length) {
+            offset += wpAdminBar.outerHeight() || 0;
+        }
+
+        let wooHeaderHeight = 0;
+        [
+            '.woocommerce-layout__header:visible',
+            '.woocommerce-layout-header:visible',
+            '.wc-admin-layout__header:visible'
+        ].forEach((selector) => {
+            const header = $(selector);
+            if (header.length) {
+                wooHeaderHeight = Math.max(wooHeaderHeight, header.first().outerHeight() || 0);
+            }
+        });
+        offset += wooHeaderHeight;
+
+        if (offset === 0) {
+            // Fallback for older Woo/admin layouts where selectors differ.
+            offset = 150;
+        }
+
+        return offset + 16;
+    };
+
+    const scrollToPpcpSettingsTarget = function ($target, speed) {
+        if (!$target || !$target.length) {
+            return;
+        }
+        $('html, body').animate({
+            scrollTop: Math.max(0, $target.offset().top - getPpcpAdminScrollOffset())
+        }, speed || 'slow');
+    };
+
+    const scrollToHashTargetWithOffset = function () {
+        const hash = window.location.hash;
+        if (!hash) {
+            return;
+        }
+
+        let $target;
+        try {
+            $target = $(hash);
+        } catch (error) {
+            return;
+        }
+
+        if (!$target.length) {
+            return;
+        }
+
+        window.setTimeout(function () {
+            scrollToPpcpSettingsTarget($target, 'slow');
+        }, 50);
+    };
+
     let url = new URL(window.location.href);
     if (url.searchParams.has('move')) {
         let move_to_location = url.searchParams.get('move');
         if (move_to_location == 'true') {
             move_to_location = 'tokenization_subscriptions';
         }
-        if ($('#woocommerce_angelleye_ppcp_' + move_to_location).length){
-            $('html, body').animate({
-                scrollTop: $('#woocommerce_angelleye_ppcp_' + move_to_location).offset().top - 150
-            }, 'slow');
-        }
+        scrollToPpcpSettingsTarget($('#woocommerce_angelleye_ppcp_' + move_to_location), 'slow');
     }
+    scrollToHashTargetWithOffset();
+    $(window).on('hashchange', function () {
+        scrollToHashTargetWithOffset();
+    });
 
     // handle the ajax form submission
     jQuery(document.body).on('submit', '.angelleye_apple_pay_ajax_form_submit', function (e) {

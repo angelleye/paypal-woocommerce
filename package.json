@@ -1,0 +1,27 @@
+{
+  "name": "paypal-woocommerce",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gruntfile.js",
+  "scripts": {
+    "build": "grunt",
+    "minify": "grunt uglify cssmin"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angelleye/paypal-woocommerce.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/angelleye/paypal-woocommerce/issues"
+  },
+  "homepage": "https://github.com/angelleye/paypal-woocommerce#readme",
+  "devDependencies": {
+    "grunt": "^1.6.1",
+    "grunt-contrib-cssmin": "^5.0.0",
+    "grunt-contrib-uglify": "^5.2.2",
+    "load-grunt-tasks": "^5.1.0"
+  }
+}
