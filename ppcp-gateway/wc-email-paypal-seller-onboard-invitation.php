@@ -23,10 +23,10 @@ if (!class_exists('WC_Email_PayPal_Onboard_Seller_Invitation', false)) :
 
             add_action('angelleye_ppcp_multi_account_send_saller_onboard_invitation', array($this, 'trigger'), 10);
 
+            $this->customer_email = true;
+
             // Call parent constructor.
             parent::__construct();
-
-            $this->recipient = $this->get_option('recipient', get_option('admin_email'));
 
             $this->template_base = PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/template/';
         }

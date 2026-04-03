@@ -170,8 +170,7 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                     if (isset($link['rel']) && 'action_url' === $link['rel']) {
                         $signup_link = isset($link['href']) ? $link['href'] : false;
                         if ($signup_link) {
-                            $url = add_query_arg($args, $signup_link);
-                            $this->angelleye_display_paypal_signup_button($url, 'paypal_onbard', 'multi_account');
+                            $this->angelleye_display_paypal_signup_button($signup_link, 'paypal_onbard', 'multi_account');
                         } else {
                             echo __('We could not properly connect to PayPal', '');
                         }
@@ -181,7 +180,9 @@ class AngellEYE_PayPal_PPCP_Seller_Onboarding {
                 return false;
             }
         } catch (Exception $ex) {
-
+            if (function_exists('angelleye_ppcp_log')) {
+                angelleye_ppcp_log('Error generating multi-account signup link for post ' . $post_id . ': ' . $ex->getMessage(), 'error');
+            }
         }
     }
 
