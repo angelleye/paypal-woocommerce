@@ -90,6 +90,15 @@ function initSmartButtons() {
     angelleyeOrder.hooks.onPaymentCancellation();
     angelleyeOrder.hooks.handleWooEvents();
 
+    // Re-render PayPal buttons when FunnelKit sliding cart updates via AJAX fragments
+    $(document.body).on('added_to_cart removed_from_cart', function() {
+        setTimeout(function() {
+            if ($('#angelleye_ppcp_fkcart').length && !$('#angelleye_ppcp_fkcart').children().length) {
+                angelleyeOrder.renderSmartButton();
+            }
+        }, 200);
+    });
+
     angelleyeOrder.triggerPendingEvents();
 
     $(document.body).on('removed_coupon_in_checkout', function () {

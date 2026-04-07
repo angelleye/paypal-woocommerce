@@ -347,6 +347,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 add_action('woocommerce_proceed_to_checkout', array($this, 'display_paypal_button_cart_page'), 11);
             }
         }
+        // Always register FunnelKit Cart hook — sliding cart appears on all pages
+        add_action('fkcart_before_checkout_button', array($this, 'display_paypal_button_funnelkit_cart'), 11);
         if ($this->checkout_disable_smart_button === false) {
             add_action('woocommerce_pay_order_before_submit', array($this, 'display_paypal_button_checkout_page'), 100);
             add_action('woocommerce_review_order_before_submit', array($this, 'display_paypal_button_checkout_page'), 100);
@@ -431,6 +433,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } elseif(is_product() && $this->enable_product_button) {
             angelleye_ppcp_add_css_js();
         } elseif (is_cart() && !WC()->cart->is_empty() && $this->enable_cart_button) {
+            angelleye_ppcp_add_css_js();
+        } elseif ($this->enable_cart_button && class_exists('\FKCart\Plugin') && !is_null(WC()->cart) && !WC()->cart->is_empty()) {
+            // FunnelKit Cart opens on non-cart pages, so SDK assets must be available there too.
             angelleye_ppcp_add_css_js();
         }
     }
@@ -688,8 +693,20 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
                 $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
                 $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
+            } elseif ($this->enable_cart_button && class_exists('\FKCart\Plugin')) {
+                // Support FunnelKit sliding cart on non-WC pages (shop, home, etc.)
+                $page = 'cart';
+                if (!is_null(WC()->cart) && !WC()->cart->is_empty()) {
+                    $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
+                }
             } elseif (is_add_payment_method_page()) {
                 $page = 'add_payment_method';
+            }
+
+            if ($this->enable_cart_button && class_exists('\FKCart\Plugin')) {
+                $button_selector['angelleye_ppcp_fkcart'] = '#angelleye_ppcp_fkcart';
+                $apple_pay_btn_selector['angelleye_ppcp_fkcart_apple_pay'] = '#angelleye_ppcp_fkcart_apple_pay';
+                $google_pay_btn_selector['angelleye_ppcp_fkcart_google_pay'] = '#angelleye_ppcp_fkcart_google_pay';
             }
 
             $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
@@ -881,6 +898,20 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_cart_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_cart_google_pay"></div>' : '') . $separator_html . '</div>';
             }
         }
+    }
+
+    public function display_paypal_button_funnelkit_cart() {
+        echo '<!-- PPCP FKCART DEBUG: function called -->';
+        if (angelleye_ppcp_is_cart_subscription() && $this->enable_tokenized_payments === false) {
+            return false;
+        }
+        if ($this->is_pre_order_item_in_cart() && $this->is_paypal_vault_used_for_pre_order() && $this->is_pre_order_charged_upon_release_in_cart()) {
+            return false;
+        }
+        $this->angelleye_ppcp_smart_button_style_properties();
+        // FunnelKit Cart handles empty cart state in cart-cta.php — always output the container
+        // so the button renders when items are added via AJAX fragment updates.
+        echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_fkcart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_fkcart_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_fkcart_google_pay"></div>' : '') . '</div>';
     }
 
     public function display_paypal_button_cart_page_top() {
