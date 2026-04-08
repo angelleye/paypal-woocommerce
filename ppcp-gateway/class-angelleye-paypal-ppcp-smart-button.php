@@ -748,15 +748,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $smart_js_arg['disable-funding'] = implode(',', $this->vault_not_supported_payment_method);
                 }
             } else {
-                // When FunnelKit Cart is active, merge its disallowed funding methods into disable-funding
-                // (the SDK loads once globally, so we have to combine all sources of disabled funding)
-                if (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
-                    // Default to hiding 'card' so existing users don't get a broken UI on update
-                    $fkcart_disable_funding = $this->setting_obj->get('funnelkit_cart_disallowed_funding_methods', array('card'));
-                    if (!empty($fkcart_disable_funding) && is_array($fkcart_disable_funding)) {
-                        $this->disable_funding = array_unique(array_merge((array) $this->disable_funding, $fkcart_disable_funding));
-                    }
-                }
                 if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
                     $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
                 }
@@ -848,6 +839,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 'style_layout' => $this->setting_obj->get('funnelkit_cart_button_layout', 'vertical'),
                 'style_height' => $this->setting_obj->get('funnelkit_cart_button_height', ''),
                 'style_tagline' => $this->setting_obj->get('funnelkit_cart_button_tagline', 'no'),
+                'disable_funding' => array_values((array) $this->setting_obj->get('funnelkit_cart_disallowed_funding_methods', array('card'))),
                 'google_pay_button_props' => array(
                     'buttonColor' => $this->setting_obj->get('funnelkit_cart_google_style_color', 'default'),
                     'buttonType' => $this->setting_obj->get('funnelkit_cart_google_button_type', 'plain'),
@@ -880,6 +872,25 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
         if (!empty($this->apple_pay_button_props['height'])) {
             $customCss .= 'apple-pay-button{--apple-pay-button-height: ' . $this->apple_pay_button_props['height'] . 'px;}';
+        }
+        // Hide Apple Pay / Google Pay container divs inside FunnelKit sliding cart if those funding sources are disabled
+        // (PayPal-rendered iframes inside #angelleye_ppcp_fkcart are handled in JS via Buttons fundingSource — see renderSmartButton)
+        if (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
+            $fkcart_disable_funding = $this->setting_obj->get('funnelkit_cart_disallowed_funding_methods', array('card'));
+            if (!empty($fkcart_disable_funding) && is_array($fkcart_disable_funding)) {
+                $hideSelectors = array();
+                if (in_array('apple_pay', $fkcart_disable_funding, true) || in_array('applepay', $fkcart_disable_funding, true)) {
+                    $hideSelectors[] = '.fkcart-modal-container #angelleye_ppcp_fkcart_apple_pay';
+                    $hideSelectors[] = '.fkcart-modal #angelleye_ppcp_fkcart_apple_pay';
+                }
+                if (in_array('google_pay', $fkcart_disable_funding, true) || in_array('googlepay', $fkcart_disable_funding, true)) {
+                    $hideSelectors[] = '.fkcart-modal-container #angelleye_ppcp_fkcart_google_pay';
+                    $hideSelectors[] = '.fkcart-modal #angelleye_ppcp_fkcart_google_pay';
+                }
+                if (!empty($hideSelectors)) {
+                    $customCss .= implode(',', $hideSelectors) . '{display:none !important;}';
+                }
+            }
         }
         wp_add_inline_style($this->angelleye_ppcp_plugin_name, $customCss);
         if (is_account_page()) {

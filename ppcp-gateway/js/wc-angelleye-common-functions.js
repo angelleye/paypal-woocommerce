@@ -586,8 +586,7 @@ const angelleyeOrder = {
                 angelleye_ppcp_style['tagline'] = (styleSource.style_tagline === 'yes') ? true : false;
             }
             let errorLogId = null;
-            angelleye_paypal_sdk.Buttons({
-                style: angelleye_ppcp_style,
+            let buttonCallbacks = {
                 createOrder: function (data, actions) {
                     errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeOrder.showProcessingSpinner();
@@ -612,7 +611,59 @@ const angelleyeOrder = {
                 onError: function (err) {
                     angelleyeOrder.handleCreateOrderError(err, errorLogId);
                 }
-            }).render(angelleye_ppcp_button_selector);
+            };
+
+            // FunnelKit Sliding Cart with disabled funding methods: render each enabled funding source
+            // explicitly so we can hide specific methods (e.g. card) without affecting other PFW buttons
+            // on the same page (which all share the same global SDK load).
+            let fkcartDisabled = (isFkcartButton && angelleye_ppcp_manager.fkcart_style && Array.isArray(angelleye_ppcp_manager.fkcart_style.disable_funding))
+                ? angelleye_ppcp_manager.fkcart_style.disable_funding
+                : [];
+
+            if (isFkcartButton && fkcartDisabled.length > 0) {
+                // Funding sources to render in vertical order. Apple/Google Pay are rendered separately below.
+                let fundingSources = ['paypal', 'venmo', 'paylater', 'card', 'credit'];
+                // Allowed style colors per PayPal SDK validation
+                let allowedColors = {
+                    paypal:   ['gold', 'blue', 'silver', 'white', 'black'],
+                    venmo:    ['blue', 'silver', 'black', 'white'],
+                    paylater: ['gold', 'blue', 'silver', 'white', 'black'],
+                    card:     ['black', 'white', 'silver'],
+                    credit:   ['darkblue', 'blue']
+                };
+                let renderedAny = false;
+                fundingSources.forEach(function(src) {
+                    if (fkcartDisabled.indexOf(src) > -1) {
+                        return;
+                    }
+                    if (!angelleye_paypal_sdk.FUNDING || !angelleye_paypal_sdk.FUNDING[src.toUpperCase()]) {
+                        return;
+                    }
+                    // Per-source style: clone and adjust color/label to satisfy SDK validation
+                    let srcStyle = Object.assign({}, angelleye_ppcp_style);
+                    if (allowedColors[src] && allowedColors[src].indexOf(srcStyle.color) === -1) {
+                        srcStyle.color = allowedColors[src][0];
+                    }
+                    if (src === 'venmo' || src === 'card' || src === 'credit') {
+                        delete srcStyle.label;
+                    }
+                    let btn = angelleye_paypal_sdk.Buttons(Object.assign({
+                        style: srcStyle,
+                        fundingSource: angelleye_paypal_sdk.FUNDING[src.toUpperCase()]
+                    }, buttonCallbacks));
+                    if (btn.isEligible()) {
+                        btn.render(angelleye_ppcp_button_selector);
+                        renderedAny = true;
+                    }
+                });
+                if (!renderedAny) {
+                    // Fallback to default auto-rendering if no funding source was eligible
+                    angelleye_paypal_sdk.Buttons(Object.assign({style: angelleye_ppcp_style}, buttonCallbacks)).render(angelleye_ppcp_button_selector);
+                }
+            } else {
+                // Default rendering: single Buttons() call that auto-renders all eligible funding sources
+                angelleye_paypal_sdk.Buttons(Object.assign({style: angelleye_ppcp_style}, buttonCallbacks)).render(angelleye_ppcp_button_selector);
+            }
         });
         if (angelleyeOrder.isApplePayEnabled()) {
             jQuery.each(angelleye_ppcp_manager.apple_pay_btn_selector, function (key, angelleye_ppcp_apple_button_selector) {
