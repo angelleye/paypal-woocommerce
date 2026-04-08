@@ -156,15 +156,26 @@ const angelleyeOrder = {
         });
     },
     createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback}) => {
+        // Detect FunnelKit sliding cart buttons — they should always submit cart context, not product/page context.
+        let fkcartSelectors = ['#angelleye_ppcp_fkcart', '#angelleye_ppcp_fkcart_apple_pay', '#angelleye_ppcp_fkcart_google_pay'];
+        let is_from_fkcart = fkcartSelectors.indexOf(angelleye_ppcp_button_selector) > -1;
         if (typeof apiUrl == 'undefined') {
             apiUrl = angelleye_ppcp_manager.create_order_url;
+            if (is_from_fkcart) {
+                // Force from=cart so server reads WC()->cart directly instead of treating as product/checkout request
+                apiUrl = apiUrl.replace(/([?&])from=[^&]*/, '$1from=cart');
+                if (apiUrl.indexOf('from=') === -1) {
+                    apiUrl += (apiUrl.indexOf('?') > -1 ? '&' : '?') + 'from=cart';
+                }
+            }
         }
         angelleyeOrder.lastApiResponse = null;
         let formSelector = angelleyeOrder.getWooFormSelector();
         angelleyeOrder.removeError();
         let formData;
         let is_from_checkout = angelleyeOrder.isCheckoutPage();
-        let is_from_product = angelleyeOrder.isProductPage();
+        // FKCart buttons should never be treated as product page even if rendered on a product page
+        let is_from_product = is_from_fkcart ? false : angelleyeOrder.isProductPage();
         let billingField = null;
         let shippingField = null;
         if (billingDetails) {
@@ -188,6 +199,13 @@ const angelleyeOrder = {
         }
         if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
             formData = 'angelleye_ppcp_checkout_source=' + encodeURIComponent(checkoutSource);
+        } else if (is_from_fkcart) {
+            // FunnelKit sliding cart — server reads existing WC()->cart contents, no form serialization needed
+            formData = 'angelleye_ppcp_payment_method_title=' + jQuery('#angelleye_ppcp_payment_method_title').val();
+            formData += '&woocommerce-process-checkout-nonce=' + angelleye_ppcp_manager.woocommerce_process_checkout;
+            if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {
+                formData += '&address=' + JSON.stringify(angelleyeOrder.ppcp_address);
+            }
         } else {
             if (is_from_product) {
                 jQuery(formSelector).find('input[name=angelleye_ppcp-add-to-cart]').remove();
