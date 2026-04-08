@@ -54,6 +54,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $angelleye_ppcp_currency;
     public $enable_product_button;
     public $enable_cart_button;
+    public $enable_funnelkit_cart_button;
     public $checkout_disable_smart_button;
     public $enable_mini_cart_button;
     public $disable_funding;
@@ -231,6 +232,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->angelleye_ppcp_currency_list = array('AUD', 'BRL', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'INR', 'ILS', 'JPY', 'MYR', 'MXN', 'TWD', 'NZD', 'NOK', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'SEK', 'CHF', 'THB', 'USD');
         $this->enable_product_button = 'yes' === $this->setting_obj->get('enable_product_button', 'yes');
         $this->enable_cart_button = 'yes' === $this->setting_obj->get('enable_cart_button', 'yes');
+        $this->enable_funnelkit_cart_button = 'yes' === $this->setting_obj->get('enable_funnelkit_cart_button', 'yes');
         $this->checkout_disable_smart_button = 'yes' === $this->setting_obj->get('checkout_disable_smart_button', 'no');
         $this->enable_mini_cart_button = 'yes' === $this->setting_obj->get('enable_mini_cart_button', 'yes');
     }
@@ -693,7 +695,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
                 $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
                 $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
-            } elseif (class_exists('\FKCart\Plugin')) {
+            } elseif (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
                 // Support FunnelKit sliding cart on non-WC pages (shop, home, etc.)
                 $page = 'cart';
                 if (!is_null(WC()->cart) && !WC()->cart->is_empty()) {
@@ -703,8 +705,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $page = 'add_payment_method';
             }
 
-            // Always register FunnelKit Cart selectors when FKCart is active — independent of enable_cart_button setting
-            if (class_exists('\FKCart\Plugin')) {
+            // Register FunnelKit Cart selectors when FKCart is active and feature enabled
+            if (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
                 $button_selector['angelleye_ppcp_fkcart'] = '#angelleye_ppcp_fkcart';
                 $apple_pay_btn_selector['angelleye_ppcp_fkcart_apple_pay'] = '#angelleye_ppcp_fkcart_apple_pay';
                 $google_pay_btn_selector['angelleye_ppcp_fkcart_google_pay'] = '#angelleye_ppcp_fkcart_google_pay';
@@ -828,6 +830,24 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'button_selector' => $button_selector,
             'apple_pay_btn_selector' => $apple_pay_btn_selector ?? [],
             'google_pay_btn_selector' => $google_pay_btn_selector ?? [],
+            'fkcart_style' => array(
+                'style_color' => $this->setting_obj->get('funnelkit_cart_style_color', 'gold'),
+                'style_shape' => $this->setting_obj->get('funnelkit_cart_style_shape', 'rect'),
+                'style_label' => $this->setting_obj->get('funnelkit_cart_button_label', 'paypal'),
+                'style_layout' => $this->setting_obj->get('funnelkit_cart_button_layout', 'vertical'),
+                'style_height' => $this->setting_obj->get('funnelkit_cart_button_height', ''),
+                'style_tagline' => $this->setting_obj->get('funnelkit_cart_button_tagline', 'no'),
+                'google_pay_button_props' => array(
+                    'buttonColor' => $this->setting_obj->get('funnelkit_cart_google_style_color', 'default'),
+                    'buttonType' => $this->setting_obj->get('funnelkit_cart_google_button_type', 'plain'),
+                    'height' => $this->setting_obj->get('funnelkit_cart_google_button_height', ''),
+                ),
+                'apple_pay_button_props' => array(
+                    'buttonColor' => $this->setting_obj->get('funnelkit_cart_apple_style_color', 'black'),
+                    'buttonType' => $this->setting_obj->get('funnelkit_cart_apple_button_type', 'plain'),
+                    'height' => $this->setting_obj->get('funnelkit_cart_apple_button_height', ''),
+                ),
+            ),
             'advanced_card_payments_title' => $this->advanced_card_payments_title,
             'angelleye_cart_totals' => $product_cart_amounts,
             'update_cart_oncancel' => add_query_arg(array('angelleye_ppcp_action' => 'update_cart_oncancel', 'utm_nooverride' => '1',), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
@@ -902,6 +922,9 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_funnelkit_cart() {
+        if (!$this->enable_funnelkit_cart_button) {
+            return false;
+        }
         if (angelleye_ppcp_is_cart_subscription() && $this->enable_tokenized_payments === false) {
             return false;
         }
@@ -909,9 +932,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             return false;
         }
         $this->angelleye_ppcp_smart_button_style_properties();
+        // Use FunnelKit-specific style for the container CSS class
+        $fkcart_layout = $this->setting_obj->get('funnelkit_cart_button_layout', 'vertical');
+        $fkcart_size = $this->setting_obj->get('funnelkit_cart_button_size', 'responsive');
         // FunnelKit Cart handles empty cart state in cart-cta.php — always output the container
         // so the button renders when items are added via AJAX fragment updates.
-        echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_fkcart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_fkcart_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_fkcart_google_pay"></div>' : '') . '</div>';
+        echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . esc_attr($fkcart_layout) . '_' . esc_attr($fkcart_size) . '"><div id="angelleye_ppcp_fkcart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_fkcart_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_fkcart_google_pay"></div>' : '') . '</div>';
     }
 
     public function display_paypal_button_cart_page_top() {

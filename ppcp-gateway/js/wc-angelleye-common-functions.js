@@ -570,17 +570,20 @@ const angelleyeOrder = {
             if (typeof angelleye_paypal_sdk === 'undefined') {
                 return;
             }
+            // Use FunnelKit Sliding Cart specific style props for FKCart button
+            let isFkcartButton = (angelleye_ppcp_button_selector === '#angelleye_ppcp_fkcart');
+            let styleSource = (isFkcartButton && angelleye_ppcp_manager.fkcart_style) ? angelleye_ppcp_manager.fkcart_style : angelleye_ppcp_manager;
             let angelleye_ppcp_style = {
-                layout: angelleye_ppcp_manager.style_layout,
-                color: angelleye_ppcp_manager.style_color,
-                shape: angelleye_ppcp_manager.style_shape,
-                label: angelleye_ppcp_manager.style_label
+                layout: styleSource.style_layout,
+                color: styleSource.style_color,
+                shape: styleSource.style_shape,
+                label: styleSource.style_label
             };
-            if (angelleye_ppcp_manager.style_height !== '') {
-                angelleye_ppcp_style['height'] = parseInt(angelleye_ppcp_manager.style_height);
+            if (styleSource.style_height !== '') {
+                angelleye_ppcp_style['height'] = parseInt(styleSource.style_height);
             }
-            if (angelleye_ppcp_manager.style_layout !== 'vertical') {
-                angelleye_ppcp_style['tagline'] = (angelleye_ppcp_manager.style_tagline === 'yes') ? true : false;
+            if (styleSource.style_layout !== 'vertical') {
+                angelleye_ppcp_style['tagline'] = (styleSource.style_tagline === 'yes') ? true : false;
             }
             let errorLogId = null;
             angelleye_paypal_sdk.Buttons({
