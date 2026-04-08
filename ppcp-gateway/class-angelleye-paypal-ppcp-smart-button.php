@@ -693,7 +693,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
                 $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
                 $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
-            } elseif ($this->enable_cart_button && class_exists('\FKCart\Plugin')) {
+            } elseif (class_exists('\FKCart\Plugin')) {
                 // Support FunnelKit sliding cart on non-WC pages (shop, home, etc.)
                 $page = 'cart';
                 if (!is_null(WC()->cart) && !WC()->cart->is_empty()) {
@@ -703,7 +703,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $page = 'add_payment_method';
             }
 
-            if ($this->enable_cart_button && class_exists('\FKCart\Plugin')) {
+            // Always register FunnelKit Cart selectors when FKCart is active — independent of enable_cart_button setting
+            if (class_exists('\FKCart\Plugin')) {
                 $button_selector['angelleye_ppcp_fkcart'] = '#angelleye_ppcp_fkcart';
                 $apple_pay_btn_selector['angelleye_ppcp_fkcart_apple_pay'] = '#angelleye_ppcp_fkcart_apple_pay';
                 $google_pay_btn_selector['angelleye_ppcp_fkcart_google_pay'] = '#angelleye_ppcp_fkcart_google_pay';
@@ -901,7 +902,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     public function display_paypal_button_funnelkit_cart() {
-        echo '<!-- PPCP FKCART DEBUG: function called -->';
         if (angelleye_ppcp_is_cart_subscription() && $this->enable_tokenized_payments === false) {
             return false;
         }

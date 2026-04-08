@@ -151,6 +151,12 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             }
         }
         parent::process_admin_options();
+        // Clear FunnelKit Cart cache so frontend reflects PFW button changes immediately.
+        // FKCart's cache helper handles WP cache, WP Rocket, Autoptimize, W3TC, LiteSpeed,
+        // WP Fastest Cache, and WP Super Cache (used by SiteGround SG Optimizer).
+        if (class_exists('\FKCart\Admin\Admin_App') && method_exists('\FKCart\Admin\Admin_App', 'maybe_clear_cache')) {
+            \FKCart\Admin\Admin_App::maybe_clear_cache();
+        }
         if ($cacheCleared) {
             if (ob_get_length()) {
                 ob_end_clean();
