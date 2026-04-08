@@ -436,8 +436,10 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             angelleye_ppcp_add_css_js();
         } elseif (is_cart() && !WC()->cart->is_empty() && $this->enable_cart_button) {
             angelleye_ppcp_add_css_js();
-        } elseif ($this->enable_cart_button && class_exists('\FKCart\Plugin') && !is_null(WC()->cart) && !WC()->cart->is_empty()) {
-            // FunnelKit Cart opens on non-cart pages, so SDK assets must be available there too.
+        } elseif (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
+            // FunnelKit Cart is a floating widget visible on all frontend pages.
+            // Load the SDK everywhere so the button renders when the user adds items
+            // and opens the sliding cart, even on pages like the homepage or shop archive.
             angelleye_ppcp_add_css_js();
         }
     }
