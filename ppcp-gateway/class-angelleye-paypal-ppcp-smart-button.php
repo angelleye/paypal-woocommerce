@@ -746,6 +746,15 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $smart_js_arg['disable-funding'] = implode(',', $this->vault_not_supported_payment_method);
                 }
             } else {
+                // When FunnelKit Cart is active, merge its disallowed funding methods into disable-funding
+                // (the SDK loads once globally, so we have to combine all sources of disabled funding)
+                if (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
+                    // Default to hiding 'card' so existing users don't get a broken UI on update
+                    $fkcart_disable_funding = $this->setting_obj->get('funnelkit_cart_disallowed_funding_methods', array('card'));
+                    if (!empty($fkcart_disable_funding) && is_array($fkcart_disable_funding)) {
+                        $this->disable_funding = array_unique(array_merge((array) $this->disable_funding, $fkcart_disable_funding));
+                    }
+                }
                 if (!empty($this->disable_funding) && count($this->disable_funding) > 0) {
                     $smart_js_arg['disable-funding'] = implode(',', $this->disable_funding);
                 }

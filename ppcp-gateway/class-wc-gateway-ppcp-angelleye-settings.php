@@ -143,7 +143,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                 'cart_apple_button_height' => '',
                 'funnelkit_cart_button_settings' => '',
                 'enable_funnelkit_cart_button' => 'yes',
-                'funnelkit_cart_disallowed_funding_methods' => '',
+                'funnelkit_cart_disallowed_funding_methods' => array('card'),
                 'funnelkit_cart_button_layout' => 'vertical',
                 'funnelkit_cart_style_color' => 'gold',
                 'funnelkit_cart_style_shape' => 'rect',
@@ -1029,7 +1029,7 @@ if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
                     'type' => 'multiselect',
                     'class' => 'wc-enhanced-select angelleye_ppcp_funnelkit_cart_button_settings',
                     'description' => __('Funding methods selected here will be hidden from buyers in the FunnelKit sliding cart.', 'paypal-for-woocommerce'),
-                    'default' => '',
+                    'default' => array('card'),
                     'desc_tip' => true,
                     'options' => array(
                         'card' => __('Credit or Debit Card', 'paypal-for-woocommerce'),
