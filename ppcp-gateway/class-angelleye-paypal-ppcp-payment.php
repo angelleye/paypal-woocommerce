@@ -344,7 +344,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $shipping_country = $order->get_billing_country();
                 }
                 $shipping_country = strtoupper($shipping_country);
-                if ($order->needs_shipping_address() || WC()->cart->needs_shipping()) {
+                if (($order->needs_shipping_address() || WC()->cart->needs_shipping()) && !angelleye_ppcp_is_local_pickup_chosen($order)) {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
@@ -364,7 +364,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             } else {
-                if (true === WC()->cart->needs_shipping()) {
+                if (true === WC()->cart->needs_shipping() && !angelleye_ppcp_is_local_pickup_chosen()) {
                     if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
                     }
@@ -382,7 +382,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
             }
             if ($this->angelleye_ppcp_used_payment_method === 'venmo') {
-                if (is_user_logged_in()) {
+                if (is_user_logged_in() && !angelleye_ppcp_is_local_pickup_chosen()) {
                     if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . '' . $cart['shipping_address']['last_name'];
                     }
@@ -468,10 +468,10 @@ class AngellEYE_PayPal_PPCP_Payment {
         if (!empty($order)) {
             $details = $this->getOrderLineItems($order);
             $totalAmount = $order->get_total('');
-            $shippingRequired = $order->needs_shipping_address();
+            $shippingRequired = $order->needs_shipping_address() && !angelleye_ppcp_is_local_pickup_chosen($order);
         } elseif (isset(WC()->cart)) {
             $totalAmount = WC()->cart->get_total('');
-            $shippingRequired = WC()->cart->needs_shipping();
+            $shippingRequired = WC()->cart->needs_shipping() && !angelleye_ppcp_is_local_pickup_chosen();
             $details = $this->getCartLineItems();
         }
         return [
@@ -897,6 +897,12 @@ class AngellEYE_PayPal_PPCP_Payment {
     }
 
     public function angelleye_ppcp_shipping_preference() {
+        // Local Pickup short-circuits to NO_SHIPPING on every entry point.
+        // Avoids passing a shipping address that would bind the seller to free
+        // shipping under PayPal Seller Protection.
+        if (angelleye_ppcp_is_local_pickup_chosen()) {
+            return 'NO_SHIPPING';
+        }
         $shipping_preference = 'GET_FROM_FILE';
         $page = null;
         if (isset($_GET) && !empty($_GET['from'])) {
@@ -1625,7 +1631,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $shipping_country = $order->get_billing_country();
             }
             $shipping_country = strtoupper($shipping_country);
-            if ($order->needs_shipping_address() || WC()->cart->needs_shipping()) {
+            if (($order->needs_shipping_address() || WC()->cart->needs_shipping()) && !angelleye_ppcp_is_local_pickup_chosen($order)) {
                 if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                     $purchase_units['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                 }
@@ -2490,7 +2496,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $shipping_country = $order->get_billing_country();
                 }
                 $shipping_country = strtoupper($shipping_country);
-                if ($order->needs_shipping_address() || WC()->cart->needs_shipping()) {
+                if (($order->needs_shipping_address() || WC()->cart->needs_shipping()) && !angelleye_ppcp_is_local_pickup_chosen($order)) {
                     if (!empty($shipping_first_name) && !empty($shipping_last_name)) {
                         $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $shipping_first_name . ' ' . $shipping_last_name;
                     }
@@ -2505,7 +2511,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     );
                 }
             } else {
-                if (true === WC()->cart->needs_shipping()) {
+                if (true === WC()->cart->needs_shipping() && !angelleye_ppcp_is_local_pickup_chosen()) {
                     if (is_user_logged_in()) {
                         if (!empty($cart['shipping_address']['first_name']) && !empty($cart['shipping_address']['last_name'])) {
                             $body_request['purchase_units'][0]['shipping']['name']['full_name'] = $cart['shipping_address']['first_name'] . ' ' . $cart['shipping_address']['last_name'];
@@ -3326,7 +3332,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                 }
             }
-            if ($order->needs_shipping_address()) {
+            if ($order->needs_shipping_address() && !angelleye_ppcp_is_local_pickup_chosen($order)) {
                 if ($order->has_shipping_address()) {
                     $shipping_first_name = $order->get_shipping_first_name();
                     $shipping_last_name = $order->get_shipping_last_name();
