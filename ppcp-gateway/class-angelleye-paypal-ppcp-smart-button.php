@@ -54,6 +54,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public $angelleye_ppcp_currency;
     public $enable_product_button;
     public $enable_cart_button;
+    public $enable_funnelkit_cart_button;
     public $checkout_disable_smart_button;
     public $enable_mini_cart_button;
     public $disable_funding;
@@ -231,6 +232,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->angelleye_ppcp_currency_list = array('AUD', 'BRL', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'INR', 'ILS', 'JPY', 'MYR', 'MXN', 'TWD', 'NZD', 'NOK', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'SEK', 'CHF', 'THB', 'USD');
         $this->enable_product_button = 'yes' === $this->setting_obj->get('enable_product_button', 'yes');
         $this->enable_cart_button = 'yes' === $this->setting_obj->get('enable_cart_button', 'yes');
+        $this->enable_funnelkit_cart_button = 'yes' === $this->setting_obj->get('enable_funnelkit_cart_button', 'yes');
         $this->checkout_disable_smart_button = 'yes' === $this->setting_obj->get('checkout_disable_smart_button', 'no');
         $this->enable_mini_cart_button = 'yes' === $this->setting_obj->get('enable_mini_cart_button', 'yes');
     }
@@ -347,6 +349,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 add_action('woocommerce_proceed_to_checkout', array($this, 'display_paypal_button_cart_page'), 11);
             }
         }
+        // Always register FunnelKit Cart hook — sliding cart appears on all pages
+        add_action('fkcart_before_checkout_button', array($this, 'display_paypal_button_funnelkit_cart'), 11);
         if ($this->checkout_disable_smart_button === false) {
             add_action('woocommerce_pay_order_before_submit', array($this, 'display_paypal_button_checkout_page'), 100);
             add_action('woocommerce_review_order_before_submit', array($this, 'display_paypal_button_checkout_page'), 100);
@@ -431,6 +435,11 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         } elseif(is_product() && $this->enable_product_button) {
             angelleye_ppcp_add_css_js();
         } elseif (is_cart() && !WC()->cart->is_empty() && $this->enable_cart_button) {
+            angelleye_ppcp_add_css_js();
+        } elseif (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
+            // FunnelKit Cart is a floating widget visible on all frontend pages.
+            // Load the SDK everywhere so the button renders when the user adds items
+            // and opens the sliding cart, even on pages like the homepage or shop archive.
             angelleye_ppcp_add_css_js();
         }
     }
@@ -688,8 +697,21 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
                 $button_selector['angelleye_ppcp_checkout_shortcode'] = '#angelleye_ppcp_checkout_shortcode';
                 $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
+            } elseif (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
+                // Support FunnelKit sliding cart on non-WC pages (shop, home, etc.)
+                $page = 'cart';
+                if (!is_null(WC()->cart) && !WC()->cart->is_empty()) {
+                    $product_cart_amounts['lineItems'] = $this->payment_request->getCartLineItems();
+                }
             } elseif (is_add_payment_method_page()) {
                 $page = 'add_payment_method';
+            }
+
+            // Register FunnelKit Cart selectors when FKCart is active and feature enabled
+            if (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
+                $button_selector['angelleye_ppcp_fkcart'] = '#angelleye_ppcp_fkcart';
+                $apple_pay_btn_selector['angelleye_ppcp_fkcart_apple_pay'] = '#angelleye_ppcp_fkcart_apple_pay';
+                $google_pay_btn_selector['angelleye_ppcp_fkcart_google_pay'] = '#angelleye_ppcp_fkcart_google_pay';
             }
 
             $smart_js_arg['commit'] = $this->angelleye_ppcp_is_skip_final_review() ? 'true' : 'false';
@@ -810,6 +832,25 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'button_selector' => $button_selector,
             'apple_pay_btn_selector' => $apple_pay_btn_selector ?? [],
             'google_pay_btn_selector' => $google_pay_btn_selector ?? [],
+            'fkcart_style' => array(
+                'style_color' => $this->setting_obj->get('funnelkit_cart_style_color', 'gold'),
+                'style_shape' => $this->setting_obj->get('funnelkit_cart_style_shape', 'rect'),
+                'style_label' => $this->setting_obj->get('funnelkit_cart_button_label', 'paypal'),
+                'style_layout' => $this->setting_obj->get('funnelkit_cart_button_layout', 'vertical'),
+                'style_height' => $this->setting_obj->get('funnelkit_cart_button_height', ''),
+                'style_tagline' => $this->setting_obj->get('funnelkit_cart_button_tagline', 'no'),
+                'disable_funding' => array_values((array) $this->setting_obj->get('funnelkit_cart_disallowed_funding_methods', array('card'))),
+                'google_pay_button_props' => array(
+                    'buttonColor' => $this->setting_obj->get('funnelkit_cart_google_style_color', 'default'),
+                    'buttonType' => $this->setting_obj->get('funnelkit_cart_google_button_type', 'plain'),
+                    'height' => $this->setting_obj->get('funnelkit_cart_google_button_height', ''),
+                ),
+                'apple_pay_button_props' => array(
+                    'buttonColor' => $this->setting_obj->get('funnelkit_cart_apple_style_color', 'black'),
+                    'buttonType' => $this->setting_obj->get('funnelkit_cart_apple_button_type', 'plain'),
+                    'height' => $this->setting_obj->get('funnelkit_cart_apple_button_height', ''),
+                ),
+            ),
             'advanced_card_payments_title' => $this->advanced_card_payments_title,
             'angelleye_cart_totals' => $product_cart_amounts,
             'update_cart_oncancel' => add_query_arg(array('angelleye_ppcp_action' => 'update_cart_oncancel', 'utm_nooverride' => '1',), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
@@ -831,6 +872,25 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
         if (!empty($this->apple_pay_button_props['height'])) {
             $customCss .= 'apple-pay-button{--apple-pay-button-height: ' . $this->apple_pay_button_props['height'] . 'px;}';
+        }
+        // Hide Apple Pay / Google Pay container divs inside FunnelKit sliding cart if those funding sources are disabled
+        // (PayPal-rendered iframes inside #angelleye_ppcp_fkcart are handled in JS via Buttons fundingSource — see renderSmartButton)
+        if (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
+            $fkcart_disable_funding = $this->setting_obj->get('funnelkit_cart_disallowed_funding_methods', array('card'));
+            if (!empty($fkcart_disable_funding) && is_array($fkcart_disable_funding)) {
+                $hideSelectors = array();
+                if (in_array('apple_pay', $fkcart_disable_funding, true) || in_array('applepay', $fkcart_disable_funding, true)) {
+                    $hideSelectors[] = '.fkcart-modal-container #angelleye_ppcp_fkcart_apple_pay';
+                    $hideSelectors[] = '.fkcart-modal #angelleye_ppcp_fkcart_apple_pay';
+                }
+                if (in_array('google_pay', $fkcart_disable_funding, true) || in_array('googlepay', $fkcart_disable_funding, true)) {
+                    $hideSelectors[] = '.fkcart-modal-container #angelleye_ppcp_fkcart_google_pay';
+                    $hideSelectors[] = '.fkcart-modal #angelleye_ppcp_fkcart_google_pay';
+                }
+                if (!empty($hideSelectors)) {
+                    $customCss .= implode(',', $hideSelectors) . '{display:none !important;}';
+                }
+            }
         }
         wp_add_inline_style($this->angelleye_ppcp_plugin_name, $customCss);
         if (is_account_page()) {
@@ -881,6 +941,25 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . $this->style_layout . '_' . $this->style_size . '"><div id="angelleye_ppcp_cart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_cart_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_cart_google_pay"></div>' : '') . $separator_html . '</div>';
             }
         }
+    }
+
+    public function display_paypal_button_funnelkit_cart() {
+        if (!$this->enable_funnelkit_cart_button) {
+            return false;
+        }
+        if (angelleye_ppcp_is_cart_subscription() && $this->enable_tokenized_payments === false) {
+            return false;
+        }
+        if ($this->is_pre_order_item_in_cart() && $this->is_paypal_vault_used_for_pre_order() && $this->is_pre_order_charged_upon_release_in_cart()) {
+            return false;
+        }
+        $this->angelleye_ppcp_smart_button_style_properties();
+        // Use FunnelKit-specific style for the container CSS class
+        $fkcart_layout = $this->setting_obj->get('funnelkit_cart_button_layout', 'vertical');
+        $fkcart_size = $this->setting_obj->get('funnelkit_cart_button_size', 'responsive');
+        // FunnelKit Cart handles empty cart state in cart-cta.php — always output the container
+        // so the button renders when items are added via AJAX fragment updates.
+        echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . esc_attr($fkcart_layout) . '_' . esc_attr($fkcart_size) . '"><div id="angelleye_ppcp_fkcart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_fkcart_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_fkcart_google_pay"></div>' : '') . '</div>';
     }
 
     public function display_paypal_button_cart_page_top() {

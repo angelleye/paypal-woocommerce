@@ -90,6 +90,22 @@ function initSmartButtons() {
     angelleyeOrder.hooks.onPaymentCancellation();
     angelleyeOrder.hooks.handleWooEvents();
 
+    // Re-render PayPal buttons and sync cart totals when FunnelKit sliding cart updates.
+    // Listens to WC core add/remove events plus FKCart-specific events for in-cart qty/coupon changes.
+    var fkcartUpdateEvents = 'added_to_cart removed_from_cart fkcart_fragments_refreshed fkcart_fragments_loaded fkcart_quantity_updated fkcart_coupon_applied fkcart_coupon_remove';
+    $(document.body).on(fkcartUpdateEvents, function() {
+        setTimeout(function() {
+            // Re-render PayPal button if container exists but is empty (FKCart replaced the HTML)
+            if ($('#angelleye_ppcp_fkcart').length && !$('#angelleye_ppcp_fkcart').children().length) {
+                angelleyeOrder.renderSmartButton();
+            }
+            // Sync cart totals so PayPal popup reflects latest qty/coupon changes
+            if (typeof angelleyeOrder.updateCartTotalsInEnvironment === 'function') {
+                angelleyeOrder.updateCartTotalsInEnvironment();
+            }
+        }, 200);
+    });
+
     angelleyeOrder.triggerPendingEvents();
 
     $(document.body).on('removed_coupon_in_checkout', function () {

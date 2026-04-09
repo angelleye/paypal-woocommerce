@@ -156,15 +156,26 @@ const angelleyeOrder = {
         });
     },
     createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback}) => {
+        // Detect FunnelKit sliding cart buttons — they should always submit cart context, not product/page context.
+        let fkcartSelectors = ['#angelleye_ppcp_fkcart', '#angelleye_ppcp_fkcart_apple_pay', '#angelleye_ppcp_fkcart_google_pay'];
+        let is_from_fkcart = fkcartSelectors.indexOf(angelleye_ppcp_button_selector) > -1;
         if (typeof apiUrl == 'undefined') {
             apiUrl = angelleye_ppcp_manager.create_order_url;
+            if (is_from_fkcart) {
+                // Force from=cart so server reads WC()->cart directly instead of treating as product/checkout request
+                apiUrl = apiUrl.replace(/([?&])from=[^&]*/, '$1from=cart');
+                if (apiUrl.indexOf('from=') === -1) {
+                    apiUrl += (apiUrl.indexOf('?') > -1 ? '&' : '?') + 'from=cart';
+                }
+            }
         }
         angelleyeOrder.lastApiResponse = null;
         let formSelector = angelleyeOrder.getWooFormSelector();
         angelleyeOrder.removeError();
         let formData;
         let is_from_checkout = angelleyeOrder.isCheckoutPage();
-        let is_from_product = angelleyeOrder.isProductPage();
+        // FKCart buttons should never be treated as product page even if rendered on a product page
+        let is_from_product = is_from_fkcart ? false : angelleyeOrder.isProductPage();
         let billingField = null;
         let shippingField = null;
         if (billingDetails) {
@@ -188,6 +199,13 @@ const angelleyeOrder = {
         }
         if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
             formData = 'angelleye_ppcp_checkout_source=' + encodeURIComponent(checkoutSource);
+        } else if (is_from_fkcart) {
+            // FunnelKit sliding cart — server reads existing WC()->cart contents, no form serialization needed
+            formData = 'angelleye_ppcp_payment_method_title=' + jQuery('#angelleye_ppcp_payment_method_title').val();
+            formData += '&woocommerce-process-checkout-nonce=' + angelleye_ppcp_manager.woocommerce_process_checkout;
+            if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {
+                formData += '&address=' + JSON.stringify(angelleyeOrder.ppcp_address);
+            }
         } else {
             if (is_from_product) {
                 jQuery(formSelector).find('input[name=angelleye_ppcp-add-to-cart]').remove();
@@ -552,21 +570,23 @@ const angelleyeOrder = {
             if (typeof angelleye_paypal_sdk === 'undefined') {
                 return;
             }
+            // Use FunnelKit Sliding Cart specific style props for FKCart button
+            let isFkcartButton = (angelleye_ppcp_button_selector === '#angelleye_ppcp_fkcart');
+            let styleSource = (isFkcartButton && angelleye_ppcp_manager.fkcart_style) ? angelleye_ppcp_manager.fkcart_style : angelleye_ppcp_manager;
             let angelleye_ppcp_style = {
-                layout: angelleye_ppcp_manager.style_layout,
-                color: angelleye_ppcp_manager.style_color,
-                shape: angelleye_ppcp_manager.style_shape,
-                label: angelleye_ppcp_manager.style_label
+                layout: styleSource.style_layout,
+                color: styleSource.style_color,
+                shape: styleSource.style_shape,
+                label: styleSource.style_label
             };
-            if (angelleye_ppcp_manager.style_height !== '') {
-                angelleye_ppcp_style['height'] = parseInt(angelleye_ppcp_manager.style_height);
+            if (styleSource.style_height !== '') {
+                angelleye_ppcp_style['height'] = parseInt(styleSource.style_height);
             }
-            if (angelleye_ppcp_manager.style_layout !== 'vertical') {
-                angelleye_ppcp_style['tagline'] = (angelleye_ppcp_manager.style_tagline === 'yes') ? true : false;
+            if (styleSource.style_layout !== 'vertical') {
+                angelleye_ppcp_style['tagline'] = (styleSource.style_tagline === 'yes') ? true : false;
             }
             let errorLogId = null;
-            angelleye_paypal_sdk.Buttons({
-                style: angelleye_ppcp_style,
+            let buttonCallbacks = {
                 createOrder: function (data, actions) {
                     errorLogId = angelleyeJsErrorLogger.generateErrorId();
                     angelleyeOrder.showProcessingSpinner();
@@ -591,7 +611,59 @@ const angelleyeOrder = {
                 onError: function (err) {
                     angelleyeOrder.handleCreateOrderError(err, errorLogId);
                 }
-            }).render(angelleye_ppcp_button_selector);
+            };
+
+            // FunnelKit Sliding Cart with disabled funding methods: render each enabled funding source
+            // explicitly so we can hide specific methods (e.g. card) without affecting other PFW buttons
+            // on the same page (which all share the same global SDK load).
+            let fkcartDisabled = (isFkcartButton && angelleye_ppcp_manager.fkcart_style && Array.isArray(angelleye_ppcp_manager.fkcart_style.disable_funding))
+                ? angelleye_ppcp_manager.fkcart_style.disable_funding
+                : [];
+
+            if (isFkcartButton && fkcartDisabled.length > 0) {
+                // Funding sources to render in vertical order. Apple/Google Pay are rendered separately below.
+                let fundingSources = ['paypal', 'venmo', 'paylater', 'card', 'credit'];
+                // Allowed style colors per PayPal SDK validation
+                let allowedColors = {
+                    paypal:   ['gold', 'blue', 'silver', 'white', 'black'],
+                    venmo:    ['blue', 'silver', 'black', 'white'],
+                    paylater: ['gold', 'blue', 'silver', 'white', 'black'],
+                    card:     ['black', 'white', 'silver'],
+                    credit:   ['darkblue', 'blue']
+                };
+                let renderedAny = false;
+                fundingSources.forEach(function(src) {
+                    if (fkcartDisabled.indexOf(src) > -1) {
+                        return;
+                    }
+                    if (!angelleye_paypal_sdk.FUNDING || !angelleye_paypal_sdk.FUNDING[src.toUpperCase()]) {
+                        return;
+                    }
+                    // Per-source style: clone and adjust color/label to satisfy SDK validation
+                    let srcStyle = Object.assign({}, angelleye_ppcp_style);
+                    if (allowedColors[src] && allowedColors[src].indexOf(srcStyle.color) === -1) {
+                        srcStyle.color = allowedColors[src][0];
+                    }
+                    if (src === 'venmo' || src === 'card' || src === 'credit') {
+                        delete srcStyle.label;
+                    }
+                    let btn = angelleye_paypal_sdk.Buttons(Object.assign({
+                        style: srcStyle,
+                        fundingSource: angelleye_paypal_sdk.FUNDING[src.toUpperCase()]
+                    }, buttonCallbacks));
+                    if (btn.isEligible()) {
+                        btn.render(angelleye_ppcp_button_selector);
+                        renderedAny = true;
+                    }
+                });
+                if (!renderedAny) {
+                    // Fallback to default auto-rendering if no funding source was eligible
+                    angelleye_paypal_sdk.Buttons(Object.assign({style: angelleye_ppcp_style}, buttonCallbacks)).render(angelleye_ppcp_button_selector);
+                }
+            } else {
+                // Default rendering: single Buttons() call that auto-renders all eligible funding sources
+                angelleye_paypal_sdk.Buttons(Object.assign({style: angelleye_ppcp_style}, buttonCallbacks)).render(angelleye_ppcp_button_selector);
+            }
         });
         if (angelleyeOrder.isApplePayEnabled()) {
             jQuery.each(angelleye_ppcp_manager.apple_pay_btn_selector, function (key, angelleye_ppcp_apple_button_selector) {

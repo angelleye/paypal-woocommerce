@@ -281,6 +281,47 @@
     margin-top: 7px;
     margin-bottom: 10px;
 }
+/* FunnelKit sliding cart — constrain buttons to container width */
+.fkcart-modal-container .angelleye_ppcp-button-container,
+.fkcart-modal .angelleye_ppcp-button-container {
+    min-width: 0 !important;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0 16px;
+    margin-bottom: 10px;
+    position: relative;
+}
+/* Divider above FK checkout button — only when our PPCP buttons rendered something */
+.fkcart-modal-container .angelleye_ppcp-button-container:has(> div > div):after,
+.fkcart-modal .angelleye_ppcp-button-container:has(> div > div):after {
+    content: '';
+    display: block;
+    border-top: 1px solid #e5e7eb;
+    margin: 12px -16px 0;
+}
+.fkcart-modal-container .angelleye_ppcp-button-container > div,
+.fkcart-modal .angelleye_ppcp-button-container > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+}
+.fkcart-modal-container #angelleye_ppcp_fkcart_apple_pay,
+.fkcart-modal-container #angelleye_ppcp_fkcart_google_pay,
+.fkcart-modal #angelleye_ppcp_fkcart_apple_pay,
+.fkcart-modal #angelleye_ppcp_fkcart_google_pay {
+    margin-top: 7px;
+    margin-bottom: 0;
+}
+.fkcart-modal-container #angelleye_ppcp_fkcart_google_pay > div,
+.fkcart-modal #angelleye_ppcp_fkcart_google_pay > div {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+.fkcart-modal-container #angelleye_ppcp_fkcart_apple_pay apple-pay-button,
+.fkcart-modal #angelleye_ppcp_fkcart_apple_pay apple-pay-button {
+    --apple-pay-button-width: 100%;
+}
 .payment_methods .payment_method_angelleye_ppcp_cc img{
     max-width: 45px;
 }
