@@ -127,9 +127,12 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.6.9.1 - 04.03.2026 =
+= 4.6.10 - 04.14.2026 =
 * Fix - PFWMA Seller onboarding invitation email issue. ([2157](https://github.com/angelleye/paypal-woocommerce/pull/2173))
-
+* feat: Add PayPal Smart Button support in FunnelKit Cart sliding cart. ([2175](https://github.com/angelleye/paypal-woocommerce/pull/2175))
+* feat: Add Local Pickup support to skip shipping address in PayPal orders. ([2176](https://github.com/angelleye/paypal-woocommerce/pull/2176))
+* fix: Fixed the deprecated property issue. ([2177](https://github.com/angelleye/paypal-woocommerce/pull/2177))
+* fix: PPCP / PPCP-CC on WooCommerce Blocks checkout. ([2178](https://github.com/angelleye/paypal-woocommerce/pull/2178))
 
 = 4.6.9 - 04.03.2026 =
 * Fix - Resolved a fatal error on the admin payment gateway listing page caused by incorrect type checking for payment methods. ([2157](https://github.com/angelleye/paypal-woocommerce/pull/2157))
