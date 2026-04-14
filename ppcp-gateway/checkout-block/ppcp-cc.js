@@ -115,27 +115,136 @@ var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
                 const {useEffect} = window.wp.element;
 
                 const Content_PPCP_CC = (props) => {
-                    const {eventRegistration, emitResponse, onSubmit, billing, shippingData} = props;
+                    const {eventRegistration, emitResponse} = props;
                     const {onPaymentSetup} = eventRegistration;
                     useEffect(() => {
                         jQuery(document.body).trigger('trigger_angelleye_ppcp_cc');
-                        jQuery(document.body).on('ppcp_cc_checkout_updated', function () {
-                            let address = {
-                                'billing': billing.billingAddress,
-                                'shipping': shippingData.shippingAddress
-                            };
-                            angelleyeOrder.ppcp_address = [];
-                            angelleyeOrder.ppcp_address = address;
-                            jQuery('#wc-angelleye_ppcp_cc-form').unblock();
-                            angelleyeOrder.renderPaymentButtons();
-                        });
+                        // Schedule a reset of the Blocks payment store to idle on the
+                        // next macrotask. Called after any ERROR return so the user's
+                        // retry click reaches our subscriber again instead of being
+                        // short-circuited by Blocks' built-in "payment option" fallback.
+                        const schedulePaymentStateReset = () => {
+                            setTimeout(function () {
+                                try {
+                                    var paymentStoreKey = wc && wc.wcBlocksData && wc.wcBlocksData.PAYMENT_STORE_KEY;
+                                    if (!paymentStoreKey) {
+                                        return;
+                                    }
+                                    var paymentDispatch = wp.data.dispatch(paymentStoreKey);
+                                    if (paymentDispatch && typeof paymentDispatch.__internalSetPaymentIdle === 'function') {
+                                        paymentDispatch.__internalSetPaymentIdle();
+                                    }
+                                } catch (e) {
+                                    // no-op — store shape may change across WC versions
+                                }
+                            }, 0);
+                        };
+                        // Scroll the user to the top-of-form notice area once Blocks has
+                        // had a tick to render the error notice DOM. Used for errors
+                        // returned at CHECKOUT context so the message is visible on
+                        // long checkout pages.
+                        const scrollToCheckoutNotice = () => {
+                            setTimeout(function () {
+                                try {
+                                    var target = document.querySelector('.wc-block-components-notices')
+                                        || document.querySelector('.wp-block-woocommerce-checkout')
+                                        || document.querySelector('form.wc-block-checkout__form');
+                                    if (target && typeof target.scrollIntoView === 'function') {
+                                        target.scrollIntoView({behavior: 'smooth', block: 'start'});
+                                    }
+                                } catch (e) {
+                                    // no-op
+                                }
+                            }, 80);
+                        };
                         const unsubscribe = onPaymentSetup(async () => {
-                            wp.data.dispatch(wc.wcBlocksData.CHECKOUT_STORE_KEY).__internalSetIdle();
-                            jQuery(document.body).trigger('submit_paypal_cc_form');
-                            jQuery('.wc-block-components-checkout-place-order-button').append('<span class="wc-block-components-spinner" aria-hidden="true"></span>');
-                            jQuery('.wc-block-components-checkout-place-order-button, .wp-block-woocommerce-checkout-fields-block #contact-fields, .wp-block-woocommerce-checkout-fields-block #billing-fields, .wp-block-woocommerce-checkout-fields-block #payment-method').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
+                            try {
+                                // If Blocks has any unresolved validation errors (e.g. a
+                                // required billing/shipping field is empty), defer to its
+                                // own field-level error display. Running card validation
+                                // now would show "credit card details are not valid" on
+                                // top of the real issue. Blocks will have already rendered
+                                // inline errors next to the offending fields, so we just
+                                // return a short pointer and skip the PayPal pre-flight.
+                                try {
+                                    var validationStoreKey = wc && wc.wcBlocksData && wc.wcBlocksData.VALIDATION_STORE_KEY;
+                                    if (validationStoreKey) {
+                                        var validationStore = wp.data.select(validationStoreKey);
+                                        if (validationStore && typeof validationStore.hasValidationErrors === 'function' && validationStore.hasValidationErrors()) {
+                                            schedulePaymentStateReset();
+                                            scrollToCheckoutNotice();
+                                            return {
+                                                type: emitResponse.responseTypes.ERROR,
+                                                message: 'Please complete all required fields before continuing.',
+                                                messageContext: emitResponse.noticeContexts.CHECKOUT,
+                                            };
+                                        }
+                                    }
+                                } catch (validationCheckErr) {
+                                    // Validation store shape may vary; fall through to
+                                    // the card-fields flow if we can't read it.
+                                }
+                                // Read LIVE address state at click time from the Blocks data
+                                // store instead of a stale useEffect closure. The cart store
+                                // holds customer data; the checkout store holds the
+                                // "Use same address for billing" checkbox.
+                                const cartStore = wp.data.select(wc.wcBlocksData.CART_STORE_KEY);
+                                const checkoutStore = wp.data.select(wc.wcBlocksData.CHECKOUT_STORE_KEY);
+                                const customerData = (cartStore && cartStore.getCustomerData && cartStore.getCustomerData()) || {};
+                                const useShippingAsBilling = (checkoutStore && typeof checkoutStore.getUseShippingAsBilling === 'function')
+                                    ? checkoutStore.getUseShippingAsBilling()
+                                    : false;
+                                let billingAddress = customerData.billingAddress || {};
+                                const shippingAddress = customerData.shippingAddress || {};
+                                if (useShippingAsBilling) {
+                                    billingAddress = Object.assign({}, shippingAddress, {
+                                        email: billingAddress.email || customerData.email || '',
+                                        phone: billingAddress.phone || shippingAddress.phone || '',
+                                    });
+                                }
+                                angelleyeOrder.ppcp_address = {
+                                    billing: billingAddress,
+                                    shipping: shippingAddress,
+                                };
+                                const paypalOrderId = await angelleyeOrder.runBlocksPpcpCcFlow();
+                                return {
+                                    type: emitResponse.responseTypes.SUCCESS,
+                                    meta: {
+                                        paymentMethodData: {
+                                            paypal_order_id: paypalOrderId,
+                                        },
+                                    },
+                                };
+                            } catch (err) {
+                                // Returning ERROR puts Blocks into a "hasPaymentError"
+                                // state that would otherwise short-circuit the next click
+                                // before our subscriber runs. Reset to idle so the retry
+                                // reaches us cleanly.
+                                schedulePaymentStateReset();
+                                // Card-field invalidity should be shown next to the
+                                // payment method block (where the card fields live).
+                                // All other failures (API errors, capture failures,
+                                // 3DS errors) go to the top-of-form notice area where
+                                // standard WC notices appear.
+                                const isCardInvalid = err && err.context === 'card_invalid';
+                                if (!isCardInvalid) {
+                                    scrollToCheckoutNotice();
+                                }
+                                return {
+                                    type: emitResponse.responseTypes.ERROR,
+                                    message: (err && err.message) || 'Unable to process PayPal card payment. Please try again.',
+                                    messageContext: isCardInvalid
+                                        ? emitResponse.noticeContexts.PAYMENTS
+                                        : emitResponse.noticeContexts.CHECKOUT,
+                                };
+                            }
                         });
-                    }, [onPaymentSetup]);
+                        return () => {
+                            if (typeof unsubscribe === 'function') {
+                                unsubscribe();
+                            }
+                        };
+                    }, [onPaymentSetup, emitResponse.responseTypes]);
                     return createElement(
                             "fieldset",
                             {id: "wc-angelleye_ppcp_cc-form", className: "wc-credit-card-form wc-payment-form"},

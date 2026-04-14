@@ -155,6 +155,55 @@ const angelleyeOrder = {
             return data.orderID;
         });
     },
+    ppcp_block_mode: false,
+    blockCreateOrderError: null,
+    /**
+     * Drives the PPCP-CC card-fields submit pipeline for WooCommerce Blocks
+     * and returns a Promise that the Blocks onPaymentSetup subscriber awaits.
+     *   - Resolves with the PayPal order id when the SDK onApprove event
+     *     fires (after 3DS / card validation completes).
+     *   - Rejects with an Error when create_order / SDK / validation surface
+     *     a failure, so the Blocks subscriber returns ERROR and Blocks clears
+     *     the spinner and shows the message.
+     * After the promise resolves, the Blocks subscriber returns SUCCESS with
+     * the order id inside paymentMethodData; Blocks then POSTs the full
+     * Blocks checkout payload (including all custom fields and extensions)
+     * to /wc/store/v1/checkout, which routes through process_payment() for
+     * the actual capture.
+     */
+    runBlocksPpcpCcFlow: () => {
+        return new Promise((resolve, reject) => {
+            let settled = false;
+            angelleyeOrder.ppcp_block_mode = true;
+            angelleyeOrder.blockCreateOrderError = null;
+            const cleanup = () => {
+                jQuery(document.body).off('angelleye_ppcp_cc_approved.ppcpBlocks', approvalHandler);
+                jQuery(document.body).off('angelleye_ppcp_cc_error.ppcpBlocks', errorHandler);
+                angelleyeOrder.ppcp_block_mode = false;
+                angelleyeOrder.blockCreateOrderError = null;
+            };
+            const approvalHandler = (e, data) => {
+                if (settled) return;
+                settled = true;
+                cleanup();
+                resolve(data && data.paypalOrderId);
+            };
+            const errorHandler = (e, errData) => {
+                if (settled) return;
+                settled = true;
+                cleanup();
+                const err = new Error((errData && errData.message) || 'PayPal card payment failed');
+                // Preserve the failure context so the Blocks subscriber can
+                // decide where to display the notice (top of form vs inline
+                // next to the payment method).
+                err.context = (errData && errData.context) || null;
+                reject(err);
+            };
+            jQuery(document.body).on('angelleye_ppcp_cc_approved.ppcpBlocks', approvalHandler);
+            jQuery(document.body).on('angelleye_ppcp_cc_error.ppcpBlocks', errorHandler);
+            jQuery(document.body).trigger('submit_paypal_cc_form');
+        });
+    },
     createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback}) => {
         // Detect FunnelKit sliding cart buttons — they should always submit cart context, not product/page context.
         let fkcartSelectors = ['#angelleye_ppcp_fkcart', '#angelleye_ppcp_fkcart_apple_pay', '#angelleye_ppcp_fkcart_google_pay'];
@@ -194,10 +243,28 @@ const angelleyeOrder = {
         }
         let topCheckoutSelectors = ['#angelleye_ppcp_checkout_top', '#angelleye_ppcp_checkout_top_google_pay', '#angelleye_ppcp_checkout_top_apple_pay'];
         let checkoutSource = null;
-        if (is_from_checkout) {
+        let is_from_block_checkout = angelleyeOrder.ppcp_block_mode === true;
+        if (is_from_block_checkout) {
+            checkoutSource = 'block_checkout';
+        } else if (is_from_checkout) {
             checkoutSource = topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1 ? 'checkout_top' : 'checkout_regular';
         }
-        if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
+        if (is_from_block_checkout) {
+            // WooCommerce Blocks pre-flight. Server only needs enough data
+            // to build a PayPal order against the cart (customer address so
+            // the PayPal order carries shipping/billing). All order-level
+            // validation, custom fields and extensions flow through the
+            // Store API /wc/store/v1/checkout POST that Blocks fires after
+            // the subscriber resolves.
+            let paymentMethodTitle = jQuery('#angelleye_ppcp_payment_method_title').val() || 'paypal';
+            formData = 'angelleye_ppcp_checkout_source=block_checkout';
+            formData += '&payment_method=angelleye_ppcp_cc';
+            formData += '&angelleye_ppcp_payment_method_title=' + encodeURIComponent(paymentMethodTitle);
+            formData += '&woocommerce-process-checkout-nonce=' + angelleye_ppcp_manager.woocommerce_process_checkout;
+            if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {
+                formData += '&address=' + encodeURIComponent(JSON.stringify(angelleyeOrder.ppcp_address));
+            }
+        } else if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
             formData = 'angelleye_ppcp_checkout_source=' + encodeURIComponent(checkoutSource);
         } else if (is_from_fkcart) {
             // FunnelKit sliding cart — server reads existing WC()->cart contents, no form serialization needed
@@ -743,13 +810,30 @@ const angelleyeOrder = {
                         isItApiError = true;
                         // Reset hosted-card submit state so user can retry createOrder on next click.
                         jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting createOrder');
-                        angelleyeOrder.showError(error);
+                        if (angelleyeOrder.ppcp_block_mode) {
+                            // Stash the server-side message so onError can surface it to the
+                            // Blocks subscriber instead of the generic SDK error.
+                            angelleyeOrder.blockCreateOrderError = (typeof error === 'string')
+                                ? error.replace(/<[^>]+>/g, '').trim()
+                                : (error && error.message) || 'PayPal card payment failed';
+                        } else {
+                            angelleyeOrder.showError(error);
+                        }
                         return '';
                     });
                 }
             },
             onApprove: function (data, actions) {
                 if (data.orderID) {
+                    if (angelleyeOrder.ppcp_block_mode) {
+                        // Blocks-native flow: hand the PayPal order id to the
+                        // runBlocksPpcpCcFlow promise. The Blocks subscriber will
+                        // then return SUCCESS with paymentMethodData, and the
+                        // Store API /wc/store/v1/checkout POST will carry the id
+                        // into process_payment() for capture.
+                        jQuery(document.body).trigger('angelleye_ppcp_cc_approved', [{paypalOrderId: data.orderID}]);
+                        return;
+                    }
                     angelleyeOrder.checkoutFormCapture({checkoutSelector, payPalOrderId: data.orderID, errorLogId});
                 }
             },
@@ -758,6 +842,12 @@ const angelleyeOrder = {
                 jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting createOrder');
                 angelleyeOrder.stopPpcpCcSubmitWatchdog();
                 angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
+                if (angelleyeOrder.ppcp_block_mode) {
+                    const blockMessage = angelleyeOrder.blockCreateOrderError
+                        || angelleyeOrder.parsePayPalSdkError(err);
+                    jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{message: blockMessage}]);
+                    return;
+                }
                 if (!isItApiError) {
                     const errorMessage = angelleyeOrder.parsePayPalSdkError(err);
                     angelleyeOrder.showError(errorMessage);
@@ -801,6 +891,12 @@ const angelleyeOrder = {
             }
         });
         if (cardFields.isEligible()) {
+            // On Blocks checkout the form element gets replaced after a
+            // failed validation submit, so the `.CardFields` guard above
+            // doesn't prevent a re-entry. Wipe any stale iframes left over
+            // from the previous render before the SDK mounts new ones;
+            // otherwise the customer sees each card field duplicated.
+            jQuery('#angelleye_ppcp_cc-card-number, #angelleye_ppcp_cc-card-expiry, #angelleye_ppcp_cc-card-cvc').empty();
             cardFields.NumberField().render("#angelleye_ppcp_cc-card-number");
             cardFields.ExpiryField().render("#angelleye_ppcp_cc-card-expiry");
             cardFields.CVVField().render("#angelleye_ppcp_cc-card-cvc");
@@ -821,6 +917,17 @@ const angelleyeOrder = {
                     angelleyeOrder.stopPpcpCcSubmitWatchdog();
                     angelleyeOrder.hideProcessingSpinner();
                     jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting CardFields createOrder');
+                    if (angelleyeOrder.ppcp_block_mode) {
+                        // context='card_invalid' signals the Blocks subscriber to
+                        // display this notice next to the payment method block
+                        // (where the card fields live) instead of at the top of
+                        // the checkout form.
+                        jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{
+                            message: localizedMessages.fields_not_valid,
+                            context: 'card_invalid'
+                        }]);
+                        return;
+                    }
                     angelleyeOrder.removeError();
                     angelleyeOrder.showError(localizedMessages.fields_not_valid);
                     return;

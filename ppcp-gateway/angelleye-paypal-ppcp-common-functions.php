@@ -854,6 +854,27 @@ if (!function_exists('angelleye_ppcp_is_cart_subscription')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_is_store_api_request')) {
+
+    /**
+     * Detect whether the current request is being served by the WooCommerce
+     * Store API (Blocks checkout). Used to guard exit()/false returns that
+     * are incompatible with the REST request lifecycle while keeping the
+     * classic-checkout behavior byte-identical.
+     */
+    function angelleye_ppcp_is_store_api_request() {
+        if (defined('REST_REQUEST') && REST_REQUEST) {
+            return true;
+        }
+        if (!empty($_SERVER['REQUEST_URI'])
+            && false !== strpos((string) $_SERVER['REQUEST_URI'], '/wc/store/')) {
+            return true;
+        }
+        return false;
+    }
+
+}
+
 if (!function_exists('angelleye_ppcp_is_save_payment_method')) {
 
     function angelleye_ppcp_is_save_payment_method($enable_tokenized_payments) {

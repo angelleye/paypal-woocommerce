@@ -176,10 +176,62 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         $checkout_source = isset($_REQUEST['angelleye_ppcp_checkout_source']) ? wc_clean(wp_unslash($_REQUEST['angelleye_ppcp_checkout_source'])) : '';
                         $is_checkout_top = 'checkout_top' === $checkout_source;
                         $is_checkout_regular = 'checkout_regular' === $checkout_source;
+                        $is_block_checkout = 'block_checkout' === $checkout_source;
 
-                        if (!$is_checkout_top && !$is_checkout_regular) {
+                        if (!$is_checkout_top && !$is_checkout_regular && !$is_block_checkout) {
                             $is_checkout_top = empty($_POST);
                             $is_checkout_regular = !$is_checkout_top;
+                        }
+
+                        if ($is_block_checkout) {
+                            // WooCommerce Blocks checkout. This pre-flight call exists
+                            // only to build a PayPal order against the current cart so
+                            // the SDK has an order id to authorize against. All order
+                            // validation, custom fields, extensions and process_payment
+                            // routing happen later via the Store API /wc/store/v1/checkout
+                            // POST that Blocks fires after our SDK onApprove callback
+                            // returns the paypal_order_id via paymentMethodData.
+                            self::$is_user_logged_in_before_checkout = is_user_logged_in();
+                            if (isset($_POST['address']) && strlen($_POST['address']) > 2) {
+                                $address_data = json_decode(stripslashes($_POST['address']), true);
+                                if (is_array($address_data)) {
+                                    if (!empty($address_data['billing']) && is_array($address_data['billing'])) {
+                                        $b = $address_data['billing'];
+                                        !empty($b['first_name']) && $woocommerce->customer->set_billing_first_name($b['first_name']);
+                                        !empty($b['last_name']) && $woocommerce->customer->set_billing_last_name($b['last_name']);
+                                        !empty($b['company']) && $woocommerce->customer->set_billing_company($b['company']);
+                                        !empty($b['address_1']) && $woocommerce->customer->set_billing_address_1($b['address_1']);
+                                        !empty($b['address_2']) && $woocommerce->customer->set_billing_address_2($b['address_2']);
+                                        !empty($b['city']) && $woocommerce->customer->set_billing_city($b['city']);
+                                        !empty($b['state']) && $woocommerce->customer->set_billing_state($b['state']);
+                                        !empty($b['postcode']) && $woocommerce->customer->set_billing_postcode($b['postcode']);
+                                        !empty($b['country']) && $woocommerce->customer->set_billing_country($b['country']);
+                                        !empty($b['email']) && $woocommerce->customer->set_billing_email($b['email']);
+                                        !empty($b['phone']) && $woocommerce->customer->set_billing_phone($b['phone']);
+                                    }
+                                    if (!empty($address_data['shipping']) && is_array($address_data['shipping'])) {
+                                        $s = $address_data['shipping'];
+                                        !empty($s['first_name']) && $woocommerce->customer->set_shipping_first_name($s['first_name']);
+                                        !empty($s['last_name']) && $woocommerce->customer->set_shipping_last_name($s['last_name']);
+                                        !empty($s['company']) && $woocommerce->customer->set_shipping_company($s['company']);
+                                        !empty($s['address_1']) && $woocommerce->customer->set_shipping_address_1($s['address_1']);
+                                        !empty($s['address_2']) && $woocommerce->customer->set_shipping_address_2($s['address_2']);
+                                        !empty($s['city']) && $woocommerce->customer->set_shipping_city($s['city']);
+                                        !empty($s['state']) && $woocommerce->customer->set_shipping_state($s['state']);
+                                        !empty($s['postcode']) && $woocommerce->customer->set_shipping_postcode($s['postcode']);
+                                        !empty($s['country']) && $woocommerce->customer->set_shipping_country($s['country']);
+                                    }
+                                    $woocommerce->customer->save();
+                                }
+                            }
+                            if (!empty($_POST['angelleye_ppcp_payment_method_title'])) {
+                                AngellEye_Session_Manager::set('payment_method_title', wc_clean(wp_unslash($_POST['angelleye_ppcp_payment_method_title'])));
+                            }
+                            if (!empty($_POST['payment_method'])) {
+                                AngellEye_Session_Manager::set('payment_method_id', wc_clean(wp_unslash($_POST['payment_method'])));
+                            }
+                            $this->payment_request->angelleye_ppcp_create_order_request();
+                            exit();
                         }
 
                         if ($is_checkout_regular) {
