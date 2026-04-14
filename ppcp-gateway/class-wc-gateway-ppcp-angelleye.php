@@ -392,7 +392,15 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             }
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, $woo_order_id);
             $order = wc_get_order($woo_order_id);
-            $angelleye_ppcp_paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id');
+            $angelleye_ppcp_paypal_order_id = !empty($_POST['paypal_order_id'])
+                ? wc_clean(wp_unslash($_POST['paypal_order_id']))
+                : AngellEye_Session_Manager::get('paypal_order_id');
+            if (!empty($_POST['paypal_order_id']) && !empty($angelleye_ppcp_paypal_order_id)) {
+                // Blocks carries the PayPal order id through paymentMethodData rather
+                // than the WC session. Downstream capture/update calls still read the
+                // session value, so write it back here.
+                AngellEye_Session_Manager::set('paypal_order_id', $angelleye_ppcp_paypal_order_id);
+            }
             $angelleye_ppcp_payment_method_title = AngellEye_Session_Manager::get('payment_method_title');
             $angelleye_ppcp_used_payment_method = AngellEye_Session_Manager::get('used_payment_method');
             $order->update_meta_data('_angelleye_ppcp_used_payment_method', $angelleye_ppcp_used_payment_method);
@@ -437,11 +445,25 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                 } elseif ( $redirect = $this->handle_overcharge_redirect( $is_success ) ) {
 	                return $redirect;
                 }
+                if (angelleye_ppcp_is_store_api_request()) {
+                    AngellEye_Session_Manager::clear();
+                    wc_add_notice(__('Unfortunately your payment could not be completed. Please try again.', 'paypal-for-woocommerce'), 'error');
+                    return array(
+                        'result'   => 'failure',
+                        'redirect' => wc_get_checkout_url(),
+                    );
+                }
                 exit();
             } else {
                 if (isset($_GET['from']) && 'checkout' === $_GET['from']) {
                     AngellEye_Session_Manager::set('checkout_post', isset($_POST) ? $_POST : false);
                     $this->payment_request->angelleye_ppcp_create_order_request($woo_order_id);
+                    if (angelleye_ppcp_is_store_api_request()) {
+                        return array(
+                            'result'   => 'failure',
+                            'redirect' => '',
+                        );
+                    }
                     exit();
                 } elseif (!empty($angelleye_ppcp_paypal_order_id)) {
                     $order = wc_get_order($woo_order_id);
@@ -485,18 +507,38 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
+                    if (!is_array($result)) {
+                        return array(
+                            'result'   => 'failure',
+                            'redirect' => wc_get_checkout_url(),
+                        );
+                    }
                     return $result;
                 } else {
                     $result = $this->payment_request->angelleye_ppcp_regular_create_order_request($woo_order_id, $return_url = true);
                     if (ob_get_length()) {
                         ob_end_clean();
                     }
+                    if (!is_array($result)) {
+                        return array(
+                            'result'   => 'failure',
+                            'redirect' => wc_get_checkout_url(),
+                        );
+                    }
                     return $result;
                 }
             }
         } catch (Exception $ex) {
-
+            if (isset($this->payment_request->api_log)) {
+                $this->payment_request->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
+                $this->payment_request->api_log->log($ex->getMessage(), 'error');
+            }
+            wc_add_notice($ex->getMessage(), 'error');
         }
+        return array(
+            'result'   => 'failure',
+            'redirect' => wc_get_checkout_url(),
+        );
     }
 
 	protected function handle_overcharge_redirect( $is_success ) {
