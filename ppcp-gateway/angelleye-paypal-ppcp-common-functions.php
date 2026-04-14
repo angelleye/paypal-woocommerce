@@ -1,4 +1,52 @@
 <?php
+if (!function_exists('angelleye_ppcp_is_local_pickup_chosen')) {
+
+    /**
+     * Detect whether the customer has chosen WooCommerce Local Pickup as the
+     * shipping method. When pickup is chosen, the PayPal order must use
+     * shipping_preference = NO_SHIPPING and omit purchase_units[].shipping
+     * to avoid binding the seller to free shipping under PayPal Seller
+     * Protection rules.
+     *
+     * @param WC_Order|null $order Optional WC order. When provided, reads
+     *                             the order's shipping items. Otherwise reads
+     *                             the WC session's chosen_shipping_methods.
+     * @return bool True only when ALL chosen shipping methods are local_pickup.
+     */
+    function angelleye_ppcp_is_local_pickup_chosen($order = null) {
+        // Order context (pay_page / capture / authorize)
+        if ($order instanceof WC_Order) {
+            $shipping_items = $order->get_shipping_methods();
+            if (empty($shipping_items)) {
+                return false;
+            }
+            foreach ($shipping_items as $item) {
+                $method_id = $item->get_method_id();
+                if ($method_id !== 'local_pickup') {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Session context (cart / checkout / product / FKCart)
+        if (!function_exists('WC') || !WC()->session) {
+            return false;
+        }
+        $chosen = WC()->session->get('chosen_shipping_methods');
+        if (empty($chosen) || !is_array($chosen)) {
+            return false;
+        }
+        foreach ($chosen as $rate_id) {
+            // Rate IDs look like "local_pickup:3"; method ID is the prefix
+            if (strpos((string) $rate_id, 'local_pickup') !== 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
 if (!function_exists('angelleye_ppcp_remove_empty_key')) {
 
     function angelleye_ppcp_remove_empty_key($data) {
