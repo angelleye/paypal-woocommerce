@@ -1112,7 +1112,14 @@ const angelleyeOrder = {
             });
         },
         handleRaceConditionOnWooHooks: () => {
-            jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_block_ready', function (event, data) {
+            // trigger_angelleye_ppcp_cc is fired by the Blocks-checkout
+            // Content_PPCP_CC React component's useEffect on mount. On first
+            // page load it races the async PayPal SDK load: the real handler
+            // in handleWooEvents() is only wired up AFTER the SDK finishes
+            // loading (inside initSmartButtons), so without queuing this
+            // event here the early trigger is lost and the express button /
+            // hosted card fields never render until the user refreshes.
+            jQuery(document.body).on('updated_cart_totals payment_method_selected updated_checkout ppcp_block_ready trigger_angelleye_ppcp_cc', function (event, data) {
                 if (!angelleyeOrder.isPendingEventTriggering) {
                     angelleyeOrder.addEventsForCallback(event.type, event, data);
                 }
