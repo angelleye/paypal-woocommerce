@@ -15,6 +15,14 @@ final class AngellEYE_PPCP_CC_Block extends AbstractPaymentMethodType {
     }
 
     public function is_active() {
+        // See angelleye-ppcp-checkout-block.php::is_active() for the same
+        // rationale: parent gateway classes are loaded lazily via the
+        // woocommerce_payment_gateways filter, and Blocks can call is_active()
+        // from script-dependency hooks on pages where WC never boots its
+        // gateways (e.g. wp-login.php under WP Defender Mask Login).
+        if (!class_exists('WC_Gateway_CC_AngellEYE')) {
+            return false;
+        }
         $this->gateway = new WC_Gateway_CC_AngellEYE();
         return $this->gateway->is_available();
     }
