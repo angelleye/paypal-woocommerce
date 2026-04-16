@@ -2,6 +2,10 @@
 if (!defined('WFACP_TEMPLATE_DIR')) {
     return '';
 }
+if (!defined('PFW_EXPRESS_DEBUG')) {
+    define('PFW_EXPRESS_DEBUG', false);
+}
+
 if (apply_filters('wfacp_skip_form_printing', false)) {
     return;
 }
@@ -157,6 +161,62 @@ $permalink = get_the_permalink();
             }
         }
     </style>
+    <?php
+    // Diagnostic dump for the PayPal-express FunnelKit Aero review page.
+    // Enable with `define('PFW_EXPRESS_DEBUG', true);` in wp-config.php on
+    // the affected site. Shows raw PayPal checkout_details, the mapped
+    // billing/shipping arrays, WFACP_Core's public detail arrays, the
+    // WC()->customer snapshot and relevant $_POST keys — so we can see
+    // exactly where the data is coming in and where it is dropping.
+    if (defined('PFW_EXPRESS_DEBUG') && PFW_EXPRESS_DEBUG) {
+        $pfw_dbg_checkout_details = null;
+        if (class_exists('AngellEye_Session_Manager')) {
+            $pfw_dbg_checkout_details = AngellEye_Session_Manager::get('paypal_transaction_details');
+        }
+        $pfw_dbg_customer = null;
+        if (function_exists('WC') && WC()->customer) {
+            $pfw_dbg_customer = array(
+                'billing_first_name' => WC()->customer->get_billing_first_name(),
+                'billing_last_name' => WC()->customer->get_billing_last_name(),
+                'billing_email' => WC()->customer->get_billing_email(),
+                'billing_address_1' => WC()->customer->get_billing_address_1(),
+                'billing_address_2' => WC()->customer->get_billing_address_2(),
+                'billing_city' => WC()->customer->get_billing_city(),
+                'billing_state' => WC()->customer->get_billing_state(),
+                'billing_postcode' => WC()->customer->get_billing_postcode(),
+                'billing_country' => WC()->customer->get_billing_country(),
+                'billing_phone' => WC()->customer->get_billing_phone(),
+                'shipping_first_name' => WC()->customer->get_shipping_first_name(),
+                'shipping_last_name' => WC()->customer->get_shipping_last_name(),
+                'shipping_address_1' => WC()->customer->get_shipping_address_1(),
+                'shipping_address_2' => WC()->customer->get_shipping_address_2(),
+                'shipping_city' => WC()->customer->get_shipping_city(),
+                'shipping_state' => WC()->customer->get_shipping_state(),
+                'shipping_postcode' => WC()->customer->get_shipping_postcode(),
+                'shipping_country' => WC()->customer->get_shipping_country(),
+            );
+        }
+        $pfw_dbg_post = array();
+        foreach (array('billing_first_name', 'billing_last_name', 'billing_email', 'billing_address_1', 'billing_city', 'billing_state', 'billing_postcode', 'billing_country', 'billing_phone', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_city', 'shipping_state', 'shipping_postcode', 'shipping_country') as $pfw_dbg_key) {
+            if (isset($_POST[$pfw_dbg_key])) {
+                $pfw_dbg_post[$pfw_dbg_key] = $_POST[$pfw_dbg_key];
+            }
+        }
+        ?>
+        <div style="background:#fff8dc;border:2px solid #d4a017;padding:12px;margin:12px 0;font-family:monospace;font-size:11px;line-height:1.4;max-height:600px;overflow:auto;">
+            <strong style="font-size:13px;color:#a00;">PFW PayPal Express Debug Dump</strong>
+            <p style="margin:8px 0;">Remove <code>define('PFW_EXPRESS_DEBUG', true);</code> from wp-config.php when done.</p>
+            <details><summary><strong>1. Raw PayPal checkout_details (from session)</strong></summary><pre><?php echo esc_html(print_r($pfw_dbg_checkout_details, true)); ?></pre></details>
+            <details open><summary><strong>2. WFACP_Core()->public->billing_details (what template reads for billing form)</strong></summary><pre><?php echo esc_html(print_r(WFACP_Core()->public->billing_details, true)); ?></pre></details>
+            <details open><summary><strong>3. WFACP_Core()->public->shipping_details (what template reads for shipping form)</strong></summary><pre><?php echo esc_html(print_r(WFACP_Core()->public->shipping_details, true)); ?></pre></details>
+            <details open><summary><strong>4. WC()->customer snapshot</strong></summary><pre><?php echo esc_html(print_r($pfw_dbg_customer, true)); ?></pre></details>
+            <details><summary><strong>5. $_POST billing/shipping keys</strong></summary><pre><?php echo esc_html(print_r($pfw_dbg_post, true)); ?></pre></details>
+            <details><summary><strong>6. Normalized billing (for summary card at top)</strong></summary><pre><?php echo esc_html(print_r($normalized_billing_details, true)); ?></pre></details>
+            <details><summary><strong>7. Normalized shipping (for summary card at top)</strong></summary><pre><?php echo esc_html(print_r($normalized_shipping_details, true)); ?></pre></details>
+        </div>
+        <?php
+    }
+    ?>
     <form name="checkout" method="post" class="checkout woocommerce-checkout wfacp_paypal_express" action="<?php echo esc_url(get_the_permalink()); ?>" enctype="multipart/form-data" id="wfacp_checkout_form">
         <input type="hidden" name="_wfacp_post_id" class="_wfacp_post_id" value="<?php echo WFACP_Common::get_id(); ?>">
         <input type="hidden" name="wfacp_cart_hash" value="<?php esc_html_e(WC()->session->get('wfacp_cart_hash', '')); ?>">
@@ -246,6 +306,15 @@ $permalink = get_the_permalink();
                             <h3><?php _e('Billing Address', 'paypal-for-woocommerce'); ?></h3>
                             <?php
                             $fields = $checkout->get_checkout_fields('billing');
+                            if (defined('PFW_EXPRESS_DEBUG') && PFW_EXPRESS_DEBUG) {
+                                echo '<div style="background:#e3f2fd;border:1px solid #0288d1;padding:8px;margin:8px 0;font-family:monospace;font-size:11px;"><strong>In-loop BILLING debug</strong>';
+                                echo '<br>$_POST[billing_city] at loop entry = <code>' . esc_html(isset($_POST['billing_city']) ? $_POST['billing_city'] : '(unset)') . '</code>';
+                                echo '<br>$_POST[billing_postcode] at loop entry = <code>' . esc_html(isset($_POST['billing_postcode']) ? $_POST['billing_postcode'] : '(unset)') . '</code>';
+                                echo '<br>billing_details[city] at loop entry = <code>' . esc_html(isset(WFACP_Core()->public->billing_details['city']) ? WFACP_Core()->public->billing_details['city'] : '(unset)') . '</code>';
+                                echo '<br>billing_details[postcode] at loop entry = <code>' . esc_html(isset(WFACP_Core()->public->billing_details['postcode']) ? WFACP_Core()->public->billing_details['postcode'] : '(unset)') . '</code>';
+                                echo '<br>customer.get_billing_city() = <code>' . esc_html(WC()->customer->get_billing_city()) . '</code>';
+                                echo '</div>';
+                            }
                             foreach ($fields as $key => $field) {
                                 if ('billing_same_as_shipping' == $key) {
                                     continue;
@@ -260,7 +329,13 @@ $permalink = get_the_permalink();
                                 } else {
                                     $value = $checkout->get_value($key);
                                 }
+                                if (defined('PFW_EXPRESS_DEBUG') && PFW_EXPRESS_DEBUG && in_array($key, array('billing_city', 'billing_postcode', 'billing_country', 'billing_phone', 'billing_state'), true)) {
+                                    $pfw_before_filter = $value;
+                                }
                                 $value = apply_filters('wfacp_default_values', $value, $key, $field);
+                                if (defined('PFW_EXPRESS_DEBUG') && PFW_EXPRESS_DEBUG && in_array($key, array('billing_city', 'billing_postcode', 'billing_country', 'billing_phone', 'billing_state'), true)) {
+                                    echo '<div style="background:#fce4ec;border:1px solid #c2185b;padding:4px;margin:2px 0;font-family:monospace;font-size:11px;"><strong>' . esc_html($key) . '</strong> before wfacp_default_values filter: <code>' . esc_html((string) $pfw_before_filter) . '</code> | after filter: <code>' . esc_html((string) $value) . '</code></div>';
+                                }
                                 woocommerce_form_field($key, $field, $value);
                             }
                             ?>

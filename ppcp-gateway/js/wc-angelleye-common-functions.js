@@ -275,15 +275,23 @@ const angelleyeOrder = {
             }
         } else {
             if (is_from_product) {
+                // Always re-add on every click. The server's product branch
+                // handles re-add idempotently (empties cart then re-adds), so
+                // skipping the re-add on the second click — as the old
+                // one-shot flag did — left retries with no add-to-cart
+                // signal and surfaced a spurious "session has expired" error
+                // whenever the first click hit validation and never actually
+                // populated the cart.
                 jQuery(formSelector).find('input[name=angelleye_ppcp-add-to-cart]').remove();
-                if (angelleyeOrder.productAddToCart) {
-                    jQuery('<input>', {
-                        type: 'hidden',
-                        name: 'angelleye_ppcp-add-to-cart',
-                        value: jQuery("[name='add-to-cart']").val()
-                    }).appendTo(formSelector);
-                    angelleyeOrder.productAddToCart = false;
-                }
+                jQuery('<input>', {
+                    type: 'hidden',
+                    name: 'angelleye_ppcp-add-to-cart',
+                    value: jQuery("[name='add-to-cart']").val()
+                }).appendTo(formSelector);
+                // Keep the flag flip so the angelleye_paypal_oncancel handler
+                // still knows the PPCP flow started and can clean up cart
+                // items on cancel.
+                angelleyeOrder.productAddToCart = false;
             }
             if (billingField) {
                 jQuery(formSelector).find('input[name=billing_address_source]').remove();
@@ -294,6 +302,12 @@ const angelleyeOrder = {
                 shippingField.appendTo(formSelector);
             }
             formData = jQuery(formSelector).serialize();
+            if (is_from_product) {
+                // Product pages can expose duplicated variation inputs via
+                // plugins/themes — dedupe before sending so PHP's $_POST
+                // doesn't receive an empty override of the selected value.
+                formData = angelleyeOrder.dedupeFormBody(formData);
+            }
             if (formData === '') {
                 formData = 'angelleye_ppcp_payment_method_title=' + jQuery('#angelleye_ppcp_payment_method_title').val();
                 if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {
@@ -613,6 +627,44 @@ const angelleyeOrder = {
         }
         console.log(payment_method_element_selector);
         return payment_method_element_selector;
+    },
+    /**
+     * Deduplicate a URL-encoded form body by key, preferring non-empty
+     * values. Some variable-product pages (WC variations alongside
+     * plugins like WooCommerce Advanced Product Fields / gtm4wp / theme
+     * mirror forms) cause jQuery.serialize() to emit each field twice,
+     * with one copy populated and the other empty. PHP's $_POST uses
+     * last-value-wins, which picks the empty copy and fails WC's
+     * variation-attribute validation with "Invalid value posted for X".
+     */
+    dedupeFormBody: (formData) => {
+        if (!formData || typeof formData !== 'string') {
+            return formData;
+        }
+        const parts = formData.split('&');
+        const indexByKey = {};
+        const result = [];
+        for (const part of parts) {
+            if (!part) continue;
+            const eq = part.indexOf('=');
+            const key = eq >= 0 ? part.substring(0, eq) : part;
+            const val = eq >= 0 ? part.substring(eq + 1) : '';
+            if (Object.prototype.hasOwnProperty.call(indexByKey, key)) {
+                const existingIdx = indexByKey[key];
+                const existing = result[existingIdx];
+                const existingEq = existing.indexOf('=');
+                const existingVal = existingEq >= 0 ? existing.substring(existingEq + 1) : '';
+                // Replace only when the first copy is empty and the later
+                // copy has a value; otherwise keep the first occurrence.
+                if (existingVal === '' && val !== '') {
+                    result[existingIdx] = part;
+                }
+            } else {
+                indexByKey[key] = result.length;
+                result.push(part);
+            }
+        }
+        return result.join('&');
     },
     setPaymentMethodSelector: (paymentMethod) => {
         let payment_method_element_selector = angelleyeOrder.getWooFormSelector();
