@@ -2092,41 +2092,29 @@ class AngellEYE_Utility {
         return maybe_unserialize($value);
     }
 
+    /**
+     * Backward-compatibility shim — all multilingual logic lives in
+     * AngellEYE_PPCP_Multilingual. This method is retained so any
+     * third-party code that calls AngellEye_Utility::get_button_locale_code()
+     * keeps working without modification.
+     */
     public static function get_button_locale_code() {
-        $_supportedLocale = array(
-            'en_US', 'fr_XC', 'es_XC', 'zh_XC', 'en_AU', 'de_DE', 'nl_NL',
-            'fr_FR', 'pt_BR', 'fr_CA', 'zh_CN', 'ru_RU', 'en_GB', 'zh_HK',
-            'he_IL', 'it_IT', 'ja_JP', 'pl_PL', 'pt_PT', 'es_ES', 'sv_SE', 'zh_TW', 'tr_TR'
-        );
-        $wpml_locale = self::angelleye_ec_get_wpml_locale();
-        if ($wpml_locale) {
-            if (in_array($wpml_locale, $_supportedLocale)) {
-                return $wpml_locale;
-            }
+        if (class_exists('AngellEYE_PPCP_Multilingual')) {
+            return AngellEYE_PPCP_Multilingual::get_button_locale_code();
         }
         $locale = get_locale();
-        if (get_locale() != '') {
-            $locale = substr(get_locale(), 0, 5);
-        }
-        if (!in_array($locale, $_supportedLocale)) {
-            $locale = 'en_US';
-        }
-        return $locale;
+        return $locale !== '' ? substr($locale, 0, 5) : 'en_US';
     }
 
+    /**
+     * Backward-compatibility shim — see
+     * AngellEYE_PPCP_Multilingual::get_current_language_locale().
+     */
     public static function angelleye_ec_get_wpml_locale() {
-        $locale = false;
-        if (defined('ICL_LANGUAGE_CODE') && function_exists('icl_object_id')) {
-            global $sitepress;
-            if (isset($sitepress)) { // avoids a fatal error with Polylang
-                $locale = $sitepress->get_current_language();
-            } else if (function_exists('pll_current_language')) { // adds Polylang support
-                $locale = pll_current_language('locale'); //current selected language requested on the broswer
-            } else if (function_exists('pll_default_language')) {
-                $locale = pll_default_language('locale'); //default lanuage of the blog
-            }
+        if (class_exists('AngellEYE_PPCP_Multilingual')) {
+            return AngellEYE_PPCP_Multilingual::get_current_language_locale();
         }
-        return $locale;
+        return false;
     }
 
     public function angelleye_wc_braintree_docapture($order) {

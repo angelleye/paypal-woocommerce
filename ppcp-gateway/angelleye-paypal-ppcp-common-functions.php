@@ -110,45 +110,36 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
 
 if (!function_exists('angelleye_ppcp_get_button_locale_code')) {
 
+    /**
+     * Backward-compatibility shim — delegates to the canonical
+     * implementation in AngellEYE_PPCP_Multilingual. Left in place so
+     * any third-party code that hooks this function name keeps
+     * working. All multilingual logic lives in the facade class.
+     */
     function angelleye_ppcp_get_button_locale_code() {
-        $_supportedLocale = array(
-            'en_US', 'fr_XC', 'es_XC', 'zh_XC', 'en_AU', 'de_DE', 'nl_NL',
-            'fr_FR', 'pt_BR', 'fr_CA', 'zh_CN', 'ru_RU', 'en_GB', 'zh_HK',
-            'he_IL', 'it_IT', 'ja_JP', 'pl_PL', 'pt_PT', 'es_ES', 'sv_SE', 'zh_TW', 'tr_TR'
-        );
-        $wpml_locale = angelleye_ppcp_get_wpml_locale();
-        if ($wpml_locale) {
-            if (in_array($wpml_locale, $_supportedLocale)) {
-                return $wpml_locale;
-            }
+        if (class_exists('AngellEYE_PPCP_Multilingual')) {
+            return AngellEYE_PPCP_Multilingual::get_button_locale_code();
         }
+        // Fallback if the facade somehow isn't loaded (defensive; should
+        // never happen in a normal boot where ppcp-gateway/bootstrap
+        // requires the facade).
         $locale = get_locale();
-        if (get_locale() != '') {
-            $locale = substr(get_locale(), 0, 5);
-        }
-        if (!in_array($locale, $_supportedLocale)) {
-            $locale = 'en_US';
-        }
-        return $locale;
+        return $locale !== '' ? substr($locale, 0, 5) : 'en_US';
     }
 
 }
 
 if (!function_exists('angelleye_ppcp_get_wpml_locale')) {
 
+    /**
+     * Backward-compatibility shim — see
+     * AngellEYE_PPCP_Multilingual::get_current_language_locale().
+     */
     function angelleye_ppcp_get_wpml_locale() {
-        $locale = false;
-        if (defined('ICL_LANGUAGE_CODE') && function_exists('icl_object_id')) {
-            global $sitepress;
-            if (isset($sitepress)) {
-                $locale = $sitepress->get_current_language();
-            } else if (function_exists('pll_current_language')) {
-                $locale = pll_current_language('locale');
-            } else if (function_exists('pll_default_language')) {
-                $locale = pll_default_language('locale');
-            }
+        if (class_exists('AngellEYE_PPCP_Multilingual')) {
+            return AngellEYE_PPCP_Multilingual::get_current_language_locale();
         }
-        return $locale;
+        return false;
     }
 
 }
