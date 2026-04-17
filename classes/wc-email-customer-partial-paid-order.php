@@ -4,6 +4,12 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
+// Shared capture-aggregation + formatting helpers used by both the
+// HTML and plain-text templates for this email.
+if (!class_exists('AngellEYE_PPCP_Partial_Payment_Data', false)) {
+    require_once PAYPAL_FOR_WOOCOMMERCE_DIR_PATH . '/ppcp-gateway/includes/class-angelleye-ppcp-partial-payment-data.php';
+}
+
 if (!class_exists('WC_Email_Partially_Paid_Order', false)) :
 
     class WC_Email_Partially_Paid_Order extends WC_Email {
