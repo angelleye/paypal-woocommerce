@@ -57,6 +57,138 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
         add_action('wc_ajax_wfocu_front_handle_angelleye_ppcp_payments', array($this, 'process_client_order'));
         add_action('woocommerce_api_wfocu_angelleye_ppcp_payments', array($this, 'handle_api_calls'));
         add_filter('wfacp_form_template', [$this, 'replace_form_template']);
+        // Guarantee PayPal-sourced billing/shipping values on every render
+        // path. WC_Checkout::get_value() calls this filter before falling
+        // back to WC()->customer, so returning a non-null value here wins
+        // over any stale customer data clobbered mid-request by an AJAX
+        // handler (wc-ajax=update_order_review, etc.) that doesn't carry
+        // ?paypal_order_id= in the URL.
+        add_filter('woocommerce_checkout_get_value', array($this, 'paypal_express_get_value'), 10, 2);
+        // FunnelKit Aero's wfacp_default_values chain has a priority-11
+        // listener (WFACP_Compatibility_With_Paypal_Express::merge_ppec_data)
+        // that overwrites billing_city / billing_state from the classic
+        // wc_gateway_ppec session when that plugin is present and reports
+        // an active session — even on sites using PPCP, not PPEC. If PPEC's
+        // stale session has empty city, it wipes our PayPal value.
+        // Run at priority 9999 so we are the last word for PPCP express.
+        add_filter('wfacp_default_values', array($this, 'paypal_express_override_default_value'), 9999, 3);
+    }
+
+    /**
+     * Resolve and cache the PayPal-sourced billing+shipping addresses once
+     * per request. Returns ['billing' => [...], 'shipping' => [...]] or
+     * null when not in a PPCP express session.
+     */
+    protected function get_paypal_express_addresses() {
+        static $cache = false;
+        if ($cache !== false) {
+            return $cache;
+        }
+        $paypal_order_id = null;
+        if (!empty($_GET['paypal_order_id'])) {
+            $paypal_order_id = wc_clean($_GET['paypal_order_id']);
+        } elseif (class_exists('AngellEye_Session_Manager')) {
+            $session_order_id = AngellEye_Session_Manager::get('paypal_order_id');
+            if (!empty($session_order_id)) {
+                $paypal_order_id = $session_order_id;
+            }
+        }
+        if (empty($paypal_order_id)) {
+            $cache = null;
+            return null;
+        }
+        $checkout_details = null;
+        if (class_exists('AngellEye_Session_Manager')) {
+            $checkout_details = AngellEye_Session_Manager::get('paypal_transaction_details');
+        }
+        if (empty($checkout_details) && isset($this->payment_request)) {
+            try {
+                $checkout_details = $this->payment_request->angelleye_ppcp_get_checkout_details($paypal_order_id);
+                if (!empty($checkout_details) && class_exists('AngellEye_Session_Manager')) {
+                    AngellEye_Session_Manager::set('paypal_transaction_details', $checkout_details);
+                }
+            } catch (Exception $ex) {
+                $cache = null;
+                return null;
+            }
+        }
+        if (empty($checkout_details)) {
+            $cache = null;
+            return null;
+        }
+        $shipping = angelleye_ppcp_get_mapped_shipping_address($checkout_details);
+        $billing = angelleye_ppcp_get_mapped_billing_address($checkout_details, !$this->set_billing_address);
+        if (!is_array($billing)) {
+            $billing = array();
+        }
+        if (is_array($shipping)) {
+            foreach (array('address_1', 'address_2', 'city', 'state', 'postcode', 'country', 'phone', 'company') as $f) {
+                if (empty($billing[$f]) && !empty($shipping[$f])) {
+                    $billing[$f] = $shipping[$f];
+                }
+            }
+        }
+        $cache = array('billing' => $billing, 'shipping' => is_array($shipping) ? $shipping : array());
+        return $cache;
+    }
+
+    /**
+     * woocommerce_checkout_get_value listener. Returns the PayPal-sourced
+     * value for billing_ / shipping_ prefixed keys when we're in a PPCP
+     * express session and the field has a non-empty PayPal value.
+     */
+    public function paypal_express_get_value($value, $input) {
+        if ($value !== null && $value !== '') {
+            return $value;
+        }
+        $addresses = $this->get_paypal_express_addresses();
+        if (empty($addresses)) {
+            return $value;
+        }
+        if (strpos($input, 'billing_') === 0) {
+            $field = substr($input, strlen('billing_'));
+            if (!empty($addresses['billing'][$field])) {
+                return $addresses['billing'][$field];
+            }
+        } elseif (strpos($input, 'shipping_') === 0) {
+            $field = substr($input, strlen('shipping_'));
+            if (!empty($addresses['shipping'][$field])) {
+                return $addresses['shipping'][$field];
+            }
+        }
+        return $value;
+    }
+
+    /**
+     * Last-word override for Aero's wfacp_default_values filter chain.
+     * Only runs when the current request carries our PayPal order id.
+     * Wins over Aero's priority-11 PPEC compatibility listener that
+     * clobbers billing_city / billing_state with empty strings from a
+     * stale wc_gateway_ppec session.
+     */
+    public function paypal_express_override_default_value($value, $key, $field) {
+        if (empty($_GET['paypal_order_id']) && empty($_POST['paypal_order_id'])) {
+            return $value;
+        }
+        if (!is_string($key) || $key === '') {
+            return $value;
+        }
+        $addresses = $this->get_paypal_express_addresses();
+        if (empty($addresses)) {
+            return $value;
+        }
+        if (strpos($key, 'billing_') === 0) {
+            $short = substr($key, strlen('billing_'));
+            if (isset($addresses['billing'][$short]) && $addresses['billing'][$short] !== '' && $addresses['billing'][$short] !== null) {
+                return $addresses['billing'][$short];
+            }
+        } elseif (strpos($key, 'shipping_') === 0) {
+            $short = substr($key, strlen('shipping_'));
+            if (isset($addresses['shipping'][$short]) && $addresses['shipping'][$short] !== '' && $addresses['shipping'][$short] !== null) {
+                return $addresses['shipping'][$short];
+            }
+        }
+        return $value;
     }
 
     public static function get_instance() {
@@ -122,6 +254,31 @@ class WFOCU_Paypal_For_WC_Gateway_AngellEYE_PPCP extends WFOCU_Gateway {
                 }
                 WFACP_Core()->public->billing_details = $billing_address;
                 WFACP_Core()->public->paypal_billing_address = true;
+            }
+            // Backfill any missing billing postal fields from the shipping
+            // address. Covers the case where PFW's "Set billing address
+            // from PayPal" setting is off (billing_address has only name/
+            // email) or PayPal's payer block omits a full address. Same
+            // semantics as Aero's "same as shipping" checkbox but done
+            // server-side so the form renders pre-filled.
+            $billing_for_persist = is_array($billing_address) ? $billing_address : array();
+            if (!empty($shipping_address) && is_array($shipping_address)) {
+                foreach (array('address_1', 'address_2', 'city', 'state', 'postcode', 'country', 'phone', 'company') as $fallback_field) {
+                    if (empty($billing_for_persist[$fallback_field]) && !empty($shipping_address[$fallback_field])) {
+                        $billing_for_persist[$fallback_field] = $shipping_address[$fallback_field];
+                    }
+                }
+            }
+            // Persist the PayPal-sourced addresses to WC()->customer so
+            // wc-ajax=update_order_review (and any other AJAX that doesn't
+            // carry ?paypal_order_id= in the URL) still renders the form
+            // with the right values via WC_Checkout::get_value()'s
+            // customer fallback.
+            if (function_exists('angelleye_ppcp_update_customer_addresses_from_paypal')) {
+                angelleye_ppcp_update_customer_addresses_from_paypal(
+                    !empty($shipping_address) ? $shipping_address : array(),
+                    $billing_for_persist
+                );
             }
             $template = PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/template/ppcp-funnelkit-order-review.php';
             return $template;

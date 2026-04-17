@@ -2,6 +2,7 @@
 if (!defined('WFACP_TEMPLATE_DIR')) {
     return '';
 }
+
 if (apply_filters('wfacp_skip_form_printing', false)) {
     return;
 }
@@ -67,6 +68,48 @@ $permalink = get_the_permalink();
 
     $normalized_billing_details = $normalize_address_details(WFACP_Core()->public->billing_details);
     $normalized_shipping_details = $normalize_address_details(WFACP_Core()->public->shipping_details);
+    // Auto-expand the editable billing/shipping form when a field marked
+    // required in this store's WC checkout-fields config is still empty
+    // after PayPal population, so the buyer isn't stuck with a hidden
+    // "Edit" toggle for a field Place Order won't accept blank. Driven by
+    // WC()->checkout()->get_checkout_fields(), so per-site plugins that
+    // toggle the `required` flag (phone required, company required,
+    // address_2 required, etc.) flow through automatically.
+    $angelleye_auto_expand_billing = false;
+    $angelleye_auto_expand_shipping = false;
+    $angelleye_wc_checkout = WC()->checkout();
+    if ($angelleye_wc_checkout instanceof WC_Checkout) {
+        $angelleye_billing_config = (array) $angelleye_wc_checkout->get_checkout_fields('billing');
+        foreach ($angelleye_billing_config as $angelleye_field_key => $angelleye_field_def) {
+            if (empty($angelleye_field_def['required'])) {
+                continue;
+            }
+            $angelleye_short_key = preg_replace('/^billing_/', '', $angelleye_field_key);
+            $angelleye_field_value = isset(WFACP_Core()->public->billing_details[$angelleye_short_key])
+                ? WFACP_Core()->public->billing_details[$angelleye_short_key]
+                : '';
+            if ($angelleye_field_value === '' || $angelleye_field_value === null) {
+                $angelleye_auto_expand_billing = true;
+                break;
+            }
+        }
+        if ($instance->have_shipping_address()) {
+            $angelleye_shipping_config = (array) $angelleye_wc_checkout->get_checkout_fields('shipping');
+            foreach ($angelleye_shipping_config as $angelleye_field_key => $angelleye_field_def) {
+                if (empty($angelleye_field_def['required'])) {
+                    continue;
+                }
+                $angelleye_short_key = preg_replace('/^shipping_/', '', $angelleye_field_key);
+                $angelleye_field_value = isset(WFACP_Core()->public->shipping_details[$angelleye_short_key])
+                    ? WFACP_Core()->public->shipping_details[$angelleye_short_key]
+                    : '';
+                if ($angelleye_field_value === '' || $angelleye_field_value === null) {
+                    $angelleye_auto_expand_shipping = true;
+                    break;
+                }
+            }
+        }
+    }
     $fieldsets = $instance->get_fieldsets();
     if (!is_array($fieldsets)) {
         return;
@@ -97,11 +140,11 @@ $permalink = get_the_permalink();
         }
 
         .wfacp_address_container .wfacp_express_billing_address {
-            display: none;
+            display: <?php echo $angelleye_auto_expand_billing ? 'block' : 'none'; ?>;
             margin-bottom: 15px;
         }
         .wfacp_address_container .wfacp_express_shipping_address {
-            display: none;
+            display: <?php echo $angelleye_auto_expand_shipping ? 'block' : 'none'; ?>;
             margin-bottom: 15px;
         }
         .woocommerce-checkout .wfacp_payment {
