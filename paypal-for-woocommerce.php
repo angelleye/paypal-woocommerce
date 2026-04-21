@@ -573,6 +573,17 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             // Ensure PPCP traits/classes are loaded before any direct gateway class includes.
             $this->bootstrap_ppcp_runtime();
 
+            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-payflow-angelleye.php');
+            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-advanced-angelleye.php');
+            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-pro-angelleye.php');
+            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-braintree-angelleye.php');
+            include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-credit-cards-rest-angelleye.php');
+            if (is_angelleye_multi_account_active()) {
+                include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v1.php');
+            } else {
+                include_once(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/classes/wc-gateway-paypal-express-angelleye-v2.php');
+            }
+
             if (class_exists('WC_Subscriptions') && function_exists('wcs_create_renewal_order')) {
                 $this->subscription_support_enabled = true;
             }
