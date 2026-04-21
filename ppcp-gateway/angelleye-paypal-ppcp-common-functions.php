@@ -108,6 +108,24 @@ if (!function_exists('angelleye_ppcp_get_post_meta')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_get_partner_attribution_id')) {
+
+    /**
+     * Resolve the BN code (PayPal partner attribution id) for this
+     * install. Defaults to the PAYPAL_PARTNER_ATTRIBUTION_ID constant
+     * defined in paypal-for-woocommerce.php. Exposed via filter so
+     * multi-account plugins / white-label installations can override
+     * per site.
+     *
+     * @return string The BN code, or '' when none configured.
+     */
+    function angelleye_ppcp_get_partner_attribution_id() {
+        $default = defined('PAYPAL_PARTNER_ATTRIBUTION_ID') ? PAYPAL_PARTNER_ATTRIBUTION_ID : '';
+        return (string) apply_filters('angelleye_paypal_partner_attribution_id', $default);
+    }
+
+}
+
 if (!function_exists('angelleye_ppcp_get_button_locale_code')) {
 
     function angelleye_ppcp_get_button_locale_code() {
@@ -1000,6 +1018,12 @@ if (!function_exists('angelleye_ppcp_account_ready_to_paid')) {
             'body' => wp_json_encode($data)
         );
         $args['headers']['Authorization'] = "Basic " . $basicAuth;
+        // Partner attribution (BN code) on the admin "Test credentials"
+        // ping so PayPal's attribution reporting sees this call too.
+        $bn_code = angelleye_ppcp_get_partner_attribution_id();
+        if ($bn_code !== '') {
+            $args['headers']['PayPal-Partner-Attribution-Id'] = $bn_code;
+        }
         $result = wp_remote_post($paypal_order_api, $args);
         $body = wp_remote_retrieve_body($result);
         $response = !empty($body) ? json_decode($body, true) : '';

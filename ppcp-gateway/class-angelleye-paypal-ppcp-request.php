@@ -241,6 +241,17 @@ class AngellEYE_PayPal_PPCP_Request {
             } else if ($this->is_first_party_used === 'yes') {
                 unset($args['headers']['Paypal-Auth-Assertion']);
                 $args['headers']['Authorization'] = ($action_name && $action_name === 'get_client_token') ? "Bearer " . $this->basicAuth : "Basic " . $this->basicAuth;
+                // Partner attribution (BN code) for direct-to-PayPal
+                // first-party calls. The third-party middleware path is
+                // handled by the middleware itself, so it's not injected
+                // there. Respects an existing header if a caller has
+                // already set one.
+                if (function_exists('angelleye_ppcp_get_partner_attribution_id')) {
+                    $bn_code = angelleye_ppcp_get_partner_attribution_id();
+                    if ($bn_code !== '' && empty($args['headers']['PayPal-Partner-Attribution-Id'])) {
+                        $args['headers']['PayPal-Partner-Attribution-Id'] = $bn_code;
+                    }
+                }
                 if (isset($args['body']) && is_array($args['body'])) {
                     $args['body'] = wp_json_encode($args['body']);
                 }
