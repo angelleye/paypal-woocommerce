@@ -65,6 +65,10 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['PAYMENTINFO_0_TRANSACTIONID']) ? $result['PAYMENTINFO_0_TRANSACTIONID'] : '';
                     $request_param['amount'] = isset($result['PAYMENTINFO_0_AMT']) ? $result['PAYMENTINFO_0_AMT'] : '0.00';
+                    $request_param['currency'] = $result['PAYMENTINFO_0_CURRENCYCODE'] ?? $this->angelleye_nvp_lookup($request, 'PAYMENTREQUEST_0_CURRENCYCODE');
+                    $request_param['custom_id'] = $this->angelleye_nvp_lookup($request, 'PAYMENTREQUEST_0_CUSTOM');
+                    $request_param['invoice_id'] = $this->angelleye_nvp_lookup($request, 'PAYMENTREQUEST_0_INVNUM');
+                    $request_param['debug_id'] = $request_param['correlation_id'];
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'DoDirectPayment') {
                     if (isset($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID']) && !empty($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'])) {
@@ -75,6 +79,10 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['TRANSACTIONID']) ? $result['TRANSACTIONID'] : '';
                     $request_param['amount'] = isset($result['AMT']) ? $result['AMT'] : '0.00';
+                    $request_param['currency'] = $result['CURRENCYCODE'] ?? $this->angelleye_nvp_lookup($request, 'CURRENCYCODE');
+                    $request_param['custom_id'] = $request['CUSTOM'] ?? $this->angelleye_nvp_lookup($request, 'PAYMENTREQUEST_0_CUSTOM');
+                    $request_param['invoice_id'] = $request['INVNUM'] ?? $this->angelleye_nvp_lookup($request, 'PAYMENTREQUEST_0_INVNUM');
+                    $request_param['debug_id'] = $request_param['correlation_id'];
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'DoCapture') {
                     if (isset($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID']) && !empty($result['PAYMENTINFO_0_SECUREMERCHANTACCOUNTID'])) {
@@ -85,6 +93,11 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['TRANSACTIONID']) ? $result['TRANSACTIONID'] : '';
                     $request_param['amount'] = isset($result['AMT']) ? $result['AMT'] : '0.00';
+                    // DoCapture response doesn't echo CURRENCYCODE; fall back to the request value.
+                    $request_param['currency'] = $result['CURRENCYCODE'] ?? $request['CURRENCYCODE'] ?? '';
+                    $request_param['custom_id'] = $request['CUSTOM'] ?? '';
+                    $request_param['invoice_id'] = $request['INVNUM'] ?? '';
+                    $request_param['debug_id'] = $request_param['correlation_id'];
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'ProcessTransaction') {
                     if($payment_method == 'paypal_advanced') {
@@ -102,6 +115,11 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = isset($result['CORRELATIONID']) ? $result['CORRELATIONID'] : '';
                     $request_param['transaction_id'] = isset($result['PNREF']) ? $result['PNREF'] : '';
                     $request_param['amount'] = isset($result['AMT']) ? $result['AMT'] : '0.00';
+                    $request_param['currency'] = $result['CURRENCY'] ?? $this->angelleye_nvp_lookup($request, 'CURRENCY');
+                    // Plugin never sets a Payflow custom field on outgoing requests, so leave blank.
+                    $request_param['custom_id'] = '';
+                    $request_param['invoice_id'] = $this->angelleye_nvp_lookup($request, 'INVNUM');
+                    $request_param['debug_id'] = $request_param['correlation_id'];
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'Braintree') {
                     if ($result->success) {
@@ -115,6 +133,10 @@ class AngellEYE_PFW_Payment_Logger {
                     $request_param['correlation_id'] = '';
                     $request_param['transaction_id'] = isset($result->transaction->id) ? $result->transaction->id : '';
                     $request_param['amount'] = isset($result->transaction->amount) ? $result->transaction->amount : '0.00';
+                    $request_param['currency'] = isset($result->transaction->currencyIsoCode) ? $result->transaction->currencyIsoCode : '';
+                    $request_param['custom_id'] = isset($result->transaction->customFields['custom_id']) ? $result->transaction->customFields['custom_id'] : '';
+                    $request_param['invoice_id'] = isset($result->transaction->orderId) ? $result->transaction->orderId : '';
+                    $request_param['debug_id'] = '';
                     $this->angelleye_tpv_request($request_param);
                 } elseif ($request['METHOD'] == 'PayPal Credit Card (REST)') {
                     if (isset($result->id)) {
@@ -125,11 +147,35 @@ class AngellEYE_PFW_Payment_Logger {
                     }
                     $request_param['correlation_id'] = '';
                     $request_param['amount'] = isset($result->amount->total) ? $result->amount->total : '0.00';
+                    $request_param['currency'] = isset($result->amount->currency) ? $result->amount->currency : '';
+                    // Sale/Authorization objects don't expose custom/invoice_number — those live on the
+                    // parent Payment. Plumbing them into this hook would require upstream changes.
+                    $request_param['custom_id'] = '';
+                    $request_param['invoice_id'] = '';
+                    $request_param['debug_id'] = '';
                     $this->angelleye_tpv_request($request_param);
                 }
             }
         }
         return $result_data;
+    }
+
+    /**
+     * Look up an NVP value tolerating Payflow length-prefixed keys (e.g. CURRENCY[3]).
+     */
+    private function angelleye_nvp_lookup($data, $key) {
+        if (!is_array($data)) {
+            return '';
+        }
+        if (isset($data[$key])) {
+            return $data[$key];
+        }
+        foreach ($data as $k => $v) {
+            if (preg_match('/^' . preg_quote($key, '/') . '\[\d+\]$/', $k)) {
+                return $v;
+            }
+        }
+        return '';
     }
 
     public function angelleye_nvp_to_array($NVPString) {
