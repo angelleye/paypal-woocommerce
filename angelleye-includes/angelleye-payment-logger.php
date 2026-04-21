@@ -156,6 +156,15 @@ class AngellEYE_PFW_Payment_Logger {
             $correlation_id = $request_param['correlation_id'];
             $transaction_id = $request_param['transaction_id'];
             $product_id = $request_param['product_id'];
+            $env_meta = [
+                'php_version' => phpversion(),
+                'pfw_version' => defined('VERSION_PFW') ? VERSION_PFW : '',
+                'woocommerce_version' => defined('WC_VERSION') ? WC_VERSION : '',
+                'wp_version' => get_bloginfo('version'),
+            ];
+            $meta = !empty($request_param['meta']) && is_array($request_param['meta'])
+                ? array_merge($env_meta, $request_param['meta'])
+                : $env_meta;
             $params = [
                 "product_id" => $product_id,
                 "type" => $payment_type,
@@ -173,7 +182,7 @@ class AngellEYE_PFW_Payment_Logger {
                 "custom_id" => $request_param['custom_id'] ?? '',
                 "invoice_id" => $request_param['invoice_id'] ?? '',
                 "debug_id" => $request_param['debug_id'] ?? '',
-                "meta" => !empty($request_param['meta']) ? $request_param['meta'] : new stdClass(),
+                "meta" => $meta,
             ];
             $params = apply_filters('angelleye_log_params', $params);
             // Temporary log for TPV tracker payload verification — remove after testing
