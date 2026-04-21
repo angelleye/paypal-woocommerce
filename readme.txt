@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 6.9.4
-Stable tag: 4.6.10
+Stable tag: 4.6.11
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.6.11 - 04.21.2026 =
+* Fix - Resolved race condition on WooCommerce Blocks checkout first load causing PayPal buttons and PPCP-CC card fields to go missing until page refresh. ([2179](https://github.com/angelleye/paypal-woocommerce/pull/2179))
+* Fix - Guarded Blocks integration is_active() against missing gateway classes to prevent "Class 'WC_Gateway_PPCP_AngellEYE' not found" fatal on login and other pages where gateways are not loaded (e.g. WP Defender Mask Login). ([2180](https://github.com/angelleye/paypal-woocommerce/pull/2180))
+* Fix - Preserved PayPal Express address values on the FunnelKit Aero review page so billing and shipping fields are no longer cleared by the compatibility layer. ([2181](https://github.com/angelleye/paypal-woocommerce/pull/2181))
+* feat - Added a Payment Summary section (captures, refunds, total paid, balance due) to the Partially Paid Order customer email across HTML and plain-text templates. ([2182](https://github.com/angelleye/paypal-woocommerce/pull/2182))
+* Fix - Preloaded Express Checkout parent gateway class inside the woocommerce_payment_gateways filter to prevent a fatal error when another plugin reads gateways before our init() runs. ([2185](https://github.com/angelleye/paypal-woocommerce/pull/2185))
 
 = 4.6.10 - 04.14.2026 =
 * Fix - PFWMA Seller onboarding invitation email issue. ([2157](https://github.com/angelleye/paypal-woocommerce/pull/2173))
