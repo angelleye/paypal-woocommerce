@@ -896,13 +896,19 @@ if (!function_exists('angelleye_ppcp_is_store_api_request')) {
 if (!function_exists('angelleye_ppcp_is_save_payment_method')) {
 
     function angelleye_ppcp_is_save_payment_method($enable_tokenized_payments) {
+        // Safety net: never vault when the admin toggle is off, or when the PayPal
+        // merchant account doesn't actually have ADVANCED_VAULTING provisioned.
+        // This catches POST-checkbox tampering and filter-injected overrides.
+        if ($enable_tokenized_payments !== true || !angelleye_ppcp_is_vault_capability_available()) {
+            return apply_filters('angelleye_ppcp_is_save_payment_method', false);
+        }
         $is_enable = false;
         $new_payment_methods_to_check = [
             'wc-angelleye_ppcp-new-payment-method',
             'wc-angelleye_ppcp_cc-new-payment-method',
             'wc-angelleye_ppcp_apple_pay-new-payment-method'
         ];
-        if (angelleye_ppcp_is_cart_subscription() && $enable_tokenized_payments === true) {
+        if (angelleye_ppcp_is_cart_subscription()) {
             $is_enable = true;
         }
         foreach ($new_payment_methods_to_check as $item) {
@@ -914,9 +920,9 @@ if (!function_exists('angelleye_ppcp_is_save_payment_method')) {
         // When tokenization is enabled and request originates from product/cart page
         // (or checkout_top), the save-payment-method checkbox is not in the serialized
         // form data. Force vault so the token is stored with the order.
-        if ( ! $is_enable && $enable_tokenized_payments === true ) {
-            $request_from = isset( $_GET['from'] ) ? sanitize_text_field( $_GET['from'] ) : '';
-            if ( ! in_array( $request_from, array( 'checkout', 'pay_page' ), true ) ) {
+        if (!$is_enable) {
+            $request_from = isset($_GET['from']) ? sanitize_text_field($_GET['from']) : '';
+            if (!in_array($request_from, array('checkout', 'pay_page'), true)) {
                 $is_enable = true;
             }
         }
@@ -1049,6 +1055,53 @@ if (!function_exists('angelleye_is_vaulting_enable')) {
             }
         }
         return false;
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_is_vault_capability_available')) {
+
+    /**
+     * Returns whether ADVANCED_VAULTING is active on the connected PayPal merchant.
+     *
+     * Layered caching, cheapest-first:
+     *   1. Per-request static cache — repeated calls in one request cost nothing.
+     *   2. `ae_seller_onboarding_status` transient (1-day TTL) — shared across
+     *      requests; populated by admin settings / here on first miss.
+     *   3. PayPal Partner API — called only when the transient is missing or
+     *      expired, and the result re-primes the transient for the next day.
+     *
+     * This keeps frontend page loads free of API calls in steady state while
+     * still recovering automatically after the cache expires.
+     */
+    function angelleye_ppcp_is_vault_capability_available() {
+        static $cached = null;
+        if ($cached !== null) {
+            return $cached;
+        }
+        // Fail closed if invoked before plugin bootstrap defines paths/constants
+        // (e.g. another plugin instantiates the gateway unusually early).
+        if (!defined('PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR')) {
+            return $cached = false;
+        }
+        if (!class_exists('WC_Gateway_PPCP_AngellEYE_Settings')) {
+            include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-wc-gateway-ppcp-angelleye-settings.php';
+        }
+        $settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+        $is_sandbox = 'yes' === $settings->get('testmode', 'no');
+        $merchant_id = $settings->get($is_sandbox ? 'sandbox_merchant_id' : 'live_merchant_id', '');
+        if (empty($merchant_id)) {
+            return $cached = false;
+        }
+        if (!class_exists('AngellEYE_PayPal_PPCP_Seller_Onboarding')) {
+            include_once PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-seller-onboarding.php';
+        }
+        $result = AngellEYE_PayPal_PPCP_Seller_Onboarding::instance()
+            ->angelleye_track_seller_onboarding_status_from_cache($merchant_id, false);
+        if (!is_array($result)) {
+            return $cached = false;
+        }
+        return $cached = angelleye_is_vaulting_enable($result);
     }
 
 }
