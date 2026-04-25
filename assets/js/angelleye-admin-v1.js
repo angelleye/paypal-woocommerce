@@ -22,6 +22,11 @@ jQuery(function () {
     });
     el_notice.fadeIn(750);
     jQuery(".angelleye-notice-dismiss").click(function (e) {
+        // Push notices rendered by AngellEYE_Push_Notifications carry data-action and are
+        // dismissed by that class's own handler. Skip them here to avoid double POSTs.
+        if (jQuery(this).data("action")) {
+            return;
+        }
         e.preventDefault();
         jQuery(this).parent('div.ppcp_migration_report_parent').fadeOut(600, function () {
             jQuery(this).parent('div.ppcp_migration_report_parent').remove();

@@ -372,9 +372,6 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
         }
 
         function admin_notices() {
-            global $current_user;
-            $user_id = $current_user->ID;
-
             $this->pp_settings['testmode'] = isset($this->pp_settings['testmode']) ? $this->pp_settings['testmode'] : '';
             $this->pp_settings['enabled'] = isset($this->pp_settings['enabled']) ? $this->pp_settings['enabled'] : '';
             $screen = get_current_screen();
@@ -386,34 +383,7 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
                     echo '</div>';
                 }
             }
-
-            $response = AngellEYE_Utility::angelleye_get_push_notifications('paypal-for-woocommerce');
-            if (is_object($response)) {
-                foreach ($response->data as $key => $response_data) {
-                    $display = false;
-                    if (!get_user_meta($user_id, $response_data->id)) {
-                        if (!empty($response_data->ans_plugins) && is_array($response_data->ans_plugins)) {
-                            foreach ($response_data->ans_plugins as $key => $gateway_id) {
-                                if ('paypal-for-woocommerce' === $gateway_id) {
-                                    $display = true;
-                                    break;
-                                } else {
-                                    $gateway_option = get_option('woocommerce_' . $gateway_id . '_settings');
-                                    if (!empty($gateway_option) && is_array($gateway_option)) {
-                                        if (isset($gateway_option['enabled']) && 'yes' === $gateway_option['enabled']) {
-                                            $display = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            if ($display) {
-                                AngellEYE_Utility::angelleye_display_push_notification($response_data);
-                            }
-                        }
-                    }
-                }
-            }
+            // Push notifications are now rendered by the shared AngellEYE_Push_Notifications class.
         }
 
         public function init() {
@@ -1653,6 +1623,37 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
 
 global $angelleye_gateway_paypal_instance;
 $angelleye_gateway_paypal_instance = new AngellEYE_Gateway_Paypal();
+
+/**
+ * Shared AngellEYE push-notifications class. Self-contained — copy the file as-is
+ * into other AngellEYE plugins; the class_exists guard ensures only one copy loads.
+ */
+require_once plugin_dir_path(__FILE__) . 'includes/notifications/class-angelleye-push-notifications.php';
+add_action('plugins_loaded', function () {
+    if (!is_admin() || !class_exists('AngellEYE_Push_Notifications')) {
+        return;
+    }
+    (new AngellEYE_Push_Notifications(array(
+        'plugin_slug' => 'paypal-for-woocommerce',
+        'applies_to'  => function ($notification, $plugin_slug) {
+            // Show if the notification declares this plugin OR any currently-enabled WC payment gateway.
+            if (empty($notification->ans_plugins) || !is_array($notification->ans_plugins)) {
+                return false;
+            }
+            foreach ($notification->ans_plugins as $gateway_id) {
+                if ($plugin_slug === $gateway_id) {
+                    return true;
+                }
+                $gateway_option = get_option('woocommerce_' . $gateway_id . '_settings');
+                if (!empty($gateway_option) && is_array($gateway_option)
+                    && isset($gateway_option['enabled']) && 'yes' === $gateway_option['enabled']) {
+                    return true;
+                }
+            }
+            return false;
+        },
+    )))->register();
+}, 25);
 
 if (!function_exists('angelleye_pfw_bootstrap_ppcp_runtime')) {
     function angelleye_pfw_bootstrap_ppcp_runtime() {
