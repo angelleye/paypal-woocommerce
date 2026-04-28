@@ -859,7 +859,19 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'constants' => [
                 'approval_token_id' => APPROVAL_TOKEN_ID_PARAM_NAME
             ],
-            'is_hide_place_order_button' => angelleye_ppcp_is_cart_contains_free_trial() || ($this->is_pre_order_item_in_cart() && $this->is_paypal_vault_used_for_pre_order() && $this->is_pre_order_charged_upon_release_in_cart()) ? 'no' : 'yes',
+            // Force-show Place Order only when no smart button is rendered:
+            //   - Pure $0 free-trial cart (smart button bails at total === 0,
+            //     so the redirect-based setup-token flow is the only path).
+            //   - Pre-order vault charge-upon-release (smart button explicitly
+            //     bails for this scenario regardless of cart total).
+            // For a mixed cart (free-trial subscription + paid item) the cart
+            // total is > 0, so the smart button renders and drives the flow;
+            // we must NOT force Place Order here, otherwise both buttons show
+            // and the JS saved-token toggle can no longer hide Place Order.
+            'is_hide_place_order_button' => (
+                (angelleye_ppcp_is_cart_contains_free_trial() && (function_exists('WC') && WC()->cart ? (float) WC()->cart->total : 0) <= 0)
+                || ($this->is_pre_order_item_in_cart() && $this->is_paypal_vault_used_for_pre_order() && $this->is_pre_order_charged_upon_release_in_cart())
+            ) ? 'no' : 'yes',
         ));
     }
 

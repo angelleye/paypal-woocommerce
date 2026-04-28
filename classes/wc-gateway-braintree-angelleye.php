@@ -635,8 +635,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     (function ($) {
                         'use strict';
                         $(function () {
+                        // NOTE: avoid `&&` here. WooCommerce Blocks renders this
+                        // gateway description through wp_kses, which HTML-encodes
+                        // ampersands (`&&` → `&#038;&#038;`) and breaks the script.
                         var hasCreateAccountCheckbox = 0 < $( 'input#createaccount' ).length,
-			createAccount            = hasCreateAccountCheckbox && $( 'input#createaccount' ).is( ':checked' );
+			createAccount            = hasCreateAccountCheckbox ? $( 'input#createaccount' ).is( ':checked' ) : false;
                         if ( createAccount || is_logged_in || is_registration_required ) {
                             $( '.payment_method_braintree .woocommerce-SavedPaymentMethods-saveNew' ).show();
                         } else {
@@ -3166,8 +3169,11 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         <script type="text/javascript">
                 var angelleye_dropinInstance;
                     (function ($) {
+                        // NOTE: avoid `&&` here. WooCommerce Blocks renders this
+                        // gateway description through wp_kses, which HTML-encodes
+                        // ampersands (`&&` → `&#038;&#038;`) and breaks the script.
                         var hasCreateAccountCheckbox = 0 < $( 'input#createaccount' ).length,
-			createAccount            = hasCreateAccountCheckbox && $( 'input#createaccount' ).is( ':checked' );
+			createAccount            = hasCreateAccountCheckbox ? $( 'input#createaccount' ).is( ':checked' ) : false;
                         if ( createAccount || is_logged_in || is_registration_required ) {
                             $( '.payment_method_braintree .woocommerce-SavedPaymentMethods-saveNew' ).show();
                         } else {
