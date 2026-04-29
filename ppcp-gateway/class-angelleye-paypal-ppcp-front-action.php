@@ -632,10 +632,17 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     AngellEye_Session_Manager::clear();
                     if (ob_get_length())
                         ob_end_clean();
-                    wp_send_json_success(array(
+                    $result = array(
                         'result' => 'success',
                         'redirect' => apply_filters('woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order),
-                    ));
+                    );
+                    // This direct-capture path bypasses WC_Checkout::process_order_payment(), so the
+                    // woocommerce_payment_successful_result filter is never applied. Plugins like
+                    // Germanized for WooCommerce hook that filter to send the order confirmation email
+                    // immediately on order placement (legal requirement in DE). Apply it here so those
+                    // integrations behave the same as the standard checkout flow.
+                    $result = angelleye_ppcp_trigger_payment_successful_result($result, $order);
+                    wp_send_json_success($result);
                 } else {
                     AngellEye_Session_Manager::clear();
                     if (ob_get_length()) {
