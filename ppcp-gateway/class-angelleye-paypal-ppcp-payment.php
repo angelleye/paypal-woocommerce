@@ -1046,12 +1046,21 @@ class AngellEYE_PayPal_PPCP_Payment {
                     }
                     break;
                 case 'INVALID_REQUEST':
+                    $has_description = false;
                     foreach ($error['details'] as $e) {
                         if (isset($e['field']) && isset($e['description'])) {
                             $message .= "\t" . $e['field'] . "\n\t" . $e['description'] . "\n\n";
+                            $has_description = true;
                         } elseif (isset($e['issue'])) {
-                            $message .= "\t" . $e['issue'] . "n\n";
+                            $message .= "\t" . $e['issue'] . "\n\n";
                         }
+                    }
+                    // When PayPal only returns a generic issue code (e.g.
+                    // UNKNOWN_VALIDATION) with no field/description, the issue
+                    // code alone is useless to the buyer. Prepend the
+                    // top-level message so they get something actionable.
+                    if (!$has_description && !empty($error['message'])) {
+                        $message = $error['message'] . "\n" . $message;
                     }
                     break;
                 case 'BUSINESS_ERROR':
@@ -4172,6 +4181,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'expiry' => $posted_card->exp_year . '-' . $posted_card->exp_month,
                 'name' => $name
             );
+            // PayPal v3 vault setup-tokens validates the card; the security
+            // code is effectively required for setup-tokens-with-card or PayPal
+            // returns the generic UNKNOWN_VALIDATION with no field detail.
+            if (!empty($posted_card->cvc)) {
+                $body_request['payment_source']['card']['security_code'] = $posted_card->cvc;
+            }
             if (!empty($country) && !empty($postcode) && !empty($city)) {
                 $body_request['payment_source']['card']['billing_address'] = array(
                     'address_line_1' => $address_1,
@@ -4182,17 +4197,20 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'country_code' => $country
                 );
             }
-            $body_request['payment_source']['card']['verification_method'] = 'SCA_WHEN_REQUIRED';
+            // Do NOT send `verification_method` on /v3/vault/setup-tokens with
+            // a card source. The `SCA_WHEN_REQUIRED` enum is documented for
+            // /v2/checkout/orders' payment_source.card; the setup-tokens
+            // schema rejects it and PayPal returns INVALID_REQUEST →
+            // UNKNOWN_VALIDATION with no `field` / `description`. Verified
+            // via live sandbox test 2026-05-01 — removing this single line
+            // turned the same request from 400 INVALID_REQUEST into a
+            // successful setup-token response.
+            // $body_request['payment_source']['card']['verification_method'] = 'SCA_WHEN_REQUIRED';
             $body_request['payment_source']['card']['experience_context'] = array(
                 'brand_name' => $this->brand_name,
                 'locale' => 'en-US',
                 'return_url' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token_free_signup_with_free_trial', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id(), 'order_id' => $order_id), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
                 'cancel_url' => wc_get_checkout_url()
-            );
-            $body_request['payment_source']['card']['stored_credential'] = array(
-                'payment_initiator' => 'CUSTOMER',
-                'payment_type' => 'UNSCHEDULED',
-                'usage' => 'SUBSEQUENT'
             );
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
             if (!empty($paypal_generated_customer_id)) {
@@ -4275,18 +4293,28 @@ class AngellEYE_PayPal_PPCP_Payment {
                     'country_code' => $country
                 );
             }
-            $body_request['payment_source']['card']['verification_method'] = 'SCA_WHEN_REQUIRED';
+            // Do NOT send `verification_method` on /v3/vault/setup-tokens with
+            // a card source — see the matching note in
+            // angelleye_ppcp_advanced_credit_card_setup_tokens_free_signup_with_free_trial.
+            // PayPal rejects the call with INVALID_REQUEST → UNKNOWN_VALIDATION.
+            // $body_request['payment_source']['card']['verification_method'] = 'SCA_WHEN_REQUIRED';
             $body_request['payment_source']['card']['experience_context'] = array(
                 'brand_name' => $this->brand_name,
                 'locale' => 'en-US',
                 'return_url' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token_sub_change_payment', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id(), 'order_id' => $order_id), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
                 'cancel_url' => wc_get_checkout_url()
             );
-            $body_request['payment_source']['card']['stored_credential'] = array(
-                'payment_initiator' => 'CUSTOMER',
-                'payment_type' => 'UNSCHEDULED',
-                'usage' => 'SUBSEQUENT'
-            );
+            // Do NOT send `stored_credential` on /v3/vault/setup-tokens. It is
+            // a /v2/checkout/orders field; the setup-tokens schema for
+            // payment_source.card does not accept it and PayPal rejects the
+            // call with INVALID_REQUEST → UNKNOWN_VALIDATION. The merchant-
+            // initiated recurring intent is conveyed at exchange / capture
+            // time, not on setup-token creation.
+            // $body_request['payment_source']['card']['stored_credential'] = array(
+            //     'payment_initiator' => 'CUSTOMER',
+            //     'payment_type' => 'UNSCHEDULED',
+            //     'usage' => 'SUBSEQUENT'
+            // );
             $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
             if (!empty($paypal_generated_customer_id)) {
                 $body_request['customer']['id'] = $paypal_generated_customer_id;

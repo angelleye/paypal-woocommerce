@@ -31,9 +31,15 @@ function initSmartButtons() {
             });
     }
 
+    // At $0 cart the CC gateway uses WooCommerce's legacy plain-text card
+    // form (server-side setup-tokens-with-free-trial flow). Don't take over
+    // the submit — let WC POST the form so the trait reads raw card data
+    // from $_POST and forwards it to /v3/vault/setup-tokens.
+    const isZeroCart = () => parseFloat(angelleye_ppcp_manager.cart_total) <= 0;
+
     if ($(document.body).hasClass('woocommerce-order-pay')) {
         $('#order_review').on('submit', function (event) {
-            if (angelleyeOrder.isCardFieldEligible() === true) {
+            if (angelleyeOrder.isCardFieldEligible() === true && !isZeroCart()) {
                 event.preventDefault();
                 if ($('input[name="wc-angelleye_ppcp_cc-payment-token"]').length) {
                     if ('new' !== $('input[name="wc-angelleye_ppcp_cc-payment-token"]:checked').val()) {
@@ -50,9 +56,9 @@ function initSmartButtons() {
             return true;
         });
     }
-    
+
     $(checkoutSelector).on('checkout_place_order_angelleye_ppcp_cc', function (event) {
-        if (angelleyeOrder.isCardFieldEligible() === true) {
+        if (angelleyeOrder.isCardFieldEligible() === true && !isZeroCart()) {
             event.preventDefault();
             if ($('input[name="wc-angelleye_ppcp_cc-payment-token"]').length) {
                 if ('new' !== $('input[name="wc-angelleye_ppcp_cc-payment-token"]:checked').val()) {
