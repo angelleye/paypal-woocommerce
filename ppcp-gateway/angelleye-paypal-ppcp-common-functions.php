@@ -1528,6 +1528,40 @@ if (!function_exists('angelleye_get_matched_shortcode_attributes')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_trigger_payment_successful_result')) {
+
+    /**
+     * Apply WooCommerce's `woocommerce_payment_successful_result` filter for PPCP
+     * direct-capture paths that bypass WC_Checkout::process_order_payment().
+     *
+     * Some PPCP smart-button flows (CC, Apple Pay, Google Pay, PayPal Wallet) capture
+     * payment via a custom AJAX endpoint instead of the standard checkout submit, so
+     * WooCommerce never applies this filter for them. Plugins such as Germanized for
+     * WooCommerce hook that filter to send the order confirmation email immediately on
+     * order placement; without this call, those integrations are silent for cards/wallets.
+     *
+     * A per-request static guard prevents firing twice for the same order within one
+     * request, which would otherwise risk a duplicate confirmation email if a future
+     * code path also reaches WC_Checkout::process_order_payment() for the same order.
+     *
+     * @param array        $result Payment result array (must contain 'result' and 'redirect').
+     * @param int|WC_Order $order  Order or order ID.
+     * @return array Filtered result array.
+     */
+    function angelleye_ppcp_trigger_payment_successful_result($result, $order) {
+        static $fired = array();
+
+        $order_id = is_a($order, 'WC_Order') ? $order->get_id() : (int) $order;
+        if (!$order_id || isset($fired[$order_id])) {
+            return $result;
+        }
+        $fired[$order_id] = true;
+
+        return apply_filters('woocommerce_payment_successful_result', $result, $order_id);
+    }
+
+}
+
 if (!function_exists('angelleye_ppcp_get_awaiting_payment_order_id')) {
 
     function angelleye_ppcp_get_awaiting_payment_order_id() {
