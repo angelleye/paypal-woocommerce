@@ -841,6 +841,18 @@ const angelleyeOrder = {
             angelleyeOrder.setPpcpCcSubmitHookReady(false);
             return false;
         }
+        // At $0 cart the CC gateway renders WooCommerce's legacy plain-text
+        // card form (see WC_Gateway_CC_AngellEYE::angelleye_ppcp_cc_form),
+        // because the existing free-trial flow reads raw card data from
+        // $_POST and forwards it to /v3/vault/setup-tokens to vault the
+        // card for future renewals. Mounting SDK Card Fields iframes on
+        // top of those same DOM ids would tokenize the card client-side
+        // and break the submission. We let the checkout submit normally
+        // and the server-side trait flow handles vaulting.
+        if (parseFloat(angelleye_ppcp_manager.cart_total) <= 0) {
+            angelleyeOrder.setPpcpCcSubmitHookReady(false);
+            return false;
+        }
         let spinnerSelectors = checkoutSelector;
         jQuery(checkoutSelector).addClass('CardFields');
         let errorLogId = null;
