@@ -128,24 +128,30 @@ function initSmartButtons() {
         console.log('PayPal lib loaded, initialize buttons.');
         let scriptsToLoad = [];
         if (angelleyeOrder.isApplePayEnabled()) {
-            let appleResolveOnLoad = new Promise((resolve) => {
-                console.log('apple sdk loaded');
-                resolve();
+            let appleResolve, appleReject;
+            let applePromise = new Promise((resolve, reject) => {
+                appleResolve = resolve;
+                appleReject = reject;
             });
             scriptsToLoad.push({
                 url: angelleye_ppcp_manager.apple_sdk_url,
-                callback: appleResolveOnLoad
+                promise: applePromise,
+                onLoaded: () => { console.log('apple sdk loaded'); appleResolve(); },
+                onError: () => { console.log('apple sdk failed to load'); appleReject(); }
             });
         }
 
         if (angelleyeOrder.isGooglePayEnabled()) {
-            let googleResolveOnLoad = new Promise((resolve) => {
-                console.log('google sdk loaded');
-                resolve();
+            let googleResolve, googleReject;
+            let googlePromise = new Promise((resolve, reject) => {
+                googleResolve = resolve;
+                googleReject = reject;
             });
             scriptsToLoad.push({
                 url: angelleye_ppcp_manager.google_sdk_url,
-                callback: googleResolveOnLoad
+                promise: googlePromise,
+                onLoaded: () => { console.log('google sdk loaded'); googleResolve(); },
+                onError: () => { console.log('google sdk failed to load'); googleReject(); }
             });
         }
 
@@ -154,7 +160,7 @@ function initSmartButtons() {
         } else {
             let allPromises = [];
             for (let i = 0; i < scriptsToLoad.length; i++) {
-                allPromises.push(scriptsToLoad[i].callback);
+                allPromises.push(scriptsToLoad[i].promise);
             }
             Promise.all(allPromises).then((success) => {
                 console.log('all libs loaded');
@@ -163,7 +169,7 @@ function initSmartButtons() {
                 console.log('An error occurred in loading the SDKs.');
             });
             for (let i = 0; i < scriptsToLoad.length; i++) {
-                angelleyeLoadPayPalScript(scriptsToLoad[i], scriptsToLoad[i].callback);
+                angelleyeLoadPayPalScript(scriptsToLoad[i], scriptsToLoad[i].onLoaded, scriptsToLoad[i].onError);
             }
         }
     };
