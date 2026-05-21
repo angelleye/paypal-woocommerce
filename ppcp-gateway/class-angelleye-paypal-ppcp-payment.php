@@ -1266,7 +1266,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $order->update_meta_data('_paypal_order_id', $this->api_response['id']);
                 $order->save_meta_data();
                 if ($this->api_response['status'] == 'COMPLETED') {
-                    if (isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'APPROVED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
+                    // vault.status = APPROVED only carries a setup_token for the
+                    // explicit setup-token vaulting flow. Some capture responses
+                    // come back with vault.status = APPROVED but no setup_token
+                    // (and no vault id) - there is nothing to exchange. Guard on
+                    // setup_token so we don't POST to /v3/vault/payment-tokens
+                    // with an empty id, which only triggers a failed API call.
+                    if (!empty($this->api_response['payment_source']['card']['attributes']['vault']['setup_token']) && isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'APPROVED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
                         $setup_token = $this->api_response['payment_source']['card']['attributes']['vault']['setup_token'];
                         $body_request = array();
                         $body_request['payment_source']['token'] = array(
@@ -1895,7 +1901,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
                 $payment_status = $this->api_response['purchase_units']['0']['payments']['authorizations']['0']['status'] ?? '';
                 if ($this->api_response['status'] == 'COMPLETED' && strtolower($payment_status) != "denied") {
-                    if (isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'APPROVED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
+                    // vault.status = APPROVED only carries a setup_token for the
+                    // explicit setup-token vaulting flow. Some capture responses
+                    // come back with vault.status = APPROVED but no setup_token
+                    // (and no vault id) - there is nothing to exchange. Guard on
+                    // setup_token so we don't POST to /v3/vault/payment-tokens
+                    // with an empty id, which only triggers a failed API call.
+                    if (!empty($this->api_response['payment_source']['card']['attributes']['vault']['setup_token']) && isset($this->api_response['payment_source']['card']['attributes']['vault']['status']) && 'APPROVED' === $this->api_response['payment_source']['card']['attributes']['vault']['status']) {
                         $setup_token = $this->api_response['payment_source']['card']['attributes']['vault']['setup_token'];
                         $body_request = array();
                         $body_request['payment_source']['token'] = array(
