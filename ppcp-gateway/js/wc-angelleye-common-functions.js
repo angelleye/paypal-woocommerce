@@ -476,7 +476,10 @@ const angelleyeOrder = {
                 '.woocommerce',
                 '.woocommerce-checkout',
                 '#customer_details, .woocommerce-checkout-review-order',
-                'form.checkout'
+                'form.checkout',
+                '.woocommerce-checkout-payment',
+                '.woocommerce-checkout-review-order-table',
+                '#order_review'
             ];
 
             unblockTargets.forEach((selector) => {
@@ -1026,6 +1029,25 @@ const angelleyeOrder = {
                     data.errors.forEach(error => {
                         console.log(error);
                     });
+                }
+            }).catch((error) => {
+                // A rejected getState() must not strand the checkout in the
+                // processing state. Without this catch the spinner shown by
+                // triggerPpcpCcSubmit() would stay on screen forever, since
+                // the .then() cleanup never runs. Clear the spinner and submit
+                // guards so the customer can retry.
+                angelleyeOrder.stopPpcpCcSubmitWatchdog();
+                angelleyeOrder.hideProcessingSpinner();
+                jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting CardFields createOrder');
+                console.log('cardFields.getState() failed', error);
+                if (angelleyeOrder.ppcp_block_mode) {
+                    jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{
+                        message: localizedMessages.fields_not_valid,
+                        context: 'card_invalid'
+                    }]);
+                } else {
+                    angelleyeOrder.removeError();
+                    angelleyeOrder.showError(localizedMessages.fields_not_valid);
                 }
             });
         });
