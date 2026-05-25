@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 6.9.4
-Stable tag: 4.6.11
+Tested up to: 7.0
+Stable tag: 4.6.12
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,16 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.6.12 - 05.25.2026 =
+* Fix - Hide the "Save payment method to my account" checkbox on checkout for merchants whose PayPal accounts do not actually have vault capability provisioned, preventing silently rejected vault attributes from being injected into payment requests. ([2187](https://github.com/angelleye/paypal-woocommerce/pull/2187))
+* Enhancement - Improved notifications to avoid API calls on every page request. ([2188](https://github.com/angelleye/paypal-woocommerce/pull/2188))
+* Fix - Triggered the woocommerce_payment_successful_result filter on PPCP direct-capture so third-party plugins such as Germanized for WooCommerce can dispatch their order confirmation emails for PayPal/ACDC/Apple Pay/Google Pay orders. ([2189](https://github.com/angelleye/paypal-woocommerce/pull/2189))
+* Feature - Added $0 trial subscription checkout with PPCP and Advanced Credit Card gateways. ([2190](https://github.com/angelleye/paypal-woocommerce/pull/2190))
+* Enhancement - Updated email template override with WooCommerce 10.7 core, fixing an undefined $cogs_is_enabled warning, adding the new Cost of Goods Sold column and totals, improving coupon lookups, and allowing negative fees to display. ([2191](https://github.com/angelleye/paypal-woocommerce/pull/2191))
+* Fix - Resolved a race condition where Google Pay and Apple Pay SDKs were initialized before their scripts finished loading, causing "google is not defined" errors; loader now waits on real promises with proper onLoaded/onError callbacks. ([2192](https://github.com/angelleye/paypal-woocommerce/pull/2192))
+* Fix - Prevented duplicate PPCP advanced Card Fields from rendering after checkout updates by tracking the mounted DOM node identity rather than relying on async iframe presence detection. ([2193](https://github.com/angelleye/paypal-woocommerce/pull/2193))
+* Fix - Guarded the vault payment-token exchange in both capture and authorization handlers so it no longer fires when the PayPal response is APPROVED but contains no setup_token, eliminating "Undefined array key" warnings and malformed POSTs to /v3/vault/payment-tokens. ([2194](https://github.com/angelleye/paypal-woocommerce/pull/2194))
 
 = 4.6.11 - 04.21.2026 =
 * Fix - Resolved race condition on WooCommerce Blocks checkout first load causing PayPal buttons and PPCP-CC card fields to go missing until page refresh. ([2179](https://github.com/angelleye/paypal-woocommerce/pull/2179))
