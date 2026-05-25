@@ -157,6 +157,12 @@ const angelleyeOrder = {
     },
     ppcp_block_mode: false,
     blockCreateOrderError: null,
+    // The #angelleye_ppcp_cc-card-number DOM node the SDK Card Fields were
+    // last mounted into. Used by renderHostedButtons to detect whether a
+    // (possibly still-in-flight) mount already ran for the current
+    // container, so an updated_checkout / payment_method_selected burst
+    // can't stack a duplicate set of card-field iframes.
+    hostedFieldsContainer: null,
     /**
      * Drives the PPCP-CC card-fields submit pipeline for WooCommerce Blocks
      * and returns a Promise that the Blocks onPaymentSetup subscriber awaits.
@@ -470,7 +476,10 @@ const angelleyeOrder = {
                 '.woocommerce',
                 '.woocommerce-checkout',
                 '#customer_details, .woocommerce-checkout-review-order',
-                'form.checkout'
+                'form.checkout',
+                '.woocommerce-checkout-payment',
+                '.woocommerce-checkout-review-order-table',
+                '#order_review'
             ];
 
             unblockTargets.forEach((selector) => {
@@ -837,6 +846,22 @@ const angelleyeOrder = {
         if (jQuery(checkoutSelector).is('.CardFields')) {
             return false;
         }
+        // updated_checkout swaps in a fresh review-order fragment: the
+        // .CardFields class on the form survives, but the card-field
+        // containers become brand-new empty nodes, and renderPaymentButtons
+        // clears the class (its iframe-count check) so we re-mount. The race
+        // that duplicates the fields: CardFields().render() appends its
+        // iframe asynchronously, so a second event (another updated_checkout
+        // / payment_method_selected) can fire while the first mount is still
+        // in flight — the iframe is not in the DOM yet, the class gets
+        // cleared again, and a second set is mounted into the same node.
+        // Guard on the container node identity instead of iframe presence:
+        // the same node means a mount already ran (or is running) for it;
+        // only a node replaced by a new fragment is a legitimate re-render.
+        const cardNumberContainer = document.getElementById('angelleye_ppcp_cc-card-number');
+        if (cardNumberContainer && angelleyeOrder.hostedFieldsContainer === cardNumberContainer) {
+            return false;
+        }
         if (angelleyeOrder.isCCPaymentMethodSelected() === false) {
             angelleyeOrder.setPpcpCcSubmitHookReady(false);
             return false;
@@ -961,6 +986,10 @@ const angelleyeOrder = {
             // from the previous render before the SDK mounts new ones;
             // otherwise the customer sees each card field duplicated.
             jQuery('#angelleye_ppcp_cc-card-number, #angelleye_ppcp_cc-card-expiry, #angelleye_ppcp_cc-card-cvc').empty();
+            // Claim this container node before the async iframe mount starts
+            // so any re-entrant renderHostedButtons call bails on the
+            // node-identity guard above instead of mounting a duplicate set.
+            angelleyeOrder.hostedFieldsContainer = document.getElementById('angelleye_ppcp_cc-card-number');
             cardFields.NumberField().render("#angelleye_ppcp_cc-card-number");
             cardFields.ExpiryField().render("#angelleye_ppcp_cc-card-expiry");
             cardFields.CVVField().render("#angelleye_ppcp_cc-card-cvc");
@@ -1000,6 +1029,25 @@ const angelleyeOrder = {
                     data.errors.forEach(error => {
                         console.log(error);
                     });
+                }
+            }).catch((error) => {
+                // A rejected getState() must not strand the checkout in the
+                // processing state. Without this catch the spinner shown by
+                // triggerPpcpCcSubmit() would stay on screen forever, since
+                // the .then() cleanup never runs. Clear the spinner and submit
+                // guards so the customer can retry.
+                angelleyeOrder.stopPpcpCcSubmitWatchdog();
+                angelleyeOrder.hideProcessingSpinner();
+                jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting CardFields createOrder');
+                console.log('cardFields.getState() failed', error);
+                if (angelleyeOrder.ppcp_block_mode) {
+                    jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{
+                        message: localizedMessages.fields_not_valid,
+                        context: 'card_invalid'
+                    }]);
+                } else {
+                    angelleyeOrder.removeError();
+                    angelleyeOrder.showError(localizedMessages.fields_not_valid);
                 }
             });
         });
