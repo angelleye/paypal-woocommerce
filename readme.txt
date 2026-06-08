@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 7.0
-Stable tag: 4.6.12
+Stable tag: 4.6.13
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.6.13 - 06.08.2026 =
+* Fix - PayPal credit/debit card fields render issue resolved for Guest checkouts on the WooCommerce Order Pay page. ([2197](https://github.com/angelleye/paypal-woocommerce/pull/2197))
 
 = 4.6.12 - 05.25.2026 =
 * Fix - Hide the "Save payment method to my account" checkbox on checkout for merchants whose PayPal accounts do not actually have vault capability provisioned, preventing silently rejected vault attributes from being injected into payment requests. ([2187](https://github.com/angelleye/paypal-woocommerce/pull/2187))
