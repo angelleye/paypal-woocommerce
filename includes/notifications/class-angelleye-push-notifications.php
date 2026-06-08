@@ -176,7 +176,7 @@ if ( ! class_exists( 'AngellEYE_Push_Notifications' ) ) {
             if ( ! is_user_logged_in() ) {
                 wp_send_json_error();
             }
-            $message_id = isset( $_POST['data'] ) ? wc_clean( wp_unslash( $_POST['data'] ) ) : '';
+            $message_id = isset( $_POST['data'] ) ? sanitize_text_field( wp_unslash( $_POST['data'] ) ) : '';
             if ( '' === $message_id ) {
                 wp_send_json_error();
             }

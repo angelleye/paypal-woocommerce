@@ -158,11 +158,15 @@ const angelleyeOrder = {
     ppcp_block_mode: false,
     blockCreateOrderError: null,
     // The #angelleye_ppcp_cc-card-number DOM node the SDK Card Fields were
-    // last mounted into. Used by renderHostedButtons to detect whether a
-    // (possibly still-in-flight) mount already ran for the current
-    // container, so an updated_checkout / payment_method_selected burst
-    // can't stack a duplicate set of card-field iframes.
+    // last mounted into, and the timestamp of that render() call. Used by
+    // renderHostedButtons to detect whether a (possibly still-in-flight)
+    // mount already ran for the current container, so an updated_checkout
+    // / payment_method_selected burst can't stack a duplicate set of
+    // card-field iframes. The timestamp lets a later call distinguish an
+    // in-flight render from one that silently failed, so a stuck mount
+    // doesn't leave the customer with empty containers forever.
     hostedFieldsContainer: null,
+    hostedFieldsRenderedAt: 0,
     /**
      * Drives the PPCP-CC card-fields submit pipeline for WooCommerce Blocks
      * and returns a Promise that the Blocks onPaymentSetup subscriber awaits.
@@ -855,12 +859,26 @@ const angelleyeOrder = {
         // / payment_method_selected) can fire while the first mount is still
         // in flight — the iframe is not in the DOM yet, the class gets
         // cleared again, and a second set is mounted into the same node.
-        // Guard on the container node identity instead of iframe presence:
-        // the same node means a mount already ran (or is running) for it;
-        // only a node replaced by a new fragment is a legitimate re-render.
+        //
+        // Guard on the container node identity *and* the iframe presence:
+        //   - iframe already in the node → mounted, bail.
+        //   - no iframe yet but render() was called very recently → still
+        //     in flight, bail (preventing the duplicate-mount race).
+        //   - no iframe and the render call is older than the grace window
+        //     → the previous mount silently failed (SDK glitch, hidden
+        //     container at render time, etc.); fall through and retry,
+        //     otherwise the customer is stuck with empty containers.
+        // A node replaced by a fresh fragment (updated_checkout) is always
+        // a different reference, so re-renders into a new container always
+        // proceed.
         const cardNumberContainer = document.getElementById('angelleye_ppcp_cc-card-number');
         if (cardNumberContainer && angelleyeOrder.hostedFieldsContainer === cardNumberContainer) {
-            return false;
+            const hasIframe = cardNumberContainer.querySelector('iframe') !== null;
+            const renderedAt = angelleyeOrder.hostedFieldsRenderedAt || 0;
+            const stillInFlight = (Date.now() - renderedAt) < 2000;
+            if (hasIframe || stillInFlight) {
+                return false;
+            }
         }
         if (angelleyeOrder.isCCPaymentMethodSelected() === false) {
             angelleyeOrder.setPpcpCcSubmitHookReady(false);
@@ -986,10 +1004,12 @@ const angelleyeOrder = {
             // from the previous render before the SDK mounts new ones;
             // otherwise the customer sees each card field duplicated.
             jQuery('#angelleye_ppcp_cc-card-number, #angelleye_ppcp_cc-card-expiry, #angelleye_ppcp_cc-card-cvc').empty();
-            // Claim this container node before the async iframe mount starts
-            // so any re-entrant renderHostedButtons call bails on the
-            // node-identity guard above instead of mounting a duplicate set.
+            // Claim this container node + stamp the time before the async
+            // iframe mount starts, so any re-entrant renderHostedButtons
+            // call bails on the guard above (during the in-flight window)
+            // instead of mounting a duplicate set.
             angelleyeOrder.hostedFieldsContainer = document.getElementById('angelleye_ppcp_cc-card-number');
+            angelleyeOrder.hostedFieldsRenderedAt = Date.now();
             cardFields.NumberField().render("#angelleye_ppcp_cc-card-number");
             cardFields.ExpiryField().render("#angelleye_ppcp_cc-card-expiry");
             cardFields.CVVField().render("#angelleye_ppcp_cc-card-cvc");
