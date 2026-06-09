@@ -434,7 +434,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             angelleye_ppcp_add_css_js();
         } elseif(is_product() && $this->enable_product_button) {
             angelleye_ppcp_add_css_js();
-        } elseif (is_cart() && !WC()->cart->is_empty() && $this->enable_cart_button) {
+        } elseif (is_cart() && WC()->cart && !WC()->cart->is_empty() && $this->enable_cart_button) {
             angelleye_ppcp_add_css_js();
         } elseif (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
             // FunnelKit Cart is a floating widget visible on all frontend pages.
@@ -550,7 +550,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_is_subs_change_payment() === true) {
             if (is_product()) {
                 $page = 'product';
-            } else if (is_cart() && !WC()->cart->is_empty()) {
+            } else if (is_cart() && WC()->cart && !WC()->cart->is_empty()) {
                 $page = 'cart';
             } elseif (is_checkout_pay_page()) {
                 $page = 'checkout';
@@ -624,7 +624,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $apple_pay_btn_selector['angelleye_ppcp_product_apple_pay'] = '#angelleye_ppcp_product_apple_pay';
                 $google_pay_btn_selector['angelleye_ppcp_product_shortcode_google_pay'] = '#angelleye_ppcp_product_shortcode_google_pay';
                 $google_pay_btn_selector['angelleye_ppcp_product_google_pay'] = '#angelleye_ppcp_product_google_pay';
-            } elseif (is_cart() && !WC()->cart->is_empty()) {
+            } elseif (is_cart() && WC()->cart && !WC()->cart->is_empty()) {
                 $page = 'cart';
                 if ($this->cart_button_position === 'top') {
                     $button_selector['angelleye_ppcp_cart_top'] = '#angelleye_ppcp_cart_top';
@@ -1926,7 +1926,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         try {
             if (is_product()) {
                 $this->display_paypal_button_product_page($is_shortcode = 'yes');
-            } elseif (is_cart() && !WC()->cart->is_empty()) {
+            } elseif (is_cart() && WC()->cart && !WC()->cart->is_empty()) {
                 $this->display_paypal_button_cart_page($is_shortcode = 'yes');
             } elseif (is_checkout_pay_page()) {
                 $this->display_paypal_button_checkout_page($is_shortcode = 'yes');

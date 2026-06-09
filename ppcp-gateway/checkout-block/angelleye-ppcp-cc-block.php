@@ -53,7 +53,7 @@ final class AngellEYE_PPCP_CC_Block extends AbstractPaymentMethodType {
         $is_pay_page = '';
         if (is_product()) {
             $page = 'product';
-        } else if (is_cart() && !WC()->cart->is_empty()) {
+        } else if (is_cart() && WC()->cart && !WC()->cart->is_empty()) {
             $page = 'cart';
         } elseif (is_checkout_pay_page()) {
             $page = 'checkout';
