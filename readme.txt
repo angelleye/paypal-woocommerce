@@ -127,8 +127,9 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.6.13 - 06.08.2026 =
-* Fix - PayPal credit/debit card fields render issue resolved for Guest checkouts on the WooCommerce Order Pay page. ([2197](https://github.com/angelleye/paypal-woocommerce/pull/2197))
+= 4.6.13 - 06.09.2026 =
+* Fix - PayPal credit/debit card fields now render correctly on the WooCommerce Order Pay page, so customers can complete payment for pending orders without needing to reload the page. ([2197](https://github.com/angelleye/paypal-woocommerce/pull/2197))
+* Fix - Resolved a couple of issues on the Order Pay page where the PayPal card fields failed to load and the WooCommerce "Place Order" button incorrectly stayed visible alongside the PayPal buttons when PPCP was selected. ([2198](https://github.com/angelleye/paypal-woocommerce/pull/2198))
 
 = 4.6.12 - 05.25.2026 =
 * Fix - Hide the "Save payment method to my account" checkbox on checkout for merchants whose PayPal accounts do not actually have vault capability provisioned, preventing silently rejected vault attributes from being injected into payment requests. ([2187](https://github.com/angelleye/paypal-woocommerce/pull/2187))
