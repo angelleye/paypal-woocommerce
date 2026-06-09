@@ -907,7 +907,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         $page = null;
         if (isset($_GET) && !empty($_GET['from'])) {
             $page = $_GET['from'];
-        } elseif (is_cart() && !WC()->cart->is_empty()) {
+        } elseif (is_cart() && WC()->cart && !WC()->cart->is_empty()) {
             $page = 'cart';
         } elseif (is_checkout() || is_checkout_pay_page()) {
             $page = 'checkout';

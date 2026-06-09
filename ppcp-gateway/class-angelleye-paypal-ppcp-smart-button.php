@@ -434,7 +434,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             angelleye_ppcp_add_css_js();
         } elseif(is_product() && $this->enable_product_button) {
             angelleye_ppcp_add_css_js();
-        } elseif (is_cart() && !WC()->cart->is_empty() && $this->enable_cart_button) {
+        } elseif (is_cart() && WC()->cart && !WC()->cart->is_empty() && $this->enable_cart_button) {
             angelleye_ppcp_add_css_js();
         } elseif (class_exists('\FKCart\Plugin') && $this->enable_funnelkit_cart_button) {
             // FunnelKit Cart is a floating widget visible on all frontend pages.
@@ -550,7 +550,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_is_subs_change_payment() === true) {
             if (is_product()) {
                 $page = 'product';
-            } else if (is_cart() && !WC()->cart->is_empty()) {
+            } else if (is_cart() && WC()->cart && !WC()->cart->is_empty()) {
                 $page = 'cart';
             } elseif (is_checkout_pay_page()) {
                 $page = 'checkout';
@@ -624,7 +624,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $apple_pay_btn_selector['angelleye_ppcp_product_apple_pay'] = '#angelleye_ppcp_product_apple_pay';
                 $google_pay_btn_selector['angelleye_ppcp_product_shortcode_google_pay'] = '#angelleye_ppcp_product_shortcode_google_pay';
                 $google_pay_btn_selector['angelleye_ppcp_product_google_pay'] = '#angelleye_ppcp_product_google_pay';
-            } elseif (is_cart() && !WC()->cart->is_empty()) {
+            } elseif (is_cart() && WC()->cart && !WC()->cart->is_empty()) {
                 $page = 'cart';
                 if ($this->cart_button_position === 'top') {
                     $button_selector['angelleye_ppcp_cart_top'] = '#angelleye_ppcp_cart_top';
@@ -792,6 +792,22 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         $js_url = add_query_arg($smart_js_arg, 'https://www.paypal.com/sdk/js');
 
+        // On Order Pay there is no active shopping cart, so WC()->cart->total
+        // returns 0. The JS-side renderHostedButtons treats cart_total <= 0
+        // as the legacy free-trial flow and bails before mounting the SDK
+        // Card Fields. Use the order total on Order Pay so that guard
+        // recognises the real amount and the hosted fields mount.
+        $cart_total = WC()->cart->total;
+        if (is_checkout_pay_page()) {
+            global $wp;
+            if (isset($wp->query_vars['order-pay'])) {
+                $pay_order = wc_get_order(absint($wp->query_vars['order-pay']));
+                if ($pay_order) {
+                    $cart_total = $pay_order->get_total();
+                }
+            }
+        }
+
         wp_localize_script($ae_script_loader_handle, 'angelleye_ppcp_manager', array(
             'sandbox_mode' => (bool) $this->is_sandbox,
             'paypal_sdk_url' => $js_url,
@@ -818,7 +834,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'cc_capture' => add_query_arg(array('angelleye_ppcp_action' => 'cc_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'create_order_url' => add_query_arg(array('angelleye_ppcp_action' => 'create_order', 'utm_nooverride' => '1', 'from' => is_checkout_pay_page() ? 'pay_page' : $page), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'shipping_update_url' => add_query_arg(array('angelleye_ppcp_action' => 'shipping_address_update', 'utm_nooverride' => '1', 'from' => is_checkout_pay_page() ? 'pay_page' : $page), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
-            'cart_total' => WC()->cart->total,
+            'cart_total' => $cart_total,
             'paymentaction' => $this->paymentaction,
             'advanced_card_payments' => ($this->advanced_card_payments === true) ? 'yes' : 'no',
             'three_d_secure_contingency' => $this->three_d_secure_contingency,
@@ -866,8 +882,14 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             // vault charge-upon-release case where the smart button bails
             // regardless of cart total. For carts with total > 0 the JS
             // saved-token toggle in canShowPlaceOrderBtn() handles visibility.
+            //
+            // Use the resolved $cart_total (Order Pay-aware) rather than
+            // WC()->cart->total directly: on Order Pay the cart is empty
+            // so WC()->cart->total is 0, which would otherwise force the
+            // Place Order button visible alongside the smart button even
+            // when the order has a real amount.
             'is_hide_place_order_button' => (
-                (function_exists('WC') && WC()->cart ? (float) WC()->cart->total : 1) <= 0
+                (float) $cart_total <= 0
                 || ($this->is_pre_order_item_in_cart() && $this->is_paypal_vault_used_for_pre_order() && $this->is_pre_order_charged_upon_release_in_cart())
             ) ? 'no' : 'yes',
         ));
@@ -1904,7 +1926,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         try {
             if (is_product()) {
                 $this->display_paypal_button_product_page($is_shortcode = 'yes');
-            } elseif (is_cart() && !WC()->cart->is_empty()) {
+            } elseif (is_cart() && WC()->cart && !WC()->cart->is_empty()) {
                 $this->display_paypal_button_cart_page($is_shortcode = 'yes');
             } elseif (is_checkout_pay_page()) {
                 $this->display_paypal_button_checkout_page($is_shortcode = 'yes');

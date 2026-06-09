@@ -791,7 +791,7 @@ class Angelleye_PayPal_Express_Checkout_Helper {
                 if (!isset($this->disallowed_funding_methods['paylater'])) {
                     array_push($enable_funding, 'paylater');
                 }
-                $is_cart = is_cart() && !WC()->cart->is_empty();
+                $is_cart = is_cart() && WC()->cart && !WC()->cart->is_empty();
                 $is_product = is_product();
                 $is_checkout = is_checkout();
                 $page = $is_cart ? 'cart' : ( $is_product ? 'product' : ( $is_checkout ? 'checkout' : null ) );
