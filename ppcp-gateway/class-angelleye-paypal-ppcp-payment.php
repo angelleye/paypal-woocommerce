@@ -1420,6 +1420,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                         wc_add_notice(__('Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction. Please attempt your purchase again.', 'paypal-for-woocommerce'), 'error');
                         return false;
                     } else {
+                        // PENDING / non-final capture: defer status to angelleye_ppcp_update_woo_order_status,
+                        // which sets on-hold with the PayPal pending reason. Avoid an extra update_status('on-hold')
+                        // that would only flap the status and produce duplicate transition notes.
                         if ($this->payment_complete === count($this->api_response['purchase_units'])) {
                             $order->payment_complete($transaction_id);
                         } else {
@@ -1432,6 +1435,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                     $order->save();
                     $order->add_order_note(sprintf(__('%s Capture Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
                     $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
+                    $this->angelleye_ppcp_maybe_trigger_gzd_order_confirmation($order);
                     return true;
                 } else {
                     return false;
@@ -2031,6 +2035,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                     }
                     $order->save();
+                    $this->angelleye_ppcp_maybe_trigger_gzd_order_confirmation($order);
                     return true;
                 } else {
                     $response_code = __('Processor authorization status: ', 'paypal-for-woocommerce');
@@ -2644,9 +2649,11 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $order = wc_get_order($orderid);
             $angelleye_ppcp_payment_method_title = $this->get_payment_method_title_for_order($orderid);
-            $_paypal_order_id = angelleye_ppcp_get_post_meta($order, '_paypal_order_id');
-            $respnse = $this->angelleye_ppcp_get_paypal_order($_paypal_order_id);
-            $payment_status = isset($respnse['status']) ? $respnse['status'] : $payment_status;
+            // Trust the caller's $payment_status (capture- or auth-level enum). The previous
+            // refetch overrode it with the PayPal Order-level status, which can be COMPLETED
+            // while the capture itself is still PENDING (e.g. RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION) —
+            // that mismatch wrongly routed pending captures into the COMPLETED branch and called
+            // payment_complete() against funds that were not yet settled.
             switch (strtoupper($payment_status)) :
                 case 'COMPLETED' :
                     $order->payment_complete();
@@ -3519,6 +3526,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $order->save();
                         $order->add_order_note(sprintf(__('%s Capture Transaction ID: %s', 'paypal-for-woocommerce'), $angelleye_ppcp_payment_method_title, $transaction_id));
                         $order->add_order_note('Seller Protection Status: ' . angelleye_ppcp_readable($seller_protection));
+                        $this->angelleye_ppcp_maybe_trigger_gzd_order_confirmation($order);
                         return true;
                     } else {
                         $processor_response = $this->api_response['purchase_units']['0']['payments']['authorizations']['0']['processor_response'] ?? '';
@@ -3597,6 +3605,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                         if ($this->is_auto_capture_auth) {
                             $order->add_order_note(__('Payment authorized. Change payment status to processing or complete to capture funds.', 'paypal-for-woocommerce'));
                         }
+                        $this->angelleye_ppcp_maybe_trigger_gzd_order_confirmation($order);
                         return true;
                     }
                 } else {
@@ -5140,5 +5149,28 @@ class AngellEYE_PayPal_PPCP_Payment {
             return 'pre-ordered';
         }
         return $this->paymentstatus === 'wc-default' ? strtolower($payment_status) : $this->paymentstatus;
+    }
+
+    /**
+     * Fire WooCommerce Germanized's order confirmation trigger after a successful
+     * capture/authorization. Germanized unhooks WC's default customer-processing-order
+     * email triggers (see WC_GZD_Email_Customer_Processing_Order::__construct) and
+     * suppresses the customer-on-hold email when instant order confirmation is enabled,
+     * so orders that finish in 'on-hold' (e.g. PENDING captures) never receive a
+     * customer email through WC's default status-transition path. This explicit trigger
+     * lets Germanized's confirm_order() flow run; Germanized itself guards against
+     * duplicate sends via did_action('woocommerce_germanized_order_confirmation_sent').
+     */
+    public function angelleye_ppcp_maybe_trigger_gzd_order_confirmation($order) {
+        if (!is_a($order, 'WC_Order')) {
+            return;
+        }
+        if (!function_exists('wc_gzd_send_instant_order_confirmation')) {
+            return;
+        }
+        if (did_action('woocommerce_germanized_order_confirmation_sent')) {
+            return;
+        }
+        do_action('woocommerce_gzd_order_confirmation', $order);
     }
 }
