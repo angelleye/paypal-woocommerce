@@ -5168,9 +5168,36 @@ class AngellEYE_PayPal_PPCP_Payment {
         if (!function_exists('wc_gzd_send_instant_order_confirmation')) {
             return;
         }
-        if (did_action('woocommerce_germanized_order_confirmation_sent')) {
+        // Persistent dedup. did_action() only catches duplicates within the
+        // same PHP request, but PFW reaches this method from four separate
+        // call sites and the redirect-style PayPal flow splits across two
+        // requests (process_payment → PayPal → regular_capture), so we need
+        // a flag that survives across requests. Also covers the case where
+        // Germanized's own checkout-step confirm_order somehow runs (status
+        // change firing the email despite prevent_confirmation_email_sending,
+        // or a third-party plugin invoking the action) — in either of those
+        // we record that it was sent and skip our explicit trigger.
+        if ('yes' === $order->get_meta('_angelleye_ppcp_gzd_confirmation_sent')) {
             return;
         }
-        do_action('woocommerce_gzd_order_confirmation', $order);
+        if (did_action('woocommerce_germanized_order_confirmation_sent')) {
+            // Someone (Germanized's normal flow, an earlier PFW call site)
+            // already fired the confirmation in this request. Mark it so
+            // we don't fire again — even from a future request.
+            $order->update_meta_data('_angelleye_ppcp_gzd_confirmation_sent', 'yes');
+            $order->save();
+            return;
+        }
+        // Germanized fires its own trigger as
+        //   do_action('woocommerce_gzd_order_confirmation', $order, $order->get_id());
+        // and registers WC_GZD_Emails::trigger_order_confirmation_emails($order, $order_id)
+        // as the handler with accepted_args = 2. WC's send_transactional_email
+        // forwards whatever args we pass to the *_notification dispatcher, so
+        // we must mirror Germanized's own signature (order first, then id) —
+        // passing only the order produced "Too few arguments to function
+        // trigger_order_confirmation_emails()" on the client's site.
+        do_action('woocommerce_gzd_order_confirmation', $order, $order->get_id());
+        $order->update_meta_data('_angelleye_ppcp_gzd_confirmation_sent', 'yes');
+        $order->save();
     }
 }
