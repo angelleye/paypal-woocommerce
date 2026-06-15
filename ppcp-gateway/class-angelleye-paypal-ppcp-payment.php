@@ -1328,6 +1328,19 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $card_response_order_note .= 'Card type : ' . angelleye_ppcp_readable($payment_source['card']['type']);
                         $order->add_order_note($card_response_order_note);
                     }
+                    if (!empty($payment_source['venmo'])) {
+                        $venmo_response_order_note = __('Venmo Details', 'paypal-for-woocommerce');
+                        if (!empty($payment_source['venmo']['user_name'])) {
+                            $venmo_response_order_note .= "\n" . 'Username : ' . $payment_source['venmo']['user_name'];
+                        }
+                        if (!empty($payment_source['venmo']['email_address'])) {
+                            $venmo_response_order_note .= "\n" . 'Email : ' . $payment_source['venmo']['email_address'];
+                        }
+                        if (!empty($payment_source['venmo']['payer_id'])) {
+                            $venmo_response_order_note .= "\n" . 'Payer ID : ' . $payment_source['venmo']['payer_id'];
+                        }
+                        $order->add_order_note($venmo_response_order_note);
+                    }
                     foreach ($this->api_response['purchase_units'] as $captures_key => $captures) {
                         
                         $processor_response = isset($this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['processor_response']) ? $this->api_response['purchase_units'][$captures_key]['payments']['captures']['0']['processor_response'] : '';
@@ -1956,6 +1969,19 @@ class AngellEYE_PayPal_PPCP_Payment {
                         $card_response_order_note .= "\n";
                         $card_response_order_note .= 'Card type : ' . angelleye_ppcp_readable($payment_source['card']['type']);
                         $order->add_order_note($card_response_order_note);
+                    }
+                    if (!empty($payment_source['venmo'])) {
+                        $venmo_response_order_note = __('Venmo Details', 'paypal-for-woocommerce');
+                        if (!empty($payment_source['venmo']['user_name'])) {
+                            $venmo_response_order_note .= "\n" . 'Username : ' . $payment_source['venmo']['user_name'];
+                        }
+                        if (!empty($payment_source['venmo']['email_address'])) {
+                            $venmo_response_order_note .= "\n" . 'Email : ' . $payment_source['venmo']['email_address'];
+                        }
+                        if (!empty($payment_source['venmo']['payer_id'])) {
+                            $venmo_response_order_note .= "\n" . 'Payer ID : ' . $payment_source['venmo']['payer_id'];
+                        }
+                        $order->add_order_note($venmo_response_order_note);
                     }
                     $processor_response = $this->api_response['purchase_units']['0']['payments']['authorizations']['0']['processor_response'] ?? '';
                     if (!empty($processor_response['avs_code'])) {
@@ -3233,7 +3259,13 @@ class AngellEYE_PayPal_PPCP_Payment {
                         break;
                     case 'venmo':
                         $payment_method_name = 'venmo';
-                        $attributes = array('vault' => array('store_in_vault' => 'ON_SUCCESS', 'usage_type' => 'MERCHANT', 'permit_multiple_payment_tokens ' => true));
+                        // Note: the key here has a (now-removed) trailing space
+                        // historically — PayPal silently dropped it as an
+                        // unrecognized property, defaulting permit_multiple to
+                        // false, so a returning Venmo buyer kept getting fresh
+                        // vault ids instead of additional tokens under one
+                        // customer. Matches the paypal / apple_pay branches.
+                        $attributes = array('vault' => array('store_in_vault' => 'ON_SUCCESS', 'usage_type' => 'MERCHANT', 'permit_multiple_payment_tokens' => true));
                         $paypal_generated_customer_id = $this->ppcp_payment_token->angelleye_ppcp_get_paypal_generated_customer_id($this->is_sandbox);
                         if (!empty($paypal_generated_customer_id)) {
                             $attributes['customer'] = array('id' => $paypal_generated_customer_id);
