@@ -1629,7 +1629,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
     public function process_refund($order_id, $amount = null, $reason = '') {
         $order = wc_get_order($order_id);
         if (!$order || !$order->get_transaction_id()) {
-            return false;
+            $this->add_log(sprintf('Transaction::refund() aborted: order #%s has no associated Braintree transaction ID.', $order_id), 'error');
+            return new WP_Error('ec_refund-error', __('Refund failed: no Braintree transaction ID is associated with this order.', 'paypal-for-woocommerce'));
         }
 
         $this->angelleye_braintree_lib($order_id);
@@ -1664,10 +1665,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                         $order->save();
                         return true;
                     } else {
-                        $error = '';
-                        foreach (($result->errors->deepAll()) as $error) {
-                            return new WP_Error(404, 'ec_refund-error', $error->message);
-                        }
+                        return $this->angelleye_braintree_refund_error($result, $order, 'void');
                     }
                 } catch (Braintree\Exception\NotFound $e) {
                     $this->add_log("Transaction::void() Braintree\Exception\NotFound: " . $e->getMessage());
@@ -1690,10 +1688,7 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
                     $order->add_order_note(sprintf(__('Refunded %s - Transaction ID: %s', 'paypal-for-woocommerce'), wc_price(number_format($amount, 2, '.', '')), $result->transaction->id));
                     return true;
                 } else {
-                    $error = '';
-                    foreach (($result->errors->deepAll()) as $error) {
-                        return new WP_Error(404, 'ec_refund-error', $error->message);
-                    }
+                    return $this->angelleye_braintree_refund_error($result, $order, 'refund');
                 }
             } catch (Braintree\Exception\NotFound $e) {
                 $this->add_log("Transaction::refund() Braintree\Exception\NotFound: " . $e->getMessage());
@@ -1706,6 +1701,36 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
             $this->add_log("Error: The transaction cannot be voided nor refunded in its current state: state = {$transaction->status}");
             return new WP_Error(404, "Error: The transaction cannot be voided nor refunded in its current state: state = {$transaction->status}");
         }
+    }
+
+    /**
+     * Handle a failed Braintree refund/void response.
+     *
+     * Braintree signals processor and settlement declines through the transaction
+     * status (processor_declined, settlement_declined, gateway_rejected), not through
+     * the validation errors collection. The previous code only iterated the validation
+     * errors, so a declined refund fell through and returned null - which makes
+     * WooCommerce show the generic "An error occurred while attempting to create the
+     * refund using the payment gateway API." popup with nothing written to the log or
+     * order notes. This decodes the real reason, records it, and always returns a
+     * WP_Error so the actual message reaches the admin.
+     *
+     * @param object   $result  Braintree error result.
+     * @param WC_Order $order   Order being refunded.
+     * @param string   $context "refund" or "void", used for log context.
+     * @return WP_Error
+     */
+    public function angelleye_braintree_refund_error($result, $order, $context = 'refund') {
+        $this->response = $result;
+        $code = $this->get_failure_status_info('code');
+        $message = $this->get_failure_status_info('message');
+        if (empty($message)) {
+            $message = (isset($result->message) && !empty($result->message)) ? $result->message : __('The refund was declined by the payment gateway.', 'paypal-for-woocommerce');
+        }
+        $status = isset($result->transaction->status) ? $result->transaction->status : 'unknown';
+        $this->add_log(sprintf('Transaction::%s() failed. Status: %s | Code: %s | Message: %s', $context, $status, $code, $message), 'error');
+        $order->add_order_note(sprintf(__('Braintree %1$s failed: %2$s (Code: %3$s)', 'paypal-for-woocommerce'), $context, $message, $code));
+        return new WP_Error('ec_refund-error', $message);
     }
 
     public function angelleye_braintree_lib($order_id = null) {
