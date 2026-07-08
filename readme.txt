@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
 Tested up to: 7.0
-Stable tag: 4.6.13
+Stable tag: 4.6.14
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.6.14 - 07.08.2026 =
+* Feature - Added support for Germanized for WooCommerce order confirmation emails so they are dispatched correctly for PayPal orders, with a fix to prevent duplicate confirmation emails. ([2199](https://github.com/angelleye/paypal-woocommerce/pull/2199))
+* Fix - Fixed the Venmo integration by correcting a malformed vault attribute key that was silently dropped by PayPal's API (restoring multi-token support for returning Venmo customers), and added a "Venmo Details" order note capturing the customer username, email, and payer ID at capture time. ([2200](https://github.com/angelleye/paypal-woocommerce/pull/2200))
+* Fix - Resolved a render issue with the PayPal cart button in block-style (WooCommerce Blocks) layouts. ([2201](https://github.com/angelleye/paypal-woocommerce/pull/2201))
+* Fix - Synced the payment-methods.php template override version header to WooCommerce 8.9.0 to clear the misleading "outdated template" warning in the WooCommerce Status report. ([2202](https://github.com/angelleye/paypal-woocommerce/pull/2202))
+* Fix - Braintree refunds declined by the processor or bank no longer return null; the real gateway decline reason is now surfaced to WooCommerce, written to the Braintree log, and recorded as an order note. ([2204](https://github.com/angelleye/paypal-woocommerce/pull/2204))
 
 = 4.6.13 - 06.09.2026 =
 * Fix - PayPal credit/debit card fields now render correctly on the WooCommerce Order Pay page, so customers can complete payment for pending orders without needing to reload the page. ([2197](https://github.com/angelleye/paypal-woocommerce/pull/2197))
