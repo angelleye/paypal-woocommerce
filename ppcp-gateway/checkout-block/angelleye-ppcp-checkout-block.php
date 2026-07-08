@@ -36,7 +36,22 @@ final class AngellEYE_PPCP_Checkout_Block extends AbstractPaymentMethodType {
         $this->pay_later = AngellEYE_PayPal_PPCP_Pay_Later::instance();
 
         wp_register_style('angelleye_ppcp', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/wc-gateway-ppcp-angelleye-public.css', array(), $this->version, 'all');
-        wp_register_script('angelleye_ppcp-blocks-integration', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/checkout-block/ppcp-checkout.js', array('jquery', 'react', 'wc-blocks-registry', 'wc-settings', 'wp-element', 'wp-i18n', 'wp-polyfill', 'wp-element', 'wp-plugins'), VERSION_PFW, true);
+
+        // Pull in PFW's full runtime chain (common-functions, script-loader,
+        // public.js, apple-pay, google-pay). Without this the Cart block
+        // calls angelleyeOrder.renderSmartButton() which instantiates
+        // GooglePayCheckoutButton / ApplePayCheckoutButton — classes that
+        // live in wc-gateway-ppcp-angelleye-google-pay.js / -apple-pay.js
+        // and never get enqueued through the Blocks payment-method
+        // registration path on their own. On classic checkout these load
+        // because the gateway's payment_fields() calls this same helper;
+        // the Cart block has no payment_fields, so we call it ourselves.
+        angelleye_ppcp_add_css_js();
+
+        // wc-blocks-checkout is required because ppcp-checkout.js reads
+        // `wc.blocksCheckout.ExperimentalOrderMeta`. WC now emits a
+        // dependency-missing warning when the dep isn't declared.
+        wp_register_script('angelleye_ppcp-blocks-integration', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/checkout-block/ppcp-checkout.js', array('jquery', 'react', 'wc-blocks-registry', 'wc-blocks-checkout', 'wc-blocks-data-store', 'wc-settings', 'wp-element', 'wp-i18n', 'wp-polyfill', 'wp-element', 'wp-plugins'), VERSION_PFW, true);
         if (angelleye_ppcp_has_active_session()) {
             $order_button_text = apply_filters('angelleye_ppcp_order_review_page_place_order_button_text', __('Confirm Your PayPal Order', 'paypal-for-woocommerce'));
         } else {
