@@ -127,12 +127,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
-= 4.6.14 - 07.08.2026 =
+= 4.6.14 - 07.09.2026 =
 * Feature - Added support for Germanized for WooCommerce order confirmation emails so they are dispatched correctly for PayPal orders, with a fix to prevent duplicate confirmation emails. ([2199](https://github.com/angelleye/paypal-woocommerce/pull/2199))
 * Fix - Fixed the Venmo integration by correcting a malformed vault attribute key that was silently dropped by PayPal's API (restoring multi-token support for returning Venmo customers), and added a "Venmo Details" order note capturing the customer username, email, and payer ID at capture time. ([2200](https://github.com/angelleye/paypal-woocommerce/pull/2200))
 * Fix - Resolved a render issue with the PayPal cart button in block-style (WooCommerce Blocks) layouts. ([2201](https://github.com/angelleye/paypal-woocommerce/pull/2201))
 * Fix - Synced the payment-methods.php template override version header to WooCommerce 8.9.0 to clear the misleading "outdated template" warning in the WooCommerce Status report. ([2202](https://github.com/angelleye/paypal-woocommerce/pull/2202))
 * Fix - Braintree refunds declined by the processor or bank no longer return null; the real gateway decline reason is now surfaced to WooCommerce, written to the Braintree log, and recorded as an order note. ([2204](https://github.com/angelleye/paypal-woocommerce/pull/2204))
+* Fix - Fixed the Google Pay/Apple Pay sliding-cart total showing a doubled amount and a false empty-cart error. ([2206](https://github.com/angelleye/paypal-woocommerce/pull/2206))
 
 = 4.6.13 - 06.09.2026 =
 * Fix - PayPal credit/debit card fields now render correctly on the WooCommerce Order Pay page, so customers can complete payment for pending orders without needing to reload the page. ([2197](https://github.com/angelleye/paypal-woocommerce/pull/2197))
