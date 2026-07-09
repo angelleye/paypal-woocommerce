@@ -384,7 +384,14 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     }
                     $orderTotal = WC()->cart->get_total('');
                     $addToCart = $_REQUEST['angelleye_ppcp-add-to-cart'] ?? null;
-                    if (!empty($addToCart)) {
+                    // Empty the cart before re-adding so a product that is already in the cart
+                    // is not counted twice, which doubled the Google Pay/Apple Pay total when
+                    // the shipping-address-update callback fired for an item already in the cart.
+                    // Mirrors the guard used in the create_order branch above.
+                    if (!empty($addToCart) && angelleye_ppcp_get_order_total() > 0) {
+                        WC()->cart->empty_cart();
+                    }
+                    if (!empty($addToCart) && angelleye_ppcp_get_order_total() === 0) {
                         try {
                             if (!class_exists('AngellEYE_PayPal_PPCP_Product')) {
                                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-product.php');

@@ -280,6 +280,16 @@ const angelleyeOrder = {
             // FunnelKit sliding cart — server reads existing WC()->cart contents, no form serialization needed
             formData = 'angelleye_ppcp_payment_method_title=' + jQuery('#angelleye_ppcp_payment_method_title').val();
             formData += '&woocommerce-process-checkout-nonce=' + angelleye_ppcp_manager.woocommerce_process_checkout;
+            // Forward the address details (e.g. Google Pay / Apple Pay shipping-address-update
+            // callbacks) so the server can recalculate shipping against the existing cart —
+            // without appending angelleye_ppcp-add-to-cart, which would re-add the product and
+            // double the total for an item already in the sliding cart.
+            if (billingDetails) {
+                formData += '&billing_address_source=' + encodeURIComponent(JSON.stringify(billingDetails));
+            }
+            if (shippingDetails) {
+                formData += '&shipping_address_source=' + encodeURIComponent(JSON.stringify(shippingDetails));
+            }
             if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {
                 formData += '&address=' + JSON.stringify(angelleyeOrder.ppcp_address);
             }
@@ -405,8 +415,11 @@ const angelleyeOrder = {
             }
     }
     },
-    shippingAddressUpdate: (shippingDetails, billingDetails, errorLogId) => {
-        return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails, billingDetails, errorLogId});
+    shippingAddressUpdate: (shippingDetails, billingDetails, errorLogId, angelleye_ppcp_button_selector) => {
+        // Forward the button selector so createOrder keeps the sliding-cart (FKCart) context.
+        // Without it the shipping update is treated as a product-page buy-now and re-adds the
+        // product, doubling the cart total for an item already present in the sliding cart.
+        return angelleyeOrder.createOrder({angelleye_ppcp_button_selector, apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails, billingDetails, errorLogId});
     },
     triggerPaymentCancelEvent: () => {
         jQuery(document.body).trigger('angelleye_paypal_oncancel');
