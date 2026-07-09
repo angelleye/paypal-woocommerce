@@ -385,6 +385,15 @@ $permalink = get_the_permalink();
             include WFACP_TEMPLATE_COMMON . '/account.php';
             if (isset($checkout_fields['advanced'])) {
                 if (isset($checkout_fields['advanced']['shipping_calculator'])) {
+                    // Defensive guard: rendering the shipping_calculator field triggers FunnelKit's
+                    // shipping calculator, which calls WooCommerce Subscriptions'
+                    // wcs_cart_totals_shipping_html() -> count( WC()->cart->recurring_carts ). If the
+                    // cart's subscription totals have not been calculated in this render context,
+                    // recurring_carts is not an array and count() throws a fatal TypeError on PHP 8.
+                    // Normalise it to an array so the field renders without crashing the page.
+                    if (!is_null(WC()->cart) && (!isset(WC()->cart->recurring_carts) || !is_array(WC()->cart->recurring_carts))) {
+                        WC()->cart->recurring_carts = array();
+                    }
                     ?>
                     <div class="wfacp-comm-form-detail clearfix">
                         <?php woocommerce_form_field('shipping_calculator', $checkout_fields['advanced']['shipping_calculator']); ?>
