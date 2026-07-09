@@ -247,7 +247,7 @@ class ApplePayCheckoutButton {
             };
 
             try {
-                let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: event.shippingContact});
+                let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: event.shippingContact}, undefined, undefined, containerSelector);
                 console.log('shipping update response', response);
                 if (typeof response.totalAmount !== 'undefined') {
                     angelleyeOrder.updateCartTotalsInEnvironment(response);

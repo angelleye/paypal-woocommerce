@@ -280,6 +280,16 @@ const angelleyeOrder = {
             // FunnelKit sliding cart — server reads existing WC()->cart contents, no form serialization needed
             formData = 'angelleye_ppcp_payment_method_title=' + jQuery('#angelleye_ppcp_payment_method_title').val();
             formData += '&woocommerce-process-checkout-nonce=' + angelleye_ppcp_manager.woocommerce_process_checkout;
+            // Forward the address details (e.g. Google Pay / Apple Pay shipping-address-update
+            // callbacks) so the server can recalculate shipping against the existing cart —
+            // without appending angelleye_ppcp-add-to-cart, which would re-add the product and
+            // double the total for an item already in the sliding cart.
+            if (billingDetails) {
+                formData += '&billing_address_source=' + encodeURIComponent(JSON.stringify(billingDetails));
+            }
+            if (shippingDetails) {
+                formData += '&shipping_address_source=' + encodeURIComponent(JSON.stringify(shippingDetails));
+            }
             if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {
                 formData += '&address=' + JSON.stringify(angelleyeOrder.ppcp_address);
             }
@@ -405,8 +415,11 @@ const angelleyeOrder = {
             }
     }
     },
-    shippingAddressUpdate: (shippingDetails, billingDetails, errorLogId) => {
-        return angelleyeOrder.createOrder({apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails, billingDetails, errorLogId});
+    shippingAddressUpdate: (shippingDetails, billingDetails, errorLogId, angelleye_ppcp_button_selector) => {
+        // Forward the button selector so createOrder keeps the sliding-cart (FKCart) context.
+        // Without it the shipping update is treated as a product-page buy-now and re-adds the
+        // product, doubling the cart total for an item already present in the sliding cart.
+        return angelleyeOrder.createOrder({angelleye_ppcp_button_selector, apiUrl: angelleye_ppcp_manager.shipping_update_url, shippingDetails, billingDetails, errorLogId});
     },
     triggerPaymentCancelEvent: () => {
         jQuery(document.body).trigger('angelleye_paypal_oncancel');
@@ -1241,6 +1254,17 @@ const angelleyeOrder = {
             });
             jQuery(document.body).on('trigger_angelleye_ppcp_cc', function (event) {
                 angelleyeOrder.renderPaymentButtons();
+            });
+            // Off the cart page (e.g. a sliding cart on shop/archive/product pages) adding an
+            // item fires added_to_cart rather than updated_cart_totals. Refresh the cached cart
+            // totals from the angelleye_payments_data fragment so express buttons read the fresh
+            // total instead of the stale page-load value, which otherwise surfaced a false
+            // "your shopping cart seems to be empty" error on the Google Pay/Apple Pay button.
+            jQuery(document.body).on('added_to_cart', function (event, fragments) {
+                if (fragments && typeof fragments['angelleye_payments_data'] !== 'undefined') {
+                    angelleyeOrder.updateCartTotalsInEnvironment(JSON.parse(fragments['angelleye_payments_data']));
+                    angelleyeOrder.renderPaymentButtons();
+                }
             });
         },
         handleRaceConditionOnWooHooks: () => {

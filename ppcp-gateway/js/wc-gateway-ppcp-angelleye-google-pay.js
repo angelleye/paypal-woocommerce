@@ -157,7 +157,7 @@ class GooglePayCheckoutButton {
                         locality: shippingAddress.locality,
                         postalCode: shippingAddress.postalCode
                     };
-                    let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: shippingDetails});
+                    let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: shippingDetails}, undefined, undefined, additionalData.thisObject.containerSelector);
                     if (typeof response.totalAmount !== 'undefined') {
                         angelleyeOrder.updateCartTotalsInEnvironment(response);
                         paymentDataRequestUpdate.newTransactionInfo = additionalData.thisObject.getGoogleTransactionInfo();
