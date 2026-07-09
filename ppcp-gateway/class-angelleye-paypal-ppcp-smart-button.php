@@ -412,6 +412,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         // Currently, This is to support the applepay, so that we can pass the total amount to SDK popup
         add_filter('woocommerce_update_order_review_fragments', array($this, 'add_order_checkout_data_for_direct_checkouts'), 99);
 
+        // Include the fresh cart totals in add-to-cart AJAX responses so express buttons
+        // (Google Pay/Apple Pay) rendered off the cart page — e.g. in a sliding cart on the
+        // shop/archive/product pages — read the updated total instead of the stale page-load
+        // value, which otherwise triggered a false "your shopping cart seems to be empty" error.
+        add_filter('woocommerce_add_to_cart_fragments', array($this, 'add_order_checkout_data_for_direct_checkouts'), 99);
+
         // This is utilised on cart page to inform the shipping changes or cart total changes in frontend
         add_action('woocommerce_after_cart_totals', [$this, 'add_cart_data_in_html'], 99);
 

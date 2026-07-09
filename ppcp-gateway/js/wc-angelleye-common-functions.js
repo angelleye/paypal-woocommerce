@@ -1255,6 +1255,17 @@ const angelleyeOrder = {
             jQuery(document.body).on('trigger_angelleye_ppcp_cc', function (event) {
                 angelleyeOrder.renderPaymentButtons();
             });
+            // Off the cart page (e.g. a sliding cart on shop/archive/product pages) adding an
+            // item fires added_to_cart rather than updated_cart_totals. Refresh the cached cart
+            // totals from the angelleye_payments_data fragment so express buttons read the fresh
+            // total instead of the stale page-load value, which otherwise surfaced a false
+            // "your shopping cart seems to be empty" error on the Google Pay/Apple Pay button.
+            jQuery(document.body).on('added_to_cart', function (event, fragments) {
+                if (fragments && typeof fragments['angelleye_payments_data'] !== 'undefined') {
+                    angelleyeOrder.updateCartTotalsInEnvironment(JSON.parse(fragments['angelleye_payments_data']));
+                    angelleyeOrder.renderPaymentButtons();
+                }
+            });
         },
         handleRaceConditionOnWooHooks: () => {
             // trigger_angelleye_ppcp_cc is fired by the Blocks-checkout
