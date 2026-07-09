@@ -134,6 +134,7 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * Fix - Synced the payment-methods.php template override version header to WooCommerce 8.9.0 to clear the misleading "outdated template" warning in the WooCommerce Status report. ([2202](https://github.com/angelleye/paypal-woocommerce/pull/2202))
 * Fix - Braintree refunds declined by the processor or bank no longer return null; the real gateway decline reason is now surfaced to WooCommerce, written to the Braintree log, and recorded as an order note. ([2204](https://github.com/angelleye/paypal-woocommerce/pull/2204))
 * Fix - Fixed the Google Pay/Apple Pay sliding-cart total showing a doubled amount and a false empty-cart error. ([2206](https://github.com/angelleye/paypal-woocommerce/pull/2206))
+* Fix - Guarded against a non-array recurring_carts value to prevent a PHP 8 fatal error in the FunnelKit shipping calculator on the order review page. ([2207](https://github.com/angelleye/paypal-woocommerce/pull/2207))
 
 = 4.6.13 - 06.09.2026 =
 * Fix - PayPal credit/debit card fields now render correctly on the WooCommerce Order Pay page, so customers can complete payment for pending orders without needing to reload the page. ([2197](https://github.com/angelleye/paypal-woocommerce/pull/2197))
