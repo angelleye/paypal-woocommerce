@@ -300,7 +300,7 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             $addToCart = $_REQUEST['angelleye_ppcp-add-to-cart'] ?? null;
 
                             if (!empty($addToCart) && angelleye_ppcp_get_order_total() > 0) {
-                                WC()->cart->empty_cart();
+                                $this->angelleye_ppcp_empty_cart_preserving_session();
                             }
 
                             if (angelleye_ppcp_get_order_total() === 0 && !empty($addToCart)) {
@@ -387,9 +387,12 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     // Empty the cart before re-adding so a product that is already in the cart
                     // is not counted twice, which doubled the Google Pay/Apple Pay total when
                     // the shipping-address-update callback fired for an item already in the cart.
-                    // Mirrors the guard used in the create_order branch above.
+                    // Mirrors the guard used in the create_order branch above. The session-clear
+                    // listener is suspended: this callback also runs after the buyer authorizes
+                    // the payment, and clearing the PPCP session here loses reference_id and
+                    // aborts the capture in the subsequent direct_capture request.
                     if (!empty($addToCart) && angelleye_ppcp_get_order_total() > 0) {
-                        WC()->cart->empty_cart();
+                        $this->angelleye_ppcp_empty_cart_preserving_session();
                     }
                     if (!empty($addToCart) && angelleye_ppcp_get_order_total() === 0) {
                         try {
@@ -868,6 +871,25 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     public function angelleye_ppcp_direct_capture() {
         $this->angelleye_ppcp_create_woo_order();
+    }
+
+    /**
+     * Empties the cart for the plugin's own empty-and-re-add rebuild without
+     * destroying the in-flight PPCP checkout session.
+     *
+     * WC()->cart->empty_cart() fires woocommerce_cart_emptied, which is hooked to
+     * AngellEYE_PayPal_PPCP_Smart_Button::maybe_clear_session_data() so that a
+     * customer emptying their cart clears any stale PayPal session. During the
+     * internal idempotent re-add (create_order / shipping_address_update handlers)
+     * that listener must be suspended: the post-authorization shipping update
+     * otherwise wipes reference_id/paypal_order_id mid-payment and the capture
+     * fails with "_paypal_reference_id is missing in the update_order call.".
+     */
+    private function angelleye_ppcp_empty_cart_preserving_session() {
+        $smart_button = AngellEYE_PayPal_PPCP_Smart_Button::instance();
+        remove_action('woocommerce_cart_emptied', array($smart_button, 'maybe_clear_session_data'));
+        WC()->cart->empty_cart();
+        add_action('woocommerce_cart_emptied', array($smart_button, 'maybe_clear_session_data'));
     }
 
     public function angelleye_ppcp_download_zip_file($github_zip_url, $plugin_zip_path) {
