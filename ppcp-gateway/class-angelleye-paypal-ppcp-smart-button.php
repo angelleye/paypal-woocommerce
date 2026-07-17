@@ -781,6 +781,17 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             $google_pay_btn_selector = [];
         }
 
+        // Google Pay / Apple Pay do not support PayPal multi-seller mode (merchant-id=*).
+        // When multi-account routing resolves more than one payee for the current cart,
+        // suppress both wallets so the SDK does not fail with googlepay_config_error /
+        // "Not Eligible for GooglePay Payments". See https://github.com/angelleye/paypal-woocommerce/issues/2211
+        if (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) > 1) {
+            $this->enable_google_pay = false;
+            $this->enable_apple_pay = false;
+            $google_pay_btn_selector = [];
+            $apple_pay_btn_selector = [];
+        }
+
         if ($this->enabled_pay_later_messaging) {
             array_push($components, 'messages');
         }
@@ -929,6 +940,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $customCss .= implode(',', $hideSelectors) . '{display:none !important;}';
                 }
             }
+        }
+        // Google Pay / Apple Pay are suppressed for multi-seller carts (see the merchant-id=* guard
+        // in enqueue_scripts); also hide their payment method rows on the checkout page so a dead
+        // gateway option is not shown. https://github.com/angelleye/paypal-woocommerce/issues/2211
+        if (is_array($this->sdk_merchant_id) && count($this->sdk_merchant_id) > 1) {
+            $customCss .= '.wc_payment_method.payment_method_angelleye_ppcp_google_pay, .payment_box.payment_method_angelleye_ppcp_google_pay, .wc_payment_method.payment_method_angelleye_ppcp_apple_pay, .payment_box.payment_method_angelleye_ppcp_apple_pay {display:none !important;}';
         }
         wp_add_inline_style($this->angelleye_ppcp_plugin_name, $customCss);
         if (is_account_page()) {
