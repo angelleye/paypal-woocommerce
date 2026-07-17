@@ -127,42 +127,48 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
 
     public function process_admin_options() {
         delete_transient(AE_FEE);
-        $cacheCleared = false;
-        $clearCache = function () {
-            delete_option('ae_apple_pay_domain_reg_retries');
-            delete_transient('ae_seller_onboarding_status');
-            delete_transient('angelleye_apple_pay_domain_list_cache');
-            return true;
-        };
-        if (!isset($_POST['woocommerce_angelleye_ppcp_enabled']) || $_POST['woocommerce_angelleye_ppcp_enabled'] == "0") {
-            // run the automatic domain remove feature
-            try {
-                AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoUnRegisterDomain();
-            } catch (Exception $exception) {
-                $this->api_log->log("The exception was created on line: " . $exception->getFile() . ' ' .$exception->getLine(), 'error');
-                $this->api_log->log($exception->getMessage(), 'error');
-            }
-            $cacheCleared = $clearCache();
-        } else {
-            $oldSandboxMode = $this->get_option('testmode', 'no') == 'yes';
-            $newSandboxMode = isset($_POST['woocommerce_angelleye_ppcp_testmode']);
-            if ($oldSandboxMode != $newSandboxMode) {
-                $cacheCleared = $clearCache();
-            }
-        }
+        $gateway_being_disabled = (!isset($_POST['woocommerce_angelleye_ppcp_enabled']) || $_POST['woocommerce_angelleye_ppcp_enabled'] == "0");
+        // Capture the previous test-mode value before the settings are saved below.
+        $oldSandboxMode = $this->get_option('testmode', 'no') == 'yes';
+        $newSandboxMode = isset($_POST['woocommerce_angelleye_ppcp_testmode']);
+
+        // Persist this gateway's own settings.
         parent::process_admin_options();
+
         // Clear FunnelKit Cart cache so frontend reflects PFW button changes immediately.
         // FKCart's cache helper handles WP cache, WP Rocket, Autoptimize, W3TC, LiteSpeed,
         // WP Fastest Cache, and WP Super Cache (used by SiteGround SG Optimizer).
         if (class_exists('\FKCart\Admin\Admin_App') && method_exists('\FKCart\Admin\Admin_App', 'maybe_clear_cache')) {
             \FKCart\Admin\Admin_App::maybe_clear_cache();
         }
-        if ($cacheCleared) {
-            if (ob_get_length()) {
-                ob_end_clean();
+
+        // IMPORTANT: this handler is inherited by the Apple Pay and Google Pay
+        // subscription gateways, which are all hooked to this same
+        // (woocommerce_update_options_payment_gateways_angelleye_ppcp) save action.
+        // The account-level cleanup below must run only for the primary gateway, and
+        // must NOT redirect/exit here — doing so aborts the remaining gateways' saves
+        // (whichever instance fired first would win), which is what previously kept
+        // Disconnect from ever persisting to woocommerce_angelleye_ppcp_settings.
+        if ($this->id !== 'angelleye_ppcp') {
+            return;
+        }
+
+        if ($gateway_being_disabled || $oldSandboxMode !== $newSandboxMode) {
+            delete_option('ae_apple_pay_domain_reg_retries');
+            delete_transient('ae_seller_onboarding_status');
+            delete_transient('angelleye_apple_pay_domain_list_cache');
+        }
+
+        if ($gateway_being_disabled) {
+            // Best-effort Apple Pay domain removal. The settings were already saved
+            // above, so a slow or failed PayPal call here cannot undo the change; the
+            // \Throwable guard also keeps any error from bubbling up.
+            try {
+                AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::autoUnRegisterDomain();
+            } catch (\Throwable $exception) {
+                $this->api_log->log("The exception was created on line: " . $exception->getFile() . ' ' . $exception->getLine(), 'error');
+                $this->api_log->log($exception->getMessage(), 'error');
             }
-            wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=angelleye_ppcp'));
-            die;
         }
     }
 
