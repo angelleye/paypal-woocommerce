@@ -204,6 +204,29 @@ class ApplePayCheckoutButton {
         let parseErrorMessage = (errorObject) => {
             console.error(errorObject)
             console.log(JSON.stringify(errorObject));
+            // The buyer-facing sentence is deliberately generic, but it used to
+            // be all we kept: errorName and message carry PayPal's actual
+            // rejection reason and were dropped on the floor, so every distinct
+            // failure landed in the log as the same contentless string plus a
+            // debug id we could only redeem through PayPal support. Record the
+            // detail on the trace before collapsing it for display.
+            angelleyeJsErrorLogger.addToLog(errorLogId, {
+                context: 'apple_pay_error',
+                name: errorObject?.name,
+                errorName: errorObject?.errorName,
+                message: errorObject?.message,
+                paypalDebugId: errorObject?.paypalDebugId,
+                // Errors serialize to {} through JSON.stringify, so pull the
+                // enumerable own properties across explicitly.
+                details: (() => {
+                    try {
+                        return JSON.stringify(errorObject, Object.getOwnPropertyNames(Object(errorObject)));
+                    } catch (e) {
+                        return String(errorObject);
+                    }
+                })(),
+                time: new Date()
+            });
             if (errorObject.name === 'PayPalApplePayError') {
                 let debugID = errorObject.paypalDebugId;
                 switch (errorObject.errorName) {
@@ -212,6 +235,11 @@ class ApplePayCheckoutButton {
                     default:
                         return localizedMessages.general_error_message + ' [ApplePay DebugId:' + debugID + ']';
                 }
+            }
+            // Anything else reached showError()/logJsError() as a raw object,
+            // which renders as [object Object] and stringifies to {}.
+            if (errorObject instanceof Error) {
+                return errorObject.message;
             }
             return errorObject;
         };
