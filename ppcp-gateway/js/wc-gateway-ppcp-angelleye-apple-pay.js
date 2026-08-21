@@ -110,6 +110,14 @@ class ApplePayCheckoutButton {
         // }
     }
 
+    /**
+     * Decides whether to ask Apple for a recurring merchant token or a one-time
+     * token. angelleye_ppcp_is_apple_pay_recurring_token() in
+     * angelleye-paypal-ppcp-common-functions.php mirrors this condition when it
+     * builds payment_source.apple_pay - PayPal rejects confirmOrder() if the
+     * order's stored_credential and the token disagree, so the two must move
+     * together.
+     */
     static addPaymentMethodSaveParams () {
         let isNewPaymentMethodSelected = jQuery('input#wc-angelleye_ppcp_apple_pay-new-payment-method:checked').val();
         const cartDetails = angelleyeOrder.getCartDetails();
