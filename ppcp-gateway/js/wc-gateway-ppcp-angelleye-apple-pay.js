@@ -159,6 +159,8 @@ class ApplePayCheckoutButton {
 
         if (cartDetails.totalAmount <= 0) {
             angelleyeOrder.showError(localizedMessages.empty_cart_message);
+            angelleyeOrder.hideProcessingSpinner();
+            return;
         }
 
         let shippingAddressRequired = [];
