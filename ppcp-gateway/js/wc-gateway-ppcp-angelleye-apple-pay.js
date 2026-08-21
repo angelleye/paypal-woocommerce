@@ -155,7 +155,12 @@ class ApplePayCheckoutButton {
 
         let shippingAddressRequired = [];
         if (cartDetails.shippingRequired) {
-            shippingAddressRequired = ["postalAddress", "name", "email"];
+            // "phone" belongs here as well as in the billing list below: without
+            // it Apple returns a shipping contact with no phone number, the
+            // checkout POST goes out with an empty shipping_phone, and any store
+            // that marks Shipping Phone required rejects the order outright for
+            // every buyer shipping to a different address.
+            shippingAddressRequired = ["postalAddress", "name", "email", "phone"];
         }
 
         let subscriptionParams = ApplePayCheckoutButton.addPaymentMethodSaveParams();
