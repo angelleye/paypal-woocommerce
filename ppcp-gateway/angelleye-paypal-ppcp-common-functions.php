@@ -932,6 +932,33 @@ if (!function_exists('angelleye_ppcp_is_save_payment_method')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_is_apple_pay_recurring_token')) {
+
+    /**
+     * Whether the Apple Pay token for this checkout is a recurring merchant
+     * token rather than a one-time token.
+     *
+     * This has to stay in lockstep with addPaymentMethodSaveParams() in
+     * wc-gateway-ppcp-angelleye-apple-pay.js. The browser decides which kind of
+     * token to ask Apple for, and PayPal rejects applepay.confirmOrder() when
+     * the order's stored_credential disagrees with the token it is handed. It
+     * deliberately does not reuse angelleye_ppcp_is_save_payment_method(),
+     * which also honours the PayPal and card gateways' save checkboxes and
+     * force-enables vaulting off the checkout page - neither of which the
+     * Apple Pay button looks at.
+     *
+     * @return bool
+     */
+    function angelleye_ppcp_is_apple_pay_recurring_token() {
+        if (angelleye_ppcp_is_cart_subscription()) {
+            return true;
+        }
+        return isset($_POST['wc-angelleye_ppcp_apple_pay-new-payment-method'])
+                && 'true' === $_POST['wc-angelleye_ppcp_apple_pay-new-payment-method'];
+    }
+
+}
+
 if (!function_exists('angelleye_ppcp_get_token_id_by_token')) {
 
     function angelleye_ppcp_get_token_id_by_token($token_id) {

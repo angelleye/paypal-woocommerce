@@ -110,6 +110,14 @@ class ApplePayCheckoutButton {
         // }
     }
 
+    /**
+     * Decides whether to ask Apple for a recurring merchant token or a one-time
+     * token. angelleye_ppcp_is_apple_pay_recurring_token() in
+     * angelleye-paypal-ppcp-common-functions.php mirrors this condition when it
+     * builds payment_source.apple_pay - PayPal rejects confirmOrder() if the
+     * order's stored_credential and the token disagree, so the two must move
+     * together.
+     */
     static addPaymentMethodSaveParams () {
         let isNewPaymentMethodSelected = jQuery('input#wc-angelleye_ppcp_apple_pay-new-payment-method:checked').val();
         const cartDetails = angelleyeOrder.getCartDetails();
@@ -151,11 +159,18 @@ class ApplePayCheckoutButton {
 
         if (cartDetails.totalAmount <= 0) {
             angelleyeOrder.showError(localizedMessages.empty_cart_message);
+            angelleyeOrder.hideProcessingSpinner();
+            return;
         }
 
         let shippingAddressRequired = [];
         if (cartDetails.shippingRequired) {
-            shippingAddressRequired = ["postalAddress", "name", "email"];
+            // "phone" belongs here as well as in the billing list below: without
+            // it Apple returns a shipping contact with no phone number, the
+            // checkout POST goes out with an empty shipping_phone, and any store
+            // that marks Shipping Phone required rejects the order outright for
+            // every buyer shipping to a different address.
+            shippingAddressRequired = ["postalAddress", "name", "email", "phone"];
         }
 
         let subscriptionParams = ApplePayCheckoutButton.addPaymentMethodSaveParams();
@@ -204,6 +219,29 @@ class ApplePayCheckoutButton {
         let parseErrorMessage = (errorObject) => {
             console.error(errorObject)
             console.log(JSON.stringify(errorObject));
+            // The buyer-facing sentence is deliberately generic, but it used to
+            // be all we kept: errorName and message carry PayPal's actual
+            // rejection reason and were dropped on the floor, so every distinct
+            // failure landed in the log as the same contentless string plus a
+            // debug id we could only redeem through PayPal support. Record the
+            // detail on the trace before collapsing it for display.
+            angelleyeJsErrorLogger.addToLog(errorLogId, {
+                context: 'apple_pay_error',
+                name: errorObject?.name,
+                errorName: errorObject?.errorName,
+                message: errorObject?.message,
+                paypalDebugId: errorObject?.paypalDebugId,
+                // Errors serialize to {} through JSON.stringify, so pull the
+                // enumerable own properties across explicitly.
+                details: (() => {
+                    try {
+                        return JSON.stringify(errorObject, Object.getOwnPropertyNames(Object(errorObject)));
+                    } catch (e) {
+                        return String(errorObject);
+                    }
+                })(),
+                time: new Date()
+            });
             if (errorObject.name === 'PayPalApplePayError') {
                 let debugID = errorObject.paypalDebugId;
                 switch (errorObject.errorName) {
@@ -212,6 +250,11 @@ class ApplePayCheckoutButton {
                     default:
                         return localizedMessages.general_error_message + ' [ApplePay DebugId:' + debugID + ']';
                 }
+            }
+            // Anything else reached showError()/logJsError() as a raw object,
+            // which renders as [object Object] and stringifies to {}.
+            if (errorObject instanceof Error) {
+                return errorObject.message;
             }
             return errorObject;
         };

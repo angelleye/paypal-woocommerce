@@ -142,6 +142,28 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             $woocommerce->customer->set_shipping_country($shipping_address['countryCode']);
                             $woocommerce->customer->set_shipping_city($shipping_address['locality']);
                             $woocommerce->customer->set_shipping_state($shipping_address['administrativeArea']);
+                            // Apple Pay only honours "phone" in
+                            // requiredShippingContactFields, so the shipping
+                            // contact is the sole source of a phone number in
+                            // the wallet flow - the billing contact never
+                            // carries one. Feed it to billing as well, the same
+                            // way emailAddress is borrowed above, and mirror it
+                            // into $_POST: process_checkout() validates the raw
+                            // post data and rejects the order outright when a
+                            // required phone field is empty.
+                            if (!empty($shipping_address['phoneNumber'])) {
+                                $wallet_phone = wc_clean($shipping_address['phoneNumber']);
+                                if (method_exists($woocommerce->customer, 'set_shipping_phone')) {
+                                    $woocommerce->customer->set_shipping_phone($wallet_phone);
+                                }
+                                if (empty($_POST['shipping_phone'])) {
+                                    $_POST['shipping_phone'] = $wallet_phone;
+                                }
+                                if (empty($_POST['billing_phone'])) {
+                                    $woocommerce->customer->set_billing_phone($wallet_phone);
+                                    $_POST['billing_phone'] = $wallet_phone;
+                                }
+                            }
                         }
                     }
 
