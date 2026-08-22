@@ -2926,10 +2926,10 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $order->add_order_note(
                         sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
                 );
-            } else if (isset($$this->api_response['status']) && $$this->api_response['status'] == "PENDING") {
-                $gross_amount = isset($$this->api_response['seller_payable_breakdown']['gross_amount']['value']) ? $$this->api_response['seller_payable_breakdown']['gross_amount']['value'] : '';
-                $refund_transaction_id = isset($$this->api_response['id']) ? $$this->api_response['id'] : '';
-                $pending_reason_text = isset($$this->api_response['status_details']['reason']) ? $$this->api_response['status_details']['reason'] : '';
+            } else if (isset($this->api_response['status']) && $this->api_response['status'] == "PENDING") {
+                $gross_amount = isset($this->api_response['seller_payable_breakdown']['gross_amount']['value']) ? $this->api_response['seller_payable_breakdown']['gross_amount']['value'] : '';
+                $refund_transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
+                $pending_reason_text = isset($this->api_response['status_details']['reason']) ? $this->api_response['status_details']['reason'] : '';
                 $order->add_order_note(sprintf(__('Payment via %s Pending. Pending reason: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $pending_reason_text));
                 $order->add_order_note(
                         sprintf(__('Refund Amount %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
