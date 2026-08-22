@@ -1079,8 +1079,13 @@ class AngellEYE_PayPal_PPCP_Payment {
             $message = $error['message'];
         } else if (!empty($error['error_description'])) {
             $message = $error['error_description'];
+        } else if (is_scalar($error)) {
+            $message = (string) $error;
         } else {
-            $message = $error;
+            // $error can be an array or object of an unexpected shape. Assigning
+            // it straight to $message raised "Array to string conversion" and put
+            // the literal text "Array" in order notes and error emails.
+            $message = !empty($error) ? wc_print_r($error, true) : '';
         }
         if ($this->error_email_notification) {
             $this->angelleye_ppcp_error_email_notification($error_email_notification_param, $message);
