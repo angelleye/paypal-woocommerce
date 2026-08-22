@@ -3289,6 +3289,16 @@ class AngellEYE_PayPal_PPCP_Payment {
                         unset($request['application_context']);
                         break;
                     case 'apple_pay':
+                        // Vaulting the order under stored_credential RECURRING
+                        // while the wallet hands back a one-time token makes
+                        // PayPal reject applepay.confirmOrder(), which surfaces
+                        // to the buyer as an opaque "unable to process your
+                        // request". The browser owns that decision, so mirror
+                        // it here instead of inheriting the broader
+                        // save-payment-method rules the outer gate applies.
+                        if (!angelleye_ppcp_is_apple_pay_recurring_token()) {
+                            break;
+                        }
                         $payment_method_name = 'apple_pay';
                         $attributes = array('vault' => array('store_in_vault' => 'ON_SUCCESS', 'usage_type' => 'MERCHANT', 'permit_multiple_payment_tokens' => true));
                         // If existing PayPal Customer ID is available then add it so that PayPal can add new payment method to same user account.
