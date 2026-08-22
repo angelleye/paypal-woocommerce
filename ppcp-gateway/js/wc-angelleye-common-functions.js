@@ -962,14 +962,18 @@ const angelleyeOrder = {
                 jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting createOrder');
                 angelleyeOrder.stopPpcpCcSubmitWatchdog();
                 angelleyeOrder.hideProcessingSpinner(spinnerSelectors);
-                if (angelleyeOrder.ppcp_block_mode) {
-                    const blockMessage = angelleyeOrder.blockCreateOrderError
-                        || angelleyeOrder.parsePayPalSdkError(err);
-                    jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{message: blockMessage}]);
+                // Snapshot before the trigger below: on Blocks the runBlocksPpcpCcFlow
+                // errorHandler runs synchronously and its cleanup() resets
+                // ppcp_block_mode to false, so reading the flag after dispatch would
+                // send the Blocks flow down the classic branch.
+                const isBlockMode = angelleyeOrder.ppcp_block_mode;
+                const errorMessage = (isBlockMode && angelleyeOrder.blockCreateOrderError)
+                    || angelleyeOrder.parsePayPalSdkError(err);
+                jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{message: errorMessage}]);
+                if (isBlockMode) {
                     return;
                 }
                 if (!isItApiError) {
-                    const errorMessage = angelleyeOrder.parsePayPalSdkError(err);
                     angelleyeOrder.showError(errorMessage);
                     angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
                 }
@@ -1043,15 +1047,22 @@ const angelleyeOrder = {
                     angelleyeOrder.stopPpcpCcSubmitWatchdog();
                     angelleyeOrder.hideProcessingSpinner();
                     jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting CardFields createOrder');
-                    if (angelleyeOrder.ppcp_block_mode) {
-                        // context='card_invalid' signals the Blocks subscriber to
-                        // display this notice next to the payment method block
-                        // (where the card fields live) instead of at the top of
-                        // the checkout form.
-                        jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{
-                            message: localizedMessages.fields_not_valid,
-                            context: 'card_invalid'
-                        }]);
+                    // Snapshot before the trigger below: the Blocks errorHandler
+                    // cleanup() flips ppcp_block_mode to false synchronously.
+                    const isBlockMode = angelleyeOrder.ppcp_block_mode;
+                    // context='card_invalid' signals the Blocks subscriber to
+                    // display this notice next to the payment method block
+                    // (where the card fields live) instead of at the top of
+                    // the checkout form. On classic checkout nothing in-plugin
+                    // listens, but the card fields reject the payment before
+                    // wc-ajax=checkout is ever sent, so WooCommerce's
+                    // checkout_error never fires and integrations have no other
+                    // hook for this failure.
+                    jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{
+                        message: localizedMessages.fields_not_valid,
+                        context: 'card_invalid'
+                    }]);
+                    if (isBlockMode) {
                         return;
                     }
                     angelleyeOrder.removeError();
@@ -1073,12 +1084,14 @@ const angelleyeOrder = {
                 angelleyeOrder.hideProcessingSpinner();
                 jQuery(checkoutSelector).removeClass('processing paypal_cc_submiting CardFields createOrder');
                 console.log('cardFields.getState() failed', error);
-                if (angelleyeOrder.ppcp_block_mode) {
-                    jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{
-                        message: localizedMessages.fields_not_valid,
-                        context: 'card_invalid'
-                    }]);
-                } else {
+                // Snapshot before the trigger below: the Blocks errorHandler
+                // cleanup() flips ppcp_block_mode to false synchronously.
+                const isBlockMode = angelleyeOrder.ppcp_block_mode;
+                jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{
+                    message: localizedMessages.fields_not_valid,
+                    context: 'card_invalid'
+                }]);
+                if (!isBlockMode) {
                     angelleyeOrder.removeError();
                     angelleyeOrder.showError(localizedMessages.fields_not_valid);
                 }
