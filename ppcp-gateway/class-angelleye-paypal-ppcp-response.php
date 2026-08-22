@@ -66,9 +66,25 @@ class AngellEYE_PayPal_PPCP_Response {
         try {
             if (is_wp_error($paypal_api_response)) {
                 delete_transient('is_angelleye_aws_down');
-                $response = array(
-                    'status' => 'failed',
-                    'body' => array('error_message' => $paypal_api_response->get_error_message(), 'error_code' => $paypal_api_response->get_error_code())
+                $error_code = $paypal_api_response->get_error_code();
+                $error_message = $paypal_api_response->get_error_message();
+                // The request never reached PayPal (timeout, DNS, TLS, reset).
+                // Log it with the same header block as any other call so the
+                // action, URL and request body stay on record, then record the
+                // transport error itself at error level so it survives the
+                // errors_warnings_only log setting. Previously this branch
+                // built a response, returned nothing and logged nothing, so the
+                // failure was invisible: no log line, and an error email with no
+                // Error: row because the caller had nothing to describe.
+                $this->angelleye_ppcp_write_log($url, $request, array('body' => ''), $action_name);
+                $this->api_log->log(sprintf('Connection Error on %s (%s): %s - %s', ucwords(str_replace('_', ' ', $action_name)), $url, $error_code, $error_message), 'error');
+                // Deliberately no 'status' key: callers read
+                // !empty($response['status']) as success, so returning one here
+                // would route a failed request into the success branch and then
+                // dereference an 'id' / 'purchase_units' that do not exist.
+                return array(
+                    'name' => 'CONNECTION_ERROR',
+                    'message' => sprintf('%s (%s)', $error_message, $error_code),
                 );
             } else {
                 $body = wp_remote_retrieve_body($paypal_api_response);

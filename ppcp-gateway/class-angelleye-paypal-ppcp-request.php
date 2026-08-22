@@ -152,6 +152,12 @@ class AngellEYE_PayPal_PPCP_Request {
     }
 
     public function angelleye_ppcp_remote_get($paypal_url, $args, $action_name, $retry = 1) {
+        // Keep the caller's untouched args for the retry below. This method
+        // rewrites $args in place (body wrapped in the middleware envelope and
+        // json-encoded, headers replaced with just Content-Type), so feeding
+        // the mutated copy back in nulls out paypal_body and drops the PayPal
+        // headers, making the retried request unusable.
+        $original_args = $args;
         $body['testmode'] = ($this->is_sandbox) ? 'yes' : 'no';
         $body['meta'] = [
             'plugin_version' => VERSION_PFW,
@@ -191,7 +197,7 @@ class AngellEYE_PayPal_PPCP_Request {
             if ($this->is_ssl_error($this->result)) {
                 $this->ignore_ssl_in_request = true;
             }
-            return $this->angelleye_ppcp_remote_get($paypal_url, $args, $action_name, ++$retry);
+            return $this->angelleye_ppcp_remote_get($paypal_url, $original_args, $action_name, ++$retry);
         }
         return $this->result;
     }
