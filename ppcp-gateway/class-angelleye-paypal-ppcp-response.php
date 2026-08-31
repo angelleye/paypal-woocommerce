@@ -92,11 +92,21 @@ class AngellEYE_PayPal_PPCP_Response {
                 if (201 < $status_code && $action_name !== 'update_order') {
                     delete_transient('is_angelleye_aws_down');
                 }
-                $response = !empty($body) ? json_decode($body, true) : '';
-                $response = isset($response['body']) ? $response['body'] : $response;
+                $decoded = !empty($body) ? json_decode($body, true) : '';
+                $response = isset($decoded['body']) ? $decoded['body'] : $decoded;
                 $this->angelleye_ppcp_write_log($url, $request, $paypal_api_response, $action_name);
                 if (strpos($url, 'paypal.com') !== false) {
+                    // First-party calls reach PayPal directly, so the debug id
+                    // arrives as a real response header. Third-party calls go
+                    // through the middleware, which echoes the same header back
+                    // - but only on builds new enough to do so, and only if no
+                    // proxy in front of the site strips unknown headers. Fall
+                    // back to the copy the middleware nests in its JSON
+                    // envelope so the id is recorded either way.
                     $debug_id = wp_remote_retrieve_header($paypal_api_response, 'Paypal-Debug-Id');
+                    if (empty($debug_id) && is_array($decoded) && !empty($decoded['headers'])) {
+                        $debug_id = $this->angelleye_ppcp_parse_headers($decoded['headers'], 'paypal-debug-id');
+                    }
                     do_action('angelleye_ppcp_request_respose_data', $request, $response, $action_name, $debug_id);
                 }
                 return $response;
