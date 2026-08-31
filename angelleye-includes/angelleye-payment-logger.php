@@ -207,6 +207,7 @@ class AngellEYE_PFW_Payment_Logger {
                 'pfw_version' => defined('VERSION_PFW') ? VERSION_PFW : '',
                 'woocommerce_version' => defined('WC_VERSION') ? WC_VERSION : '',
                 'wp_version' => get_bloginfo('version'),
+                'bn' => angelleye_ppcp_get_partner_attribution_id(),
             ];
             $meta = !empty($request_param['meta']) && is_array($request_param['meta'])
                 ? array_merge($env_meta, $request_param['meta'])
