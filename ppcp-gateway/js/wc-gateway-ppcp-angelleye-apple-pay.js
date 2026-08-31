@@ -202,6 +202,30 @@ class ApplePayCheckoutButton {
             return;
         }
 
+        // ApplePaySession completion calls are phase-specific: each is legal
+        // only while the sheet is in the matching state, and every one of them
+        // throws InvalidAccessError once the sheet has been dismissed or timed
+        // out. Both showed up in production as a raw
+        // "The object does not support the operation or argument." shown to the
+        // buyer, so route every call through safeSessionCall() and track which
+        // phase the sheet is in.
+        let sessionClosed = false;
+        let awaitingPaymentAuthorization = false;
+
+        let safeSessionCall = (label, fn) => {
+            try {
+                fn();
+            } catch (e) {
+                console.log('ApplePay session call failed: ' + label, e);
+                angelleyeJsErrorLogger.addToLog(errorLogId, {
+                    context: 'apple_pay_session_call_failed',
+                    call: label,
+                    message: e?.message,
+                    time: new Date()
+                });
+            }
+        };
+
         let paymentCancelled = (error) => {
             angelleyeOrder.triggerPaymentCancelEvent();
             angelleyeOrder.hideProcessingSpinner();
@@ -210,9 +234,21 @@ class ApplePayCheckoutButton {
                 angelleyeOrder.showError(errorMessage);
                 angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
 
-                session.completePayment({
-                    status: ApplePaySession.STATUS_FAILURE,
-                });
+                // completePayment() is only legal once onpaymentauthorized has
+                // fired. Calling it from the shipping-contact phase - which the
+                // shipping update's catch used to do - throws, and the buyer is
+                // left looking at a Safari internal error string.
+                if (sessionClosed) {
+                    return;
+                }
+                sessionClosed = true;
+                if (awaitingPaymentAuthorization) {
+                    safeSessionCall('completePayment', () => session.completePayment({
+                        status: ApplePaySession.STATUS_FAILURE,
+                    }));
+                } else {
+                    safeSessionCall('abort', () => session.abort());
+                }
             }
         };
 
@@ -263,14 +299,17 @@ class ApplePayCheckoutButton {
                 validationUrl: event.validationURL,
             })
             .then((payload) => {
-                session.completeMerchantValidation(payload.merchantSession);
+                safeSessionCall('completeMerchantValidation', () => session.completeMerchantValidation(payload.merchantSession));
             })
             .catch((error) => {
                 angelleyeOrder.hideProcessingSpinner();
                 let errorMessage = parseErrorMessage(error);
                 angelleyeOrder.showError(errorMessage);
                 angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
-                session.abort();
+                if (!sessionClosed) {
+                    sessionClosed = true;
+                    safeSessionCall('abort', () => session.abort());
+                }
             });
         };
 
@@ -305,7 +344,7 @@ class ApplePayCheckoutButton {
                         total: newTotal,
                         lineItems: response.lineItems
                     });
-                    session.completeShippingContactSelection(shippingContactUpdate);
+                    safeSessionCall('completeShippingContactSelection', () => session.completeShippingContactSelection(shippingContactUpdate));
                 } else {
                     throw new Error(localizedMessages.shipping_amount_update_error);
                 }
@@ -317,10 +356,11 @@ class ApplePayCheckoutButton {
         session.onshippingmethodselected = async (event) => {
             console.log('on shipping method selected', event);
             let shippingMethodUpdate = {}
-            session.completeShippingMethodSelection(shippingMethodUpdate);
+            safeSessionCall('completeShippingMethodSelection', () => session.completeShippingMethodSelection(shippingMethodUpdate));
         }
 
         session.onpaymentauthorized = async (event) => {
+            awaitingPaymentAuthorization = true;
             try {
                 console.log('paymentAuthorized', event);
                 // create the order to send a payment request
@@ -339,9 +379,10 @@ class ApplePayCheckoutButton {
                  */
                 await ApplePayCheckoutButton.applePay().confirmOrder({ orderId: orderID, token: event.payment.token, billingContact: event.payment.billingContact, shippingContact: event.payment.shippingContact });
 
-                await session.completePayment({
+                sessionClosed = true;
+                safeSessionCall('completePayment', () => session.completePayment({
                     status: ApplePaySession.STATUS_SUCCESS,
-                });
+                }));
                 angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
             } catch (error) {
                 paymentCancelled(error);
@@ -350,6 +391,7 @@ class ApplePayCheckoutButton {
 
         session.oncancel  = (event) => {
             console.log("Apple Pay Cancelled !!", event)
+            sessionClosed = true;
             paymentCancelled();
         }
 
