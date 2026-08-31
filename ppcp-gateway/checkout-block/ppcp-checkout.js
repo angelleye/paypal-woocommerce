@@ -125,7 +125,11 @@ var {addAction} = wp.hooks;
 
                 const Content_PPCP_Smart_Button_Express = () => {
                     useEffect(() => {
-                        angelleyeOrder.renderPaymentButtons();
+                        // Not renderPaymentButtons() directly: this effect runs
+                        // before the PayPal SDK has loaded, renderSmartButton()
+                        // bails out when it is missing, and an empty dep array
+                        // means it never retries. See renderBlockExpressButton().
+                        angelleyeOrder.renderBlockExpressButton();
                     }, []);
                     return createElement("div", {id: "angelleye_ppcp_checkout_top"});
                 };
