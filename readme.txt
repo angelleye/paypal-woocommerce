@@ -3,8 +3,8 @@ Contributors: angelleye, angelleyesupport, Umangvaghela
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SG9SQU2GBXJNA
 Tags: woocommerce, paypal, express checkout, payments pro, angelleye, payflow, dodirectpayment, apple pay, google play, braintree, payments advanced, rest, credit cards, credit card payments, payments, payment
 Requires at least: 5.8
-Tested up to: 7.0
-Stable tag: 4.6.15
+Tested up to: 7.1
+Stable tag: 4.6.16
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -126,6 +126,14 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 * If you are unsure, you may need to [contact PayPal](https://www.paypal.com/us/webapps/helpcenter/helphub/home/) and request the information.  Just let them know you need to enable a Payments Pro plugin on your website, but you're unsure whether you should use Website Payments Pro 3.0(DoDirectPayment) or Payments Pro 2.0 (PayFlow).  They can confirm which one you need to use.
 
 == Changelog ==
+
+= 4.6.16 - 08.31.2026 =
+* Fix - Fixed Google Pay/Apple Pay express checkout from the product page failing after the buyer authorizes payment. ([2214](https://github.com/angelleye/paypal-woocommerce/pull/2214))
+* Fix - Improved Apple Pay error logging and fixed missing shipping phone, token type mismatch, and zero-total sheet issues causing payment failures. ([2216](https://github.com/angelleye/paypal-woocommerce/pull/2216))
+* Fix - Transport-level Create Order failures are now logged and reported instead of failing silently, plus related retry and error-message fixes. ([2218](https://github.com/angelleye/paypal-woocommerce/pull/2218))
+* Fix - The angelleye_ppcp_cc_error event now fires on classic checkout as well as Blocks checkout. ([2220](https://github.com/angelleye/paypal-woocommerce/pull/2220))
+* Fix - Apple Pay now keeps the payment sheet total in sync with the order total to prevent amount-mismatch failures. ([2222](https://github.com/angelleye/paypal-woocommerce/pull/2222))
+* Fix - Fixed the express PayPal button not rendering on WooCommerce Blocks checkout until a payment gateway was clicked. ([2224](https://github.com/angelleye/paypal-woocommerce/pull/2224))
 
 = 4.6.15 - 07.31.2026 =
 * Fix - Fixed the google pay express checkout authorization redirecting to checkout page. ([2213](https://github.com/angelleye/paypal-woocommerce/issues/2213))
