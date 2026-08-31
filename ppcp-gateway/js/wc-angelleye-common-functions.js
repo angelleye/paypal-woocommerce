@@ -1237,6 +1237,26 @@ const angelleyeOrder = {
             console.log(event);
         }
     },
+    isBlockExpressRenderPending: false,
+    // Entry point for the Blocks express component's mount effect.
+    //
+    // That component mounts before wc-gateway-ppcp-angelleye-public.js has run,
+    // so at mount time neither handleRaceConditionOnWooHooks() nor
+    // handleWooEvents() is bound and a jQuery trigger would be fired at an empty
+    // document.body and lost — jQuery events are not retroactive. Calling
+    // renderPaymentButtons() directly is no better: renderSmartButton() bails on
+    // `typeof angelleye_paypal_sdk === 'undefined'` and the effect never retries.
+    //
+    // angelleyeOrder is a header script, so it always exists by the time the
+    // component mounts. Record the request as state here and let
+    // initSmartButtons() act on it once the SDK is ready.
+    renderBlockExpressButton: () => {
+        if (typeof angelleye_paypal_sdk !== 'undefined') {
+            angelleyeOrder.renderPaymentButtons();
+            return;
+        }
+        angelleyeOrder.isBlockExpressRenderPending = true;
+    },
     renderPaymentButtons: () => {
         angelleyeOrder.hideShowPlaceOrderButton();
         angelleyeOrder.renderSmartButton();

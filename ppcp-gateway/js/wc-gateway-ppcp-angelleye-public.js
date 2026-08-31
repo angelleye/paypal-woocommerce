@@ -114,6 +114,13 @@ function initSmartButtons() {
 
     angelleyeOrder.triggerPendingEvents();
 
+    // The Blocks express component mounted before this script ran, so its render
+    // request could not reach any listener. Serve it now that the SDK is loaded.
+    if (angelleyeOrder.isBlockExpressRenderPending) {
+        angelleyeOrder.isBlockExpressRenderPending = false;
+        angelleyeOrder.renderPaymentButtons();
+    }
+
     $(document.body).on('removed_coupon_in_checkout', function () {
         window.location.href = window.location.href;
     });
