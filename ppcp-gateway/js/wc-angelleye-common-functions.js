@@ -1329,6 +1329,7 @@ const localizedMessages = ( function() {
         error_validating_merchant: __('This merchant is not enabled to process requested payment method. please contact website owner.', 'paypal-for-woocommerce'),
         general_error_message: __('We are unable to process your request at the moment, please contact website owner.', 'paypal-for-woocommerce'),
         shipping_amount_update_error: __('Unable to update the shipping amount.', 'paypal-for-woocommerce'),
+        apple_pay_amount_changed_error: __('Your order total has changed since Apple Pay was opened. Please review the total and confirm your payment again.', 'paypal-for-woocommerce'),
         shipping_amount_pull_error: __('Unable to pull the shipping amount details based on selected address', 'paypal-for-woocommerce'),
         currency_change_js_load_error: __('We encountered an issue loading the updated currency. Please refresh the page or contact support for assistance.', 'paypal-for-woocommerce'),
         create_order_error: __('Unable to create the order, please contact the support.', 'paypal-for-woocommerce'),
