@@ -202,6 +202,30 @@ class ApplePayCheckoutButton {
             return;
         }
 
+        // ApplePaySession completion calls are phase-specific: each is legal
+        // only while the sheet is in the matching state, and every one of them
+        // throws InvalidAccessError once the sheet has been dismissed or timed
+        // out. Both showed up in production as a raw
+        // "The object does not support the operation or argument." shown to the
+        // buyer, so route every call through safeSessionCall() and track which
+        // phase the sheet is in.
+        let sessionClosed = false;
+        let awaitingPaymentAuthorization = false;
+
+        let safeSessionCall = (label, fn) => {
+            try {
+                fn();
+            } catch (e) {
+                console.log('ApplePay session call failed: ' + label, e);
+                angelleyeJsErrorLogger.addToLog(errorLogId, {
+                    context: 'apple_pay_session_call_failed',
+                    call: label,
+                    message: e?.message,
+                    time: new Date()
+                });
+            }
+        };
+
         let paymentCancelled = (error) => {
             angelleyeOrder.triggerPaymentCancelEvent();
             angelleyeOrder.hideProcessingSpinner();
@@ -210,9 +234,21 @@ class ApplePayCheckoutButton {
                 angelleyeOrder.showError(errorMessage);
                 angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
 
-                session.completePayment({
-                    status: ApplePaySession.STATUS_FAILURE,
-                });
+                // completePayment() is only legal once onpaymentauthorized has
+                // fired. Calling it from the shipping-contact phase - which the
+                // shipping update's catch used to do - throws, and the buyer is
+                // left looking at a Safari internal error string.
+                if (sessionClosed) {
+                    return;
+                }
+                sessionClosed = true;
+                if (awaitingPaymentAuthorization) {
+                    safeSessionCall('completePayment', () => session.completePayment({
+                        status: ApplePaySession.STATUS_FAILURE,
+                    }));
+                } else {
+                    safeSessionCall('abort', () => session.abort());
+                }
             }
         };
 
@@ -263,21 +299,65 @@ class ApplePayCheckoutButton {
                 validationUrl: event.validationURL,
             })
             .then((payload) => {
-                session.completeMerchantValidation(payload.merchantSession);
+                safeSessionCall('completeMerchantValidation', () => session.completeMerchantValidation(payload.merchantSession));
             })
             .catch((error) => {
                 angelleyeOrder.hideProcessingSpinner();
                 let errorMessage = parseErrorMessage(error);
                 angelleyeOrder.showError(errorMessage);
                 angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
-                session.abort();
+                if (!sessionClosed) {
+                    sessionClosed = true;
+                    safeSessionCall('abort', () => session.abort());
+                }
             });
         };
 
-        session.onpaymentmethodselected = (event) => {
-            session.completePaymentMethodSelection({
+        session.onpaymentmethodselected = async (event) => {
+            // The sheet was built from angelleye_cart_totals, a total cached in
+            // the page and refreshed only when an updated_checkout fragment
+            // happens to arrive. The order is built fresh server-side at
+            // authorization time and nothing reconciled the two, so PayPal
+            // rejected confirmOrder() with APPLE_PAY_AMOUNT_MISMATCH: the buyer
+            // had approved a different number from the one on the order.
+            // onshippingcontactselected was the only thing that ever corrected
+            // this, and it fires only when the buyer changes their address.
+            //
+            // This handler fires as soon as the sheet opens, and Apple allows
+            // the total to be revised here, so re-read the authoritative figure
+            // while the buyer has still approved nothing.
+            try {
+                let response = await angelleyeOrder.shippingAddressUpdate(undefined, undefined, errorLogId, containerSelector);
+                if (response && typeof response.totalAmount !== 'undefined') {
+                    angelleyeOrder.updateCartTotalsInEnvironment(response);
+                    if (`${response.totalAmount}` !== `${paymentRequest.total.amount}`) {
+                        angelleyeJsErrorLogger.addToLog(errorLogId, {
+                            context: 'apple_pay_total_corrected',
+                            sheetTotal: paymentRequest.total.amount,
+                            authoritativeTotal: response.totalAmount,
+                            time: new Date()
+                        });
+                    }
+                    Object.assign(paymentRequest, {
+                        total: Object.assign({}, paymentRequest.total, {amount: `${response.totalAmount}`}),
+                        lineItems: response.lineItems
+                    });
+                }
+            } catch (error) {
+                // Not fatal on its own: the sheet keeps the total it already
+                // had and the create_order guard below still catches a
+                // mismatch before PayPal is asked to confirm it.
+                console.log('ApplePay total refresh failed', error);
+                angelleyeJsErrorLogger.addToLog(errorLogId, {
+                    context: 'apple_pay_total_refresh_failed',
+                    message: error?.message,
+                    time: new Date()
+                });
+            }
+            safeSessionCall('completePaymentMethodSelection', () => session.completePaymentMethodSelection({
                 newTotal: paymentRequest.total,
-            });
+                newLineItems: paymentRequest.lineItems
+            }));
         };
 
         session.onshippingcontactselected = async (event) => {
@@ -305,7 +385,7 @@ class ApplePayCheckoutButton {
                         total: newTotal,
                         lineItems: response.lineItems
                     });
-                    session.completeShippingContactSelection(shippingContactUpdate);
+                    safeSessionCall('completeShippingContactSelection', () => session.completeShippingContactSelection(shippingContactUpdate));
                 } else {
                     throw new Error(localizedMessages.shipping_amount_update_error);
                 }
@@ -317,10 +397,11 @@ class ApplePayCheckoutButton {
         session.onshippingmethodselected = async (event) => {
             console.log('on shipping method selected', event);
             let shippingMethodUpdate = {}
-            session.completeShippingMethodSelection(shippingMethodUpdate);
+            safeSessionCall('completeShippingMethodSelection', () => session.completeShippingMethodSelection(shippingMethodUpdate));
         }
 
         session.onpaymentauthorized = async (event) => {
+            awaitingPaymentAuthorization = true;
             try {
                 console.log('paymentAuthorized', event);
                 // create the order to send a payment request
@@ -331,6 +412,25 @@ class ApplePayCheckoutButton {
                     errorLogId
                 }).then((orderData) => {
                     console.log('orderCreated', orderData);
+                    // Last line of defence. PayPal rejects confirmOrder() when
+                    // the order total is not the total the buyer approved, and
+                    // that rejection reaches the buyer as an opaque failure. If
+                    // the two have still drifted, refresh the cached totals and
+                    // say so plainly - authorizing again is PayPal's own
+                    // guidance for this case, and the refreshed total makes the
+                    // second attempt succeed.
+                    if (typeof orderData.totalAmount !== 'undefined'
+                            && `${orderData.totalAmount}` !== `${paymentRequest.total.amount}`) {
+                        angelleyeJsErrorLogger.addToLog(errorLogId, {
+                            context: 'apple_pay_total_mismatch',
+                            sheetTotal: paymentRequest.total.amount,
+                            orderTotal: orderData.totalAmount,
+                            orderID: orderData.orderID,
+                            time: new Date()
+                        });
+                        angelleyeOrder.updateCartTotalsInEnvironment(orderData);
+                        throw new Error(localizedMessages.apple_pay_amount_changed_error);
+                    }
                     return orderData.orderID;
                 });
 
@@ -339,9 +439,10 @@ class ApplePayCheckoutButton {
                  */
                 await ApplePayCheckoutButton.applePay().confirmOrder({ orderId: orderID, token: event.payment.token, billingContact: event.payment.billingContact, shippingContact: event.payment.shippingContact });
 
-                await session.completePayment({
+                sessionClosed = true;
+                safeSessionCall('completePayment', () => session.completePayment({
                     status: ApplePaySession.STATUS_SUCCESS,
-                });
+                }));
                 angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
             } catch (error) {
                 paymentCancelled(error);
@@ -350,6 +451,7 @@ class ApplePayCheckoutButton {
 
         session.oncancel  = (event) => {
             console.log("Apple Pay Cancelled !!", event)
+            sessionClosed = true;
             paymentCancelled();
         }
 
