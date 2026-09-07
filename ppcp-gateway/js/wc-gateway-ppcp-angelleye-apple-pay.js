@@ -211,6 +211,9 @@ class ApplePayCheckoutButton {
         // phase the sheet is in.
         let sessionClosed = false;
         let awaitingPaymentAuthorization = false;
+        // True once the sheet has been repriced against the wallet address, so
+        // the order must be built from it rather than the posted form fields.
+        let walletAddressIsAuthoritative = false;
 
         let safeSessionCall = (label, fn) => {
             try {
@@ -344,6 +347,7 @@ class ApplePayCheckoutButton {
                         total: newTotal,
                         lineItems: response.lineItems
                     });
+                    walletAddressIsAuthoritative = true;
                     safeSessionCall('completeShippingContactSelection', () => session.completeShippingContactSelection(shippingContactUpdate));
                 } else {
                     throw new Error(localizedMessages.shipping_amount_update_error);
@@ -364,6 +368,7 @@ class ApplePayCheckoutButton {
             try {
                 console.log('paymentAuthorized', event);
                 // create the order to send a payment request
+                angelleyeOrder.setWalletAddressAuthoritative(walletAddressIsAuthoritative);
                 let orderID = await angelleyeOrder.createOrder({
                     angelleye_ppcp_button_selector: containerSelector,
                     billingDetails: event.payment.billingContact,
@@ -371,13 +376,9 @@ class ApplePayCheckoutButton {
                     errorLogId
                 }).then((orderData) => {
                     console.log('orderCreated', orderData);
-                    // Last line of defence. PayPal rejects confirmOrder() when
-                    // the order total is not the total the buyer approved, and
-                    // that rejection reaches the buyer as an opaque failure. If
-                    // the two have still drifted, refresh the cached totals and
-                    // say so plainly - authorizing again is PayPal's own
-                    // guidance for this case, and the refreshed total makes the
-                    // second attempt succeed.
+                    // PayPal rejects confirmOrder() when the order total is not
+                    // the total the buyer approved; say so rather than sending a
+                    // confirm that is certain to fail.
                     if (typeof orderData.totalAmount !== 'undefined'
                             && `${orderData.totalAmount}` !== `${paymentRequest.total.amount}`) {
                         angelleyeJsErrorLogger.addToLog(errorLogId, {

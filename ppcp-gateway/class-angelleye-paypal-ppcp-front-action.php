@@ -167,6 +167,15 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         }
                     }
 
+                    // Only when the wallet repriced the sheet; otherwise the
+                    // posted fields are what the buyer approved.
+                    if (!empty($_POST['angelleye_ppcp_wallet_address_authoritative'])) {
+                        $this->angelleye_ppcp_apply_wallet_address_to_post(
+                                $billing_address ?? null,
+                                $shipping_address ?? null
+                        );
+                    }
+
                     $request_from_page = $_GET['from'] ?? '';
 
                     AngellEye_Session_Manager::set('from', $request_from_page);
@@ -957,6 +966,62 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         // Shipping before totals, so methods that affect tax are chosen first.
         WC()->cart->calculate_shipping();
         WC()->cart->calculate_totals();
+    }
+
+    /**
+     * Copy a wallet-supplied contact into the posted checkout fields.
+     *
+     * process_checkout() reads $_POST, not the customer object, so this is the
+     * only way an Apple Pay address reaches the order.
+     *
+     * @param array|null $billing_address  Wallet billing contact.
+     * @param array|null $shipping_address Wallet shipping contact.
+     */
+    private function angelleye_ppcp_apply_wallet_address_to_post($billing_address, $shipping_address) {
+        $map = array(
+            'address_1' => 'addressLines.0',
+            'address_2' => 'addressLines.1',
+            'city' => 'locality',
+            'state' => 'administrativeArea',
+            'postcode' => 'postalCode',
+            'country' => 'countryCode',
+            'first_name' => 'givenName',
+            'last_name' => 'familyName',
+        );
+        $read = function ($source, $path) {
+            if (strpos($path, 'addressLines.') === 0) {
+                return $source['addressLines'][(int) substr($path, 13)] ?? '';
+            }
+            return $source[$path] ?? '';
+        };
+        $shipping_address = $shipping_address['shippingDetails'] ?? $shipping_address;
+        $billing_address = $billing_address['billingDetails'] ?? $billing_address;
+        $copied_shipping = 0;
+        foreach (array('billing' => $billing_address, 'shipping' => $shipping_address) as $prefix => $source) {
+            if (empty($source) || !is_array($source)) {
+                continue;
+            }
+            foreach ($map as $field => $path) {
+                $value = $read($source, $path);
+                if ('' === $value || null === $value) {
+                    continue;
+                }
+                if ('country' === $field || 'state' === $field) {
+                    $value = strtoupper($value);
+                }
+                $_POST[$prefix . '_' . $field] = wc_clean($value);
+                if ('shipping' === $prefix) {
+                    $copied_shipping ++;
+                }
+            }
+        }
+        if (!empty($shipping_address['emailAddress'])) {
+            $_POST['billing_email'] = wc_clean($shipping_address['emailAddress']);
+        }
+        // Without this WooCommerce copies billing over the shipping fields.
+        if ($copied_shipping > 0) {
+            $_POST['ship_to_different_address'] = 1;
+        }
     }
 
     /**

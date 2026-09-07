@@ -415,6 +415,21 @@ const angelleyeOrder = {
             }
     }
     },
+    /**
+     * Flag whether the wallet address should override the posted checkout
+     * fields when the order is built.
+     */
+    setWalletAddressAuthoritative: (isAuthoritative) => {
+        let formSelector = angelleyeOrder.getWooFormSelector();
+        jQuery(formSelector).find('input[name=angelleye_ppcp_wallet_address_authoritative]').remove();
+        if (isAuthoritative) {
+            jQuery('<input>', {
+                type: 'hidden',
+                name: 'angelleye_ppcp_wallet_address_authoritative',
+                value: '1'
+            }).appendTo(formSelector);
+        }
+    },
     shippingAddressUpdate: (shippingDetails, billingDetails, errorLogId, angelleye_ppcp_button_selector) => {
         // Forward the button selector so createOrder keeps the sliding-cart (FKCart) context.
         // Without it the shipping update is treated as a product-page buy-now and re-adds the
