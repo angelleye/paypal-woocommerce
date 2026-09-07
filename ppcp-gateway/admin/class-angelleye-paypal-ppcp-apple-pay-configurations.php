@@ -117,22 +117,27 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
             if (!is_array($addedDomains)) {
                 $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
                 $addedDomains = $instance->listApplePayDomain(true);
-                set_transient("angelleye_apple_pay_domain_list_cache", $addedDomains, 24 * HOUR_IN_SECONDS);
+                // Never cache a failed lookup as though it were an answer.
+                if (!empty($addedDomains['status'])) {
+                    set_transient("angelleye_apple_pay_domain_list_cache", $addedDomains, 24 * HOUR_IN_SECONDS);
+                }
             }
         } else {
             $addedDomains = $response;
         }
 
-        if ($addedDomains['status'] && count($addedDomains['domains'])) {
-            $domainName = parse_url( get_site_url(), PHP_URL_HOST );
-            foreach ($addedDomains['domains'] as $addedDomain) {
-                if ($addedDomain['domain'] == $domainName) {
-                    return true;
-                }
-            }
-            return false;
+        // An account with no domains is a successful lookup reporting none;
+        // only a failed call is genuinely unknown.
+        if (empty($addedDomains['status'])) {
+            throw new Exception('Unable to retrieve apple pay domain list.');
         }
-        throw new Exception('Unable to retrieve apple pay domain list.');
+        $domainName = parse_url( get_site_url(), PHP_URL_HOST );
+        foreach ((array) ($addedDomains['domains'] ?? []) as $addedDomain) {
+            if ($addedDomain['domain'] == $domainName) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static function autoRegisterDomain($is_domain_added = false): bool
