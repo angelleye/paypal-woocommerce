@@ -470,6 +470,10 @@ class AngellEYE_PayPal_PPCP_Payment {
             $totalAmount = $order->get_total('');
             $shippingRequired = $order->needs_shipping_address() && !angelleye_ppcp_is_local_pickup_chosen($order);
         } elseif (isset(WC()->cart)) {
+            // At wp_enqueue_scripts WooCommerce has not calculated totals yet,
+            // so get_total() returns the stale pre-tax session figure - which
+            // the wallet sheet then asks the buyer to approve.
+            WC()->cart->calculate_totals();
             $totalAmount = WC()->cart->get_total('');
             $shippingRequired = WC()->cart->needs_shipping() && !angelleye_ppcp_is_local_pickup_chosen();
             $details = $this->getCartLineItems();
