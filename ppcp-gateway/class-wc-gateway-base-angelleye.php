@@ -114,7 +114,7 @@ trait WC_Gateway_Base_AngellEYE
                 return $bool;
             }
         } else {
-            return apply_filters('angelleye_is_ppcp_parallel_payment_handle', true, $order_id, $this);
+            return apply_filters('angelleye_is_ppcp_parallel_payment_handle', true, $order_id, $this, $amount, $reason);
         }
     }
 }
