@@ -2899,7 +2899,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_multi_account_refund_order_third_party($order_id, $value, $testmode) {
+    public function angelleye_ppcp_multi_account_refund_order_third_party($order_id, $value, $testmode, $amount = null) {
         try {
             if(!isset($value['transaction_id'])) {
                 return;
@@ -2913,6 +2913,15 @@ class AngellEYE_PayPal_PPCP_Payment {
             $order = wc_get_order($order_id);
             $reason = !empty($reason) ? $reason : 'Refund';
             $body_request['note_to_payer'] = $reason;
+            $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
+            // Omitting `amount` makes PayPal refund the entire capture, so it must only
+            // ever be left out when the caller genuinely asked for a full refund.
+            if (!empty($amount) && $amount > 0) {
+                $body_request['amount'] = array(
+                    'value' => angelleye_ppcp_round($amount, $decimals),
+                    'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount)
+                );
+            }
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
