@@ -2899,7 +2899,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_multi_account_refund_order_third_party($order_id, $value, $testmode, $amount = null) {
+    public function angelleye_ppcp_multi_account_refund_order_third_party($order_id, $value, $testmode, $amount = null, $reason = '') {
         try {
             if(!isset($value['transaction_id'])) {
                 return;
@@ -2912,6 +2912,9 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $order = wc_get_order($order_id);
             $reason = !empty($reason) ? $reason : 'Refund';
+            if (strlen($reason) > 255) {
+                $reason = substr($reason, 0, 252) . '...';
+            }
             $body_request['note_to_payer'] = $reason;
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
             // Omitting `amount` makes PayPal refund the entire capture, so it must only
