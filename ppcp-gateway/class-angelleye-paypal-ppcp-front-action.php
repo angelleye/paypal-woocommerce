@@ -167,6 +167,15 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                         }
                     }
 
+                    // Only when the wallet repriced the sheet; otherwise the
+                    // posted fields are what the buyer approved.
+                    if (!empty($_POST['angelleye_ppcp_wallet_address_authoritative'])) {
+                        $this->angelleye_ppcp_apply_wallet_address_to_post(
+                                $billing_address ?? null,
+                                $shipping_address ?? null
+                        );
+                    }
+
                     $request_from_page = $_GET['from'] ?? '';
 
                     AngellEye_Session_Manager::set('from', $request_from_page);
@@ -428,6 +437,9 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                             $this->api_log->log($ex->getMessage(), 'error');
                         }
                     }
+                    // After any add-to-cart rebuild above, which discards
+                    // whatever was calculated before it.
+                    $this->angelleye_ppcp_sync_wallet_tax_location($shipping_address ?? null);
                     if (!empty($woo_order_id)) {
                         $order = wc_get_order($woo_order_id);
                         if (is_a($order, 'WC_Order')) {
@@ -893,6 +905,123 @@ class AngellEYE_PayPal_PPCP_Front_Action {
 
     public function angelleye_ppcp_direct_capture() {
         $this->angelleye_ppcp_create_woo_order();
+    }
+
+    /**
+     * Apply a wallet address to WooCommerce's tax location and reprice.
+     *
+     * Mirrors WC_AJAX::update_order_review(). WOOCOMMERCE_CHECKOUT matters:
+     * is_checkout() keys off it, and tax providers such as AvaTax skip
+     * calculation entirely when it is false, repricing the cart to zero tax.
+     *
+     * @param array|null $shipping_address Wallet shipping contact.
+     */
+    private function angelleye_ppcp_sync_wallet_tax_location($shipping_address) {
+        if (!function_exists('WC') || !WC()->customer || !WC()->cart) {
+            return;
+        }
+        // Mirrors WC_AJAX::update_order_review(), which is the same operation:
+        // apply an address, then reprice the cart. Its first act is to define
+        // WOOCOMMERCE_CHECKOUT, and wc-conditional-functions.php keys
+        // is_checkout() off that constant. Without it is_checkout() is false
+        // for everything running inside this wc-api request, so anything that
+        // supplies tax rates only in checkout context contributes nothing and
+        // the cart reprices to zero tax for an address that is taxed correctly
+        // on the checkout page.
+        wc_maybe_define_constant('WOOCOMMERCE_CHECKOUT', true);
+
+        if (isset($shipping_address['shippingDetails']) && is_array($shipping_address['shippingDetails'])) {
+            $shipping_address = $shipping_address['shippingDetails'];
+        }
+        if (!empty($shipping_address) && is_array($shipping_address)) {
+            $location = array(
+                'country' => strtoupper((string) ($shipping_address['countryCode'] ?? '')),
+                'state' => strtoupper((string) ($shipping_address['administrativeArea'] ?? '')),
+                'postcode' => (string) ($shipping_address['postalCode'] ?? ''),
+                'city' => (string) ($shipping_address['locality'] ?? ''),
+            );
+            // Skip empties: the wallet omits what the buyer has not supplied,
+            // and blanking a stored value widens the tax location.
+            $location = array_filter($location, function ($value) {
+                return '' !== $value;
+            });
+            $props = array();
+            foreach ($location as $key => $value) {
+                $props['shipping_' . $key] = wc_clean($value);
+            }
+            // update_order_review() sets both slots from the posted form; the
+            // wallet only gives us a delivery address, so mirror it into
+            // billing just when that is what tax is based on.
+            if ('billing' === get_option('woocommerce_tax_based_on')) {
+                foreach ($location as $key => $value) {
+                    $props['billing_' . $key] = wc_clean($value);
+                }
+            }
+            if (!empty($props)) {
+                WC()->customer->set_props($props);
+                WC()->customer->set_calculated_shipping(true);
+                WC()->customer->save();
+            }
+        }
+        // Shipping before totals, so methods that affect tax are chosen first.
+        WC()->cart->calculate_shipping();
+        WC()->cart->calculate_totals();
+    }
+
+    /**
+     * Copy a wallet-supplied contact into the posted checkout fields.
+     *
+     * process_checkout() reads $_POST, not the customer object, so this is the
+     * only way an Apple Pay address reaches the order.
+     *
+     * @param array|null $billing_address  Wallet billing contact.
+     * @param array|null $shipping_address Wallet shipping contact.
+     */
+    private function angelleye_ppcp_apply_wallet_address_to_post($billing_address, $shipping_address) {
+        $map = array(
+            'address_1' => 'addressLines.0',
+            'address_2' => 'addressLines.1',
+            'city' => 'locality',
+            'state' => 'administrativeArea',
+            'postcode' => 'postalCode',
+            'country' => 'countryCode',
+            'first_name' => 'givenName',
+            'last_name' => 'familyName',
+        );
+        $read = function ($source, $path) {
+            if (strpos($path, 'addressLines.') === 0) {
+                return $source['addressLines'][(int) substr($path, 13)] ?? '';
+            }
+            return $source[$path] ?? '';
+        };
+        $shipping_address = $shipping_address['shippingDetails'] ?? $shipping_address;
+        $billing_address = $billing_address['billingDetails'] ?? $billing_address;
+        $copied_shipping = 0;
+        foreach (array('billing' => $billing_address, 'shipping' => $shipping_address) as $prefix => $source) {
+            if (empty($source) || !is_array($source)) {
+                continue;
+            }
+            foreach ($map as $field => $path) {
+                $value = $read($source, $path);
+                if ('' === $value || null === $value) {
+                    continue;
+                }
+                if ('country' === $field || 'state' === $field) {
+                    $value = strtoupper($value);
+                }
+                $_POST[$prefix . '_' . $field] = wc_clean($value);
+                if ('shipping' === $prefix) {
+                    $copied_shipping ++;
+                }
+            }
+        }
+        if (!empty($shipping_address['emailAddress'])) {
+            $_POST['billing_email'] = wc_clean($shipping_address['emailAddress']);
+        }
+        // Without this WooCommerce copies billing over the shipping fields.
+        if ($copied_shipping > 0) {
+            $_POST['ship_to_different_address'] = 1;
+        }
     }
 
     /**

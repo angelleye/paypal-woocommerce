@@ -211,6 +211,9 @@ class ApplePayCheckoutButton {
         // phase the sheet is in.
         let sessionClosed = false;
         let awaitingPaymentAuthorization = false;
+        // True once the sheet has been repriced against the wallet address, so
+        // the order must be built from it rather than the posted form fields.
+        let walletAddressIsAuthoritative = false;
 
         let safeSessionCall = (label, fn) => {
             try {
@@ -313,50 +316,9 @@ class ApplePayCheckoutButton {
             });
         };
 
-        session.onpaymentmethodselected = async (event) => {
-            // The sheet was built from angelleye_cart_totals, a total cached in
-            // the page and refreshed only when an updated_checkout fragment
-            // happens to arrive. The order is built fresh server-side at
-            // authorization time and nothing reconciled the two, so PayPal
-            // rejected confirmOrder() with APPLE_PAY_AMOUNT_MISMATCH: the buyer
-            // had approved a different number from the one on the order.
-            // onshippingcontactselected was the only thing that ever corrected
-            // this, and it fires only when the buyer changes their address.
-            //
-            // This handler fires as soon as the sheet opens, and Apple allows
-            // the total to be revised here, so re-read the authoritative figure
-            // while the buyer has still approved nothing.
-            try {
-                let response = await angelleyeOrder.shippingAddressUpdate(undefined, undefined, errorLogId, containerSelector);
-                if (response && typeof response.totalAmount !== 'undefined') {
-                    angelleyeOrder.updateCartTotalsInEnvironment(response);
-                    if (`${response.totalAmount}` !== `${paymentRequest.total.amount}`) {
-                        angelleyeJsErrorLogger.addToLog(errorLogId, {
-                            context: 'apple_pay_total_corrected',
-                            sheetTotal: paymentRequest.total.amount,
-                            authoritativeTotal: response.totalAmount,
-                            time: new Date()
-                        });
-                    }
-                    Object.assign(paymentRequest, {
-                        total: Object.assign({}, paymentRequest.total, {amount: `${response.totalAmount}`}),
-                        lineItems: response.lineItems
-                    });
-                }
-            } catch (error) {
-                // Not fatal on its own: the sheet keeps the total it already
-                // had and the create_order guard below still catches a
-                // mismatch before PayPal is asked to confirm it.
-                console.log('ApplePay total refresh failed', error);
-                angelleyeJsErrorLogger.addToLog(errorLogId, {
-                    context: 'apple_pay_total_refresh_failed',
-                    message: error?.message,
-                    time: new Date()
-                });
-            }
+        session.onpaymentmethodselected = (event) => {
             safeSessionCall('completePaymentMethodSelection', () => session.completePaymentMethodSelection({
                 newTotal: paymentRequest.total,
-                newLineItems: paymentRequest.lineItems
             }));
         };
 
@@ -385,6 +347,7 @@ class ApplePayCheckoutButton {
                         total: newTotal,
                         lineItems: response.lineItems
                     });
+                    walletAddressIsAuthoritative = true;
                     safeSessionCall('completeShippingContactSelection', () => session.completeShippingContactSelection(shippingContactUpdate));
                 } else {
                     throw new Error(localizedMessages.shipping_amount_update_error);
@@ -405,6 +368,7 @@ class ApplePayCheckoutButton {
             try {
                 console.log('paymentAuthorized', event);
                 // create the order to send a payment request
+                angelleyeOrder.setWalletAddressAuthoritative(walletAddressIsAuthoritative);
                 let orderID = await angelleyeOrder.createOrder({
                     angelleye_ppcp_button_selector: containerSelector,
                     billingDetails: event.payment.billingContact,
@@ -412,13 +376,9 @@ class ApplePayCheckoutButton {
                     errorLogId
                 }).then((orderData) => {
                     console.log('orderCreated', orderData);
-                    // Last line of defence. PayPal rejects confirmOrder() when
-                    // the order total is not the total the buyer approved, and
-                    // that rejection reaches the buyer as an opaque failure. If
-                    // the two have still drifted, refresh the cached totals and
-                    // say so plainly - authorizing again is PayPal's own
-                    // guidance for this case, and the refreshed total makes the
-                    // second attempt succeed.
+                    // PayPal rejects confirmOrder() when the order total is not
+                    // the total the buyer approved; say so rather than sending a
+                    // confirm that is certain to fail.
                     if (typeof orderData.totalAmount !== 'undefined'
                             && `${orderData.totalAmount}` !== `${paymentRequest.total.amount}`) {
                         angelleyeJsErrorLogger.addToLog(errorLogId, {
