@@ -156,7 +156,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
         if ($gateway_being_disabled || $oldSandboxMode !== $newSandboxMode) {
             delete_option('ae_apple_pay_domain_reg_retries');
             delete_transient('ae_seller_onboarding_status');
-            delete_transient('angelleye_apple_pay_domain_list_cache');
+            angelleye_ppcp_clear_apple_pay_domain_cache();
         }
 
         if ($gateway_being_disabled) {
@@ -956,7 +956,7 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             }
             $is_enabled = $this->get_option($key);
             $is_domain_added_new = false;
-            $is_domain_added = $this->get_option('apple_pay_domain_added', null) == 'yes';
+            $is_domain_added = angelleye_ppcp_is_apple_pay_domain_recorded();
             $is_apple_pay_approved = $data['is_apple_pay_approved'] ?? false;
             $is_apple_pay_enabled = $data['is_apple_pay_enable'] ?? false;
             $is_ppcp_connected = $data['is_ppcp_connected'] ?? false;
@@ -966,14 +966,9 @@ class WC_Gateway_PPCP_AngellEYE extends WC_Payment_Gateway {
             }
             $is_disabled = $data['disabled'] || isset($data['custom_attributes']['disabled']) || !$is_domain_added_new || !$is_apple_pay_approved;
 
-            if ($is_domain_added == null || $is_domain_added_new != $is_domain_added) {
-                if ($is_domain_added_new) {
-                    $is_domain_added = true;
-                    $this->update_option('apple_pay_domain_added', 'yes');
-                } else {
-                    $is_domain_added = false;
-                    $this->update_option('apple_pay_domain_added', 'no');
-                }
+            if ($is_domain_added_new != $is_domain_added) {
+                $is_domain_added = (bool) $is_domain_added_new;
+                angelleye_ppcp_record_apple_pay_domain_added($is_domain_added);
             }
             ob_start();
             ?>
