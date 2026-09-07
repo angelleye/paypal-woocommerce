@@ -932,6 +932,87 @@ if (!function_exists('angelleye_ppcp_is_save_payment_method')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_apple_pay_account_scope')) {
+
+    /**
+     * Identifies the connected PayPal account, so Apple Pay domain state
+     * cannot be carried over from a previously connected one.
+     *
+     * @return string
+     */
+    function angelleye_ppcp_apple_pay_account_scope() {
+        $settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+        $is_sandbox = 'yes' === $settings->get('testmode', 'no');
+        $merchant_id = $is_sandbox
+                ? $settings->get('sandbox_merchant_id', '')
+                : $settings->get('live_merchant_id', '');
+        return substr(md5(($is_sandbox ? 'sandbox' : 'live') . '|' . $merchant_id), 0, 12);
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_apple_pay_domain_cache_key')) {
+
+    function angelleye_ppcp_apple_pay_domain_cache_key() {
+        return 'angelleye_apple_pay_domain_list_cache_' . angelleye_ppcp_apple_pay_account_scope();
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_clear_apple_pay_domain_cache')) {
+
+    function angelleye_ppcp_clear_apple_pay_domain_cache() {
+        delete_transient(angelleye_ppcp_apple_pay_domain_cache_key());
+        // Pre-scoping key, still present on existing installs.
+        delete_transient('angelleye_apple_pay_domain_list_cache');
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_is_apple_pay_domain_recorded')) {
+
+    /**
+     * Whether the domain is recorded as registered for the account connected
+     * right now. A flag left behind by a different account does not count.
+     *
+     * @return bool
+     */
+    function angelleye_ppcp_is_apple_pay_domain_recorded() {
+        $settings = WC_Gateway_PPCP_AngellEYE_Settings::instance();
+        if ('yes' !== $settings->get('apple_pay_domain_added', 'no')) {
+            return false;
+        }
+        $recorded_account = $settings->get('apple_pay_domain_added_account', '');
+        // Installs upgrading from before the flag was scoped have no account
+        // recorded against it. Honour the existing flag so a working Apple Pay
+        // is not switched off by the upgrade; the settings page stamps the
+        // connected account the next time it reconciles.
+        if ('' === $recorded_account) {
+            return true;
+        }
+        return $recorded_account === angelleye_ppcp_apple_pay_account_scope();
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_record_apple_pay_domain_added')) {
+
+    /**
+     * @param bool $is_added
+     */
+    function angelleye_ppcp_record_apple_pay_domain_added($is_added) {
+        $key = 'woocommerce_angelleye_ppcp_settings';
+        $settings = get_option($key, array());
+        if (!is_array($settings)) {
+            $settings = array();
+        }
+        $settings['apple_pay_domain_added'] = $is_added ? 'yes' : 'no';
+        $settings['apple_pay_domain_added_account'] = $is_added ? angelleye_ppcp_apple_pay_account_scope() : '';
+        update_option($key, $settings);
+    }
+
+}
+
 if (!function_exists('angelleye_ppcp_is_apple_pay_recurring_token')) {
 
     /**

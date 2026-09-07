@@ -100,8 +100,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
             $checkIsDomainAdded = self::isApplePayDomainAdded($jsonResponse);
             if ($checkIsDomainAdded) {
                 $successMessage = __('Your domain has been registered successfully, Close the popup and refresh the page to update the status.', 'paypal-for-woocommerce');
-                $applePayGateway = WC_Gateway_Apple_Pay_AngellEYE::instance();
-                $applePayGateway->update_option('apple_pay_domain_added', 'yes');
+                angelleye_ppcp_record_apple_pay_domain_added(true);
             }
         } catch (Exception $exception) {
 
@@ -113,13 +112,14 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
     public static function isApplePayDomainAdded($response = null): bool
     {
         if (empty($response)) {
-            $addedDomains = get_transient("angelleye_apple_pay_domain_list_cache");
+            $cacheKey = angelleye_ppcp_apple_pay_domain_cache_key();
+            $addedDomains = get_transient($cacheKey);
             if (!is_array($addedDomains)) {
                 $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
                 $addedDomains = $instance->listApplePayDomain(true);
                 // Never cache a failed lookup as though it were an answer.
                 if (!empty($addedDomains['status'])) {
-                    set_transient("angelleye_apple_pay_domain_list_cache", $addedDomains, 24 * HOUR_IN_SECONDS);
+                    set_transient($cacheKey, $addedDomains, 24 * HOUR_IN_SECONDS);
                 }
             }
         } else {
@@ -145,14 +145,15 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         try {
             if (!self::isApplePayDomainAdded()) {
                 /**
-                 * Try to register the domain max 1 time, this reduces the register attempt in case add domain fails
-                 * If domain registration fails its expected user will register manually.
+                 * Try to register the domain max 1 time per connected account,
+                 * so a failure against one account does not latch registration
+                 * off for the next one.
                  */
-                $auto_register_status = get_option('ae_apple_pay_domain_reg_retries', 0);
-                if ($auto_register_status > 0) {
+                $scope = angelleye_ppcp_apple_pay_account_scope();
+                if (get_option('ae_apple_pay_domain_reg_retries', '') === $scope) {
                     return false;
                 }
-                update_option('ae_apple_pay_domain_reg_retries', 1);
+                update_option('ae_apple_pay_domain_reg_retries', $scope);
                 $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
 
                 /**
@@ -216,7 +217,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $domainGetUrl = 'https://' . $this->host . '/v1/customer/wallet-domains';
         $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_add');
         if (isset($response['domain'])) {
-            delete_transient('angelleye_apple_pay_domain_list_cache');
+            angelleye_ppcp_clear_apple_pay_domain_cache();
             return [
                 'status' => true,
                 'domain' => $domainNameToRegister,
@@ -257,7 +258,7 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
         $domainGetUrl = 'https://' . $this->host . '/v1/customer/unregister-wallet-domain';
         $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_remove');
         if (isset($response['domain'])) {
-            delete_transient('angelleye_apple_pay_domain_list_cache');
+            angelleye_ppcp_clear_apple_pay_domain_cache();
             return [
                 'status' => true,
                 'message' => __('Domain has been removed successfully.', 'paypal-for-woocommerce')
