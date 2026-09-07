@@ -117,10 +117,17 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
             if (!is_array($addedDomains)) {
                 $instance = AngellEYE_PayPal_PPCP_Apple_Pay_Configurations::instance();
                 $addedDomains = $instance->listApplePayDomain(true);
-                // Never cache a failed lookup as though it were an answer.
-                if (!empty($addedDomains['status'])) {
-                    set_transient($cacheKey, $addedDomains, 24 * HOUR_IN_SECONDS);
-                }
+                // Cache the failure as well, briefly. It is not treated as an
+                // answer - the check below still throws - but without it a
+                // failing or rate-limited API is called again on every admin
+                // page render, which is what the manual process exists to
+                // avoid. A short window still lets an outage recover on its
+                // own, rather than pinning the state for a day.
+                set_transient(
+                        $cacheKey,
+                        $addedDomains,
+                        !empty($addedDomains['status']) ? 24 * HOUR_IN_SECONDS : 15 * MINUTE_IN_SECONDS
+                );
             }
         } else {
             $addedDomains = $response;
