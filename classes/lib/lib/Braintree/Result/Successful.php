@@ -61,6 +61,20 @@ class Successful extends Instance
         }
     }
 
+    /**
+     * Implementation of JsonSerializable
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $data = ['success' => $this->success];
+        foreach ($this->_returnObjectNames as $returnObjectName) {
+            $data[$returnObjectName] = $this->$returnObjectName;
+        }
+        return $data;
+    }
+
     // phpcs:ignore PEAR.Commenting.FunctionComment.Missing
     public function __toString()
     {

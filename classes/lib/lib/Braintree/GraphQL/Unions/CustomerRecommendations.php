@@ -6,6 +6,8 @@ use Braintree\Base;
 
 /**
  * A union of all possible customer recommendations associated with a PayPal customer session.
+ *
+ * @experimental This class is experimental and may change in future releases.
  */
 class CustomerRecommendations extends Base
 {
@@ -14,8 +16,12 @@ class CustomerRecommendations extends Base
     {
         $this->_attributes = $attributes;
 
-        if (isset($attributes['paymentOptions'])) {
-            $this->_set('paymentOptions', $attributes['paymentOptions']);
+        if (isset($attributes['paymentRecommendations'])) {
+            $this->_set('paymentOptions', $attributes['paymentRecommendations']);
+        }
+
+        if (isset($attributes['paymentRecommendations'])) {
+            $this->_set('paymentRecommendations', $attributes['paymentRecommendations']);
         }
     }
 

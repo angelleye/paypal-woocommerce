@@ -26,9 +26,9 @@ class ClientTokenGateway
     }
 
     /**
-     * Generate a client token for client-side authorization
+     * Generates a client token for client-side authorization
      *
-     * @param Optional $params containing request parameters
+     * @param array $params containing optional request parameters
      *
      * @return string client token
      */
@@ -39,7 +39,10 @@ class ClientTokenGateway
             $params["version"] = ClientToken::DEFAULT_VERSION;
         }
 
-        Util::verifyKeys(self::generateSignature(), $params);
+        $this->conditionallyVerifyKeys($params);
+
+        $params = Util::replaceKey($params, "preferredPaymentMethodToken", "paymentMethodId");
+
         $generateParams = ["client_token" => $params];
 
         return $this->_doGenerate('/client_token', $generateParams);
@@ -84,6 +87,7 @@ class ClientTokenGateway
         return [
             "customerId",
             "merchantAccountId",
+            "preferredPaymentMethodToken",
             "proxyMerchantId",
             "version",
             ["domains" => ['_anyKey_']],
@@ -103,7 +107,8 @@ class ClientTokenGateway
     public function generateWithCustomerIdSignature()
     {
         return [
-            "version", "customerId", "proxyMerchantId",
+            "version", "customerId", "preferredPaymentMethodToken", "proxyMerchantId",
+            ["domains" => ['_anyKey_']],
             ["options" => ["makeDefault", "verifyCard", "failOnDuplicatePaymentMethod", "failOnDuplicatePaymentMethodForCustomer"]],
             "merchantAccountId"];
     }
@@ -119,7 +124,7 @@ class ClientTokenGateway
      */
     public function generateWithoutCustomerIdSignature()
     {
-        return ["version", "proxyMerchantId", "merchantAccountId"];
+        return ["version", "preferredPaymentMethodToken", "proxyMerchantId", ["domains" => ['_anyKey_']], "merchantAccountId"];
     }
 
     /**

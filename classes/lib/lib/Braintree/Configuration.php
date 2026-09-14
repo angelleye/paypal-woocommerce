@@ -368,6 +368,23 @@ class Configuration
     }
 
     /*
+     * Check if configuration has API key credentials (publicKey and privateKey).
+     * Required for operations that perform HMAC signature verification, such as
+     * webhook parsing. OAuth access tokens do not provide signing material.
+     *
+     * @throws Exception\Configuration
+     *
+     * @return void
+     */
+    public function assertHasKeys()
+    {
+        if (empty($this->_publicKey) || empty($this->_privateKey)) {
+            // phpcs:ignore Generic.Files.LineLength
+            throw new Exception\Configuration('Webhook signature verification requires API key credentials (publicKey and privateKey).');
+        }
+    }
+
+    /*
      * Getter function
      *
      * @return string environment
@@ -632,6 +649,16 @@ class Configuration
     }
 
     /**
+     * returns the base URL for Braintree's Atmosphere service based on config values
+     *
+     * @return string Braintree Atmosphere URL
+     */
+    public function atmosphereBaseUrl()
+    {
+        return sprintf('%s://%s:%d', $this->protocol(), $this->atmosphereServerName(), $this->atmospherePortNumber());
+    }
+
+    /**
      * sets the merchant path based on merchant ID
      *
      * @return string merchant path uri
@@ -685,6 +712,19 @@ class Configuration
             return 443;
         }
         return getenv("GRAPHQL_PORT") ?: 8080;
+    }
+
+    /**
+     * returns the port number for Atmosphere service depending on environment
+     *
+     * @return integer atmosphere portnumber
+     */
+    public function atmospherePortNumber()
+    {
+        if ($this->sslOn()) {
+            return 443;
+        }
+        return getenv("ATMOSPHERE_PORT") ?: 8080;
     }
 
     /**
@@ -774,6 +814,33 @@ class Configuration
         }
 
         return $graphQLServerName;
+    }
+
+    /**
+     * returns Braintree Atmosphere server name depending on environment
+     *
+     * @return string atmosphere domain name
+     */
+    public function atmosphereServerName()
+    {
+        switch ($this->_environment) {
+            case 'production':
+                $atmosphereServerName = 'payments.braintree-api.com';
+                break;
+            case 'qa':
+                $atmosphereServerName = 'payments-qa.dev.braintree-api.com';
+                break;
+            case 'sandbox':
+                $atmosphereServerName = 'payments.sandbox.braintree-api.com';
+                break;
+            case 'development':
+            case 'integration':
+            default:
+                $atmosphereServerName = 'atmosphere.bt.local';
+                break;
+        }
+
+        return $atmosphereServerName;
     }
 
     /**

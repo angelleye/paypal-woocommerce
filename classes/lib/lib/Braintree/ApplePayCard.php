@@ -69,6 +69,11 @@ class ApplePayCard extends Base
         // set the attributes
         $this->_attributes = $applePayCardAttribs;
 
+        // map billing address into its own object
+        $billingAddress = isset($applePayCardAttribs['billingAddress']) ?
+            Address::factory($applePayCardAttribs['billingAddress']) :
+            null;
+
         $subscriptionArray = [];
         if (isset($applePayCardAttribs['subscriptions'])) {
             foreach ($applePayCardAttribs['subscriptions'] as $subscription) {
@@ -77,6 +82,19 @@ class ApplePayCard extends Base
         }
 
         $this->_set('subscriptions', $subscriptionArray);
+        $this->_set('billingAddress', $billingAddress);
         $this->_set('expirationDate', $this->expirationMonth . '/' . $this->expirationYear);
+
+        if (isset($applePayCardAttribs['verifications']) && count($applePayCardAttribs['verifications']) > 0) {
+            $verifications = $applePayCardAttribs['verifications'];
+            usort($verifications, [$this, '_compareCreatedAtOnVerifications']);
+
+            $this->_set('verification', CreditCardVerification::factory($verifications[0]));
+        }
+    }
+
+    private function _compareCreatedAtOnVerifications($verificationAttrib1, $verificationAttrib2)
+    {
+        return ($verificationAttrib2['createdAt'] < $verificationAttrib1['createdAt']) ? -1 : 1;
     }
 }

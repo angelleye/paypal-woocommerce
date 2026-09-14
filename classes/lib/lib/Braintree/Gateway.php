@@ -139,11 +139,11 @@ class Gateway
 
     /**
      *
-     * @return MerchantGateway
+     * @return LocalPaymentContextGateway
      */
-    public function merchant()
+    public function localPaymentContext()
     {
-        return new MerchantGateway($this);
+        return new LocalPaymentContextGateway($this->graphQLClient);
     }
 
     /**
@@ -297,5 +297,16 @@ class Gateway
     public function webhookTesting()
     {
         return new WebhookTestingGateway($this);
+    }
+
+    /**
+     * Returns a BankAccountInstantVerificationGateway for interacting with
+     * Bank Account Instant Verification functionality.
+     *
+     * @return BankAccountInstantVerificationGateway
+     */
+    public function bankAccountInstantVerification()
+    {
+        return new BankAccountInstantVerificationGateway($this);
     }
 }
