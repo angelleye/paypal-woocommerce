@@ -227,8 +227,8 @@ class WC_Gateway_Braintree_AngellEYE extends WC_Payment_Gateway_CC {
         if ($this->enabled == 'no') {
             return;
         }
-        if (version_compare(PHP_VERSION, '7.2.0', '<')) {
-            echo '<div id="message" class="notice notice-error is-dismissible"><p>' . sprintf(__('Braintree Error: Braintree requires PHP 7.2.0 and above. You are using version %s.', 'paypal-for-woocommerce'), phpversion()) . '</p></div>';
+        if (version_compare(PHP_VERSION, '7.3.0', '<')) {
+            echo '<div id="message" class="notice notice-error is-dismissible"><p>' . sprintf(__('Braintree Error: Braintree requires PHP 7.3.0 and above. You are using version %s.', 'paypal-for-woocommerce'), phpversion()) . '</p></div>';
         }
         if (!is_ssl() && $this->enable_braintree_drop_in == false && $this->sandbox == false) {
             echo '<div id="message" class="notice notice-error is-dismissible"><p>' . sprintf(__('Braintree is enabled, but the <a href="%s">force SSL option</a> is disabled; your checkout may not be secure! Please enable SSL and ensure your server has a valid SSL certificate - Braintree custome credit card UI will only work in sandbox mode.', 'paypal-for-woocommerce'), admin_url('admin.php?page=wc-settings&tab=checkout')) . '</p></div>';
