@@ -160,13 +160,6 @@ class Transaction extends Base
     const SETTLEMENT_PENDING       = 'settlement_pending';
     const SETTLEMENT_CONFIRMED     = 'settlement_confirmed';
 
-    // Transaction Escrow Status
-    const ESCROW_HOLD_PENDING    = 'hold_pending';
-    const ESCROW_HELD            = 'held';
-    const ESCROW_RELEASE_PENDING = 'release_pending';
-    const ESCROW_RELEASED        = 'released';
-    const ESCROW_REFUNDED        = 'refunded';
-
     // Transaction Types
     const SALE   = 'sale';
     const CREDIT = 'credit';
@@ -226,6 +219,10 @@ class Transaction extends Base
     protected function _initialize($transactionAttribs)
     {
         $this->_attributes = $transactionAttribs;
+
+        if (isset($transactionAttribs['processorResponseCode'])) {
+            $this->partiallyAuthorized = ($transactionAttribs['processorResponseCode'] === '1004');
+        }
 
         if (isset($transactionAttribs['applePay'])) {
             $this->_set(
@@ -692,28 +689,30 @@ class Transaction extends Base
      * Static methods redirecting to gateway class
      *
      * @param string $transactionId unique identifier of the transaction to be voided
+     * @param mixed  $attribs       containing any additional request parameters
      *
      * @see TransactionGateway::void()
      *
      * @return Result\Successful|Exception\NotFound
      */
-    public static function void($transactionId)
+    public static function void($transactionId, $attribs = [])
     {
-        return Configuration::gateway()->transaction()->void($transactionId);
+        return Configuration::gateway()->transaction()->void($transactionId, $attribs);
     }
 
     /**
      * Static methods redirecting to gateway class
      *
      * @param string $transactionId unique identifier of the transaction to be voided
+     * @param array  $attribs       containing any additional request parameters
      *
      * @see TransactionGateway::voidNoValidate()
      *
      * @return Transaction|Result\Error
      */
-    public static function voidNoValidate($transactionId)
+    public static function voidNoValidate($transactionId, $attribs = [])
     {
-        return Configuration::gateway()->transaction()->voidNoValidate($transactionId);
+        return Configuration::gateway()->transaction()->voidNoValidate($transactionId, $attribs);
     }
 
     /**
@@ -793,34 +792,6 @@ class Transaction extends Base
     public static function packageTracking($transactionId, $attribs = [])
     {
         return Configuration::gateway()->transaction()->packageTracking($transactionId, $attribs);
-    }
-
-    /**
-     * Static methods redirecting to gateway class
-     *
-     * @param string $transactionId unique identifier of the transaction to be held in escrow
-     *
-     * @see TransactionGateway::holdInEscrow()
-     *
-     * @return Result\Successful|Exception\NotFound
-     */
-    public static function holdInEscrow($transactionId)
-    {
-        return Configuration::gateway()->transaction()->holdInEscrow($transactionId);
-    }
-
-    /**
-     * Static methods redirecting to gateway class
-     *
-     * @param string $transactionId unique identifier of the transaction to be released from escrow
-     *
-     * @see TransactionGateway::releaseFromEscrow()
-     *
-     * @return Result\Successful|Exception\NotFound
-     */
-    public static function releaseFromEscrow($transactionId)
-    {
-        return Configuration::gateway()->transaction()->releaseFromEscrow($transactionId);
     }
 
     /**

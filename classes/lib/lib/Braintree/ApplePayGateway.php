@@ -77,4 +77,62 @@ class ApplePayGateway
             throw new Exception\Unexpected('expected response or apiErrorResponse');
         }
     }
+
+    /**
+     * creates the signature array for create operations
+     *
+     * @return array
+     */
+    public static function createSignature()
+    {
+        return self::baseSignature([]);
+    }
+
+    /**
+     * creates the signature array for update operations
+     *
+     * @return array
+     */
+    public static function updateSignature()
+    {
+        return self::baseSignature(['makeDefault']);
+    }
+
+    /**
+     * creates the base signature for Apple Pay card operations
+     *
+     * @param array $additionalOptions additional options to merge with baseOptions
+     *
+     * @return array
+     */
+    public static function baseSignature($additionalOptions = [])
+    {
+        return [
+            'cardholderName',
+            'cryptogram',
+            'eciIndicator',
+            'expirationMonth',
+            'expirationYear',
+            'networkTransactionId',
+            'number',
+            'token',
+            ['billingAddress' => AddressGateway::createSignature()],
+            ['options' => array_merge(self::baseOptions(), $additionalOptions)]
+        ];
+    }
+
+    /**
+     * creates the base options for Apple Pay card operations
+     *
+     * @return array
+     */
+    public static function baseOptions()
+    {
+        return [
+            "verificationAccountType",
+            "verificationAmount",
+            "verificationMerchantAccountId",
+            "verifyCard",
+        ];
+    }
 }

@@ -18,6 +18,16 @@ class TransactionSearch
     }
 
     /*
+     * Create a new range node for acquirer reference number (ARN)
+     *
+     * @return RangeNode
+     */
+    public static function acquirerReferenceNumber()
+    {
+        return new TextNode("acquirerReferenceNumber");
+    }
+
+    /*
      * Create a new range node for amount
      *
      * @return RangeNode

@@ -19,6 +19,7 @@ class Nonces
     public static $applePayAmEx = "fake-apple-pay-amex-nonce";
     public static $applePayMasterCard = "fake-apple-pay-visa-nonce";
     public static $applePayVisa = "fake-apple-pay-visa-nonce";
+    public static $applePayMpan = "fake-apple-pay-mpan-nonce";
     public static $consumed = "fake-consumed-nonce";
     public static $europe = "fake-europe-bank-account-nonce";
     public static $gatewayRejectedFraud = "fake-gateway-rejected-fraud-nonce";
@@ -66,7 +67,10 @@ class Nonces
     public static $threeDSecureVisaUnavailable = "fake-three-d-secure-visa-unavailable-nonce";
     public static $transactable = "fake-valid-nonce";
     public static $transactableAmEx = "fake-valid-amex-nonce";
+    public static $transactableBusiness = "fake-valid-business-nonce";
     public static $transactableCommercial = "fake-valid-commercial-nonce";
+    public static $transactableConsumer = "fake-valid-consumer-nonce";
+    public static $transactableCorporate = "fake-valid-corporate-nonce";
     public static $transactableCountryOfIssuanceCAD = "fake-valid-country-of-issuance-cad-nonce";
     public static $transactableCountryOfIssuanceUSA = "fake-valid-country-of-issuance-usa-nonce";
     public static $transactableDebit = "fake-valid-debit-nonce";
@@ -82,10 +86,12 @@ class Nonces
     public static $transactablePayroll = "fake-valid-payroll-nonce";
     public static $transactablePrepaid = "fake-valid-prepaid-nonce";
     public static $transactablePrepaidReloadable = "fake-valid-prepaid-reloadable-nonce";
+    public static $transactablePurchase = "fake-valid-purchase-nonce";
     public static $transactableUnknownIndicators = "fake-valid-unknown-indicators-nonce";
     public static $transactableVisa = "fake-valid-visa-nonce";
     public static $transactablePinlessDebitVisa = "fake-pinless-debit-visa-nonce";
     public static $usBankAccount = "fake-us-bank-account-nonce";
+    // NEXT_MAJOR_VERSION visaCheckoutCard is deprecated, remove all associated values
     public static $venmoAccount = "fake-venmo-account-nonce";
     public static $visaCheckoutAmEx = "fake-visa-checkout-amex-nonce";
     public static $visaCheckoutDiscover = "fake-visa-checkout-discover-nonce";

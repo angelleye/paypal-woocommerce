@@ -133,6 +133,7 @@ class CustomerGateway
                 ['customerBrowser', 'customerIp']
             ],
             ['creditCard' => $creditCardSignature],
+            ['applePayCard' => ApplePayGateway::createSignature()],
             ['customFields' => ['_anyKey_']],
             ['taxIdentifiers' =>
                 ['countryCode', 'identifier']
@@ -182,6 +183,7 @@ class CustomerGateway
             'website', 'deviceData',
             'paymentMethodNonce', 'defaultPaymentMethodToken',
             ['creditCard' => $creditCardSignature],
+            ['applePayCard' => ApplePayGateway::updateSignature()],
             ['customFields' => ['_anyKey_']],
             ['taxIdentifiers' =>
                 ['countryCode', 'identifier']

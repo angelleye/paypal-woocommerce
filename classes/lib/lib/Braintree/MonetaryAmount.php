@@ -20,6 +20,8 @@ class MonetaryAmount extends Base
         }
         if (isset($monetaryAmount['currencyCode'])) {
             $this->_set('currencyCode', $monetaryAmount['currencyCode']);
+        } elseif (isset($monetaryAmount['currencyIsoCode'])) {
+            $this->_set('currencyCode', $monetaryAmount['currencyIsoCode']);
         }
     }
 
