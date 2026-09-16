@@ -2899,7 +2899,7 @@ class AngellEYE_PayPal_PPCP_Payment {
         }
     }
 
-    public function angelleye_ppcp_multi_account_refund_order_third_party($order_id, $value, $testmode) {
+    public function angelleye_ppcp_multi_account_refund_order_third_party($order_id, $value, $testmode, $amount = null, $reason = '') {
         try {
             if(!isset($value['transaction_id'])) {
                 return;
@@ -2912,7 +2912,19 @@ class AngellEYE_PayPal_PPCP_Payment {
             }
             $order = wc_get_order($order_id);
             $reason = !empty($reason) ? $reason : 'Refund';
+            if (strlen($reason) > 255) {
+                $reason = substr($reason, 0, 252) . '...';
+            }
             $body_request['note_to_payer'] = $reason;
+            $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
+            // Omitting `amount` makes PayPal refund the entire capture, so it must only
+            // ever be left out when the caller genuinely asked for a full refund.
+            if (!empty($amount) && $amount > 0) {
+                $body_request['amount'] = array(
+                    'value' => angelleye_ppcp_round($amount, $decimals),
+                    'currency_code' => apply_filters('angelleye_ppcp_woocommerce_currency', angelleye_ppcp_get_currency($order_id), $amount)
+                );
+            }
             $args = array(
                 'method' => 'POST',
                 'timeout' => 60,
@@ -2924,11 +2936,12 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'cookies' => array()
             );
             $this->api_response = $this->api_request->request($paypal_refund_api . $transaction_id . '/refund', $args, 'refund_order');
+            $currency_code = angelleye_ppcp_get_currency($order_id);
             if (isset($this->api_response['status']) && $this->api_response['status'] == "COMPLETED") {
                 $gross_amount = isset($this->api_response['seller_payable_breakdown']['gross_amount']['value']) ? $this->api_response['seller_payable_breakdown']['gross_amount']['value'] : '';
                 $refund_transaction_id = isset($this->api_response['id']) ? $this->api_response['id'] : '';
                 $order->add_order_note(
-                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
+                        sprintf(__('Refunded %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), wc_price($gross_amount, array('currency' => $currency_code)), $refund_transaction_id)
                 );
             } else if (isset($this->api_response['status']) && $this->api_response['status'] == "PENDING") {
                 $gross_amount = isset($this->api_response['seller_payable_breakdown']['gross_amount']['value']) ? $this->api_response['seller_payable_breakdown']['gross_amount']['value'] : '';
@@ -2936,7 +2949,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $pending_reason_text = isset($this->api_response['status_details']['reason']) ? $this->api_response['status_details']['reason'] : '';
                 $order->add_order_note(sprintf(__('Payment via %s Pending. Pending reason: %s.', 'paypal-for-woocommerce'), $order->get_payment_method_title(), $pending_reason_text));
                 $order->add_order_note(
-                        sprintf(__('Refund Amount %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), $gross_amount, $refund_transaction_id)
+                        sprintf(__('Refund Amount %1$s - Refund ID: %2$s', 'paypal-for-woocommerce'), wc_price($gross_amount, array('currency' => $currency_code)), $refund_transaction_id)
                 );
             } else {
                 if ($this->paymentaction === 'authorize' && !empty($this->api_response['details'][0]['issue']) && 'INVALID_RESOURCE_ID' === $this->api_response['details'][0]['issue']) {
