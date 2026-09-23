@@ -559,6 +559,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     wp_send_json(['status' => false]);
                     exit();
                 case "angelleye_ppcp_cc_setup_tokens":
+                    // Only used on My Account > Add payment method, so a guest call is never valid.
+                    if (!is_user_logged_in()) {
+                        wp_send_json(['result' => 'failure'], 403);
+                    }
                     $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens();
                     exit();
                 case "install_shipment_plugin":
