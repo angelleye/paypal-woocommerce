@@ -1158,11 +1158,46 @@ if (!function_exists('angelleye_is_vaulting_enable')) {
                 if ($product['name'] === 'ADVANCED_VAULTING' &&
                         isset($product['vetting_status']) && $product['vetting_status'] === 'SUBSCRIBED' &&
                         isset($product['capabilities']) && in_array('PAYPAL_WALLET_VAULTING_ADVANCED', $product['capabilities'])) {
-                    return true;
+                    return angelleye_ppcp_has_vault_scope($result);
                 }
             }
         }
         return false;
+    }
+
+}
+
+if (!function_exists('angelleye_ppcp_has_vault_scope')) {
+
+    /**
+     * Checks that the merchant granted us the vault permission.
+     * PayPal returns 403 on vault calls without it, even when ADVANCED_VAULTING is subscribed.
+     */
+    function angelleye_ppcp_has_vault_scope($result) {
+        if (empty($result['oauth_integrations']) || !is_array($result['oauth_integrations'])) {
+            return true;
+        }
+        $partner_client_ids = array_filter([
+            defined('PAYPAL_PPCP_PARTNER_CLIENT_ID') ? PAYPAL_PPCP_PARTNER_CLIENT_ID : '',
+            defined('PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID') ? PAYPAL_PPCP_SANDBOX_PARTNER_CLIENT_ID : '',
+        ]);
+        $found_our_integration = false;
+        foreach ($result['oauth_integrations'] as $integration) {
+            if (($integration['integration_type'] ?? '') !== 'OAUTH_THIRD_PARTY' || empty($integration['oauth_third_party'])) {
+                continue;
+            }
+            foreach ((array) $integration['oauth_third_party'] as $third_party) {
+                if (!in_array($third_party['partner_client_id'] ?? '', $partner_client_ids, true)) {
+                    continue;
+                }
+                $found_our_integration = true;
+                if (in_array('https://uri.paypal.com/services/vault/payment-tokens/readwrite', (array) ($third_party['scopes'] ?? []), true)) {
+                    return true;
+                }
+            }
+        }
+        // Not connected through our partner app (e.g. own API credentials), nothing to check.
+        return !$found_our_integration;
     }
 
 }
