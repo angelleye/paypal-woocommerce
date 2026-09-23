@@ -517,6 +517,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     $this->payment_request->angelleye_ppcp_paypal_create_payment_token_free_signup_with_free_trial();
                     exit();
                 case "advanced_credit_card_create_payment_token":
+                    // Token is saved against the current user, so a guest call is never valid.
+                    if (!is_user_logged_in()) {
+                        wp_send_json(['result' => 'failure', 'redirect' => wc_get_page_permalink('myaccount')], 403);
+                    }
                     $this->payment_request->angelleye_ppcp_advanced_credit_card_create_payment_token();
                     exit();
                 case "advanced_credit_card_create_payment_token_free_signup_with_free_trial":
