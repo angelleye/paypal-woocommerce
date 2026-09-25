@@ -103,6 +103,13 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             $prefix = is_network_admin() ? 'network_admin_' : '';
             add_filter("{$prefix}plugin_action_links_$basename", array($this, 'plugin_action_links'), 10, 4);
             add_action('init', array($this, 'load_plugin_textdomain'));
+            // Centralised WPML / WCML / Polylang compatibility layer.
+            // Loaded on plugins_loaded so third-party multilingual plugins
+            // have declared their functions before the facade wires its
+            // hooks. All multilingual logic lives in the facade class —
+            // gateway text translation, email language switching, order
+            // language stamping, URL permalink rewriting, etc.
+            add_action('plugins_loaded', array($this, 'bootstrap_multilingual_facade'), 1);
             add_action('wp_loaded', array($this, 'load_cartflow_pro_plugin'), 20);
             add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 32);
             add_action('plugins_loaded', array($this, 'load_funnelkit_pro_plugin_compatible_gateways'), 5);
@@ -298,7 +305,9 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             add_filter("pre_option_woocommerce_paypal_pro_payflow_settings", array($this, 'angelleye_paypal_pro_payflow_decrypt_gateway_api'), 10, 1);
             add_filter("pre_option_woocommerce_braintree_settings", array($this, 'angelleye_braintree_decrypt_gateway_api'), 10, 1);
             add_filter("pre_option_woocommerce_enable_guest_checkout", array($this, 'angelleye_express_checkout_woocommerce_enable_guest_checkout'), 10, 1);
-            add_filter('woocommerce_get_checkout_order_received_url', array($this, 'angelleye_woocommerce_get_checkout_order_received_url'), 10, 2);
+            // woocommerce_get_checkout_order_received_url translation is
+            // now handled by AngellEYE_PPCP_Multilingual::translate_order_received_url
+            // (see ppcp-gateway/includes/class-angelleye-ppcp-multilingual.php).
             add_filter('woocommerce_saved_payment_methods_list', array($this, 'angelleye_synce_braintree_save_payment_methods'), 5, 2);
             add_filter('wc_order_statuses', array($this, 'angelleye_wc_order_statuses'), 10, 1);
             add_filter('woocommerce_email_classes', array($this, 'angelleye_woocommerce_email_classes'), 10, 1);
@@ -1222,19 +1231,42 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
             return $product_title;
         }
 
+        /**
+         * Backward-compatibility shim — the woocommerce_get_checkout_order_received_url
+         * filter is now registered by AngellEYE_PPCP_Multilingual::init().
+         * This wrapper is kept so any third-party code that called
+         * $paypal_for_woocommerce->angelleye_woocommerce_get_checkout_order_received_url()
+         * directly continues to work.
+         */
         public function angelleye_woocommerce_get_checkout_order_received_url($order_received_url, $order) {
-            $lang_code = $order->get_meta('wpml_language', true);
-            if (empty($lang_code)) {
-                $lang_code = $order->get_meta('_wpml_language');
-            }
-            if (!empty($lang_code)) {
-                $order_received_url = apply_filters('wpml_permalink', $order_received_url, $lang_code);
+            if (class_exists('AngellEYE_PPCP_Multilingual')) {
+                return AngellEYE_PPCP_Multilingual::translate_order_received_url($order_received_url, $order);
             }
             return $order_received_url;
         }
 
         public function load_plugin_textdomain() {
             load_plugin_textdomain('paypal-for-woocommerce', false, plugin_basename(dirname(PAYPAL_FOR_WOOCOMMERCE_PLUGIN_FILE)) . '/i18n/languages');
+        }
+
+        /**
+         * Load the multilingual compatibility layer and register its
+         * hooks. The facade loads its own per-plugin files
+         * (WPML / Polylang / WCML) from includes/compatibility/.
+         *
+         * Runs on plugins_loaded priority 1 so WPML / Polylang / WCML
+         * have declared their globals and functions first.
+         */
+        public function bootstrap_multilingual_facade() {
+            if (!class_exists('AngellEYE_PPCP_Multilingual', false)) {
+                $file = PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/includes/class-angelleye-ppcp-multilingual.php';
+                if (file_exists($file)) {
+                    require_once $file;
+                }
+            }
+            if (class_exists('AngellEYE_PPCP_Multilingual')) {
+                AngellEYE_PPCP_Multilingual::init();
+            }
         }
 
         public function angelleye_dismiss_notice() {
