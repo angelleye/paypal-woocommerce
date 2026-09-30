@@ -887,7 +887,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'advanced_card_payments_title' => $this->advanced_card_payments_title,
             'angelleye_cart_totals' => $product_cart_amounts,
             'update_cart_oncancel' => add_query_arg(array('angelleye_ppcp_action' => 'update_cart_oncancel', 'utm_nooverride' => '1',), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
-            'angelleye_ppcp_cc_setup_tokens' => add_query_arg(array('angelleye_ppcp_action' => 'angelleye_ppcp_cc_setup_tokens', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
+            'angelleye_ppcp_cc_setup_tokens' => add_query_arg(array('angelleye_ppcp_action' => 'angelleye_ppcp_cc_setup_tokens', 'utm_nooverride' => '1', 'security' => wp_create_nonce('angelleye_ppcp_cc_setup_tokens')), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'advanced_credit_card_create_payment_token' => add_query_arg(array('angelleye_ppcp_action' => 'advanced_credit_card_create_payment_token', 'utm_nooverride' => '1', 'customer_id' => get_current_user_id()), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'constants' => [
                 'approval_token_id' => APPROVAL_TOKEN_ID_PARAM_NAME
