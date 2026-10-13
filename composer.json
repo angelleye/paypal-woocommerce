@@ -10,20 +10,22 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=8.1.0",
         "composer/installers": "^2.2"
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "phpcompatibility/php-compatibility": "^9.3",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "phpunit/phpunit": "^10.0",
         "squizlabs/php_codesniffer": "^3.10",
         "wp-coding-standards/wpcs": "^3.0"
     },
     "scripts": {
         "lint:errors": "phpcs --standard=phpcs-errors.xml.dist",
         "lint": "phpcs --standard=phpcs.xml.dist",
-        "lint:fix": "phpcbf --standard=phpcs.xml.dist"
+        "lint:fix": "phpcbf --standard=phpcs.xml.dist",
+        "test": "phpunit -c tests/Migration/phpunit.xml"
     },
     "config": {
         "sort-packages": true,

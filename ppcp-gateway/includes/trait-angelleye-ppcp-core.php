@@ -42,6 +42,12 @@ trait AngellEye_PPCP_Core
                 include_once ( PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/ppcp-gateway/class-angelleye-paypal-ppcp-migration.php');
             }
             AngellEYE_PayPal_PPCP_Migration::instance();
+            // Load refactored migration system (subscription migration with state tracking)
+            $migration_autoload = PAYPAL_FOR_WOOCOMMERCE_PLUGIN_DIR . '/src/Migration/autoload.php';
+            if (file_exists($migration_autoload) && !function_exists('angelleye_ppcp_migration_init')) {
+                include_once $migration_autoload;
+                angelleye_ppcp_migration_init();
+            }
             $this->setting_obj = WC_Gateway_PPCP_AngellEYE_Settings::instance();
             $this->api_log = AngellEYE_PayPal_PPCP_Log::instance();
             $this->api_request = AngellEYE_PayPal_PPCP_Request::instance();
