@@ -606,6 +606,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 $product = wc_get_product($product_id);
                 if (class_exists('WC_Subscriptions_Product') && WC_Subscriptions_Product::is_subscription($product)) {
                     $product_cart_amounts['isSubscriptionRequired'] = true;
+                    $product_cart_amounts['recurringBilling'] = $this->payment_request->getProductRecurringBilling($product);
                 }
                 $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction_product_page', $this->paymentaction, $product_id);
                 if (angelleye_ppcp_is_product_purchasable($product, $this->enable_tokenized_payments) === true) {
@@ -680,6 +681,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     $recurring_items = count(WC_Subscriptions_Order::get_recurring_items($order));
                 }
                 $product_cart_amounts['isSubscriptionRequired'] = $recurring_items > 0;
+                $product_cart_amounts['recurringBilling'] = $this->payment_request->getRecurringBilling($order);
                 $product_cart_amounts['lineItems'] = $this->payment_request->getOrderLineItems($order);
 
                 $is_pay_page = 'yes';
