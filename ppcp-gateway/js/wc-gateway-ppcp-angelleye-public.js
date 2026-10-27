@@ -141,7 +141,8 @@ function initSmartButtons() {
                 appleReject = reject;
             });
             scriptsToLoad.push({
-                url: angelleye_ppcp_manager.apple_sdk_url,
+                // Native ApplePaySession (Safari, iOS) keeps the v1 build, which older iOS can parse.
+                url: typeof window.ApplePaySession !== 'undefined' ? angelleye_ppcp_manager.apple_sdk_native_url : angelleye_ppcp_manager.apple_sdk_url,
                 promise: applePromise,
                 onLoaded: () => { console.log('apple sdk loaded'); appleResolve(); },
                 onError: () => { console.log('apple sdk failed to load'); appleReject(); }
