@@ -123,21 +123,40 @@ class ApplePayCheckoutButton {
         const cartDetails = angelleyeOrder.getCartDetails();
         if (isNewPaymentMethodSelected === 'true' || cartDetails.isSubscriptionRequired) {
             return {
-                recurringPaymentRequest: {
-                    paymentDescription: angelleye_ppcp_manager.apple_pay_recurring_params.paymentDescription,
-                    regularBilling: {
-                        label: "Recurring",
-                        amount: `${cartDetails.totalAmount}`,
-                        paymentTiming: "recurring",
-                        recurringPaymentStartDate: new Date()
-                    },
-                    billingAgreement: angelleye_ppcp_manager.apple_pay_recurring_params.billingAgreement,
-                    managementURL: angelleye_ppcp_manager.apple_pay_recurring_params.managementURL,
-                    tokenNotificationURL: ApplePayCheckoutButton.applePayConfig.tokenNotificationURL
-                },
+                recurringPaymentRequest: ApplePayCheckoutButton.getRecurringPaymentRequest(cartDetails),
             }
         }
         return {};
+    }
+
+    /**
+     * regularBilling follows the subscription's renewal schedule (recurringBilling
+     * in the cart details). Without one, e.g. saving a card with no subscription
+     * in the cart, it stays the cart total from today with Apple's default
+     * monthly interval.
+     */
+    static getRecurringPaymentRequest(cartDetails) {
+        const billing = cartDetails.recurringBilling;
+        let regularBilling = {
+            label: "Recurring",
+            amount: `${billing ? billing.amount : cartDetails.totalAmount}`,
+            paymentTiming: "recurring",
+            recurringPaymentStartDate: billing?.startDate ? new Date(billing.startDate) : new Date()
+        };
+        if (billing) {
+            regularBilling.recurringPaymentIntervalUnit = billing.intervalUnit;
+            regularBilling.recurringPaymentIntervalCount = billing.intervalCount;
+            if (billing.endDate) {
+                regularBilling.recurringPaymentEndDate = new Date(billing.endDate);
+            }
+        }
+        return {
+            paymentDescription: angelleye_ppcp_manager.apple_pay_recurring_params.paymentDescription,
+            regularBilling,
+            billingAgreement: angelleye_ppcp_manager.apple_pay_recurring_params.billingAgreement,
+            managementURL: angelleye_ppcp_manager.apple_pay_recurring_params.managementURL,
+            tokenNotificationURL: ApplePayCheckoutButton.applePayConfig.tokenNotificationURL
+        };
     }
 
     async handleClickEvent(event) {
@@ -347,6 +366,11 @@ class ApplePayCheckoutButton {
                         total: newTotal,
                         lineItems: response.lineItems
                     });
+                    // Shipping and tax on the renewals can change with the address too.
+                    if (paymentRequest.recurringPaymentRequest && response.recurringBilling) {
+                        paymentRequest.recurringPaymentRequest = ApplePayCheckoutButton.getRecurringPaymentRequest(response);
+                        shippingContactUpdate.newRecurringPaymentRequest = paymentRequest.recurringPaymentRequest;
+                    }
                     walletAddressIsAuthoritative = true;
                     safeSessionCall('completeShippingContactSelection', () => session.completeShippingContactSelection(shippingContactUpdate));
                 } else {

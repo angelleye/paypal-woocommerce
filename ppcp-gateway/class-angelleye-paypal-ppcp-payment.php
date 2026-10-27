@@ -483,7 +483,8 @@ class AngellEYE_PayPal_PPCP_Payment {
             'totalAmount' => $totalAmount,
             'lineItems' => $details,
             'shippingRequired' => $shippingRequired,
-            'isSubscriptionRequired' => $this->isSubscriptionRequired($order)
+            'isSubscriptionRequired' => $this->isSubscriptionRequired($order),
+            'recurringBilling' => $this->getRecurringBilling($order)
         ];
     }
 
@@ -495,6 +496,97 @@ class AngellEYE_PayPal_PPCP_Payment {
             return WC_Subscriptions_Cart::cart_contains_subscription();
         }
         return false;
+    }
+
+    /**
+     * Renewal schedule shown on the Apple Pay sheet (regularBilling), taken from
+     * the order's subscriptions or the cart's recurring carts. Apple Pay can
+     * show one schedule only, so when subscriptions renew on different
+     * schedules the first one is used.
+     *
+     * @param WC_Order|null $order
+     * @return array|null
+     */
+    public function getRecurringBilling($order = null) {
+        $schedules = [];
+        if (!empty($order)) {
+            if (function_exists('wcs_get_subscriptions_for_order')) {
+                foreach (wcs_get_subscriptions_for_order($order, ['order_type' => 'any']) as $subscription) {
+                    $schedules[] = [
+                        'period' => $subscription->get_billing_period(),
+                        'interval' => $subscription->get_billing_interval(),
+                        'amount' => $subscription->get_total(''),
+                        'start' => $subscription->get_time('next_payment'),
+                        'end' => $subscription->get_time('end'),
+                    ];
+                }
+            }
+        } elseif (isset(WC()->cart) && !empty(WC()->cart->recurring_carts) && class_exists('WC_Subscriptions_Product')) {
+            foreach (WC()->cart->recurring_carts as $recurring_cart) {
+                $cart_item = reset($recurring_cart->cart_contents);
+                if (empty($cart_item['data'])) {
+                    continue;
+                }
+                $schedules[] = [
+                    'period' => WC_Subscriptions_Product::get_period($cart_item['data']),
+                    'interval' => WC_Subscriptions_Product::get_interval($cart_item['data']),
+                    'amount' => $recurring_cart->get_total(''),
+                    'start' => wcs_date_to_time($recurring_cart->next_payment_date),
+                    'end' => wcs_date_to_time($recurring_cart->end_date),
+                ];
+            }
+        }
+        if (empty($schedules)) {
+            return null;
+        }
+        $billing = array_shift($schedules);
+        foreach ($schedules as $schedule) {
+            if ($schedule['period'] !== $billing['period'] || (int) $schedule['interval'] !== (int) $billing['interval']) {
+                continue;
+            }
+            // Same schedule: the renewals are charged together.
+            $billing['amount'] += $schedule['amount'];
+            $billing['start'] = min($billing['start'], $schedule['start']);
+            $billing['end'] = max($billing['end'], $schedule['end']);
+        }
+        return $this->formatRecurringBilling($billing);
+    }
+
+    /**
+     * Renewal schedule of a subscription product, for the product page where
+     * the product is not in the cart yet.
+     *
+     * @param WC_Product $product
+     * @return array|null
+     */
+    public function getProductRecurringBilling($product) {
+        if (!class_exists('WC_Subscriptions_Product') || !WC_Subscriptions_Product::is_subscription($product)) {
+            return null;
+        }
+        return $this->formatRecurringBilling([
+            'period' => WC_Subscriptions_Product::get_period($product),
+            'interval' => WC_Subscriptions_Product::get_interval($product),
+            'amount' => WC_Subscriptions_Product::get_price($product),
+            'start' => WC_Subscriptions_Product::get_first_renewal_payment_time($product),
+            'end' => wcs_date_to_time(WC_Subscriptions_Product::get_expiration_date($product)),
+        ]);
+    }
+
+    private function formatRecurringBilling($billing) {
+        // Apple Pay has no week unit, so a week is sent as 7 days.
+        $units = ['day' => ['day', 1], 'week' => ['day', 7], 'month' => ['month', 1], 'year' => ['year', 1]];
+        // A variable subscription's parent product has no period of its own.
+        if (!isset($units[$billing['period']])) {
+            return null;
+        }
+        list($unit, $multiplier) = $units[$billing['period']];
+        return [
+            'amount' => angelleye_ppcp_round($billing['amount'], $this->angelleye_ppcp_get_number_of_decimal_digits()),
+            'intervalUnit' => $unit,
+            'intervalCount' => max(1, (int) $billing['interval']) * $multiplier,
+            'startDate' => $billing['start'] > 0 ? gmdate('c', $billing['start']) : null,
+            'endDate' => $billing['end'] > 0 ? gmdate('c', $billing['end']) : null,
+        ];
     }
 
     public function angelleye_ppcp_get_discount_amount_from_cart_item() {
