@@ -831,7 +831,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'paypal_sdk_attributes' => $this->get_paypal_sdk_attributes(),
             // 1.latest has the ApplePaySession polyfill for Chrome/Edge/Firefox (QR code flow), v1 does not.
             'apple_sdk_url' => $this->enable_apple_pay ? 'https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js' : '',
-            // 1.latest needs iOS 14.5+ to parse, so browsers with a native ApplePaySession (Safari, iOS) keep v1.
+            // 1.latest does not show the button on older iOS (seen on 15.8), so browsers with a native ApplePaySession (Safari, iOS) keep v1.
             'apple_sdk_native_url' => $this->enable_apple_pay ? 'https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js' : '',
             'apple_pay_recurring_params' => $this->getApplePayRecurringParams(),
             'google_sdk_url' => $this->enable_google_pay ? 'https://pay.google.com/gp/p/js/pay.js' : '',
