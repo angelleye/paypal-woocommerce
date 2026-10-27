@@ -63,26 +63,37 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
             'cookies' => []
         ];
 
-        $domainQueryParams = [
-            'provider_type' => 'APPLE_PAY', 'page_size' => 10, 'page' => 1
-        ];
-        $domainGetUrl = add_query_arg($domainQueryParams, 'https://' . $this->host . '/v1/customer/wallet-domains');
-        $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_list');
         $jsonResponse = ['status' => false];
-        if (isset($response['total_items'])) {
-            $jsonResponse['status'] = true;
-            $allDomains = [];
-            if ($response['total_items'] > 0) {
-                foreach ($response['wallet_domains'] as $domains) {
-                    $allDomains[] = ['domain' => $domains['domain']['name'], 'provider_type' => $domains['provider_type']];
-                }
+        $allDomains = [];
+        $page = 1;
+        // The API pages the list, so read every page. A failure on any page
+        // fails the whole listing: a partial list would be cached as a
+        // successful lookup and hide a domain that is registered.
+        do {
+            $domainQueryParams = [
+                'provider_type' => 'APPLE_PAY', 'page_size' => 10, 'page' => $page
+            ];
+            $domainGetUrl = add_query_arg($domainQueryParams, 'https://' . $this->host . '/v1/customer/wallet-domains');
+            $response = $this->api_request->request($domainGetUrl, $args, 'apple_pay_domain_list');
+            if (!isset($response['total_items'])) {
+                $this->payment_request->error_email_notification = false;
+                $jsonResponse['message'] = $this->payment_request->angelleye_ppcp_get_readable_message($response);
+                break;
             }
-            $jsonResponse['domains'] = $allDomains;
-            $jsonResponse['message'] = __('Domain listing retrieved successfully.', 'paypal-for-woocommerce');
-        } else {
-            $this->payment_request->error_email_notification = false;
-            $jsonResponse['message'] = $this->payment_request->angelleye_ppcp_get_readable_message($response);
-        }
+            $walletDomains = (array) ($response['wallet_domains'] ?? []);
+            foreach ($walletDomains as $domains) {
+                $allDomains[] = ['domain' => $domains['domain']['name'], 'provider_type' => $domains['provider_type']];
+            }
+            // Capped so a bad total_pages value cannot loop for ever.
+            $totalPages = min((int) ($response['total_pages'] ?? 1), 100);
+            $page++;
+            if (empty($walletDomains) || $page > $totalPages) {
+                $jsonResponse['status'] = true;
+                $jsonResponse['domains'] = $allDomains;
+                $jsonResponse['message'] = __('Domain listing retrieved successfully.', 'paypal-for-woocommerce');
+                break;
+            }
+        } while (true);
         if ($returnRawResponse) {
             return $jsonResponse;
         }
