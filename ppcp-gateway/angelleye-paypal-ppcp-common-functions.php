@@ -954,7 +954,9 @@ if (!function_exists('angelleye_ppcp_apple_pay_account_scope')) {
 if (!function_exists('angelleye_ppcp_apple_pay_domain_cache_key')) {
 
     function angelleye_ppcp_apple_pay_domain_cache_key() {
-        return 'angelleye_apple_pay_domain_list_cache_' . angelleye_ppcp_apple_pay_account_scope();
+        // v2: lists cached before the listing read every page hold only the
+        // first 10 domains, so they must not be reused after an update.
+        return 'angelleye_apple_pay_domain_list_cache_v2_' . angelleye_ppcp_apple_pay_account_scope();
     }
 
 }
@@ -963,6 +965,8 @@ if (!function_exists('angelleye_ppcp_clear_apple_pay_domain_cache')) {
 
     function angelleye_ppcp_clear_apple_pay_domain_cache() {
         delete_transient(angelleye_ppcp_apple_pay_domain_cache_key());
+        // Pre-v2 key, still present on existing installs.
+        delete_transient('angelleye_apple_pay_domain_list_cache_' . angelleye_ppcp_apple_pay_account_scope());
         // Pre-scoping key, still present on existing installs.
         delete_transient('angelleye_apple_pay_domain_list_cache');
     }
