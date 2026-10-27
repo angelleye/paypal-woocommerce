@@ -1412,7 +1412,18 @@ const angelleyeJsErrorLogger = {
         if (typeof angelleyeJsErrorLogger.errorStackMeta[errorLogId] === 'undefined') {
             angelleyeJsErrorLogger.errorStackMeta[errorLogId] = [];
         }
+        if (metaData && typeof metaData.body === 'string') {
+            metaData = {...metaData, body: angelleyeJsErrorLogger.redact(metaData.body)};
+        }
         angelleyeJsErrorLogger.errorStackMeta[errorLogId].push(metaData);
+    },
+    /**
+     * Blanks sensitive fields (account password, card fields) in a url-encoded
+     * request body before it goes into the trace. The handle_js_errors handler
+     * applies the same pattern before writing the log.
+     */
+    redact: (body) => {
+        return body.replace(/(^|&)([^=&]*(?:password|passwd|card-number|card-cvc|card-expiry|cvv)[^=&]*)=[^&]*/gi, '$1$2=[redacted]');
     },
     getLogTrace: (errorLogId) => {
         return typeof angelleyeJsErrorLogger.errorStackMeta[errorLogId] !== 'undefined' ?

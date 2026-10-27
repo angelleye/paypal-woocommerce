@@ -459,7 +459,8 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     $this->angelleye_ppcp_display_order_page();
                     break;
                 case "handle_js_errors":
-                    $_POST = json_decode(file_get_contents('php://input'), true);
+                    // Redacted here too, for browsers still running a cached script.
+                    $_POST = $this->angelleye_ppcp_redact_log_data(json_decode(file_get_contents('php://input'), true));
                     if (isset($_POST['error']['msg']) && isset($_POST['error']['source']) && isset($_POST['error']['line'])) {
                         $errorLine = html_entity_decode($_POST['error']['msg'], ENT_QUOTES) . ', file: ' . $_POST['error']['source'] . ', line:' . $_POST['error']['line'];
                     } else {
@@ -740,6 +741,27 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
         }
+    }
+
+    /**
+     * Blank sensitive fields (account password, card fields) in a JS error
+     * trace before it is written to the log: array keys that name one, and
+     * url-encoded request bodies that contain one. Same pattern as
+     * angelleyeJsErrorLogger.redact().
+     *
+     * @param mixed $data
+     * @return mixed
+     */
+    private function angelleye_ppcp_redact_log_data($data) {
+        $sensitive = '(?:password|passwd|card-number|card-cvc|card-expiry|cvv)';
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = is_string($key) && preg_match('/' . $sensitive . '/i', $key) ? '[redacted]' : $this->angelleye_ppcp_redact_log_data($value);
+            }
+        } elseif (is_string($data)) {
+            $data = preg_replace('/(^|&)([^=&]*' . $sensitive . '[^=&]*)=[^&]*/i', '$1$2=[redacted]', $data);
+        }
+        return $data;
     }
 
     public function maybe_start_checkout($data, $errors = null) {
