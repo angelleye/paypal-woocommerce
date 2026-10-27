@@ -98,6 +98,13 @@ class AngellEYE_PayPal_PPCP_Apple_Pay_Configurations
             return $jsonResponse;
         }
 
+        // Keep the cached list in step with what the popup shows. Otherwise the
+        // settings page reads an older list on refresh and flips the domain
+        // status back to not registered until the cache expires.
+        if (!empty($jsonResponse['status'])) {
+            set_transient(angelleye_ppcp_apple_pay_domain_cache_key(), $jsonResponse, 24 * HOUR_IN_SECONDS);
+        }
+
         /**
          * Add the file in physical path so that If due to some reasons server handles the path request then that should
          * find the file in path
