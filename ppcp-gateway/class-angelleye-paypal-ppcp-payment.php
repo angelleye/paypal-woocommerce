@@ -58,6 +58,7 @@ class AngellEYE_PayPal_PPCP_Payment {
     public $AVSCodes;
     public $CVV2Codes;
     public $client_token;
+    private $wallet_sheet_total_applied = false;
     public $ppcp_error_handler;
     public $avs_code;
     public $cvv_code;
@@ -410,6 +411,7 @@ class AngellEYE_PayPal_PPCP_Payment {
                 }
                 unset($body_request['application_context']);
             }
+            $body_request = $this->angelleye_ppcp_apply_wallet_sheet_total($body_request, $decimals);
             $body_request = angelleye_ppcp_remove_empty_key($body_request);
             $args = array(
                 'method' => 'POST',
@@ -426,6 +428,9 @@ class AngellEYE_PayPal_PPCP_Payment {
                 $return_response['currencyCode'] = $this->api_response['purchase_units'][0]['amount']['currency_code'];
                 $return_response['totalAmount'] = $this->api_response['purchase_units'][0]['amount']['value'];
                 $return_response['orderID'] = $this->api_response['id'];
+                // angelleye_ppcp_update_order() must not let this order be
+                // captured at the sheet total when the patch to the order total fails.
+                AngellEye_Session_Manager::set('wallet_sheet_total_order_id', $this->wallet_sheet_total_applied ? $this->api_response['id'] : '');
                 if (!empty($order)) {
                     $order->update_meta_data('_paypal_order_id', $this->api_response['id']);
                     $order->save_meta_data();
@@ -1628,6 +1633,48 @@ class AngellEYE_PayPal_PPCP_Payment {
 	}
 
 
+    /**
+     * Create the Apple Pay PayPal order for the total the buyer approved on the
+     * sheet.
+     *
+     * PayPal confirms an Apple Pay payment only when the order amount is the
+     * approved amount, and rejects anything else with APPLE_PAY_AMOUNT_MISMATCH.
+     * The sheet is priced on the partial address Apple shares before
+     * authorization, while the order can now be priced on the full address, so
+     * the two can differ by a little tax or shipping. The difference goes into
+     * the breakdown as handling or discount, and angelleye_ppcp_update_order()
+     * patches the order to the WooCommerce order's own amounts before capture,
+     * as it does for every capture.
+     *
+     * @param array $body_request
+     * @param int   $decimals
+     * @return array
+     */
+    private function angelleye_ppcp_apply_wallet_sheet_total($body_request, $decimals) {
+        if (!isset($_REQUEST['angelleye_ppcp_wallet_sheet_total'])) {
+            return $body_request;
+        }
+        $amount = $body_request['purchase_units'][0]['amount'];
+        $sheet_total = angelleye_ppcp_round(wc_clean(wp_unslash($_REQUEST['angelleye_ppcp_wallet_sheet_total'])), $decimals);
+        $difference = round((float) $sheet_total - (float) $amount['value'], $decimals);
+        if ((float) $sheet_total <= 0 || 0.0 == $difference) {
+            return $body_request;
+        }
+        if (!empty($amount['breakdown'])) {
+            $key = $difference > 0 ? 'handling' : 'discount';
+            $current = (float) ($amount['breakdown'][$key]['value'] ?? 0);
+            $amount['breakdown'][$key] = array(
+                'currency_code' => $amount['currency_code'],
+                'value' => angelleye_ppcp_round($current + abs($difference), $decimals),
+            );
+        }
+        $this->api_log->log(sprintf('Apple Pay: creating the PayPal order for the approved sheet total %s instead of %s; it is updated to the order total before capture.', $sheet_total, $amount['value']));
+        $this->wallet_sheet_total_applied = true;
+        $amount['value'] = $sheet_total;
+        $body_request['purchase_units'][0]['amount'] = $amount;
+        return $body_request;
+    }
+
 	public function angelleye_ppcp_update_order($order) {
         try {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
@@ -1799,7 +1846,15 @@ class AngellEYE_PayPal_PPCP_Payment {
                 'body' => $patch_request,
                 'user-agent' => 'PPCP/' . VERSION_PFW,
             );
-            $this->api_request->request($this->paypal_order_api . $paypal_order_id, $args, 'update_order');
+            $patch_response = $this->api_request->request($this->paypal_order_api . $paypal_order_id, $args, 'update_order');
+            // An Apple Pay order created at the sheet total only reaches the
+            // order total through this patch; capturing it unpatched would
+            // take the wrong amount.
+            if (!empty($patch_response['name']) && $paypal_order_id === AngellEye_Session_Manager::get('wallet_sheet_total_order_id', '')) {
+                $this->api_log->log('Apple Pay: the PayPal order could not be updated to the order total, so it was not captured. ' . $patch_response['name'], 'error');
+                wc_add_notice(__('Your order total has changed since Apple Pay was opened. Please review the total and confirm your payment again.', 'paypal-for-woocommerce'), 'error');
+                return false;
+            }
             return true;
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
