@@ -276,8 +276,9 @@ const angelleyeOrder = {
             formData += '&payment_method=' + encodeURIComponent(blockWallet || 'angelleye_ppcp_cc');
             formData += '&angelleye_ppcp_payment_method_title=' + encodeURIComponent(paymentMethodTitle);
             formData += '&woocommerce-process-checkout-nonce=' + angelleye_ppcp_manager.woocommerce_process_checkout;
-            if (blockWallet) {
-                // The wallet contacts are the address; the Blocks form may be empty.
+            if (blockWallet && (billingDetails || shippingDetails)) {
+                // The express button: the wallet contacts are the address, the
+                // Blocks form may be empty.
                 if (billingDetails) {
                     formData += '&billing_address_source=' + encodeURIComponent(JSON.stringify(billingDetails));
                 }

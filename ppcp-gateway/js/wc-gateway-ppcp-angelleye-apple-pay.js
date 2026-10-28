@@ -9,8 +9,9 @@ class ApplePayCheckoutButton {
      * @param {Object|null} blockHandlers Set when the button is rendered by the
      *     Blocks checkout: onClick(), onApproved(orderID, payment), onCancel(),
      *     onError(message) and optionally beforeCreateOrder(), a promise that
-     *     rejects to stop the payment. The order is then completed by the
-     *     Blocks checkout instead of approveOrder().
+     *     rejects to stop the payment, and useCheckoutAddress, to take the
+     *     address from the checkout form instead of the sheet. The order is
+     *     then completed by the Blocks checkout instead of approveOrder().
      */
     constructor(blockHandlers = null) {
         this.blockHandlers = blockHandlers;
@@ -239,7 +240,11 @@ class ApplePayCheckoutButton {
         }
 
         let shippingAddressRequired = [];
-        if (cartDetails.shippingRequired) {
+        const useCheckoutAddress = !!(blockHandlers && blockHandlers.useCheckoutAddress);
+        if (useCheckoutAddress) {
+            // The checkout form has the address, email and phone, and the
+            // sheet is priced for that address.
+        } else if (cartDetails.shippingRequired) {
             // "phone" belongs here as well as in the billing list below: without
             // it Apple returns a shipping contact with no phone number, the
             // checkout POST goes out with an empty shipping_phone, and any store
@@ -462,8 +467,8 @@ class ApplePayCheckoutButton {
                 angelleyeOrder.setWalletAddressAuthoritative(walletAddressIsAuthoritative);
                 let orderID = await angelleyeOrder.createOrder({
                     angelleye_ppcp_button_selector: containerSelector,
-                    billingDetails: event.payment.billingContact,
-                    shippingDetails: event.payment.shippingContact,
+                    billingDetails: useCheckoutAddress ? undefined : event.payment.billingContact,
+                    shippingDetails: useCheckoutAddress ? undefined : event.payment.shippingContact,
                     errorLogId,
                     walletSheetTotal: paymentRequest.total.amount
                 }).then((orderData) => {

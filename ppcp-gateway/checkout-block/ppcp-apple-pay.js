@@ -87,9 +87,11 @@
      * Renders the Apple Pay button into containerId and completes the Blocks
      * checkout once PayPal has confirmed the payment. getHandlers(propsRef)
      * returns the remaining ApplePayCheckoutButton handlers; the button
-     * outlives renders, so they read the latest props from propsRef.
+     * outlives renders, so they read the latest props from propsRef. With
+     * useWalletAddress the addresses chosen in the sheet go to the checkout;
+     * otherwise the checkout keeps the form's.
      */
-    const useApplePayButton = (props, containerId, getHandlers) => {
+    const useApplePayButton = (props, containerId, getHandlers, useWalletAddress) => {
         const propsRef = useRef(props);
         propsRef.current = props;
         const approvedRef = useRef(null);
@@ -103,15 +105,18 @@
                 return true;
             }
             approvedRef.current = null;
+            let meta = {
+                paymentMethodData: {
+                    paypal_order_id: approved.orderID
+                }
+            };
+            if (useWalletAddress) {
+                meta.billingAddress = approved.billing;
+                meta.shippingAddress = approved.shipping;
+            }
             return {
                 type: propsRef.current.emitResponse.responseTypes.SUCCESS,
-                meta: {
-                    paymentMethodData: {
-                        paypal_order_id: approved.orderID
-                    },
-                    billingAddress: approved.billing,
-                    shippingAddress: approved.shipping
-                }
+                meta
             };
         }), [onPaymentSetup]);
 
@@ -154,17 +159,37 @@
                 propsRef.current.setExpressPaymentError(toText(message));
                 propsRef.current.onClose();
             }
-        }));
+        }), true);
         return createElement('div', {id: containerId});
     };
 
+    // The checkout form's addresses, for the PayPal order; same as the card block.
+    const getCheckoutAddress = () => {
+        const customerData = wp.data.select(wc.wcBlocksData.CART_STORE_KEY).getCustomerData() || {};
+        const checkoutStore = wp.data.select(wc.wcBlocksData.CHECKOUT_STORE_KEY);
+        const shipping = customerData.shippingAddress || {};
+        let billing = customerData.billingAddress || {};
+        if (checkoutStore && typeof checkoutStore.getUseShippingAsBilling === 'function' && checkoutStore.getUseShippingAsBilling()) {
+            billing = Object.assign({}, shipping, {
+                email: billing.email || customerData.email || '',
+                phone: billing.phone || shipping.phone || ''
+            });
+        }
+        return {billing, shipping};
+    };
+
     // Replaces "Place order" while Apple Pay is the selected payment method.
+    // Like any checkout payment method it takes the address from the form, so
+    // the order total is the one the checkout shows (the Store API rejects a
+    // checkout whose total went up from the one shown).
     const ApplePayPlaceOrderButton = (props) => {
         const containerId = 'angelleye_ppcp_apple_pay_place_order';
         const validationRef = useRef(null);
         useApplePayButton(props, containerId, (propsRef) => ({
+            useCheckoutAddress: true,
             onClick: () => {
                 wp.data.dispatch('core/notices').removeNotice(noticeId, 'wc/checkout');
+                angelleyeOrder.ppcp_address = getCheckoutAddress();
                 // The sheet has to open inside the click, so the checkout form
                 // is validated alongside it and checked before the PayPal order
                 // is created.
@@ -179,7 +204,7 @@
             onError: (message) => {
                 wp.data.dispatch('core/notices').createErrorNotice(toText(message), {id: noticeId, context: 'wc/checkout'});
             }
-        }));
+        }), false);
         // Full width, like the "Place order" button it replaces.
         return createElement('div', {
             id: containerId,
