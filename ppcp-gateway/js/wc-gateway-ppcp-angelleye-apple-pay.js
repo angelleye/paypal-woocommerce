@@ -6,9 +6,10 @@ class ApplePayCheckoutButton {
     static applePayObject;
 
     /**
-     * @param {Object|null} blockHandlers Set when the button is the Blocks
-     *     express payment method: onClick(), onApproved(orderID, payment),
-     *     onCancel() and onError(message). The order is then completed by the
+     * @param {Object|null} blockHandlers Set when the button is rendered by the
+     *     Blocks checkout: onClick(), onApproved(orderID, payment), onCancel(),
+     *     onError(message) and optionally beforeCreateOrder(), a promise that
+     *     rejects to stop the payment. The order is then completed by the
      *     Blocks checkout instead of approveOrder().
      */
     constructor(blockHandlers = null) {
@@ -454,6 +455,9 @@ class ApplePayCheckoutButton {
             awaitingPaymentAuthorization = true;
             try {
                 console.log('paymentAuthorized', event);
+                if (blockHandlers && blockHandlers.beforeCreateOrder) {
+                    await blockHandlers.beforeCreateOrder();
+                }
                 // create the order to send a payment request
                 angelleyeOrder.setWalletAddressAuthoritative(walletAddressIsAuthoritative);
                 let orderID = await angelleyeOrder.createOrder({

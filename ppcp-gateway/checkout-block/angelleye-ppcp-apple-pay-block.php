@@ -4,9 +4,10 @@ use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodTyp
 
 /**
  * Apple Pay for the Cart and Checkout blocks. Registered on the client as an
- * express payment method (ppcp-apple-pay.js); the payment itself is completed
- * by WC_Gateway_Apple_Pay_AngellEYE::process_payment() with the PayPal order id
- * the Blocks checkout posts.
+ * express payment method and as a checkout payment method with Apple's button
+ * in place of "Place order" (ppcp-apple-pay.js); the payment itself is
+ * completed by WC_Gateway_Apple_Pay_AngellEYE::process_payment() with the
+ * PayPal order id the Blocks checkout posts.
  */
 final class AngellEYE_PPCP_Apple_Pay_Block extends AbstractPaymentMethodType {
 
@@ -45,6 +46,8 @@ final class AngellEYE_PPCP_Apple_Pay_Block extends AbstractPaymentMethodType {
         $gateway = $this->get_gateway();
         return [
             'title' => $gateway ? $gateway->title : __('Apple Pay', 'paypal-for-woocommerce'),
+            'description' => $gateway ? $gateway->apple_pay_payments_description : '',
+            'icon' => $gateway ? $gateway->icon : '',
             'supports' => $gateway ? array_values(array_filter($gateway->supports, array($gateway, 'supports'))) : ['products'],
         ];
     }

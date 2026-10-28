@@ -1,22 +1,25 @@
 /**
- * Apple Pay for the Cart and Checkout blocks, as an express payment method.
+ * Apple Pay for the Cart and Checkout blocks: an express payment method, and a
+ * payment method in the checkout list whose "Place order" button is Apple's.
  *
- * Apple only lets an ApplePaySession start from the buyer's own click, so the
- * button is Apple's and not the Blocks "Place order" button. The sheet, the
- * shipping updates and confirmOrder() are the classic ApplePayCheckoutButton
- * flow; once PayPal has confirmed the payment, onSubmit() runs the Blocks
- * checkout, the onPaymentSetup subscriber hands it the PayPal order id and the
- * wallet addresses, and the Apple Pay gateway's process_payment() captures.
+ * Apple only lets an ApplePaySession start from the buyer's own click on its
+ * button, so Apple Pay can not wait for the standard "Place order" button.
+ * The sheet, the shipping updates and confirmOrder() are the classic
+ * ApplePayCheckoutButton flow; once PayPal has confirmed the payment,
+ * onSubmit() runs the Blocks checkout, the onPaymentSetup subscriber hands it
+ * the PayPal order id and the wallet addresses, and the Apple Pay gateway's
+ * process_payment() captures.
  */
 (function () {
     const {createElement, useEffect, useRef} = wp.element;
-    const {registerExpressPaymentMethod} = wc.wcBlocksRegistry;
+    const {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
     const {getSetting} = wc.wcSettings;
     const {decodeEntities} = wp.htmlEntities;
+    const {__} = wp.i18n;
 
     const settings = getSetting('angelleye_ppcp_apple_pay_data', {});
     const title = decodeEntities(settings.title || 'Apple Pay');
-    const containerId = 'angelleye_ppcp_apple_pay_block';
+    const noticeId = 'angelleye-ppcp-apple-pay';
 
     const isApplePaySupported = () => {
         try {
@@ -80,8 +83,13 @@
         });
     });
 
-    const ApplePayExpress = (props) => {
-        // The button outlives renders, so its handlers read the latest props.
+    /**
+     * Renders the Apple Pay button into containerId and completes the Blocks
+     * checkout once PayPal has confirmed the payment. getHandlers(propsRef)
+     * returns the remaining ApplePayCheckoutButton handlers; the button
+     * outlives renders, so they read the latest props from propsRef.
+     */
+    const useApplePayButton = (props, containerId, getHandlers) => {
         const propsRef = useRef(props);
         propsRef.current = props;
         const approvedRef = useRef(null);
@@ -89,7 +97,7 @@
 
         useEffect(() => onPaymentSetup(() => {
             const approved = approvedRef.current;
-            // Express components stay mounted, so this also runs when the
+            // The express button stays mounted, so this also runs when the
             // buyer checks out with another payment method.
             if (!approved) {
                 return true;
@@ -108,12 +116,12 @@
         }), [onPaymentSetup]);
 
         useEffect(() => {
+            let mounted = true;
             angelleyeOrder.onSdkReady(() => {
-                (new ApplePayCheckoutButton({
-                    onClick: () => {
-                        propsRef.current.setExpressPaymentError('');
-                        propsRef.current.onClick();
-                    },
+                if (!mounted) {
+                    return;
+                }
+                (new ApplePayCheckoutButton(Object.assign({
                     onApproved: (orderID, payment) => {
                         const shippingContact = payment.shippingContact || {};
                         const billing = toBlocksAddress(payment.billingContact, shippingContact);
@@ -123,29 +131,92 @@
                             shipping: (shippingContact.addressLines || []).length ? toBlocksAddress(shippingContact) : billing
                         };
                         propsRef.current.onSubmit();
-                    },
-                    onCancel: () => {
-                        propsRef.current.onClose();
-                    },
-                    onError: (message) => {
-                        propsRef.current.setExpressPaymentError(toText(message));
-                        propsRef.current.onClose();
                     }
-                })).render('#' + containerId);
+                }, getHandlers(propsRef)))).render('#' + containerId);
             });
+            return () => {
+                mounted = false;
+            };
         }, []);
+    };
 
+    const ApplePayExpress = (props) => {
+        const containerId = 'angelleye_ppcp_apple_pay_block';
+        useApplePayButton(props, containerId, (propsRef) => ({
+            onClick: () => {
+                propsRef.current.setExpressPaymentError('');
+                propsRef.current.onClick();
+            },
+            onCancel: () => {
+                propsRef.current.onClose();
+            },
+            onError: (message) => {
+                propsRef.current.setExpressPaymentError(toText(message));
+                propsRef.current.onClose();
+            }
+        }));
         return createElement('div', {id: containerId});
     };
 
+    // Replaces "Place order" while Apple Pay is the selected payment method.
+    const ApplePayPlaceOrderButton = (props) => {
+        const containerId = 'angelleye_ppcp_apple_pay_place_order';
+        const validationRef = useRef(null);
+        useApplePayButton(props, containerId, (propsRef) => ({
+            onClick: () => {
+                wp.data.dispatch('core/notices').removeNotice(noticeId, 'wc/checkout');
+                // The sheet has to open inside the click, so the checkout form
+                // is validated alongside it and checked before the PayPal order
+                // is created.
+                validationRef.current = propsRef.current.validate();
+            },
+            beforeCreateOrder: () => Promise.resolve(validationRef.current).then((result) => {
+                if (result && result.hasError) {
+                    throw new Error(__('Please complete all required fields before continuing.', 'paypal-for-woocommerce'));
+                }
+            }),
+            onCancel: () => {},
+            onError: (message) => {
+                wp.data.dispatch('core/notices').createErrorNotice(toText(message), {id: noticeId, context: 'wc/checkout'});
+            }
+        }));
+        // Full width, like the "Place order" button it replaces.
+        return createElement('div', {
+            id: containerId,
+            style: Object.assign({width: '100%'}, props.disabled ? {opacity: 0.5, pointerEvents: 'none'} : {})
+        });
+    };
+
+    const supports = {
+        features: settings.supports || ['products']
+    };
+
     registerExpressPaymentMethod({
-        name: 'angelleye_ppcp_apple_pay',
+        name: 'angelleye_ppcp_apple_pay_express',
         paymentMethodId: 'angelleye_ppcp_apple_pay',
         content: createElement(ApplePayExpress, null),
         edit: createElement('div', null, title),
         canMakePayment,
-        supports: {
-            features: settings.supports || ['products']
-        }
+        supports
     });
+
+    const description = decodeEntities(settings.description || '');
+    registerPaymentMethod({
+        name: 'angelleye_ppcp_apple_pay',
+        label: createElement('span', {style: {width: '100%'}}, title,
+                settings.icon ? createElement('img', {src: settings.icon, alt: title, style: {float: 'right', marginRight: '20px'}}) : null),
+        ariaLabel: title,
+        content: createElement('p', null, description),
+        edit: createElement('p', null, description),
+        placeOrderButton: ApplePayPlaceOrderButton,
+        canMakePayment,
+        supports
+    });
+    // Without placeOrderButton support (older WooCommerce) the method would
+    // get the standard "Place order" button, which can not open the sheet;
+    // leave Apple Pay to the express button there.
+    const registered = wc.wcBlocksRegistry.getPaymentMethods()['angelleye_ppcp_apple_pay'];
+    if (registered && !registered.placeOrderButton && wc.wcBlocksRegistry.__experimentalDeRegisterPaymentMethod) {
+        wc.wcBlocksRegistry.__experimentalDeRegisterPaymentMethod('angelleye_ppcp_apple_pay');
+    }
 })();
