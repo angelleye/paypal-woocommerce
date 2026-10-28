@@ -397,12 +397,13 @@ class ApplePayCheckoutButton {
                     angelleye_ppcp_button_selector: containerSelector,
                     billingDetails: event.payment.billingContact,
                     shippingDetails: event.payment.shippingContact,
-                    errorLogId
+                    errorLogId,
+                    walletSheetTotal: paymentRequest.total.amount
                 }).then((orderData) => {
                     console.log('orderCreated', orderData);
-                    // PayPal rejects confirmOrder() when the order total is not
-                    // the total the buyer approved; say so rather than sending a
-                    // confirm that is certain to fail.
+                    // The PayPal order is created for the sheet total, so this
+                    // only records a difference for the trace; PayPal decides in
+                    // confirmOrder(), and the order total is patched in before capture.
                     if (typeof orderData.totalAmount !== 'undefined'
                             && `${orderData.totalAmount}` !== `${paymentRequest.total.amount}`) {
                         angelleyeJsErrorLogger.addToLog(errorLogId, {
@@ -412,8 +413,6 @@ class ApplePayCheckoutButton {
                             orderID: orderData.orderID,
                             time: new Date()
                         });
-                        angelleyeOrder.updateCartTotalsInEnvironment(orderData);
-                        throw new Error(localizedMessages.apple_pay_amount_changed_error);
                     }
                     return orderData.orderID;
                 });

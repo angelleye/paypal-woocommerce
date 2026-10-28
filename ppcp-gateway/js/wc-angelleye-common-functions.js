@@ -214,7 +214,7 @@ const angelleyeOrder = {
             jQuery(document.body).trigger('submit_paypal_cc_form');
         });
     },
-    createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback}) => {
+    createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback, walletSheetTotal}) => {
         // Detect FunnelKit sliding cart buttons — they should always submit cart context, not product/page context.
         let fkcartSelectors = ['#angelleye_ppcp_fkcart', '#angelleye_ppcp_fkcart_apple_pay', '#angelleye_ppcp_fkcart_google_pay'];
         let is_from_fkcart = fkcartSelectors.indexOf(angelleye_ppcp_button_selector) > -1;
@@ -341,6 +341,12 @@ const angelleyeOrder = {
             if (checkoutSource !== null) {
                 formData += '&angelleye_ppcp_checkout_source=' + encodeURIComponent(checkoutSource);
             }
+        }
+        // The total the buyer approved on the wallet sheet. PayPal confirms the
+        // wallet payment only for that amount, so the PayPal order is created
+        // for it and patched to the WooCommerce order total before capture.
+        if (typeof walletSheetTotal !== 'undefined') {
+            formData += '&angelleye_ppcp_wallet_sheet_total=' + encodeURIComponent(walletSheetTotal);
         }
         angelleyeJsErrorLogger.addToLog(errorLogId, {
             context: 'api_request',
