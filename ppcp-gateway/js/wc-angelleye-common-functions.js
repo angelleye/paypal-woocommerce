@@ -156,6 +156,10 @@ const angelleyeOrder = {
         });
     },
     ppcp_block_mode: false,
+    // Gateway id of a Blocks express wallet (Apple Pay) while its sheet is
+    // open. Its requests have no checkout form to serialize, so createOrder()
+    // sends the wallet contacts and this payment method instead.
+    ppcp_block_wallet: null,
     blockCreateOrderError: null,
     // The #angelleye_ppcp_cc-card-number DOM node the SDK Card Fields were
     // last mounted into, and the timestamp of that render() call. Used by
@@ -253,7 +257,8 @@ const angelleyeOrder = {
         }
         let topCheckoutSelectors = ['#angelleye_ppcp_checkout_top', '#angelleye_ppcp_checkout_top_google_pay', '#angelleye_ppcp_checkout_top_apple_pay'];
         let checkoutSource = null;
-        let is_from_block_checkout = angelleyeOrder.ppcp_block_mode === true;
+        let blockWallet = angelleyeOrder.ppcp_block_wallet;
+        let is_from_block_checkout = angelleyeOrder.ppcp_block_mode === true || !!blockWallet;
         if (is_from_block_checkout) {
             checkoutSource = 'block_checkout';
         } else if (is_from_checkout) {
@@ -268,10 +273,18 @@ const angelleyeOrder = {
             // the subscriber resolves.
             let paymentMethodTitle = jQuery('#angelleye_ppcp_payment_method_title').val() || 'paypal';
             formData = 'angelleye_ppcp_checkout_source=block_checkout';
-            formData += '&payment_method=angelleye_ppcp_cc';
+            formData += '&payment_method=' + encodeURIComponent(blockWallet || 'angelleye_ppcp_cc');
             formData += '&angelleye_ppcp_payment_method_title=' + encodeURIComponent(paymentMethodTitle);
             formData += '&woocommerce-process-checkout-nonce=' + angelleye_ppcp_manager.woocommerce_process_checkout;
-            if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {
+            if (blockWallet) {
+                // The wallet contacts are the address; the Blocks form may be empty.
+                if (billingDetails) {
+                    formData += '&billing_address_source=' + encodeURIComponent(JSON.stringify(billingDetails));
+                }
+                if (shippingDetails) {
+                    formData += '&shipping_address_source=' + encodeURIComponent(JSON.stringify(shippingDetails));
+                }
+            } else if (angelleyeOrder.ppcp_address !== null && angelleyeOrder.ppcp_address !== undefined && angelleyeOrder.ppcp_address !== '') {
                 formData += '&address=' + encodeURIComponent(JSON.stringify(angelleyeOrder.ppcp_address));
             }
         } else if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
@@ -1277,6 +1290,18 @@ const angelleyeOrder = {
             return;
         }
         angelleyeOrder.isBlockExpressRenderPending = true;
+    },
+    // Same problem as above for components that need the wallet SDKs too:
+    // run the callback once initSmartButtons() has run, which is after the
+    // PayPal, Apple Pay and Google Pay SDKs have all loaded.
+    isSdkReady: false,
+    sdkReadyCallbacks: [],
+    onSdkReady: (callback) => {
+        if (angelleyeOrder.isSdkReady) {
+            callback();
+            return;
+        }
+        angelleyeOrder.sdkReadyCallbacks.push(callback);
     },
     renderPaymentButtons: () => {
         angelleyeOrder.hideShowPlaceOrderButton();

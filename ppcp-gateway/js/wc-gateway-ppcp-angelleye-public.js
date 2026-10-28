@@ -120,6 +120,8 @@ function initSmartButtons() {
         angelleyeOrder.isBlockExpressRenderPending = false;
         angelleyeOrder.renderPaymentButtons();
     }
+    angelleyeOrder.isSdkReady = true;
+    angelleyeOrder.sdkReadyCallbacks.splice(0).forEach((callback) => callback());
 
     $(document.body).on('removed_coupon_in_checkout', function () {
         window.location.href = window.location.href;

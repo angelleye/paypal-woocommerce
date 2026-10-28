@@ -4,8 +4,15 @@ class ApplePayCheckoutButton {
     static isConfigLoading;
     static configPromise;
     static applePayObject;
-    constructor() {
 
+    /**
+     * @param {Object|null} blockHandlers Set when the button is the Blocks
+     *     express payment method: onClick(), onApproved(orderID, payment),
+     *     onCancel() and onError(message). The order is then completed by the
+     *     Blocks checkout instead of approveOrder().
+     */
+    constructor(blockHandlers = null) {
+        this.blockHandlers = blockHandlers;
     }
 
     /**
@@ -159,11 +166,59 @@ class ApplePayCheckoutButton {
         };
     }
 
+    /**
+     * The cart totals cached in the page are not refreshed when the Blocks cart
+     * changes, so on Blocks the sheet is priced from the Blocks cart store.
+     */
+    static getBlockCartDetails(cartDetails) {
+        try {
+            const cartStore = wp.data.select(wc.wcBlocksData.CART_STORE_KEY);
+            const totals = cartStore.getCartTotals();
+            const decimals = totals.currency_minor_unit;
+            const amount = (value) => (parseInt(value || 0, 10) / Math.pow(10, decimals)).toFixed(decimals);
+            const {__} = wp.i18n;
+            let lineItems = [{label: __('Subtotal', 'paypal-for-woocommerce'), amount: amount(totals.total_items)}];
+            [
+                [__('Shipping', 'paypal-for-woocommerce'), totals.total_shipping, 1],
+                [__('Fees', 'paypal-for-woocommerce'), totals.total_fees, 1],
+                [__('Tax', 'paypal-for-woocommerce'), totals.total_tax, 1],
+                [__('Discount', 'paypal-for-woocommerce'), totals.total_discount, -1]
+            ].forEach(([label, value, sign]) => {
+                if (parseInt(value || 0, 10) !== 0) {
+                    lineItems.push({label, amount: (sign * amount(value)).toFixed(decimals)});
+                }
+            });
+            return Object.assign({}, cartDetails, {
+                currencyCode: totals.currency_code,
+                totalAmount: amount(totals.total_price),
+                lineItems,
+                shippingRequired: cartStore.getNeedsShipping()
+            });
+        } catch (e) {
+            return cartDetails;
+        }
+    }
+
     async handleClickEvent(event) {
         let containerSelector = event.data.thisObject.containerSelector;
-        const cartDetails = angelleyeOrder.getCartDetails();
-        angelleyeOrder.showProcessingSpinner();
+        const blockHandlers = event.data.thisObject.blockHandlers;
+        const cartDetails = blockHandlers ? ApplePayCheckoutButton.getBlockCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails();
+        if (blockHandlers) {
+            blockHandlers.onClick();
+            angelleyeOrder.ppcp_block_wallet = 'angelleye_ppcp_apple_pay';
+        } else {
+            angelleyeOrder.showProcessingSpinner();
+        }
         angelleyeOrder.setPaymentMethodSelector('apple_pay');
+        // Blocks shows express payment errors in its own express area.
+        const showError = (message) => {
+            if (blockHandlers) {
+                angelleyeOrder.ppcp_block_wallet = null;
+                blockHandlers.onError(message);
+            } else {
+                angelleyeOrder.showError(message);
+            }
+        };
 
         const errorLogId = angelleyeJsErrorLogger.generateErrorId();
         angelleyeJsErrorLogger.addToLog(errorLogId, 'Apple Pay Payment Started');
@@ -177,7 +232,7 @@ class ApplePayCheckoutButton {
         }
 
         if (cartDetails.totalAmount <= 0) {
-            angelleyeOrder.showError(localizedMessages.empty_cart_message);
+            showError(localizedMessages.empty_cart_message);
             angelleyeOrder.hideProcessingSpinner();
             return;
         }
@@ -190,6 +245,10 @@ class ApplePayCheckoutButton {
             // that marks Shipping Phone required rejects the order outright for
             // every buyer shipping to a different address.
             shippingAddressRequired = ["postalAddress", "name", "email", "phone"];
+        } else if (blockHandlers) {
+            // Apple shares these only as shipping contact fields, and the Blocks
+            // express button has no checkout form to take them from.
+            shippingAddressRequired = ["email", "phone"];
         }
 
         let subscriptionParams = ApplePayCheckoutButton.addPaymentMethodSaveParams();
@@ -216,7 +275,7 @@ class ApplePayCheckoutButton {
         } catch (e) {
             console.log("ApplePay error session init error: ", e);
             angelleyeOrder.hideProcessingSpinner();
-            angelleyeOrder.showError(localizedMessages.apple_pay_pay_error + '<br/>Error:' + e);
+            showError(localizedMessages.apple_pay_pay_error + '<br/>Error:' + e);
             angelleyeJsErrorLogger.logJsError(localizedMessages.apple_pay_pay_error + '<br/>Error:' + e, errorLogId);
             return;
         }
@@ -249,11 +308,15 @@ class ApplePayCheckoutButton {
         };
 
         let paymentCancelled = (error) => {
+            angelleyeOrder.ppcp_block_wallet = null;
             angelleyeOrder.triggerPaymentCancelEvent();
             angelleyeOrder.hideProcessingSpinner();
+            if (!error && blockHandlers) {
+                blockHandlers.onCancel();
+            }
             if (error) {
                 let errorMessage = parseErrorMessage(error);
-                angelleyeOrder.showError(errorMessage);
+                showError(errorMessage);
                 angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
 
                 // completePayment() is only legal once onpaymentauthorized has
@@ -326,7 +389,7 @@ class ApplePayCheckoutButton {
             .catch((error) => {
                 angelleyeOrder.hideProcessingSpinner();
                 let errorMessage = parseErrorMessage(error);
-                angelleyeOrder.showError(errorMessage);
+                showError(errorMessage);
                 angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
                 if (!sessionClosed) {
                     sessionClosed = true;
@@ -426,7 +489,12 @@ class ApplePayCheckoutButton {
                 safeSessionCall('completePayment', () => session.completePayment({
                     status: ApplePaySession.STATUS_SUCCESS,
                 }));
-                angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
+                if (blockHandlers) {
+                    angelleyeOrder.ppcp_block_wallet = null;
+                    blockHandlers.onApproved(orderID, event.payment);
+                } else {
+                    angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
+                }
             } catch (error) {
                 paymentCancelled(error);
             }
