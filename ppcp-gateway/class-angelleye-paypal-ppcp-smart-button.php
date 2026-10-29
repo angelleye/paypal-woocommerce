@@ -356,7 +356,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             // load even for an empty cart, so the scripts are there when items
             // are added later through cart fragments.
             add_action('woocommerce_before_mini_cart', array($this, 'enqueue_mini_cart_scripts'));
-            add_action('woocommerce_widget_shopping_cart_buttons', array($this, 'display_paypal_button_mini_cart'), 30);
+            add_action('woocommerce_widget_shopping_cart_before_buttons', array($this, 'display_paypal_button_mini_cart'));
             // Mini-Cart block. Block themes render it before wp_head.
             add_filter('render_block_woocommerce/mini-cart', array($this, 'enqueue_mini_cart_scripts'));
             add_filter('render_block_woocommerce/mini-cart-footer-block', array($this, 'add_mini_cart_block_buttons'));
@@ -1075,7 +1075,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     public function get_mini_cart_buttons_html() {
         // Also rendered in cart fragment requests, where enqueue_scripts() has not run.
         $this->angelleye_ppcp_smart_button_style_properties();
-        return '<div class="angelleye_ppcp-button-container angelleye_ppcp_mini_cart_buttons angelleye_ppcp_' . esc_attr($this->mini_cart_style_layout) . '_' . esc_attr($this->mini_cart_style_size) . '"><div id="angelleye_ppcp_mini_cart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_mini_cart_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_mini_cart_google_pay"></div>' : '') . '</div>';
+        // "OR" between these buttons and the WooCommerce ones below. Hidden by
+        // CSS with the container when no button rendered, and when the
+        // WooCommerce buttons are not there. An empty string removes it.
+        $or_text = apply_filters('angelleye_ppcp_mini_cart_or_text', __('OR', 'paypal-for-woocommerce'));
+        $or_html = '' !== $or_text ? '<div class="angelleye_ppcp-mini-cart-or"><span>' . esc_html($or_text) . '</span></div>' : '';
+        return '<div class="angelleye_ppcp-button-container angelleye_ppcp_mini_cart_buttons angelleye_ppcp_' . esc_attr($this->mini_cart_style_layout) . '_' . esc_attr($this->mini_cart_style_size) . '"><div id="angelleye_ppcp_mini_cart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_mini_cart_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_mini_cart_google_pay"></div>' : '') . $or_html . '</div>';
     }
 
     /**
@@ -1093,7 +1098,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
     }
 
     /**
-     * Classic mini cart widget, after "View cart" and "Checkout".
+     * Classic mini cart widget, above "View cart" and "Checkout".
      */
     public function display_paypal_button_mini_cart() {
         if ($this->can_show_mini_cart_buttons()) {
@@ -1103,18 +1108,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
 
     /**
      * Mini-Cart block: WooCommerce gives it no express payment area, so the
-     * buttons go at the end of its footer, below "View my cart" and "Go to
-     * checkout".
+     * buttons go into its footer, above "View my cart" and "Go to checkout".
      *
      * @param string $block_content
      * @return string
      */
     public function add_mini_cart_block_buttons($block_content) {
-        $position = strrpos($block_content, '</div>');
-        if (false === $position || !$this->can_show_mini_cart_buttons()) {
+        if (!$this->can_show_mini_cart_buttons() || !preg_match('/<div[^>]*class="[^"]*wc-block-mini-cart__footer-actions/', $block_content, $match, PREG_OFFSET_CAPTURE)) {
             return $block_content;
         }
-        return substr_replace($block_content, $this->get_mini_cart_buttons_html(), $position, 0);
+        return substr_replace($block_content, $this->get_mini_cart_buttons_html(), $match[0][1], 0);
     }
 
     public function display_paypal_button_cart_page_top() {

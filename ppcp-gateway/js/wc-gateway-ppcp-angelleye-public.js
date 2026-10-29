@@ -140,7 +140,7 @@ function initSmartButtons() {
         new MutationObserver(function () {
             var footerActions = document.querySelector('.wc-block-mini-cart__footer-actions');
             if (footerActions && !document.getElementById('angelleye_ppcp_mini_cart')) {
-                footerActions.insertAdjacentHTML('afterend', angelleye_ppcp_manager.mini_cart_buttons_html);
+                footerActions.insertAdjacentHTML('beforebegin', angelleye_ppcp_manager.mini_cart_buttons_html);
                 refreshMiniCart();
             }
         }).observe(document.body, {childList: true, subtree: true});
