@@ -5,7 +5,8 @@
   "main": "gruntfile.js",
   "scripts": {
     "build": "grunt",
-    "minify": "grunt uglify cssmin"
+    "minify": "grunt uglify cssmin",
+    "package": "./build.sh"
   },
   "repository": {
     "type": "git",
