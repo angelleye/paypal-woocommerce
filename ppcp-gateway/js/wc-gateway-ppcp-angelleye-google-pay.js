@@ -8,8 +8,30 @@ class GooglePayCheckoutButton {
         apiVersion: 2,
         apiVersionMinor: 0,
     }
-    constructor() {
+    /**
+     * @param {Object|null} blockHandlers Set when the button is rendered by the
+     *     Blocks checkout: onClick(), onApproved(orderID, paymentData),
+     *     onCancel(), onError(message), optionally beforeCreateOrder(), a
+     *     promise that rejects to stop the payment, and useCheckoutAddress, to
+     *     take the address from the checkout form instead of the sheet. The
+     *     order is then completed by the Blocks checkout instead of
+     *     approveOrder().
+     */
+    constructor(blockHandlers = null) {
+        this.blockHandlers = blockHandlers;
+    }
 
+    getCartDetails() {
+        return this.blockHandlers ? angelleyeOrder.getBlockCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails();
+    }
+
+    showError(message) {
+        if (this.blockHandlers) {
+            angelleyeOrder.ppcp_block_wallet = null;
+            this.blockHandlers.onError(message && typeof message === 'object' && message.message ? message.message : message);
+        } else {
+            angelleyeOrder.showError(message);
+        }
     }
 
     /**
@@ -74,6 +96,11 @@ class GooglePayCheckoutButton {
     }
 
     isShippingRequired() {
+        if (this.blockHandlers) {
+            // The express button takes the address from the sheet, the checkout
+            // payment method from the form.
+            return !this.blockHandlers.useCheckoutAddress && !!this.getCartDetails().shippingRequired;
+        }
         const cartDetails = angelleyeOrder.getCartDetails();
         return !angelleyeOrder.isCheckoutPage() && cartDetails && typeof cartDetails.shippingRequired !== 'undefined' && cartDetails.shippingRequired;
     }
@@ -128,7 +155,9 @@ class GooglePayCheckoutButton {
         console.log('onPaymentAuthorized', additionalData, paymentData);
 
         return new Promise( (resolve, reject) => {
-            angelleyeOrder.showProcessingSpinner();
+            if (!additionalData.thisObject.blockHandlers) {
+                angelleyeOrder.showProcessingSpinner();
+            }
             additionalData.thisObject.processPayment(additionalData, paymentData)
                 .then(function (data) {
                     resolve({ transactionState: "SUCCESS" });
@@ -136,7 +165,7 @@ class GooglePayCheckoutButton {
                 .catch(function (error) {
                     let errorMessage = additionalData.thisObject.parseErrorMessage(error);
                     angelleyeOrder.hideProcessingSpinner();
-                    angelleyeOrder.showError(errorMessage);
+                    additionalData.thisObject.showError(errorMessage);
                     resolve({ transactionState: "ERROR" });
                 });
         });
@@ -160,7 +189,7 @@ class GooglePayCheckoutButton {
                     let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: shippingDetails}, undefined, undefined, additionalData.thisObject.containerSelector);
                     if (typeof response.totalAmount !== 'undefined') {
                         angelleyeOrder.updateCartTotalsInEnvironment(response);
-                        paymentDataRequestUpdate.newTransactionInfo = additionalData.thisObject.getGoogleTransactionInfo();
+                        paymentDataRequestUpdate.newTransactionInfo = additionalData.thisObject.getGoogleTransactionInfo(response);
                     } else {
                         throw new Error(localizedMessages.shipping_amount_update_error);
                     }
@@ -180,7 +209,13 @@ class GooglePayCheckoutButton {
         try {
             console.log('processPayment', additionalData, JSON.stringify(paymentData));
             let thisObject = additionalData.thisObject;
-            angelleyeOrder.showProcessingSpinner();
+            if (thisObject.blockHandlers) {
+                if (thisObject.blockHandlers.beforeCreateOrder) {
+                    await thisObject.blockHandlers.beforeCreateOrder();
+                }
+            } else {
+                angelleyeOrder.showProcessingSpinner();
+            }
             /* Create Order */
             let orderID = await angelleyeOrder.createOrder({
                 angelleye_ppcp_button_selector: thisObject.containerSelector,
@@ -195,7 +230,11 @@ class GooglePayCheckoutButton {
                 orderId: orderID,
                 paymentMethodData: paymentData.paymentMethodData,
             });
-            if (status === "APPROVED") {
+            if (status === "APPROVED" && thisObject.blockHandlers) {
+                angelleyeOrder.ppcp_block_wallet = null;
+                thisObject.blockHandlers.onApproved(orderID, paymentData);
+                return { transactionState: "SUCCESS" };
+            } else if (status === "APPROVED") {
                 // check if the billing address details are available
                 // Do not run this service on checkout page as user already provides all details there
                 if (!angelleyeOrder.isCheckoutPage()) {
@@ -216,11 +255,18 @@ class GooglePayCheckoutButton {
                 angelleyeOrder.approveOrder({orderID: orderID, payerID: ''});
                 return { transactionState: "SUCCESS" };
             } else {
+                if (thisObject.blockHandlers) {
+                    thisObject.showError(localizedMessages.general_error_message);
+                }
                 return { transactionState: "ERROR" };
             }
         } catch (error) {
             console.log('processPaymentError', error);
-            angelleyeOrder.handleCreateOrderError(additionalData.thisObject.parseErrorMessage(error), additionalData.thisObject.errorLogId);
+            if (additionalData.thisObject.blockHandlers) {
+                additionalData.thisObject.showError(additionalData.thisObject.parseErrorMessage(error));
+            } else {
+                angelleyeOrder.handleCreateOrderError(additionalData.thisObject.parseErrorMessage(error), additionalData.thisObject.errorLogId);
+            }
 
             return {
                 transactionState: "ERROR",
@@ -267,9 +313,8 @@ class GooglePayCheckoutButton {
         container.append(googlePayContainer);
     }
 
-    getGoogleTransactionInfo() {
+    getGoogleTransactionInfo(cartDetails = this.getCartDetails()) {
         let displayItems = [];
-        const cartDetails = angelleyeOrder.getCartDetails();
         for (let i = 0; i < (cartDetails.lineItems).length; i++) {
             let type = "LINE_ITEM";
             let prodLabel = cartDetails.lineItems[i].label;
@@ -303,15 +348,33 @@ class GooglePayCheckoutButton {
             paymentDataRequest.callbackIntents.push("SHIPPING_ADDRESS");
             paymentDataRequest.shippingAddressRequired = true;
         }
+        if (this.blockHandlers && !this.blockHandlers.useCheckoutAddress) {
+            // The Blocks express button has no checkout form to take the
+            // billing address and phone from.
+            paymentDataRequest.allowedPaymentMethods = paymentDataRequest.allowedPaymentMethods.map((method) => Object.assign({}, method, {
+                parameters: Object.assign({}, method.parameters, {
+                    billingAddressRequired: true,
+                    billingAddressParameters: {format: 'FULL', phoneNumberRequired: true}
+                })
+            }));
+            if (paymentDataRequest.shippingAddressRequired) {
+                paymentDataRequest.shippingAddressParameters = {phoneNumberRequired: true};
+            }
+        }
         return paymentDataRequest;
     }
 
     async handleClickEvent(event, thisObject) {
         console.log('click event', event, thisObject.containerSelector);
         thisObject.errorLogId = angelleyeJsErrorLogger.generateErrorId();
-        const cartDetails = angelleyeOrder.getCartDetails();
+        const blockHandlers = thisObject.blockHandlers;
+        if (blockHandlers) {
+            blockHandlers.onClick();
+            angelleyeOrder.ppcp_block_wallet = 'angelleye_ppcp_google_pay';
+        }
+        const cartDetails = thisObject.getCartDetails();
         if (cartDetails.totalAmount <= 0) {
-            angelleyeOrder.showError(localizedMessages.empty_cart_message);
+            thisObject.showError(localizedMessages.empty_cart_message);
         }
         angelleyeJsErrorLogger.addToLog(thisObject.errorLogId, 'Google Pay Payment Started');
         angelleyeOrder.setPaymentMethodSelector('google_pay');
@@ -325,6 +388,14 @@ class GooglePayCheckoutButton {
             angelleyeOrder.hideProcessingSpinner(thisObject.containerSelector);
             angelleyeOrder.hideProcessingSpinner();
             console.log('error handler click', e);
+            if (blockHandlers) {
+                angelleyeOrder.ppcp_block_wallet = null;
+                if (e && e.statusCode && e.statusCode !== 'CANCELED') {
+                    blockHandlers.onError(e.statusMessage || localizedMessages.general_error_message);
+                } else {
+                    blockHandlers.onCancel();
+                }
+            }
         });
 
     }

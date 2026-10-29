@@ -1304,6 +1304,39 @@ const angelleyeOrder = {
         }
         angelleyeOrder.sdkReadyCallbacks.push(callback);
     },
+    /**
+     * The cart totals cached in the page are not refreshed when the Blocks cart
+     * changes, so on Blocks the wallet sheets are priced from the Blocks cart
+     * store.
+     */
+    getBlockCartDetails: (cartDetails) => {
+        try {
+            const cartStore = wp.data.select(wc.wcBlocksData.CART_STORE_KEY);
+            const totals = cartStore.getCartTotals();
+            const decimals = totals.currency_minor_unit;
+            const amount = (value) => (parseInt(value || 0, 10) / Math.pow(10, decimals)).toFixed(decimals);
+            const {__} = wp.i18n;
+            let lineItems = [{label: __('Subtotal', 'paypal-for-woocommerce'), amount: amount(totals.total_items)}];
+            [
+                [__('Shipping', 'paypal-for-woocommerce'), totals.total_shipping, 1],
+                [__('Fees', 'paypal-for-woocommerce'), totals.total_fees, 1],
+                [__('Tax', 'paypal-for-woocommerce'), totals.total_tax, 1],
+                [__('Discount', 'paypal-for-woocommerce'), totals.total_discount, -1]
+            ].forEach(([label, value, sign]) => {
+                if (parseInt(value || 0, 10) !== 0) {
+                    lineItems.push({label, amount: (sign * amount(value)).toFixed(decimals)});
+                }
+            });
+            return Object.assign({}, cartDetails, {
+                currencyCode: totals.currency_code,
+                totalAmount: amount(totals.total_price),
+                lineItems,
+                shippingRequired: cartStore.getNeedsShipping()
+            });
+        } catch (e) {
+            return cartDetails;
+        }
+    },
     renderPaymentButtons: () => {
         angelleyeOrder.hideShowPlaceOrderButton();
         angelleyeOrder.renderSmartButton();
