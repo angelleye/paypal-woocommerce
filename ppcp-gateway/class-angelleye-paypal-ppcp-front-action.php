@@ -455,6 +455,11 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     }
                     wp_send_json($response);
                     break;
+                case "cart_totals":
+                    // Read only: the cart totals the mini cart wallet sheets
+                    // open with, fetched again after the cart changes.
+                    wp_send_json($this->payment_request->ae_get_updated_checkout_payment_data());
+                    break;
                 case "display_order_page":
                     $this->angelleye_ppcp_display_order_page();
                     break;

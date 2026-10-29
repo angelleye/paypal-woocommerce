@@ -327,8 +327,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $this->mini_cart_style_layout = $this->setting_obj->get('mini_cart_button_layout', 'vertical');
         $this->mini_cart_style_color = $this->setting_obj->get('mini_cart_style_color', 'gold');
         $this->mini_cart_style_shape = $this->setting_obj->get('mini_cart_style_shape', 'rect');
-        $this->mini_cart_style_size = $this->setting_obj->get('cart_button_size', 'responsive');
-        $this->mini_cart_style_height = $this->setting_obj->get('cart_button_height', '');
+        $this->mini_cart_style_size = $this->setting_obj->get('mini_cart_button_size', 'responsive');
+        $this->mini_cart_style_height = $this->setting_obj->get('mini_cart_button_height', '');
         $this->mini_cart_style_label = $this->setting_obj->get('mini_cart_button_label', 'paypal');
         $this->mini_cart_style_tagline = $this->setting_obj->get('mini_cart_button_tagline', 'yes');
     }
@@ -351,6 +351,16 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         }
         // Always register FunnelKit Cart hook — sliding cart appears on all pages
         add_action('fkcart_before_checkout_button', array($this, 'display_paypal_button_funnelkit_cart'), 11);
+        if ($this->enable_mini_cart_button) {
+            // Classic mini cart widget. woocommerce_before_mini_cart runs on page
+            // load even for an empty cart, so the scripts are there when items
+            // are added later through cart fragments.
+            add_action('woocommerce_before_mini_cart', array($this, 'enqueue_mini_cart_scripts'));
+            add_action('woocommerce_widget_shopping_cart_buttons', array($this, 'display_paypal_button_mini_cart'), 30);
+            // Mini-Cart block. Block themes render it before wp_head.
+            add_filter('render_block_woocommerce/mini-cart', array($this, 'enqueue_mini_cart_scripts'));
+            add_filter('render_block_woocommerce/mini-cart-footer-block', array($this, 'add_mini_cart_block_buttons'));
+        }
         if ($this->checkout_disable_smart_button === false) {
             add_action('woocommerce_pay_order_before_submit', array($this, 'display_paypal_button_checkout_page'), 100);
             add_action('woocommerce_review_order_before_submit', array($this, 'display_paypal_button_checkout_page'), 100);
@@ -551,6 +561,7 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         $apple_pay_btn_selector = [];
         $google_pay_btn_selector = [];
         $product_cart_amounts = [];
+        $mini_cart_amounts = [];
         $pre_checkout_offer = "no";
 
         if (angelleye_ppcp_has_active_session() === true || angelleye_ppcp_is_subs_change_payment() === true) {
@@ -580,6 +591,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             }
             
             $product_cart_amounts = $this->payment_request->ae_get_updated_checkout_payment_data();
+            // The cart's own totals, before a product page replaces them with the product's.
+            $mini_cart_amounts = $product_cart_amounts;
 
             $this->paymentaction = apply_filters('angelleye_ppcp_paymentaction', $this->paymentaction, null);
 
@@ -713,6 +726,12 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                 }
             } elseif (is_add_payment_method_page()) {
                 $page = 'add_payment_method';
+            }
+
+            if ($this->can_show_mini_cart_buttons()) {
+                $button_selector['angelleye_ppcp_mini_cart'] = '#angelleye_ppcp_mini_cart';
+                $apple_pay_btn_selector['angelleye_ppcp_mini_cart_apple_pay'] = '#angelleye_ppcp_mini_cart_apple_pay';
+                $google_pay_btn_selector['angelleye_ppcp_mini_cart_google_pay'] = '#angelleye_ppcp_mini_cart_google_pay';
             }
 
             // Register FunnelKit Cart selectors when FKCart is active and feature enabled
@@ -889,6 +908,18 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
                     'height' => $this->setting_obj->get('funnelkit_cart_apple_button_height', ''),
                 ),
             ),
+            'mini_cart_style' => array(
+                'style_color' => $this->mini_cart_style_color,
+                'style_shape' => $this->mini_cart_style_shape,
+                'style_label' => $this->mini_cart_style_label,
+                'style_layout' => $this->mini_cart_style_layout,
+                'style_height' => $this->mini_cart_style_height,
+                'style_tagline' => $this->mini_cart_style_tagline,
+                'disable_funding' => array_values((array) $this->mini_cart_disable_funding),
+            ),
+            'mini_cart_totals' => $mini_cart_amounts,
+            'mini_cart_buttons_html' => $this->can_show_mini_cart_buttons() ? $this->get_mini_cart_buttons_html() : '',
+            'cart_totals_url' => add_query_arg(array('angelleye_ppcp_action' => 'cart_totals', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'advanced_card_payments_title' => $this->advanced_card_payments_title,
             'angelleye_cart_totals' => $product_cart_amounts,
             'update_cart_oncancel' => add_query_arg(array('angelleye_ppcp_action' => 'update_cart_oncancel', 'utm_nooverride' => '1',), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
@@ -1020,6 +1051,70 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
         // FunnelKit Cart handles empty cart state in cart-cta.php — always output the container
         // so the button renders when items are added via AJAX fragment updates.
         echo '<div class="angelleye_ppcp-button-container angelleye_ppcp_' . esc_attr($fkcart_layout) . '_' . esc_attr($fkcart_size) . '"><div id="angelleye_ppcp_fkcart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_fkcart_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_fkcart_google_pay"></div>' : '') . '</div>';
+    }
+
+    /**
+     * Whether the mini cart gets the PayPal, Apple Pay and Google Pay buttons.
+     * Not on the cart and checkout pages, which have their own buttons.
+     *
+     * @return bool
+     */
+    public function can_show_mini_cart_buttons() {
+        if (!$this->enable_mini_cart_button || is_cart() || is_checkout()) {
+            return false;
+        }
+        if (angelleye_ppcp_is_cart_subscription() && $this->enable_tokenized_payments === false) {
+            return false;
+        }
+        if ($this->is_pre_order_item_in_cart() && $this->is_paypal_vault_used_for_pre_order() && $this->is_pre_order_charged_upon_release_in_cart()) {
+            return false;
+        }
+        return true;
+    }
+
+    public function get_mini_cart_buttons_html() {
+        // Also rendered in cart fragment requests, where enqueue_scripts() has not run.
+        $this->angelleye_ppcp_smart_button_style_properties();
+        return '<div class="angelleye_ppcp-button-container angelleye_ppcp_mini_cart_buttons angelleye_ppcp_' . esc_attr($this->mini_cart_style_layout) . '_' . esc_attr($this->mini_cart_style_size) . '"><div id="angelleye_ppcp_mini_cart"></div>' . ($this->enable_apple_pay ? '<div id="angelleye_ppcp_mini_cart_apple_pay"></div>' : '') . ($this->enable_google_pay ? '<div id="angelleye_ppcp_mini_cart_google_pay"></div>' : '') . '</div>';
+    }
+
+    /**
+     * Loads the scripts on pages that have a mini cart. Hooked as an action on
+     * woocommerce_before_mini_cart and as a render_block filter.
+     *
+     * @param string $block_content
+     * @return string
+     */
+    public function enqueue_mini_cart_scripts($block_content = '') {
+        if ($this->can_show_mini_cart_buttons()) {
+            angelleye_ppcp_add_css_js();
+        }
+        return $block_content;
+    }
+
+    /**
+     * Classic mini cart widget, after "View cart" and "Checkout".
+     */
+    public function display_paypal_button_mini_cart() {
+        if ($this->can_show_mini_cart_buttons()) {
+            echo $this->get_mini_cart_buttons_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        }
+    }
+
+    /**
+     * Mini-Cart block: WooCommerce gives it no express payment area, so the
+     * buttons go at the end of its footer, below "View my cart" and "Go to
+     * checkout".
+     *
+     * @param string $block_content
+     * @return string
+     */
+    public function add_mini_cart_block_buttons($block_content) {
+        $position = strrpos($block_content, '</div>');
+        if (false === $position || !$this->can_show_mini_cart_buttons()) {
+            return $block_content;
+        }
+        return substr_replace($block_content, $this->get_mini_cart_buttons_html(), $position, 0);
     }
 
     public function display_paypal_button_cart_page_top() {
