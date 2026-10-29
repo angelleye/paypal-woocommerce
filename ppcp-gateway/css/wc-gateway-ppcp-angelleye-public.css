@@ -254,8 +254,12 @@
     margin-left: 1rem;
     width: 50%;
 }
+/* PayPal draws its buttons in its own iframe and caps them at 750px there
+   (.paypal-button-container { max-width: 750px }), so the stack stops at the
+   same width and Apple Pay / Google Pay line up with them in wide areas. */
 .angelleye_ppcp-button-container.angelleye_ppcp_vertical_responsive {
     width: 100%;
+    max-width: 750px;
     margin: 0 auto;
     min-width: auto;
 }
