@@ -112,6 +112,40 @@ function initSmartButtons() {
         }, 200);
     });
 
+    // Mini cart: the classic widget is replaced by cart fragments and the
+    // Mini-Cart block changes through the Store API, so render its buttons
+    // again and refresh the cart totals its wallet sheets open with.
+    var refreshMiniCart = function () {
+        if ($('#angelleye_ppcp_mini_cart').length && !$('#angelleye_ppcp_mini_cart').children().length) {
+            angelleyeOrder.renderSmartButton();
+        }
+        angelleyeOrder.refreshMiniCartTotals();
+    };
+    $(document.body).on('added_to_cart removed_from_cart wc_fragments_refreshed wc_fragments_loaded', function () {
+        setTimeout(refreshMiniCart, 200);
+    });
+    ['wc-blocks_added_to_cart', 'wc-blocks_removed_from_cart'].forEach(function (eventName) {
+        document.body.addEventListener(eventName, function () {
+            setTimeout(refreshMiniCart, 200);
+        });
+    });
+    // Quantity changes inside the drawer fire no event, so also refresh as the
+    // buyer reaches for a button.
+    $(document.body).on('mouseenter touchstart', '.angelleye_ppcp_mini_cart_buttons', function () {
+        angelleyeOrder.refreshMiniCartTotals();
+    });
+    // Older WooCommerce builds the Mini-Cart drawer in the browser, so its
+    // footer never passes through the server filter that adds the buttons.
+    if (angelleye_ppcp_manager.mini_cart_buttons_html && window.MutationObserver && document.querySelector('.wp-block-woocommerce-mini-cart')) {
+        new MutationObserver(function () {
+            var footerActions = document.querySelector('.wc-block-mini-cart__footer-actions');
+            if (footerActions && !document.getElementById('angelleye_ppcp_mini_cart')) {
+                footerActions.insertAdjacentHTML('beforebegin', angelleye_ppcp_manager.mini_cart_buttons_html);
+                refreshMiniCart();
+            }
+        }).observe(document.body, {childList: true, subtree: true});
+    }
+
     angelleyeOrder.triggerPendingEvents();
 
     // The Blocks express component mounted before this script ran, so its render

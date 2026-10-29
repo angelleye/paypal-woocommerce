@@ -450,4 +450,37 @@ apple-pay-button {
     #angelleye_ppcp_cc-card-cvc {
         width: 100%;
     }
+}/* Mini cart (Mini-Cart block and classic widget): above the WooCommerce buttons, full width,
+   with "OR" between them. Hidden, "OR" included, when no button rendered. */
+.angelleye_ppcp-button-container.angelleye_ppcp_mini_cart_buttons {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 12px;
+}
+.angelleye_ppcp-button-container.angelleye_ppcp_mini_cart_buttons:not(:has(> div[id] > *)) {
+    display: none;
+}
+.angelleye_ppcp-mini-cart-or {
+    display: flex;
+    align-items: center;
+    margin: 12px 0 0;
+}
+.angelleye_ppcp-mini-cart-or::before,
+.angelleye_ppcp-mini-cart-or::after {
+    content: '';
+    flex: 1 1 auto;
+    border-bottom: 1px solid #e5e5e5;
+}
+.angelleye_ppcp-mini-cart-or span {
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #888;
+}
+/* No "OR" when there are no WooCommerce buttons to separate from. */
+.wc-block-mini-cart__footer:not(:has(.wc-block-mini-cart__footer-actions > *)) .angelleye_ppcp-mini-cart-or,
+.widget_shopping_cart_content:not(:has(.woocommerce-mini-cart__buttons > *)) .angelleye_ppcp-mini-cart-or {
+    display: none;
 }

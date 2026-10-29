@@ -23,7 +23,7 @@ class GooglePayCheckoutButton {
     }
 
     getCartDetails() {
-        return this.blockHandlers ? this.blockHandlers.getCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails();
+        return this.blockHandlers ? this.blockHandlers.getCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails(this.containerSelector);
     }
 
     showError(message) {
@@ -72,6 +72,8 @@ class GooglePayCheckoutButton {
         if (jQuery(containerSelector).length === 0) {
             return;
         }
+        // Read by getCartDetails() before renderButton() runs.
+        this.containerSelector = containerSelector;
         this.initGooglePayConfig().then(() => {
             let thisObj = this;
             let paymentsClient = this.getGooglePaymentsClient();
@@ -102,7 +104,7 @@ class GooglePayCheckoutButton {
             // payment method from the form.
             return !this.blockHandlers.useCheckoutAddress && !!this.getCartDetails().shippingRequired;
         }
-        const cartDetails = angelleyeOrder.getCartDetails();
+        const cartDetails = angelleyeOrder.getCartDetails(this.containerSelector);
         return !angelleyeOrder.isCheckoutPage() && cartDetails && typeof cartDetails.shippingRequired !== 'undefined' && cartDetails.shippingRequired;
     }
 
@@ -189,7 +191,7 @@ class GooglePayCheckoutButton {
                     };
                     let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: shippingDetails}, undefined, undefined, additionalData.thisObject.containerSelector);
                     if (typeof response.totalAmount !== 'undefined') {
-                        angelleyeOrder.updateCartTotalsInEnvironment(response);
+                        angelleyeOrder.setCartDetails(additionalData.thisObject.containerSelector, response);
                         paymentDataRequestUpdate.newTransactionInfo = additionalData.thisObject.getGoogleTransactionInfo(response);
                     } else {
                         throw new Error(localizedMessages.shipping_amount_update_error);
@@ -223,7 +225,7 @@ class GooglePayCheckoutButton {
                 errorLogId: additionalData.thisObject.errorLogId
             }).then((orderData) => {
                 console.log('orderCreated', orderData);
-                angelleyeOrder.updateCartTotalsInEnvironment(orderData);
+                angelleyeOrder.setCartDetails(thisObject.containerSelector, orderData);
                 return orderData.orderID;
             });
 

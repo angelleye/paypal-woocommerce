@@ -219,12 +219,12 @@ const angelleyeOrder = {
         });
     },
     createOrder: ({angelleye_ppcp_button_selector, billingDetails, shippingDetails, apiUrl, errorLogId, callback, walletSheetTotal}) => {
-        // Detect FunnelKit sliding cart buttons — they should always submit cart context, not product/page context.
+        // FunnelKit sliding cart and mini cart buttons always submit cart context, not product/page context.
         let fkcartSelectors = ['#angelleye_ppcp_fkcart', '#angelleye_ppcp_fkcart_apple_pay', '#angelleye_ppcp_fkcart_google_pay'];
-        let is_from_fkcart = fkcartSelectors.indexOf(angelleye_ppcp_button_selector) > -1;
+        let is_from_cart_drawer = fkcartSelectors.concat(angelleyeOrder.miniCartSelectors).indexOf(angelleye_ppcp_button_selector) > -1;
         if (typeof apiUrl == 'undefined') {
             apiUrl = angelleye_ppcp_manager.create_order_url;
-            if (is_from_fkcart) {
+            if (is_from_cart_drawer) {
                 // Force from=cart so server reads WC()->cart directly instead of treating as product/checkout request
                 apiUrl = apiUrl.replace(/([?&])from=[^&]*/, '$1from=cart');
                 if (apiUrl.indexOf('from=') === -1) {
@@ -237,8 +237,8 @@ const angelleyeOrder = {
         angelleyeOrder.removeError();
         let formData;
         let is_from_checkout = angelleyeOrder.isCheckoutPage();
-        // FKCart buttons should never be treated as product page even if rendered on a product page
-        let is_from_product = is_from_fkcart ? false : angelleyeOrder.isProductPage();
+        // Cart drawer buttons should never be treated as product page even if rendered on a product page
+        let is_from_product = is_from_cart_drawer ? false : angelleyeOrder.isProductPage();
         let billingField = null;
         let shippingField = null;
         if (billingDetails) {
@@ -290,8 +290,8 @@ const angelleyeOrder = {
             }
         } else if (is_from_checkout && topCheckoutSelectors.indexOf(angelleye_ppcp_button_selector) > -1) {
             formData = 'angelleye_ppcp_checkout_source=' + encodeURIComponent(checkoutSource);
-        } else if (is_from_fkcart) {
-            // FunnelKit sliding cart — server reads existing WC()->cart contents, no form serialization needed
+        } else if (is_from_cart_drawer) {
+            // FunnelKit sliding cart / mini cart — server reads existing WC()->cart contents, no form serialization needed
             formData = 'angelleye_ppcp_payment_method_title=' + jQuery('#angelleye_ppcp_payment_method_title').val();
             formData += '&woocommerce-process-checkout-nonce=' + angelleye_ppcp_manager.woocommerce_process_checkout;
             // Forward the address details (e.g. Google Pay / Apple Pay shipping-address-update
@@ -750,9 +750,12 @@ const angelleyeOrder = {
             if (typeof angelleye_paypal_sdk === 'undefined') {
                 return;
             }
-            // Use FunnelKit Sliding Cart specific style props for FKCart button
-            let isFkcartButton = (angelleye_ppcp_button_selector === '#angelleye_ppcp_fkcart');
-            let styleSource = (isFkcartButton && angelleye_ppcp_manager.fkcart_style) ? angelleye_ppcp_manager.fkcart_style : angelleye_ppcp_manager;
+            // FunnelKit Sliding Cart and mini cart buttons have their own style settings
+            let cartDrawerStyle = {
+                '#angelleye_ppcp_fkcart': angelleye_ppcp_manager.fkcart_style,
+                '#angelleye_ppcp_mini_cart': angelleye_ppcp_manager.mini_cart_style
+            }[angelleye_ppcp_button_selector] || null;
+            let styleSource = cartDrawerStyle ? cartDrawerStyle : angelleye_ppcp_manager;
             let angelleye_ppcp_style = {
                 layout: styleSource.style_layout,
                 color: styleSource.style_color,
@@ -793,14 +796,14 @@ const angelleyeOrder = {
                 }
             };
 
-            // FunnelKit Sliding Cart with disabled funding methods: render each enabled funding source
+            // FunnelKit Sliding Cart / mini cart with disabled funding methods: render each enabled funding source
             // explicitly so we can hide specific methods (e.g. card) without affecting other PFW buttons
             // on the same page (which all share the same global SDK load).
-            let fkcartDisabled = (isFkcartButton && angelleye_ppcp_manager.fkcart_style && Array.isArray(angelleye_ppcp_manager.fkcart_style.disable_funding))
-                ? angelleye_ppcp_manager.fkcart_style.disable_funding
+            let cartDrawerDisabled = (cartDrawerStyle && Array.isArray(cartDrawerStyle.disable_funding))
+                ? cartDrawerStyle.disable_funding
                 : [];
 
-            if (isFkcartButton && fkcartDisabled.length > 0) {
+            if (cartDrawerDisabled.length > 0) {
                 // Funding sources to render in vertical order. Apple/Google Pay are rendered separately below.
                 let fundingSources = ['paypal', 'venmo', 'paylater', 'card', 'credit'];
                 // Allowed style colors per PayPal SDK validation
@@ -813,7 +816,7 @@ const angelleyeOrder = {
                 };
                 let renderedAny = false;
                 fundingSources.forEach(function(src) {
-                    if (fkcartDisabled.indexOf(src) > -1) {
+                    if (cartDrawerDisabled.indexOf(src) > -1) {
                         return;
                     }
                     if (!angelleye_paypal_sdk.FUNDING || !angelleye_paypal_sdk.FUNDING[src.toUpperCase()]) {
@@ -1151,8 +1154,38 @@ const angelleyeOrder = {
             }
         }
     },
-    getCartDetails: () => {
+    // Mini cart buttons pay for the cart, so they keep their own cart totals:
+    // on a product page angelleye_cart_totals hold the product's.
+    miniCartSelectors: ['#angelleye_ppcp_mini_cart', '#angelleye_ppcp_mini_cart_apple_pay', '#angelleye_ppcp_mini_cart_google_pay'],
+    isMiniCartSelector: (containerSelector) => {
+        return angelleyeOrder.miniCartSelectors.indexOf(containerSelector) > -1;
+    },
+    getCartDetails: (containerSelector) => {
+        if (angelleyeOrder.isMiniCartSelector(containerSelector) && angelleye_ppcp_manager.mini_cart_totals) {
+            return angelleye_ppcp_manager.mini_cart_totals;
+        }
         return angelleye_ppcp_manager.angelleye_cart_totals;
+    },
+    // Totals returned while a wallet sheet is open; the mini cart's are kept
+    // apart so the page's own buttons keep theirs.
+    setCartDetails: (containerSelector, cartTotals) => {
+        if (angelleyeOrder.isMiniCartSelector(containerSelector)) {
+            angelleye_ppcp_manager.mini_cart_totals = cartTotals;
+            return;
+        }
+        angelleyeOrder.updateCartTotalsInEnvironment(cartTotals);
+    },
+    // The wallet sheets open synchronously on click, so the mini cart totals
+    // are fetched ahead of it, after cart changes and on hover.
+    refreshMiniCartTotals: () => {
+        if (!angelleye_ppcp_manager.cart_totals_url || !jQuery(angelleyeOrder.miniCartSelectors.join(',')).length) {
+            return Promise.resolve();
+        }
+        return fetch(angelleye_ppcp_manager.cart_totals_url, {credentials: 'same-origin'}).then((res) => res.json()).then((cartTotals) => {
+            if (cartTotals && typeof cartTotals.totalAmount !== 'undefined') {
+                angelleye_ppcp_manager.mini_cart_totals = cartTotals;
+            }
+        }).catch(() => {});
     },
     updateCartTotalsInEnvironment: (data) => {
         let cartTotals;

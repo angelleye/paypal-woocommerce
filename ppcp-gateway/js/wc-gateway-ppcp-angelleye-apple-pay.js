@@ -128,9 +128,8 @@ class ApplePayCheckoutButton {
      * order's stored_credential and the token disagree, so the two must move
      * together.
      */
-    static addPaymentMethodSaveParams () {
+    static addPaymentMethodSaveParams (cartDetails = angelleyeOrder.getCartDetails()) {
         let isNewPaymentMethodSelected = jQuery('input#wc-angelleye_ppcp_apple_pay-new-payment-method:checked').val();
-        const cartDetails = angelleyeOrder.getCartDetails();
         if (isNewPaymentMethodSelected === 'true' || cartDetails.isSubscriptionRequired) {
             return {
                 recurringPaymentRequest: ApplePayCheckoutButton.getRecurringPaymentRequest(cartDetails),
@@ -172,7 +171,7 @@ class ApplePayCheckoutButton {
     async handleClickEvent(event) {
         let containerSelector = event.data.thisObject.containerSelector;
         const blockHandlers = event.data.thisObject.blockHandlers;
-        const cartDetails = blockHandlers ? blockHandlers.getCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails();
+        const cartDetails = blockHandlers ? blockHandlers.getCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails(containerSelector);
         if (blockHandlers) {
             blockHandlers.onClick();
             angelleyeOrder.ppcp_block_wallet = 'angelleye_ppcp_apple_pay';
@@ -225,7 +224,7 @@ class ApplePayCheckoutButton {
             shippingAddressRequired = ["email", "phone"];
         }
 
-        let subscriptionParams = ApplePayCheckoutButton.addPaymentMethodSaveParams();
+        let subscriptionParams = ApplePayCheckoutButton.addPaymentMethodSaveParams(cartDetails);
         let paymentRequest = {
             countryCode: ApplePayCheckoutButton.applePayConfig.countryCode,
             currencyCode: cartDetails.currencyCode,
@@ -379,7 +378,7 @@ class ApplePayCheckoutButton {
         };
 
         session.onshippingcontactselected = async (event) => {
-            const cartDetails = angelleyeOrder.getCartDetails();
+            const cartDetails = angelleyeOrder.getCartDetails(containerSelector);
             console.log('on shipping contact selected', event);
             let newTotal = {
                 label: localizedMessages.total_amount_placeholder,
@@ -391,7 +390,7 @@ class ApplePayCheckoutButton {
                 let response = await angelleyeOrder.shippingAddressUpdate({shippingDetails: event.shippingContact}, undefined, undefined, containerSelector);
                 console.log('shipping update response', response);
                 if (typeof response.totalAmount !== 'undefined') {
-                    angelleyeOrder.updateCartTotalsInEnvironment(response);
+                    angelleyeOrder.setCartDetails(containerSelector, response);
                     newTotal.amount = response.totalAmount;
                     let shippingContactUpdate = {
                         newTotal,
