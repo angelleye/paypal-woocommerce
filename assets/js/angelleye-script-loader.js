@@ -71,10 +71,12 @@ function canShowPlaceOrderBtn() {
 }
 
 function showHidePlaceOrderBtn() {
+    let placeOrderBtn = jQuery('#place_order, .wc-block-components-checkout-place-order-button');
     if (canShowPlaceOrderBtn()) {
-        jQuery('#place_order, .wc-block-components-checkout-place-order-button').removeClass('hide_place_order_btn').show();
+        // Only show the button again if we hid it, another gateway may have hidden it for its own button.
+        placeOrderBtn.filter('.hide_place_order_btn').removeClass('hide_place_order_btn').show();
     } else {
-        jQuery('#place_order, .wc-block-components-checkout-place-order-button').addClass('hide_place_order_btn').hide();
+        placeOrderBtn.addClass('hide_place_order_btn').hide();
     }
 }
 
