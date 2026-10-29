@@ -8,7 +8,8 @@ class ApplePayCheckoutButton {
     /**
      * @param {Object|null} blockHandlers Set when the button is rendered by the
      *     Blocks checkout: onClick(), onApproved(orderID, payment), onCancel(),
-     *     onError(message) and optionally beforeCreateOrder(), a promise that
+     *     onError(message), getCartDetails(cartDetails), the amounts from the
+     *     Blocks cart, and optionally beforeCreateOrder(), a promise that
      *     rejects to stop the payment, and useCheckoutAddress, to take the
      *     address from the checkout form instead of the sheet. The order is
      *     then completed by the Blocks checkout instead of approveOrder().
@@ -168,43 +169,10 @@ class ApplePayCheckoutButton {
         };
     }
 
-    /**
-     * The cart totals cached in the page are not refreshed when the Blocks cart
-     * changes, so on Blocks the sheet is priced from the Blocks cart store.
-     */
-    static getBlockCartDetails(cartDetails) {
-        try {
-            const cartStore = wp.data.select(wc.wcBlocksData.CART_STORE_KEY);
-            const totals = cartStore.getCartTotals();
-            const decimals = totals.currency_minor_unit;
-            const amount = (value) => (parseInt(value || 0, 10) / Math.pow(10, decimals)).toFixed(decimals);
-            const {__} = wp.i18n;
-            let lineItems = [{label: __('Subtotal', 'paypal-for-woocommerce'), amount: amount(totals.total_items)}];
-            [
-                [__('Shipping', 'paypal-for-woocommerce'), totals.total_shipping, 1],
-                [__('Fees', 'paypal-for-woocommerce'), totals.total_fees, 1],
-                [__('Tax', 'paypal-for-woocommerce'), totals.total_tax, 1],
-                [__('Discount', 'paypal-for-woocommerce'), totals.total_discount, -1]
-            ].forEach(([label, value, sign]) => {
-                if (parseInt(value || 0, 10) !== 0) {
-                    lineItems.push({label, amount: (sign * amount(value)).toFixed(decimals)});
-                }
-            });
-            return Object.assign({}, cartDetails, {
-                currencyCode: totals.currency_code,
-                totalAmount: amount(totals.total_price),
-                lineItems,
-                shippingRequired: cartStore.getNeedsShipping()
-            });
-        } catch (e) {
-            return cartDetails;
-        }
-    }
-
     async handleClickEvent(event) {
         let containerSelector = event.data.thisObject.containerSelector;
         const blockHandlers = event.data.thisObject.blockHandlers;
-        const cartDetails = blockHandlers ? ApplePayCheckoutButton.getBlockCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails();
+        const cartDetails = blockHandlers ? blockHandlers.getCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails();
         if (blockHandlers) {
             blockHandlers.onClick();
             angelleyeOrder.ppcp_block_wallet = 'angelleye_ppcp_apple_pay';
