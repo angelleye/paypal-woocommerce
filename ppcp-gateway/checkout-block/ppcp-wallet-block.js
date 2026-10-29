@@ -26,6 +26,17 @@ window.angelleyePpcpWalletBlock = (function () {
         }
     };
 
+    // Brings an error notice into view once Blocks has rendered it; same as the
+    // card block. The wallet buttons can be far from where the notice shows.
+    const scrollToNotice = (selectors) => {
+        setTimeout(() => {
+            const target = selectors.map((selector) => document.querySelector(selector)).find(Boolean);
+            if (target && typeof target.scrollIntoView === 'function') {
+                target.scrollIntoView({behavior: 'smooth', block: 'start'});
+            }
+        }, 80);
+    };
+
     // The checkout form's addresses, for the PayPal order; same as the card block.
     const getCheckoutAddress = () => {
         const customerData = wp.data.select(wc.wcBlocksData.CART_STORE_KEY).getCustomerData() || {};
@@ -138,6 +149,7 @@ window.angelleyePpcpWalletBlock = (function () {
                 onError: (message) => {
                     propsRef.current.setExpressPaymentError(toText(message));
                     propsRef.current.onClose();
+                    scrollToNotice(['.wc-block-components-express-payment', '.wc-block-components-notices']);
                 }
             }), true);
             return createElement('div', {id: containerId});
@@ -168,6 +180,7 @@ window.angelleyePpcpWalletBlock = (function () {
                 onCancel: () => {},
                 onError: (message) => {
                     wp.data.dispatch('core/notices').createErrorNotice(toText(message), {id: noticeId, context: 'wc/checkout'});
+                    scrollToNotice(['.wc-block-components-notices', '.wp-block-woocommerce-checkout', 'form.wc-block-checkout__form']);
                 }
             }), false);
             // Full width, like the "Place order" button it replaces.
