@@ -24,3 +24,5 @@ composer.lock
 /node_modules/
 /paypal-for-woocommerce.zip
 CONTEXT.md
+# Zips made by build.sh
+/paypal-for-woocommerce-v*.zip
