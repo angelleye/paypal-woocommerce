@@ -127,6 +127,24 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 4.6.17 - 10.29.2026 =
+* Feature - Added Apple Pay to the WooCommerce Cart and Checkout blocks. ([2250](https://github.com/angelleye/paypal-woocommerce/pull/2250))
+* Feature - Added Google Pay to the WooCommerce Cart and Checkout blocks. ([2256](https://github.com/angelleye/paypal-woocommerce/pull/2256))
+* Feature - PayPal, Apple Pay and Google Pay buttons now display in the mini cart based on the Mini Cart Page Settings, shown above the WooCommerce buttons with an "OR" divider. ([2260](https://github.com/angelleye/paypal-woocommerce/pull/2260))
+* Feature - Apple Pay is now available in Chrome, Edge and Firefox on desktop using Apple's third-party browser SDK, while Safari keeps using the native Apple Pay SDK. ([2237](https://github.com/angelleye/paypal-woocommerce/pull/2237))
+* Fix - Fixed Apple Pay APPLE_PAY_AMOUNT_MISMATCH failures by calculating cart totals before pricing the payment sheet, repricing the shipping callback in checkout context, and building the order from the address the buyer approved. Also added support for WooCommerce AvaTax tax calculation during wallet callbacks. ([2226](https://github.com/angelleye/paypal-woocommerce/pull/2226))
+* Fix - Handled the amount change error due to shipping address changes on Apple Pay sheet. ([2246](https://github.com/angelleye/paypal-woocommerce/pull/2246))
+* Fix - The Apple Pay sheet now shows the correct subscription renewal interval, amount and start date. ([2244](https://github.com/angelleye/paypal-woocommerce/pull/2244))
+* Fix - Apple Pay domain registration status is now tied to the connected PayPal account, so switching accounts no longer shows "Apple Pay is connected!" for a domain that isn't registered. ([2228](https://github.com/angelleye/paypal-woocommerce/pull/2228))
+* Fix - Manage Apple Pay Domains now lists all registered domains instead of only the first 10, and the domain check reads every page of the list. ([2240](https://github.com/angelleye/paypal-woocommerce/pull/2240))
+* Fix - Fixed the settings page going back to "Register your domain to activate Apple Pay" after the Manage Apple Pay Domains popup had confirmed the registration. ([2242](https://github.com/angelleye/paypal-woocommerce/pull/2242))
+* Fix - Partial refunds on Multi-Account Management orders now refund only the requested amount, with the merchant's refund reason, instead of refunding the full capture at PayPal. ([2232](https://github.com/angelleye/paypal-woocommerce/pull/2232))
+* Fix - Card setup token requests now require a logged-in customer and a valid nonce, and vaulting is only treated as enabled when the vault permission has been granted. This stops the repeated "Setup Tokens - Authorization failed" error emails. ([2235](https://github.com/angelleye/paypal-woocommerce/pull/2235))
+* Fix - Updated the Braintree PHP SDK to 6.37.0 to fix the curl_close() deprecation warning on PHP 8.5. The Braintree PHP version notice now requires PHP 7.3. ([2233](https://github.com/angelleye/paypal-woocommerce/pull/2233))
+* Fix - Passwords and card fields are now redacted from the JavaScript error log. ([2248](https://github.com/angelleye/paypal-woocommerce/pull/2248))
+* Fix - The WooCommerce Place Order button is now only shown again when this plugin hid it, so it no longer clashes with other PayPal plugins that hide it. ([2258](https://github.com/angelleye/paypal-woocommerce/pull/2258))
+* Fix - In vertical button layouts, Apple Pay and Google Pay are now capped at PayPal's 750px button width so all buttons line up. ([2262](https://github.com/angelleye/paypal-woocommerce/pull/2262))
+
 = 4.6.16 - 08.31.2026 =
 * Fix - Fixed Google Pay/Apple Pay express checkout from the product page failing after the buyer authorizes payment. ([2214](https://github.com/angelleye/paypal-woocommerce/pull/2214))
 * Fix - Improved Apple Pay error logging and fixed missing shipping phone, token type mismatch, and zero-total sheet issues causing payment failures. ([2216](https://github.com/angelleye/paypal-woocommerce/pull/2216))
