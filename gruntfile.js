@@ -13,6 +13,7 @@ module.exports = function ( grunt ) {
 		uglify: {
 			build: {
 				files: {
+					'assets/js/angelleye-script-loader.min.js': 'assets/js/angelleye-script-loader.js',
 					'ppcp-gateway/js/pay-later-messaging.min.js': 'ppcp-gateway/js/pay-later-messaging.js',
 					'ppcp-gateway/js/wc-angelleye-common-functions.min.js': 'ppcp-gateway/js/wc-angelleye-common-functions.js',
 					'ppcp-gateway/js/wc-gateway-ppcp-add-payment-method.min.js': 'ppcp-gateway/js/wc-gateway-ppcp-add-payment-method.js',
