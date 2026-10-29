@@ -45,7 +45,7 @@ abstract class AngellEYE_PPCP_Wallet_Block extends AbstractPaymentMethodType {
         angelleye_ppcp_add_css_js();
         wp_register_script('angelleye_ppcp_wallet-blocks', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/checkout-block/ppcp-wallet-block.js', array('jquery', 'wc-blocks-registry', 'wc-blocks-data-store', 'wc-settings', 'wp-data', 'wp-element', 'wp-html-entities', 'wp-i18n'), VERSION_PFW, true);
         $handle = $this->name . '-blocks-integration';
-        wp_register_script($handle, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/checkout-block/' . $this->script_file, array('angelleye_ppcp_wallet-blocks'), VERSION_PFW, true);
+        wp_register_script($handle, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/checkout-block/' . $this->script_file, array('angelleye_ppcp_wallet-blocks', 'wc-settings'), VERSION_PFW, true);
         if (function_exists('wp_set_script_translations')) {
             wp_set_script_translations('angelleye_ppcp_wallet-blocks', 'paypal-for-woocommerce');
             wp_set_script_translations($handle, 'paypal-for-woocommerce');

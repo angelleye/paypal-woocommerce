@@ -8,7 +8,8 @@ class ApplePayCheckoutButton {
     /**
      * @param {Object|null} blockHandlers Set when the button is rendered by the
      *     Blocks checkout: onClick(), onApproved(orderID, payment), onCancel(),
-     *     onError(message) and optionally beforeCreateOrder(), a promise that
+     *     onError(message), getCartDetails(cartDetails), the amounts from the
+     *     Blocks cart, and optionally beforeCreateOrder(), a promise that
      *     rejects to stop the payment, and useCheckoutAddress, to take the
      *     address from the checkout form instead of the sheet. The order is
      *     then completed by the Blocks checkout instead of approveOrder().
@@ -171,7 +172,7 @@ class ApplePayCheckoutButton {
     async handleClickEvent(event) {
         let containerSelector = event.data.thisObject.containerSelector;
         const blockHandlers = event.data.thisObject.blockHandlers;
-        const cartDetails = blockHandlers ? angelleyeOrder.getBlockCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails();
+        const cartDetails = blockHandlers ? blockHandlers.getCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails();
         if (blockHandlers) {
             blockHandlers.onClick();
             angelleyeOrder.ppcp_block_wallet = 'angelleye_ppcp_apple_pay';

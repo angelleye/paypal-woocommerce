@@ -11,7 +11,8 @@ class GooglePayCheckoutButton {
     /**
      * @param {Object|null} blockHandlers Set when the button is rendered by the
      *     Blocks checkout: onClick(), onApproved(orderID, paymentData),
-     *     onCancel(), onError(message), optionally beforeCreateOrder(), a
+     *     onCancel(), onError(message), getCartDetails(cartDetails), the
+     *     amounts from the Blocks cart, optionally beforeCreateOrder(), a
      *     promise that rejects to stop the payment, and useCheckoutAddress, to
      *     take the address from the checkout form instead of the sheet. The
      *     order is then completed by the Blocks checkout instead of
@@ -22,7 +23,7 @@ class GooglePayCheckoutButton {
     }
 
     getCartDetails() {
-        return this.blockHandlers ? angelleyeOrder.getBlockCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails();
+        return this.blockHandlers ? this.blockHandlers.getCartDetails(angelleyeOrder.getCartDetails()) : angelleyeOrder.getCartDetails();
     }
 
     showError(message) {

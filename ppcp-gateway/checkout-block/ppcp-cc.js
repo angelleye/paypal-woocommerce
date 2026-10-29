@@ -107,7 +107,7 @@ var {registerExpressPaymentMethod, registerPaymentMethod} = wc.wcBlocksRegistry;
 
                 const l = Object(u.getSetting)("angelleye_ppcp_cc_data", {});
                 const iconsElements = l.icons.map(icon => (
-                            createElement("img", {src: icon, style: {float: "right", marginRight: "10px"}})
+                            createElement("img", {key: icon, src: icon, style: {float: "right", marginRight: "10px"}})
                             ));
                 const p = () => Object(a.decodeEntities)(l.description || "");
                 const ppcp_settings = angelleye_ppcp_manager_block.settins;

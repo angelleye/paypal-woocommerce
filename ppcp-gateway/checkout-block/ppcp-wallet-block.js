@@ -15,6 +15,11 @@ window.angelleyePpcpWalletBlock = (function () {
     const {createElement, useEffect, useRef} = wp.element;
     const {decodeEntities} = wp.htmlEntities;
     const {__} = wp.i18n;
+    // Read while this script runs: WooCommerce's dependency check can only
+    // tell which script touched wc.* during its own execution, and reports
+    // later reads (from callbacks) as an unknown script.
+    const {CART_STORE_KEY, CHECKOUT_STORE_KEY} = wc.wcBlocksData;
+    const blocksRegistry = wc.wcBlocksRegistry;
 
     // Error messages arrive as HTML; DOMParser reads the text without running
     // anything in it.
@@ -37,10 +42,40 @@ window.angelleyePpcpWalletBlock = (function () {
         }, 80);
     };
 
+    // The cart totals cached in the page are not refreshed when the Blocks cart
+    // changes, so the sheets are priced from the Blocks cart store.
+    const getCartDetails = (cartDetails) => {
+        try {
+            const cartStore = wp.data.select(CART_STORE_KEY);
+            const totals = cartStore.getCartTotals();
+            const decimals = totals.currency_minor_unit;
+            const amount = (value) => (parseInt(value || 0, 10) / Math.pow(10, decimals)).toFixed(decimals);
+            let lineItems = [{label: __('Subtotal', 'paypal-for-woocommerce'), amount: amount(totals.total_items)}];
+            [
+                [__('Shipping', 'paypal-for-woocommerce'), totals.total_shipping, 1],
+                [__('Fees', 'paypal-for-woocommerce'), totals.total_fees, 1],
+                [__('Tax', 'paypal-for-woocommerce'), totals.total_tax, 1],
+                [__('Discount', 'paypal-for-woocommerce'), totals.total_discount, -1]
+            ].forEach(([label, value, sign]) => {
+                if (parseInt(value || 0, 10) !== 0) {
+                    lineItems.push({label, amount: (sign * amount(value)).toFixed(decimals)});
+                }
+            });
+            return Object.assign({}, cartDetails, {
+                currencyCode: totals.currency_code,
+                totalAmount: amount(totals.total_price),
+                lineItems,
+                shippingRequired: cartStore.getNeedsShipping()
+            });
+        } catch (e) {
+            return cartDetails;
+        }
+    };
+
     // The checkout form's addresses, for the PayPal order; same as the card block.
     const getCheckoutAddress = () => {
-        const customerData = wp.data.select(wc.wcBlocksData.CART_STORE_KEY).getCustomerData() || {};
-        const checkoutStore = wp.data.select(wc.wcBlocksData.CHECKOUT_STORE_KEY);
+        const customerData = wp.data.select(CART_STORE_KEY).getCustomerData() || {};
+        const checkoutStore = wp.data.select(CHECKOUT_STORE_KEY);
         const shipping = customerData.shippingAddress || {};
         let billing = customerData.billingAddress || {};
         if (checkoutStore && typeof checkoutStore.getUseShippingAsBilling === 'function' && checkoutStore.getUseShippingAsBilling()) {
@@ -96,6 +131,7 @@ window.angelleyePpcpWalletBlock = (function () {
                     return;
                 }
                 wallet.createButton(Object.assign({
+                    getCartDetails,
                     onApproved: (orderID, payment) => {
                         approvedRef.current = Object.assign({orderID}, wallet.toBlocksAddresses(payment));
                         propsRef.current.onSubmit();
@@ -194,23 +230,28 @@ window.angelleyePpcpWalletBlock = (function () {
             features: settings.supports || ['products']
         };
 
-        wc.wcBlocksRegistry.registerExpressPaymentMethod({
+        // Blocks passes its payment method props to content and edit, so these
+        // are components rather than bare DOM elements.
+        const Title = () => createElement('div', null, title);
+        const description = decodeEntities(settings.description || '');
+        const Description = () => createElement('p', null, description);
+
+        blocksRegistry.registerExpressPaymentMethod({
             name: gatewayId + '_express',
             paymentMethodId: gatewayId,
             content: createElement(Express, null),
-            edit: createElement('div', null, title),
+            edit: createElement(Title, null),
             canMakePayment,
             supports
         });
 
-        const description = decodeEntities(settings.description || '');
-        wc.wcBlocksRegistry.registerPaymentMethod({
+        blocksRegistry.registerPaymentMethod({
             name: gatewayId,
             label: createElement('span', {style: {width: '100%'}}, title,
                     settings.icon ? createElement('img', {src: settings.icon, alt: title, style: {float: 'right', marginRight: '20px'}}) : null),
             ariaLabel: title,
-            content: createElement('p', null, description),
-            edit: createElement('p', null, description),
+            content: createElement(Description, null),
+            edit: createElement(Description, null),
             placeOrderButton: PlaceOrderButton,
             canMakePayment,
             supports
@@ -218,9 +259,9 @@ window.angelleyePpcpWalletBlock = (function () {
         // Without placeOrderButton support (older WooCommerce) the method would
         // get the standard "Place order" button, which can not open the sheet;
         // leave the wallet to the express button there.
-        const registered = wc.wcBlocksRegistry.getPaymentMethods()[gatewayId];
-        if (registered && !registered.placeOrderButton && wc.wcBlocksRegistry.__experimentalDeRegisterPaymentMethod) {
-            wc.wcBlocksRegistry.__experimentalDeRegisterPaymentMethod(gatewayId);
+        const registered = blocksRegistry.getPaymentMethods()[gatewayId];
+        if (registered && !registered.placeOrderButton && blocksRegistry.__experimentalDeRegisterPaymentMethod) {
+            blocksRegistry.__experimentalDeRegisterPaymentMethod(gatewayId);
         }
     };
 
