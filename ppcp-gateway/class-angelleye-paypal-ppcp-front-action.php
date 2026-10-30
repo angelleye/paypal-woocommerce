@@ -464,10 +464,16 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     $this->angelleye_ppcp_display_order_page();
                     break;
                 case "handle_js_errors":
+                    if ('disabled' === $this->setting_obj->get('debug', 'everything')) {
+                        break;
+                    }
                     // Redacted here too, for browsers still running a cached script.
                     $_POST = $this->angelleye_ppcp_redact_log_data(json_decode(file_get_contents('php://input'), true));
                     if (isset($_POST['error']['msg']) && isset($_POST['error']['source']) && isset($_POST['error']['line'])) {
-                        $errorLine = html_entity_decode($_POST['error']['msg'], ENT_QUOTES) . ', file: ' . $_POST['error']['source'] . ', line:' . $_POST['error']['line'];
+                        $errorLine = substr(html_entity_decode($_POST['error']['msg'], ENT_QUOTES), 0, 1000) . ', file: ' . $_POST['error']['source'] . ', line:' . $_POST['error']['line'];
+                        if (!empty($_POST['error']['stack']) && is_string($_POST['error']['stack'])) {
+                            $errorLine .= "\nStack: " . substr($_POST['error']['stack'], 0, 2000);
+                        }
                     } else {
                         $errorLine = !empty($_POST['error']) ? print_r($_POST['error'], true) : '';
                     }

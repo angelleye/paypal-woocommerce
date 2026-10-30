@@ -872,6 +872,8 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'checkout_url' => add_query_arg(array('utm_nooverride' => '1'), wc_get_checkout_url()),
             'display_order_page' => add_query_arg(array('angelleye_ppcp_action' => 'display_order_page', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'handle_js_errors' => add_query_arg(array('angelleye_ppcp_action' => 'handle_js_errors', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
+            // Lets the JS error listener report only errors from our own scripts.
+            'asset_url' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL,
             'cc_capture' => add_query_arg(array('angelleye_ppcp_action' => 'cc_capture', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'create_order_url' => add_query_arg(array('angelleye_ppcp_action' => 'create_order', 'utm_nooverride' => '1', 'from' => is_checkout_pay_page() ? 'pay_page' : $page), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'shipping_update_url' => add_query_arg(array('angelleye_ppcp_action' => 'shipping_address_update', 'utm_nooverride' => '1', 'from' => is_checkout_pay_page() ? 'pay_page' : $page), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),

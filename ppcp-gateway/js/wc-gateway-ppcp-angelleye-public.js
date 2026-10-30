@@ -232,10 +232,105 @@ function initSmartButtons() {
     
 })(jQuery);
 
-window.onerror = function (msg, source, lineNo) {
-	angelleyeJsErrorLogger.logJsError({
-		'msg': msg,
-		'source': source,
-		'line': lineNo,
+// Report only errors thrown by our own scripts; errors from other plugins and
+// themes are not ours to fix and can repeat thousands of times per page. A
+// listener rather than window.onerror so handlers set by other scripts keep
+// working.
+(function () {
+	// Too common to tell our code apart when a browser shows only the bare
+	// function name in the stack (Firefox, Safari).
+	const genericNames = ['constructor', 'render', 'renderButton', 'init', 'createOrder', 'approveOrder', 'onCancel',
+		'showError', 'removeError', 'isSale', 'getCartDetails', 'setCartDetails', 'processPayment', 'handleClickEvent',
+		'isCheckoutPage', 'isProductPage', 'isCartPage', 'getUrlObject', 'setQueryParam', 'getQueryParams',
+		'removeQueryParam', 'removeAllParams'];
+	let ourNames = null;
+
+	// Read from the loaded code on the first error, so new methods are covered
+	// without keeping a list. Class and method names survive minification.
+	const getOurNames = function () {
+		if (ourNames) {
+			return ourNames;
+		}
+		ourNames = {classes: [], objectMethods: [], bareNames: ['initSmartButtons', 'angelleyeLoadPayPalScript', 'canShowPlaceOrderBtn', 'showHidePlaceOrderBtn']};
+		const objects = [
+			typeof angelleyeOrder !== 'undefined' ? angelleyeOrder : null,
+			typeof pfwUrlHelper !== 'undefined' ? pfwUrlHelper : null
+		];
+		objects.forEach(function (obj) {
+			if (obj) {
+				Object.keys(obj).forEach(function (key) {
+					if (typeof obj[key] === 'function') {
+						ourNames.objectMethods.push(key);
+					}
+				});
+			}
+		});
+		const classes = [
+			typeof ApplePayCheckoutButton !== 'undefined' ? ApplePayCheckoutButton : null,
+			typeof GooglePayCheckoutButton !== 'undefined' ? GooglePayCheckoutButton : null
+		];
+		classes.forEach(function (cls) {
+			if (cls) {
+				ourNames.classes.push(cls.name);
+				ourNames.bareNames.push(...Object.getOwnPropertyNames(cls.prototype));
+			}
+		});
+		ourNames.bareNames = ourNames.bareNames.concat(ourNames.objectMethods, ourNames.classes).filter(function (name) {
+			return genericNames.indexOf(name) === -1;
+		});
+		return ourNames;
+	};
+
+	// For scripts combined into one file by an optimization plugin, where the
+	// file name no longer tells whose code threw. Chrome names frames
+	// "Object.method" / "ClassName.method", Firefox and Safari "method@";
+	// Firefox names anonymous inner functions "method/<", so those count too.
+	const isOurStack = function (stack) {
+		const names = getOurNames();
+		return stack.split('\n').some(function (frame) {
+			const match = frame.match(/^\s*at (?:async )?(?:new )?([^\s(]+)/) || frame.match(/^(?:async\*)?([^@\s]+)@/);
+			if (!match) {
+				return false;
+			}
+			const name = match[1].split('/')[0];
+			const dot = name.lastIndexOf('.');
+			if (dot !== -1) {
+				const owner = name.slice(0, dot), method = name.slice(dot + 1);
+				return names.classes.indexOf(owner) !== -1 || (owner === 'Object' && names.objectMethods.indexOf(method) !== -1);
+			}
+			return names.bareNames.indexOf(name) !== -1;
+		});
+	};
+
+	const isOurError = function (event) {
+		if (typeof angelleye_ppcp_manager === 'undefined' || !angelleye_ppcp_manager.asset_url) {
+			return false;
+		}
+		// Matched on the path, so assets served from a CDN host still count.
+		try {
+			const assetPath = new URL(angelleye_ppcp_manager.asset_url).pathname;
+			if (typeof event.filename === 'string' && event.filename.indexOf(assetPath) !== -1) {
+				return true;
+			}
+		} catch (e) {
+		}
+		return !!(event.error && typeof event.error.stack === 'string' && isOurStack(event.error.stack));
+	};
+
+	window.addEventListener('error', function (event) {
+		if (!isOurError(event)) {
+			return;
+		}
+		const error = {
+			'msg': event.message,
+			'source': event.filename,
+			'line': event.lineno,
+		};
+		// File and line say little for combined or minified scripts; the stack
+		// shows which of our functions failed.
+		if (event.error && typeof event.error.stack === 'string') {
+			error.stack = event.error.stack.split('\n').slice(0, 10).join('\n');
+		}
+		angelleyeJsErrorLogger.logJsError(error);
 	});
-}
+})();
