@@ -48,6 +48,7 @@ $gateway = isset($_GET['gateway']) ? wc_clean($_GET['gateway']) : 'paypal_paymen
                     <div class="angelleye-paypal-for-woocommerce-shipping-tools-wrap">
                         <form id="woocommerce_paypal-for-woocommerce_options_form_bulk_tool_shipping" autocomplete="off" action="<?php echo admin_url('options-general.php?page=' . $this->plugin_slug . '&tab=general_settings&gateway=tool'); ?>" method="post">
                             <a name="pfw-t1"></a>
+                            <?php wp_nonce_field('pfw_ed_shipping_bulk_tool', 'pfw_bulk_tool_nonce'); ?>
                             <h3><?php echo __('Bulk Edit Tool for Products', 'paypal-for-woocommerce'); ?></h3>
                             <div><?php echo __('Use the options below to enable/disable product-level settings for all products at once or a filtered sub-set of products.', 'paypal-for-woocommerce'); ?></div>
                             <div class="angelleye-paypal-for-woocommerce-shipping-tools-bulk-action-section pfw-bulk-action-type">

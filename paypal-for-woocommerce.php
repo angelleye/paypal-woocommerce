@@ -863,6 +863,11 @@ if (!class_exists('AngellEYE_Gateway_Paypal')) {
 
         public function angelleye_woocommerce_pfw_ed_shipping_bulk_tool() {
             if (is_admin() && (defined('DOING_AJAX') || DOING_AJAX)) {
+                // wp_ajax_ runs for any logged-in user, and these flags change how products are paid for.
+                if (!current_user_can('manage_options') || !check_ajax_referer('pfw_ed_shipping_bulk_tool', 'security', false)) {
+                    echo 'failed';
+                    die();
+                }
                 global $wpdb;
                 $processed_product_id = array();
                 $errors = FALSE;
