@@ -460,9 +460,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     // open with, fetched again after the cart changes.
                     wp_send_json($this->payment_request->ae_get_updated_checkout_payment_data());
                     break;
-                case "display_order_page":
-                    $this->angelleye_ppcp_display_order_page();
-                    break;
                 case "handle_js_errors":
                     if ('disabled' === $this->setting_obj->get('debug', 'everything')) {
                         break;
@@ -582,10 +579,16 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                     $this->payment_request->angelleye_ppcp_advanced_credit_card_setup_tokens();
                     exit();
                 case "install_shipment_plugin":
-                    $this->install_shipment_tracking_plugin();
-                    exit();
                 case "install_pfwma_plugin":
-                    $this->install_pfwma_plugin();
+                    // wc-api is public, so these installers must check the caller themselves.
+                    if (!current_user_can('install_plugins') || !current_user_can('activate_plugins') || !wp_verify_nonce(wc_clean(wp_unslash($_GET['_wpnonce'] ?? '')), 'angelleye_ppcp_install_companion_plugin')) {
+                        wp_die(__('You are not allowed to install plugins on this site.', 'paypal-for-woocommerce'), '', array('response' => 403));
+                    }
+                    if ('install_shipment_plugin' === $_GET['angelleye_ppcp_action']) {
+                        $this->install_shipment_tracking_plugin();
+                    } else {
+                        $this->install_pfwma_plugin();
+                    }
                     exit();
             }
         }
@@ -729,25 +732,6 @@ class AngellEYE_PayPal_PPCP_Front_Action {
                 }
                 exit();
             }
-        } catch (Exception $ex) {
-            $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
-            $this->api_log->log($ex->getMessage(), 'error');
-        }
-    }
-
-    public function angelleye_ppcp_display_order_page() {
-        try {
-            $order_id = angelleye_ppcp_get_awaiting_payment_order_id();
-            if (angelleye_ppcp_is_valid_order($order_id) === false || empty($order_id)) {
-                wp_redirect(wc_get_cart_url());
-                exit();
-            }
-            $order = wc_get_order($order_id);
-            $this->payment_request->angelleye_ppcp_update_woo_order_data($_GET['paypal_order_id']);
-            WC()->cart->empty_cart();
-            AngellEye_Session_Manager::clear();
-            wp_safe_redirect(apply_filters('woocommerce_get_return_url', $order->get_checkout_order_received_url(), $order));
-            exit();
         } catch (Exception $ex) {
             $this->api_log->log("The exception was created on line: " . $ex->getFile() . ' ' . $ex->getLine(), 'error');
             $this->api_log->log($ex->getMessage(), 'error');
@@ -1095,8 +1079,10 @@ class AngellEYE_PayPal_PPCP_Front_Action {
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, -1);
         curl_setopt($ch, CURLOPT_VERBOSE, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        // The download is installed as a plugin, so the server certificate must be verified.
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_CAINFO, ABSPATH . WPINC . '/certificates/ca-bundle.crt');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         $data = curl_exec($ch);

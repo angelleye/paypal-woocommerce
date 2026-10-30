@@ -285,6 +285,7 @@ jQuery(document).ready(function ($) {
         var authorization_type = $('#pfw-bulk-action-payment-authorization-type').val();
         var data = {
             'action': 'pfw_ed_shipping_bulk_tool',
+            'security': $('#pfw_bulk_tool_nonce').val(),
             'actionType': actionType,
             'actionTargetType': actionTargetType,
             'actionTargetWhereType': actionTargetWhereType,

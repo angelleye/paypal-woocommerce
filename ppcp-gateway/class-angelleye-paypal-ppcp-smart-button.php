@@ -870,7 +870,6 @@ class AngellEYE_PayPal_PPCP_Smart_Button {
             'is_pre_checkout_offer' => $pre_checkout_offer,
             'is_pay_page' => $is_pay_page,
             'checkout_url' => add_query_arg(array('utm_nooverride' => '1'), wc_get_checkout_url()),
-            'display_order_page' => add_query_arg(array('angelleye_ppcp_action' => 'display_order_page', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             'handle_js_errors' => add_query_arg(array('angelleye_ppcp_action' => 'handle_js_errors', 'utm_nooverride' => '1'), untrailingslashit(WC()->api_request_url('AngellEYE_PayPal_PPCP_Front_Action'))),
             // Lets the JS error listener report only errors from our own scripts.
             'asset_url' => PAYPAL_FOR_WOOCOMMERCE_ASSET_URL,
