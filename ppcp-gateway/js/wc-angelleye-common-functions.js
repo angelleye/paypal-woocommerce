@@ -1494,7 +1494,18 @@ const angelleyeJsErrorLogger = {
         return typeof angelleyeJsErrorLogger.errorStackMeta[errorLogId] !== 'undefined' ?
                 angelleyeJsErrorLogger.errorStackMeta[errorLogId] : [];
     },
+    sentErrors: [],
+    maxErrorsPerPage: 5,
     logJsError: (error, errorLogId) => {
+        // One report per distinct error and a hard cap per page load, so an
+        // error that keeps repeating can't flood the server. Kept in memory,
+        // not localStorage: blocked storage access is a common repeating error.
+        const errorKey = JSON.stringify(error);
+        if (angelleyeJsErrorLogger.sentErrors.length >= angelleyeJsErrorLogger.maxErrorsPerPage
+                || angelleyeJsErrorLogger.sentErrors.indexOf(errorKey) !== -1) {
+            return;
+        }
+        angelleyeJsErrorLogger.sentErrors.push(errorKey);
         fetch(angelleye_ppcp_manager.handle_js_errors, {
             method: 'POST',
             headers: {
