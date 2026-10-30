@@ -24,6 +24,20 @@ abstract class AngellEYE_PPCP_Wallet_Block extends AbstractPaymentMethodType {
 
     public function initialize() {
         $this->settings = get_option('woocommerce_angelleye_ppcp_settings', []);
+        add_action('woocommerce_blocks_cart_enqueue_data', array($this, 'enqueue_runtime_assets'));
+        add_action('woocommerce_blocks_checkout_enqueue_data', array($this, 'enqueue_runtime_assets'));
+    }
+
+    /**
+     * angelleyeOrder, angelleye_ppcp_manager, the wallet button classes and
+     * the SDK loading all come from the classic scripts. Enqueued only when a
+     * Cart / Checkout block renders; see
+     * AngellEYE_PPCP_Checkout_Block::enqueue_runtime_assets().
+     */
+    public function enqueue_runtime_assets() {
+        if ($this->is_active()) {
+            angelleye_ppcp_add_css_js();
+        }
     }
 
     private function get_gateway() {
@@ -40,9 +54,6 @@ abstract class AngellEYE_PPCP_Wallet_Block extends AbstractPaymentMethodType {
     }
 
     public function get_payment_method_script_handles() {
-        // angelleyeOrder, angelleye_ppcp_manager, the wallet button classes and
-        // the SDK loading all come from the classic scripts.
-        angelleye_ppcp_add_css_js();
         wp_register_script('angelleye_ppcp_wallet-blocks', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/checkout-block/ppcp-wallet-block.js', array('jquery', 'wc-blocks-registry', 'wc-blocks-data-store', 'wc-settings', 'wp-data', 'wp-element', 'wp-html-entities', 'wp-i18n'), VERSION_PFW, true);
         $handle = $this->name . '-blocks-integration';
         wp_register_script($handle, PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/checkout-block/' . $this->script_file, array('angelleye_ppcp_wallet-blocks', 'wc-settings'), VERSION_PFW, true);

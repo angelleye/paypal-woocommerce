@@ -12,6 +12,29 @@ final class AngellEYE_PPCP_Checkout_Block extends AbstractPaymentMethodType {
     public function initialize() {
         $this->version = VERSION_PFW;
         $this->settings = get_option('woocommerce_angelleye_ppcp_settings', []);
+        add_action('woocommerce_blocks_cart_enqueue_data', array($this, 'enqueue_runtime_assets'));
+        add_action('woocommerce_blocks_checkout_enqueue_data', array($this, 'enqueue_runtime_assets'));
+    }
+
+    /**
+     * Pull in PFW's full runtime chain (common-functions, script-loader,
+     * public.js, apple-pay, google-pay). Without this the Cart block calls
+     * angelleyeOrder.renderSmartButton() which instantiates
+     * GooglePayCheckoutButton / ApplePayCheckoutButton — classes that live in
+     * wc-gateway-ppcp-angelleye-google-pay.js / -apple-pay.js and never get
+     * enqueued through the Blocks payment-method registration path on their
+     * own. On classic checkout these load because the gateway's
+     * payment_fields() calls this same helper.
+     *
+     * Hooked to the Cart / Checkout block enqueue_data actions, which only
+     * fire when one of those blocks renders. It must not run from
+     * get_payment_method_script_handles(): WooCommerce calls that getter on
+     * every frontend request, so enqueueing there loaded the bundle site-wide.
+     */
+    public function enqueue_runtime_assets() {
+        if ($this->is_active()) {
+            angelleye_ppcp_add_css_js();
+        }
     }
 
     public function is_active() {
@@ -37,16 +60,8 @@ final class AngellEYE_PPCP_Checkout_Block extends AbstractPaymentMethodType {
 
         wp_register_style('angelleye_ppcp', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/wc-gateway-ppcp-angelleye-public.css', array(), $this->version, 'all');
 
-        // Pull in PFW's full runtime chain (common-functions, script-loader,
-        // public.js, apple-pay, google-pay). Without this the Cart block
-        // calls angelleyeOrder.renderSmartButton() which instantiates
-        // GooglePayCheckoutButton / ApplePayCheckoutButton — classes that
-        // live in wc-gateway-ppcp-angelleye-google-pay.js / -apple-pay.js
-        // and never get enqueued through the Blocks payment-method
-        // registration path on their own. On classic checkout these load
-        // because the gateway's payment_fields() calls this same helper;
-        // the Cart block has no payment_fields, so we call it ourselves.
-        angelleye_ppcp_add_css_js();
+        // The runtime chain is enqueued by enqueue_runtime_assets() when a
+        // Cart / Checkout block renders; see there for why not here.
 
         // wc-blocks-checkout is required because ppcp-checkout.js reads
         // `wc.blocksCheckout.ExperimentalOrderMeta`. WC now emits a

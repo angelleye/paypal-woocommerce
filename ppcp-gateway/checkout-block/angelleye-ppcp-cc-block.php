@@ -12,6 +12,22 @@ final class AngellEYE_PPCP_CC_Block extends AbstractPaymentMethodType {
     public function initialize() {
         $this->version = VERSION_PFW;
         $this->settings = get_option('woocommerce_angelleye_ppcp_settings', []);
+        add_action('woocommerce_blocks_cart_enqueue_data', array($this, 'enqueue_runtime_assets'));
+        add_action('woocommerce_blocks_checkout_enqueue_data', array($this, 'enqueue_runtime_assets'));
+    }
+
+    /**
+     * See AngellEYE_PPCP_Checkout_Block::enqueue_runtime_assets() for the
+     * full rationale. Pulls in common-functions, script-loader, public.js,
+     * apple-pay and google-pay so angelleyeOrder, angelleye_ppcp_manager, and
+     * the GooglePayCheckoutButton / ApplePayCheckoutButton classes are all
+     * defined before the React useEffect in ppcp-cc.js fires — only when a
+     * Cart / Checkout block renders.
+     */
+    public function enqueue_runtime_assets() {
+        if ($this->is_active()) {
+            angelleye_ppcp_add_css_js();
+        }
     }
 
     public function is_active() {
@@ -34,12 +50,8 @@ final class AngellEYE_PPCP_CC_Block extends AbstractPaymentMethodType {
         $this->pay_later = AngellEYE_PayPal_PPCP_Pay_Later::instance();
         wp_register_style('angelleye_ppcp', PAYPAL_FOR_WOOCOMMERCE_ASSET_URL . 'ppcp-gateway/css/wc-gateway-ppcp-angelleye-public.css', array(), $this->version, 'all');
 
-        // See angelleye-ppcp-checkout-block.php for the full rationale.
-        // Pulls in common-functions, script-loader, public.js, apple-pay
-        // and google-pay so angelleyeOrder, angelleye_ppcp_manager, and
-        // the GooglePayCheckoutButton / ApplePayCheckoutButton classes
-        // are all defined before the React useEffect in ppcp-cc.js fires.
-        angelleye_ppcp_add_css_js();
+        // The runtime chain is enqueued by enqueue_runtime_assets() when a
+        // Cart / Checkout block renders; see there for why not here.
 
         // wc-blocks-checkout / wc-blocks-data-store are required because
         // ppcp-cc.js reads wc.blocksCheckout and wc.wcBlocksData; WC now
@@ -86,8 +98,8 @@ final class AngellEYE_PPCP_CC_Block extends AbstractPaymentMethodType {
         // Note: a previous wp_enqueue_script('angelleye_ppcp_cc') here was a
         // no-op — no script is registered under that handle anywhere in the
         // plugin. The real handles (angelleye_ppcp, angelleye_ppcp-apple-pay,
-        // angelleye_ppcp-google-pay, etc.) are already enqueued by the
-        // angelleye_ppcp_add_css_js() call above.
+        // angelleye_ppcp-google-pay, etc.) are enqueued by
+        // enqueue_runtime_assets() when a Cart / Checkout block renders.
         if (angelleye_ppcp_has_active_session() === false && $page === 'cart') {
             do_action('angelleye_ppcp_cc_woo_cart_block_pay_later_message');
         }
