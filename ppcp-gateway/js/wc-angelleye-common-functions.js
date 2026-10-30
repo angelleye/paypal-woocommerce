@@ -1008,12 +1008,19 @@ const angelleyeOrder = {
                 const errorMessage = (isBlockMode && angelleyeOrder.blockCreateOrderError)
                     || angelleyeOrder.parsePayPalSdkError(err);
                 jQuery(document.body).trigger('angelleye_ppcp_cc_error', [{message: errorMessage}]);
+                // Logged for both checkouts; createOrder API errors are already
+                // logged on the server. The raw SDK error keeps the endpoint,
+                // status and issue code that the customer message hides.
+                if (!isItApiError) {
+                    const rawError = (err && err.message) || (typeof err === 'string' ? err : JSON.stringify(err));
+                    angelleyeJsErrorLogger.addToLog(errorLogId, {context: 'paypal_sdk_error', error: String(rawError).substring(0, 2000)});
+                    angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
+                }
                 if (isBlockMode) {
                     return;
                 }
                 if (!isItApiError) {
                     angelleyeOrder.showError(errorMessage);
-                    angelleyeJsErrorLogger.logJsError(errorMessage, errorLogId);
                 }
                 console.log('Error occurred:', err);
                 if (typeof err === 'object' && err !== null) {

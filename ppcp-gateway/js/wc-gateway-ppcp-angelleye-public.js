@@ -321,10 +321,16 @@ function initSmartButtons() {
 		if (!isOurError(event)) {
 			return;
 		}
-		angelleyeJsErrorLogger.logJsError({
+		const error = {
 			'msg': event.message,
 			'source': event.filename,
 			'line': event.lineno,
-		});
+		};
+		// File and line say little for combined or minified scripts; the stack
+		// shows which of our functions failed.
+		if (event.error && typeof event.error.stack === 'string') {
+			error.stack = event.error.stack.split('\n').slice(0, 10).join('\n');
+		}
+		angelleyeJsErrorLogger.logJsError(error);
 	});
 })();
