@@ -103,23 +103,39 @@ var {addAction} = wp.hooks;
                         a = n(1);
                 const l = Object(u.getSetting)("angelleye_ppcp_data", {});
                 const p = () => Object(a.decodeEntities)(l.description || "");
-                const {useEffect} = window.wp.element;
+                const {useEffect, useRef} = window.wp.element;
 
                 const Content_PPCP_Smart_Button = (props) => {
                     const {billing, shippingData} = props;
-                    jQuery(document.body).on(
-                            "ppcp_checkout_updated",
-                            function () {
-                                let address = {
-                                    billing: billing.billingAddress,
-                                    shipping: shippingData.shippingAddress,
-                                };
-                                angelleyeOrder.ppcp_address = [];
-                                angelleyeOrder.ppcp_address = address;
-                                jQuery("#angelleye_ppcp_checkout").unblock();
-                                angelleyeOrder.renderPaymentButtons();
+                    const addressRef = useRef(null);
+                    addressRef.current = {
+                        billing: billing.billingAddress,
+                        shipping: shippingData.shippingAddress,
+                    };
+                    useEffect(() => {
+                        let mounted = true;
+                        const renderButtons = () => {
+                            if (!mounted) {
+                                return;
                             }
-                    );
+                            angelleyeOrder.ppcp_address = addressRef.current;
+                            if (typeof jQuery.fn.unblock === "function") {
+                                jQuery("#angelleye_ppcp_checkout").unblock();
+                            }
+                            angelleyeOrder.renderPaymentButtons();
+                        };
+                        // Render on mount. Blocks shows the payment options only after every
+                        // payment method's canMakePayment resolves, and the Apple Pay / Google Pay
+                        // ones wait for the SDKs, so this component usually mounts after
+                        // initSmartButtons() has already rendered and missed this container.
+                        // The ppcp_checkout_updated events fired at page load are gone by then.
+                        angelleyeOrder.onSdkReady(renderButtons);
+                        jQuery(document.body).on("ppcp_checkout_updated", renderButtons);
+                        return () => {
+                            mounted = false;
+                            jQuery(document.body).off("ppcp_checkout_updated", renderButtons);
+                        };
+                    }, []);
                     return createElement("div", {id: "angelleye_ppcp_checkout"});
                 };
 
