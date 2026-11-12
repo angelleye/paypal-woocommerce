@@ -1731,6 +1731,52 @@ if (!function_exists('angelleye_ppcp_get_awaiting_payment_order_id')) {
 
 }
 
+if (!function_exists('angelleye_ppcp_get_unpaid_order_id_by_paypal_order_id')) {
+
+    /**
+     * Finds the unpaid WooCommerce order that a PayPal order was created for.
+     *
+     * Used when the session lost order_awaiting_payment between create_order
+     * and capture, so the capture reuses the original order instead of
+     * creating a duplicate. An order that belongs to a customer account is
+     * only returned to that customer.
+     *
+     * @param string $paypal_order_id
+     * @return int Order id, or 0 when there is no match.
+     */
+    function angelleye_ppcp_get_unpaid_order_id_by_paypal_order_id($paypal_order_id) {
+        if (empty($paypal_order_id) || !function_exists('wc_get_orders')) {
+            return 0;
+        }
+        $order_ids = wc_get_orders(array(
+            'status' => array('pending', 'failed', 'checkout-draft'),
+            'meta_query' => array(
+                array(
+                    'key' => '_paypal_order_id',
+                    'value' => $paypal_order_id,
+                ),
+            ),
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'limit' => 1,
+            'return' => 'ids',
+        ));
+        if (empty($order_ids)) {
+            return 0;
+        }
+        $order = wc_get_order($order_ids[0]);
+        if (!$order) {
+            return 0;
+        }
+        $customer_id = (int) $order->get_customer_id();
+        if ($customer_id > 0 && $customer_id !== get_current_user_id()) {
+            return 0;
+        }
+        return $order->get_id();
+    }
+
+}
+
 if (!function_exists('angelleye_ppcp_is_cart_contains_free_trial')) {
 
     function angelleye_ppcp_is_cart_contains_free_trial() {
