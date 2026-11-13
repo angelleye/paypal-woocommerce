@@ -127,6 +127,13 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 
 == Changelog ==
 
+= 4.6.18 - 11.13.2026 =
+* Fix - Fixed Apple Pay / Google Pay capture failing with "_paypal_reference_id is missing" and creating duplicate orders when the session was lost. ([2270](https://github.com/angelleye/paypal-woocommerce/pull/2270))
+* Fix - Fixed PayPal buttons not showing on the Checkout block on first page load. ([2272](https://github.com/angelleye/paypal-woocommerce/pull/2272))
+* Fix - Verify the PayPal amount and currency before marking an order paid, and check permissions on admin actions. ([2268](https://github.com/angelleye/paypal-woocommerce/pull/2268))
+* Fix - PPCP scripts now load only on pages with a Cart or Checkout block. ([2264](https://github.com/angelleye/paypal-woocommerce/pull/2264))
+* Fix - Only PPCP script errors are logged, at most 5 per page. ([2266](https://github.com/angelleye/paypal-woocommerce/pull/2266))
+
 = 4.6.17 - 10.29.2026 =
 * Feature - Added Apple Pay to the WooCommerce Cart and Checkout blocks. ([2250](https://github.com/angelleye/paypal-woocommerce/pull/2250))
 * Feature - Added Google Pay to the WooCommerce Cart and Checkout blocks. ([2256](https://github.com/angelleye/paypal-woocommerce/pull/2256))
