@@ -1728,6 +1728,21 @@ class AngellEYE_PayPal_PPCP_Payment {
         return $body_request;
     }
 
+    /**
+     * Reads the purchase unit reference_id from the PayPal order, for when the
+     * session and the WooCommerce order both lost it.
+     *
+     * @param string $paypal_order_id
+     * @return string Empty string when it can't be read.
+     */
+    private function angelleye_ppcp_get_reference_id_from_paypal_order($paypal_order_id) {
+        $details = $this->angelleye_ppcp_get_checkout_details($paypal_order_id);
+        if (!empty($details->id) && $details->id === $paypal_order_id && !empty($details->purchase_units[0]->reference_id)) {
+            return wc_clean($details->purchase_units[0]->reference_id);
+        }
+        return '';
+    }
+
 	public function angelleye_ppcp_update_order($order) {
         try {
             $decimals = $this->angelleye_ppcp_get_number_of_decimal_digits();
@@ -1745,7 +1760,18 @@ class AngellEYE_PayPal_PPCP_Payment {
             if (empty($reference_id)) {
                 $reference_id = angelleye_ppcp_get_post_meta($order_id, '_paypal_reference_id');
                 if (empty($reference_id)) {
-                    angelleye_session_expired_exception('_paypal_reference_id is missing in the update_order call.');
+                    // The session lost reference_id and this order has no copy of it (e.g. the
+                    // order was created at capture time). Read it from the PayPal order.
+                    $reference_id = $this->angelleye_ppcp_get_reference_id_from_paypal_order($paypal_order_id);
+                    if (empty($reference_id)) {
+                        angelleye_session_expired_exception('_paypal_reference_id is missing in the update_order call.');
+                    }
+                    $this->api_log->log(sprintf('update_order: reference_id was missing from the session and order #%s, restored it from PayPal order %s.', $order_id, $paypal_order_id));
+                }
+                AngellEye_Session_Manager::set('reference_id', $reference_id);
+                if ($reference_id !== angelleye_ppcp_get_post_meta($order_id, '_paypal_reference_id')) {
+                    $order->update_meta_data('_paypal_reference_id', $reference_id);
+                    $order->save_meta_data();
                 }
             }
             $cart = $this->angelleye_ppcp_get_details_from_order($order_id);

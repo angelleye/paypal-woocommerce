@@ -44,7 +44,8 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $this->advanced_card_payments = false;
         }
         $this->three_d_secure_contingency = $this->setting_obj->get('3d_secure_contingency', 'SCA_WHEN_REQUIRED');
-        if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'))) {
+        // Check for our own callback only, so another callback on this hook does not stop it from registering.
+        if (!has_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'))) {
             add_action('woocommerce_api_' . strtolower('AngellEYE_PayPal_PPCP_Front_Action'), array($this, 'handle_wc_api'));
         }
 
@@ -645,6 +646,17 @@ class AngellEYE_PayPal_PPCP_Front_Action {
             $angelleye_ppcp_paypal_order_id = AngellEye_Session_Manager::get('paypal_order_id', false);
             if (!empty($angelleye_ppcp_paypal_order_id)) {
                 $order_id = angelleye_ppcp_get_awaiting_payment_order_id();
+                if (!$order_id) {
+                    // The session can lose order_awaiting_payment between create_order and
+                    // capture (e.g. a concurrent request saving an older copy of the session).
+                    // Reuse the order this PayPal order was created for instead of creating
+                    // a duplicate one.
+                    $order_id = angelleye_ppcp_get_unpaid_order_id_by_paypal_order_id($angelleye_ppcp_paypal_order_id);
+                    if ($order_id) {
+                        WC()->session->set('order_awaiting_payment', $order_id);
+                        $this->api_log->log(sprintf('cc_capture: order_awaiting_payment was missing from the session, reusing order #%s found by PayPal order id %s.', $order_id, $angelleye_ppcp_paypal_order_id));
+                    }
+                }
                 $order = wc_get_order($order_id);
                 if ($order === false) {
                     if (!class_exists('AngellEYE_PayPal_PPCP_Checkout')) {
